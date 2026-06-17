@@ -29,7 +29,7 @@ export function SlidePreview({
       {/* title */}
       <foreignObject x={96} y={150} width={w - 192} height={180}>
         <div
-          xmlns="http://www.w3.org/1999/xhtml"
+          
           style={{
             fontFamily: "Fraunces, serif",
             fontSize: 72,
@@ -46,7 +46,7 @@ export function SlidePreview({
       {/* message */}
       <foreignObject x={96} y={350} width={w - 192} height={120}>
         <div
-          xmlns="http://www.w3.org/1999/xhtml"
+          
           style={{
             fontFamily: "Inter, sans-serif",
             fontSize: 34,
