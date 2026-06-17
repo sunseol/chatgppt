@@ -1,6 +1,10 @@
 import { useEffect, useState, useCallback } from "react";
 import type { DeckProject, Stage, StepKey } from "./deck-types";
 import { stageToStep, stepIndex, STEPS } from "./deck-types";
+import type { ArtifactRecord } from "./artifacts";
+import { invalidatedAfter, isStepReachable } from "./workflow-engine";
+import { createDeckProject } from "./project-creation";
+import { parseProjectList, serializeProjectList } from "./project-list-codec";
 
 const KEY = "deckforge.projects.v1";
 
@@ -12,16 +16,16 @@ function load(): DeckProject[] {
   if (!isBrowser()) return [];
   try {
     const raw = window.localStorage.getItem(KEY);
-    if (!raw) return [];
-    return JSON.parse(raw) as DeckProject[];
-  } catch {
+    return parseProjectList(raw);
+  } catch (error) {
+    if (!(error instanceof Error)) throw error;
     return [];
   }
 }
 
 function save(list: DeckProject[]) {
   if (!isBrowser()) return;
-  window.localStorage.setItem(KEY, JSON.stringify(list));
+  window.localStorage.setItem(KEY, serializeProjectList(list));
   window.dispatchEvent(new CustomEvent("deckforge:update"));
 }
 
@@ -40,19 +44,10 @@ export function createProject(input: {
   aspectRatio: "16:9" | "4:3";
   language: "ko" | "en" | "mixed";
 }): DeckProject {
-  const p: DeckProject = {
-    id: "p_" + Math.random().toString(36).slice(2, 10),
-    name: input.name,
-    initialPrompt: input.initialPrompt,
-    slideCount: input.slideCount,
-    aspectRatio: input.aspectRatio,
-    language: input.language,
-    stage: "PROJECT_CREATED",
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
-    invalidated: {},
-    approvalLog: [],
-  };
+  const p = createDeckProject(input, {
+    createId: () => "p_" + Math.random().toString(36).slice(2, 10),
+    now: Date.now,
+  });
   const list = load();
   list.push(p);
   save(list);
@@ -61,7 +56,7 @@ export function createProject(input: {
 
 export function updateProject(
   id: string,
-  patch: Partial<DeckProject> | ((p: DeckProject) => Partial<DeckProject>)
+  patch: Partial<DeckProject> | ((p: DeckProject) => Partial<DeckProject>),
 ) {
   const list = load();
   const idx = list.findIndex((p) => p.id === id);
@@ -75,42 +70,43 @@ export function deleteProject(id: string) {
   save(load().filter((p) => p.id !== id));
 }
 
-const DOWNSTREAM: Record<StepKey, StepKey[]> = {
-  project: ["interview", "research", "plan", "design", "layout", "generate", "review", "vectorize", "editor", "export"],
-  interview: ["research", "plan", "design", "layout", "generate", "review", "vectorize", "editor", "export"],
-  research: ["plan", "design", "layout", "generate", "review", "vectorize", "editor", "export"],
-  plan: ["design", "layout", "generate", "review", "vectorize", "editor", "export"],
-  design: ["layout", "generate", "review", "vectorize", "editor", "export"],
-  layout: ["generate", "review", "vectorize", "editor", "export"],
-  generate: ["review", "vectorize", "editor", "export"],
-  review: ["vectorize", "editor", "export"],
-  vectorize: ["editor", "export"],
-  editor: ["export"],
-  export: [],
-};
-
 export function invalidateDownstream(id: string, fromStep: StepKey) {
   const list = load();
   const idx = list.findIndex((p) => p.id === id);
   if (idx < 0) return;
-  const inv = { ...list[idx].invalidated };
-  for (const k of DOWNSTREAM[fromStep]) inv[k] = true;
+  const inv = { ...list[idx].invalidated, ...invalidatedAfter(fromStep) };
   list[idx] = { ...list[idx], invalidated: inv, updatedAt: Date.now() };
   save(list);
 }
 
-export function approveStage(id: string, step: StepKey, nextStage: Stage, hash: string) {
+export function approveStage(
+  id: string,
+  step: StepKey,
+  nextStage: Stage,
+  hash: string,
+  artifact?: ArtifactRecord,
+) {
   const list = load();
   const idx = list.findIndex((p) => p.id === id);
   if (idx < 0) return;
   const p = list[idx];
   const inv = { ...p.invalidated };
   delete inv[step];
+  const artifactVersion =
+    artifact?.version ?? p.approvalLog.filter((entry) => entry.stage === step).length + 1;
+  const entry = {
+    stage: step,
+    at: Date.now(),
+    hash,
+    artifactId: artifact?.id ?? `${id}_${step}_v${artifactVersion}`,
+    artifactVersion,
+    artifactType: artifact?.type ?? step,
+  };
   list[idx] = {
     ...p,
     stage: nextStage,
     invalidated: inv,
-    approvalLog: [...p.approvalLog, { stage: step, at: Date.now(), hash }],
+    approvalLog: [...p.approvalLog, entry],
     updatedAt: Date.now(),
   };
   save(list);
@@ -118,7 +114,7 @@ export function approveStage(id: string, step: StepKey, nextStage: Stage, hash: 
 
 export function useProject(id: string | undefined) {
   const [project, setProject] = useState<DeckProject | undefined>(() =>
-    id ? getProject(id) : undefined
+    id ? getProject(id) : undefined,
   );
 
   const refresh = useCallback(() => {
@@ -157,9 +153,4 @@ export function useProjectList() {
   return list;
 }
 
-export function isStepReachable(p: DeckProject, step: StepKey) {
-  const currentStep = stageToStep(p.stage);
-  return stepIndex(step) <= stepIndex(currentStep);
-}
-
-export { STEPS, stageToStep, stepIndex };
+export { STEPS, stageToStep, stepIndex, isStepReachable };

@@ -1,3 +1,31 @@
+import type { ResearchPack } from "./research-types";
+import type { LayoutValidationReport } from "./layout-validation";
+import type { WorkflowErrorRecord } from "./workflow-error-types";
+
+export type {
+  ChartType,
+  Claim,
+  ClaimConfidence,
+  ClaimStatus,
+  FactCheckIssue,
+  FactCheckReport,
+  NumericEvidence,
+  ResearchChart,
+  ResearchDataset,
+  ResearchDatasetRow,
+  ResearchPack,
+  ResearchSourceType,
+  Source,
+  SourceGrade,
+  SourceUsePolicy,
+  UsableSourceGrade,
+} from "./research-types";
+export type {
+  WorkflowDraftRecovery,
+  WorkflowErrorKind,
+  WorkflowErrorRecord,
+} from "./workflow-error-types";
+
 export type Stage =
   | "PROJECT_CREATED"
   | "INTERVIEWING"
@@ -62,38 +90,17 @@ export interface InterviewBrief {
   approvedHash?: string;
 }
 
-export interface Source {
-  id: string;
-  title: string;
-  publisher: string;
-  year: number;
-  grade: "A" | "B" | "C" | "D";
-  url?: string;
-}
-
-export interface Claim {
-  id: string;
-  statement: string;
-  sourceIds: string[];
-  confidence: "high" | "medium" | "low" | "assumption";
-  slideCandidates: number[];
-}
-
-export interface ResearchPack {
-  id: string;
-  sources: Source[];
-  claims: Claim[];
-  approvedHash?: string;
-}
-
 export interface SlideSpec {
   number: number;
   title: string;
   role: string;
   coreMessage: string;
+  bodyPoints?: string[];
   visualType: string;
+  visualComposition?: string;
   evidence: string[];
   editableElements: string[];
+  dataSourceConstraints?: string[];
 }
 
 export interface DeckPlan {
@@ -105,17 +112,31 @@ export interface DeckPlan {
 
 export interface DesignSystem {
   id: string;
-  canvas: { ratio: "16:9" | "4:3"; w: number; h: number };
+  canvas: {
+    ratio: "16:9" | "4:3";
+    w: number;
+    h: number;
+    safeMargin: { x: number; y: number };
+  };
+  grid: { columns: number; gutter: number };
   colors: {
     background: string;
     textPrimary: string;
+    textSecondary: string;
     primary: string;
+    secondary: string;
     accent: string;
   };
   typography: {
     titleStyle: string;
     bodyStyle: string;
+    title: { style: string; minPx: number; maxPx: number };
+    body: { style: string; minPx: number; maxPx: number };
+    caption: { style: string; minPx: number; maxPx: number };
+    number: { style: string; minPx: number; maxPx: number };
   };
+  layoutRules: string[];
+  componentRules: string[];
   visualLanguage: string;
   negativeRules: string[];
   approvedHash?: string;
@@ -127,8 +148,17 @@ export interface LayoutPrototype {
     number: number;
     componentType: string;
     html: string;
-    domLayers: { id: string; role: string; editable: boolean }[];
+    layoutPngDataUrl?: string;
+    domLayers: {
+      id: string;
+      role: string;
+      editable: boolean;
+      sourceIds: string[];
+      datasetIds: string[];
+      bounds: { x: number; y: number; w: number; h: number };
+    }[];
   }[];
+  validationReport?: LayoutValidationReport;
   approvedHash?: string;
 }
 
@@ -147,9 +177,30 @@ export interface EditableLayerModel {
     type: "text" | "shape" | "image" | "chart";
     role: string;
     text?: string;
+    groupId?: string;
     bounds: { x: number; y: number; w: number; h: number };
     editable: boolean;
   }[];
+}
+
+export interface ApprovalLogEntry {
+  stage: string;
+  at: number;
+  hash: string;
+  artifactId?: string;
+  artifactVersion?: number;
+  artifactType?: string;
+}
+
+export interface ProjectExportSummary {
+  readonly artifactId: string;
+  readonly artifactHash: string;
+  readonly artifactPath: string;
+  readonly createdAt: number;
+  readonly pngCount: number;
+  readonly svgCount: number;
+  readonly hybridSvgCount: number;
+  readonly projectFilePath: string;
 }
 
 export interface DeckProject {
@@ -170,32 +221,45 @@ export interface DeckProject {
   layout?: LayoutPrototype;
   slides?: GeneratedSlide[];
   layers?: EditableLayerModel[];
+  exportPackage?: ProjectExportSummary;
 
   invalidated: Partial<Record<StepKey, boolean>>;
-  approvalLog: { stage: string; at: number; hash: string }[];
+  workflowErrors?: readonly WorkflowErrorRecord[];
+  approvalLog: ApprovalLogEntry[];
 }
 
 export function stageToStep(stage: Stage): StepKey {
   switch (stage) {
-    case "PROJECT_CREATED": return "project";
+    case "PROJECT_CREATED":
+      return "project";
     case "INTERVIEWING":
-    case "INTERVIEW_APPROVAL_PENDING": return "interview";
+    case "INTERVIEW_APPROVAL_PENDING":
+      return "interview";
     case "RESEARCHING":
-    case "RESEARCH_APPROVAL_PENDING": return "research";
+    case "RESEARCH_APPROVAL_PENDING":
+      return "research";
     case "PLANNING":
-    case "PLAN_APPROVAL_PENDING": return "plan";
+    case "PLAN_APPROVAL_PENDING":
+      return "plan";
     case "DESIGNING":
-    case "DESIGN_APPROVAL_PENDING": return "design";
+    case "DESIGN_APPROVAL_PENDING":
+      return "design";
     case "PROTOTYPING_LAYOUT":
-    case "LAYOUT_APPROVAL_PENDING": return "layout";
-    case "GENERATING_SLIDES": return "generate";
-    case "SLIDE_REVIEW_PENDING": return "review";
+    case "LAYOUT_APPROVAL_PENDING":
+      return "layout";
+    case "GENERATING_SLIDES":
+      return "generate";
+    case "SLIDE_REVIEW_PENDING":
+      return "review";
     case "VECTORIZE_PENDING":
     case "VECTORIZING":
-    case "EDITABLE_REVIEW_PENDING": return "vectorize";
-    case "EDITOR": return "editor";
+    case "EDITABLE_REVIEW_PENDING":
+      return "vectorize";
+    case "EDITOR":
+      return "editor";
     case "FINAL_REPORTING":
-    case "EXPORT_READY": return "export";
+    case "EXPORT_READY":
+      return "export";
   }
 }
 

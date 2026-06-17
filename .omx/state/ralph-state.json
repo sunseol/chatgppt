@@ -1,0 +1,15 @@
+{
+  "active": false,
+  "iteration": 1,
+  "max_iterations": 10,
+  "current_phase": "completed",
+  "task_description": "Continue all remaining DeckForge tickets after DF-066A",
+  "context_snapshot_path": "/Users/jake/chatgppt/deck-scribe-craft-07/.omx/context/deckforge-df157-packaging-signing-notarization-20260618T001000Z.md",
+  "last_completed_ticket": "DF-157",
+  "next_ticket": null,
+  "started_at": "2026-06-17T10:11:12.384Z",
+  "updated_at": "2026-06-17T18:04:30Z",
+  "current_ticket": null,
+  "plan_path": "/Users/jake/chatgppt/deck-scribe-craft-07/.omx/plans/prd-deckforge-df157-packaging-signing-notarization.md",
+  "test_spec_path": "/Users/jake/chatgppt/deck-scribe-craft-07/.omx/plans/test-spec-deckforge-df157-packaging-signing-notarization.md"
+}
