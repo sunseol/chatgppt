@@ -1,0 +1,15 @@
+.DS_Store
+*.log
+
+# Local orchestration/runtime state
+/.omx/
+/.playwright-mcp/
+
+# Build and dependency outputs
+node_modules/
+dist/
+
+# Nested app runtime outputs
+deck-scribe-craft-07/.git/
+deck-scribe-craft-07/node_modules/
+deck-scribe-craft-07/dist/

@@ -1,0 +1,67 @@
+import { describe, expect, test } from "bun:test";
+import { createAuditLogEvent, createProviderJobSummaryAuditEvent } from "./audit-log";
+import { createProviderJobManager } from "./provider-job-manager";
+
+describe("full audit log", () => {
+  test("records trace lineage and redacts sensitive event messages", () => {
+    const event = createAuditLogEvent({
+      eventId: "evt_regen_001",
+      eventType: "regeneration.requested",
+      traceId: "trace_slide_1_regen",
+      timestamp: 2_000,
+      stage: "generate",
+      message: "retry with Authorization: Bearer sk-live-secret",
+      artifactLineage: {
+        artifactId: "slide_1_v4",
+        artifactHash: "sha256:slide",
+        artifactType: "generated_slide",
+        upstreamArtifactIds: ["layout_001", "prompt_slide_1"],
+      },
+    });
+
+    expect(event.traceId).toBe("trace_slide_1_regen");
+    expect(event.artifactLineage?.upstreamArtifactIds).toEqual(["layout_001", "prompt_slide_1"]);
+    expect(event.message).toBe("retry with Authorization: Bearer [redacted]");
+    expect(JSON.stringify(event).includes("sk-live-secret")).toBe(false);
+  });
+
+  test("records provider usage summary without provider output", async () => {
+    const manager = createProviderJobManager({ createId: () => "job_audit_full" });
+    const queued = manager.enqueue({
+      providerId: "openaiImage",
+      capability: "imageGeneration",
+      description: "Generate slide image",
+    });
+    const completed = await manager.run(queued.id, async (job) => {
+      job.recordUsageSummary({
+        inputTokens: 120,
+        outputTokens: 30,
+        imageCount: 1,
+        estimatedCostUsd: 0.04,
+      });
+      return "OPENAI_API_KEY=sk-live-output";
+    });
+
+    const event = createProviderJobSummaryAuditEvent(completed, {
+      eventId: "evt_provider_001",
+      traceId: "trace_provider_001",
+      timestamp: 2_500,
+      stage: "generate",
+      artifactLineage: {
+        artifactId: "slide_1_v1",
+        artifactHash: "sha256:generated",
+        artifactType: "generated_slide",
+        upstreamArtifactIds: ["layout_001"],
+      },
+    });
+
+    expect(event.eventType).toBe("provider.job.summary");
+    expect(event.usageSummary).toEqual({
+      inputTokens: 120,
+      outputTokens: 30,
+      imageCount: 1,
+      estimatedCostUsd: 0.04,
+    });
+    expect(JSON.stringify(event).includes("sk-live-output")).toBe(false);
+  });
+});
