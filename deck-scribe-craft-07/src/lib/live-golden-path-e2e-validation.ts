@@ -1,16 +1,12 @@
 import { hashContent } from "./artifacts";
-import {
-  liveImageArtifacts,
-  validationBundleIssues,
-  validSources,
-} from "./live-golden-path-e2e-evidence";
+import { liveImageArtifacts, validationBundleIssues } from "./live-golden-path-e2e-evidence";
+import { sourceIssues } from "./live-golden-path-source-evidence";
 import {
   LIVE_GOLDEN_PATH_E2E_STEPS,
   liveGoldenPathIssue,
   type LiveGoldenPathE2EBundle,
   type LiveGoldenPathE2EIssue,
   type LiveGoldenPathE2EStep,
-  type LiveGoldenPathSource,
 } from "./live-golden-path-e2e-contract";
 import {
   collectLineageContamination,
@@ -132,30 +128,6 @@ function lineageIssues(
         [artifactId],
       ),
     ),
-  ];
-}
-
-function sourceIssues(sources: readonly LiveGoldenPathSource[]): readonly LiveGoldenPathE2EIssue[] {
-  const valid = validSources(sources);
-  return [
-    ...(valid.length >= 3
-      ? []
-      : [
-          liveGoldenPathIssue(
-            "insufficient_live_sources",
-            "At least three real source URLs are required.",
-            [String(valid.length)],
-          ),
-        ]),
-    ...(valid.some((source) => source.role === "official" || source.role === "primary")
-      ? []
-      : [
-          liveGoldenPathIssue(
-            "missing_primary_source",
-            "At least one primary or official source URL is required.",
-            valid.map((source) => source.artifactId),
-          ),
-        ]),
   ];
 }
 

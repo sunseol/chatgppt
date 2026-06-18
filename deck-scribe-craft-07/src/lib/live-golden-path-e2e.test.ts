@@ -168,6 +168,27 @@ describe("live golden path E2E evidence", () => {
       "insufficient_live_image_artifacts",
     ]);
   });
+
+  test("blocks repeated source evidence from satisfying the three-source requirement", () => {
+    // Given
+    const repeatedSources = Array.from({ length: 3 }, () => ({
+      url: "https://www.sec.gov/example",
+      role: "official" as const,
+      artifactId: "src_sec",
+    }));
+    const bundle = completeBundle({ sources: repeatedSources });
+
+    // When
+    const result = evaluateLiveGoldenPathE2EBundle(bundle);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "duplicate_live_source",
+      "insufficient_live_sources",
+    ]);
+  });
 });
 
 function completeBundle(patch: Partial<LiveGoldenPathE2EBundle> = {}): LiveGoldenPathE2EBundle {

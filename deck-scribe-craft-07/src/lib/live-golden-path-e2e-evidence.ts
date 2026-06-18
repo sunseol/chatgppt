@@ -9,7 +9,7 @@ import {
 import type { ProviderArtifactProvenance } from "./provider-provenance";
 
 export function countValidLiveSources(sources: readonly LiveGoldenPathSource[]): number {
-  return validSources(sources).length;
+  return new Set(validSources(sources).map((source) => source.url.trim())).size;
 }
 
 export function countLiveImageArtifacts(

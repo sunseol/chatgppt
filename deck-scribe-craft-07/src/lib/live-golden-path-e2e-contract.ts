@@ -69,6 +69,7 @@ export type LiveGoldenPathE2EIssueCode =
   | "validation_bundle_missing_image_artifact"
   | "mock_lineage_contamination"
   | "fixture_lineage_contamination"
+  | "duplicate_live_source"
   | "insufficient_live_sources"
   | "missing_primary_source"
   | "duplicate_live_image_artifact"
