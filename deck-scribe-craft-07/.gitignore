@@ -14,6 +14,8 @@ dist-ssr
 .vinxi
 .tanstack/**
 .nitro
+src-tauri/gen/schemas
+src-tauri/target
 *.local
 
 # Wrangler / Cloudflare

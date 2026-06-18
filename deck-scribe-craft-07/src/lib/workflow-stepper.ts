@@ -19,14 +19,14 @@ export type WorkflowStepItem = {
 const CURRENT_ACTIONS: Record<StepKey, string> = {
   project: "다음 액션: 프로젝트 정보를 확인하고 인터뷰를 시작하세요.",
   interview: "다음 액션: 인터뷰 답변을 정리하고 브리프를 승인하세요.",
-  research: "다음 액션: 출처와 클레임을 검토하고 조사 결과를 승인하세요.",
-  plan: "다음 액션: 덱 구조와 슬라이드 근거를 검증한 뒤 승인하세요.",
-  design: "다음 액션: 디자인 토큰과 규칙을 검토하고 승인하세요.",
-  layout: "다음 액션: HTML 레이아웃과 검증 결과를 확인하고 승인하세요.",
+  research: "다음 액션: 출처와 핵심 주장을 확인하고 조사 결과를 승인하세요.",
+  plan: "다음 액션: 슬라이드 구조와 사용할 자료를 확인한 뒤 승인하세요.",
+  design: "다음 액션: 색상, 글꼴, 미리보기를 확인하고 승인하세요.",
+  layout: "다음 액션: 배치 초안과 수정 요청을 확인하고 승인하세요.",
   generate: "다음 액션: 슬라이드 이미지 생성을 완료하세요.",
   review: "다음 액션: 생성된 슬라이드를 검토하고 승인하세요.",
-  vectorize: "다음 액션: 편집 가능한 레이어 변환을 검토하고 승인하세요.",
-  editor: "다음 액션: 캔버스 편집을 마치고 최종 보고로 이동하세요.",
+  vectorize: "다음 액션: 편집기에서 레이어 준비를 완료하세요.",
+  editor: "다음 액션: 편집 가능한 캔버스를 확인하고 최종 보고로 이동하세요.",
   export: "다음 액션: 보고서와 내보내기 파일을 검증하세요.",
 };
 
@@ -53,9 +53,9 @@ export function getWorkflowStepItems(project: DeckProject): readonly WorkflowSte
       isCurrent,
       status,
       statusLabel: getStatusLabel(status, isCurrent),
-      detail: getStatusDetail(status, step.key, step.label, index, isCurrent),
+      detail: getStatusDetail(status, step.key, step.label, isCurrent),
     };
-  });
+  }).filter((item) => item.key !== "vectorize");
 }
 
 function getWorkflowStepStatus(input: {
@@ -92,7 +92,6 @@ function getStatusDetail(
   status: WorkflowStepStatus,
   stepKey: StepKey,
   label: string,
-  index: number,
   isCurrent: boolean,
 ): string {
   switch (status) {
@@ -104,17 +103,19 @@ function getStatusDetail(
       return CURRENT_ACTIONS[stepKey];
     case "invalidated":
       return isCurrent
-        ? "현재 단계 산출물이 무효화되었습니다. 재생성 또는 재승인이 필요합니다."
-        : "상위 단계 변경으로 산출물이 무효화되었습니다. 재생성 또는 재승인이 필요합니다.";
+        ? "앞 단계 내용이 바뀌었습니다. 이 단계 결과를 다시 확인해주세요."
+        : "앞 단계 내용이 바뀌어 다시 확인이 필요합니다.";
     case "locked":
-      return getLockReason(index);
+      return getLockReason(stepKey);
     default:
       return assertNever(status);
   }
 }
 
-function getLockReason(index: number): string {
-  const previous = STEPS[index - 1];
+function getLockReason(stepKey: StepKey): string {
+  const visibleSteps = STEPS.filter((step) => step.key !== "vectorize");
+  const index = visibleSteps.findIndex((step) => step.key === stepKey);
+  const previous = visibleSteps[index - 1];
   if (!previous) return "잠김: 이전 승인 완료 후 접근할 수 있습니다.";
   return `잠김: ${previous.label} 승인 후 접근할 수 있습니다.`;
 }

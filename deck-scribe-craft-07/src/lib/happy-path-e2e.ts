@@ -115,11 +115,9 @@ export async function runMockHappyPathE2e(
   project = approve(project, "review", slidesArtifact, visitedStages, now);
   artifacts.push(slidesArtifact);
 
-  project = move(project, "VECTORIZING", visitedStages, now);
   const layers = await provider.createEditableLayers({ plan, design });
-  project = move({ ...project, layers }, "EDITABLE_REVIEW_PENDING", visitedStages, now);
+  project = { ...project, layers, updatedAt: now() };
   const layersArtifact = artifact(project, "layers", 1, layers, now);
-  project = approve(project, "vectorize", layersArtifact, visitedStages, now, { layers });
   artifacts.push(layersArtifact);
 
   const editorArtifact = artifact(project, "project", 1, { layers }, now);

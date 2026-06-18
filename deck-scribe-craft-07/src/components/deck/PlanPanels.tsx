@@ -14,7 +14,7 @@ export function PlanValidationSummary({ result }: { readonly result: SlideSpecPa
           승인 가능
         </div>
         <p className="mt-1 text-xs text-muted-foreground">
-          {result.specs.length}개 슬라이드가 구조화된 Slide Spec으로 파싱되었습니다.
+          {result.specs.length}개 슬라이드 구조를 읽었습니다.
         </p>
       </section>
     );
@@ -24,7 +24,7 @@ export function PlanValidationSummary({ result }: { readonly result: SlideSpecPa
     <section className="border border-destructive/30 bg-destructive/10 p-4 text-sm">
       <div className="flex items-center gap-2 font-medium text-destructive">
         <AlertTriangle className="h-4 w-4" />
-        승인 차단
+        수정하면 승인할 수 있음
       </div>
       <ul className="mt-3 space-y-1 text-xs text-muted-foreground">
         {result.issues.map((issue, index) => (
@@ -43,21 +43,22 @@ export function PlanSlideSpecPreview({ specs }: { readonly specs: readonly Slide
           <FileText className="h-4 w-4 text-accent" />
           파싱된 슬라이드
         </div>
-        <span className="font-mono text-xs text-muted-foreground">{specs.length} specs</span>
+        <span className="font-mono text-xs text-muted-foreground">{specs.length}개</span>
       </div>
       {specs.length === 0 ? (
         <div className="px-4 py-8 text-sm text-muted-foreground">
           검증 오류를 해결하면 슬라이드 구조가 표시됩니다.
         </div>
       ) : (
-        <ul className="divide-y divide-border">
+        <ul className="grid gap-4 p-4 md:grid-cols-2">
           {specs.map((spec) => (
-            <li key={spec.number} className="grid grid-cols-[56px_1fr] gap-4 p-4 text-sm">
-              <div className="font-mono text-xs text-muted-foreground">
-                #{String(spec.number).padStart(2, "0")}
-              </div>
-              <div className="min-w-0">
+            <li key={spec.number} className="border border-border bg-background text-sm">
+              <PlanSpecCanvas spec={spec} />
+              <div className="min-w-0 border-t border-border p-4">
                 <div className="flex flex-wrap items-center gap-2">
+                  <span className="font-mono text-xs text-muted-foreground">
+                    #{String(spec.number).padStart(2, "0")}
+                  </span>
                   <h3 className="font-medium">{spec.title}</h3>
                   <Badge variant="outline">{spec.role}</Badge>
                 </div>
@@ -69,6 +70,84 @@ export function PlanSlideSpecPreview({ specs }: { readonly specs: readonly Slide
         </ul>
       )}
     </section>
+  );
+}
+
+function PlanSpecCanvas({ spec }: { readonly spec: SlideSpec }) {
+  const evidence = spec.evidence.slice(0, 3);
+  return (
+    <div className="aspect-video overflow-hidden bg-paper p-4">
+      <div className="flex h-full flex-col justify-between border border-border bg-background p-4">
+        <div>
+          <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+            <span>{spec.role}</span>
+            <span>{spec.visualType}</span>
+          </div>
+          <div className="mt-3 h-1 w-10 bg-accent" />
+          <div className="mt-3 line-clamp-2 font-serif text-lg font-semibold leading-tight">
+            {spec.title}
+          </div>
+          <div className="mt-3 space-y-1.5">
+            <div className="h-1.5 w-full bg-secondary" />
+            <div className="h-1.5 w-4/5 bg-secondary" />
+          </div>
+        </div>
+        <SpecVisualBlock role={spec.role} visualType={spec.visualType} />
+        <div className="flex gap-1 overflow-hidden">
+          {(evidence.length ? evidence : ["근거 없음"]).map((item) => (
+            <span
+              key={item}
+              className="max-w-[33%] truncate border border-border bg-paper px-1.5 py-0.5 text-[10px] text-muted-foreground"
+            >
+              {item}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SpecVisualBlock({
+  role,
+  visualType,
+}: {
+  readonly role: string;
+  readonly visualType: string;
+}) {
+  if (/chart|market|data|bar/i.test(`${role} ${visualType}`)) {
+    return (
+      <div className="mt-3 flex h-16 items-end gap-2 border-l border-b border-border pl-3">
+        {[0.38, 0.64, 0.5, 0.86].map((height, index) => (
+          <div
+            key={index}
+            className={index === 3 ? "w-6 bg-accent" : "w-6 bg-foreground/25"}
+            style={{ height: `${height * 100}%` }}
+          />
+        ))}
+      </div>
+    );
+  }
+  if (/roadmap|timeline|process/i.test(`${role} ${visualType}`)) {
+    return (
+      <div className="mt-3 flex h-16 items-center justify-between">
+        {[0, 1, 2, 3].map((index) => (
+          <div key={index} className="flex flex-1 items-center">
+            <div className={index === 1 ? "h-4 w-4 bg-accent" : "h-4 w-4 bg-foreground/25"} />
+            {index < 3 ? <div className="h-px flex-1 bg-border" /> : null}
+          </div>
+        ))}
+      </div>
+    );
+  }
+  return (
+    <div className="mt-3 grid h-16 grid-cols-2 gap-2">
+      {[0, 1, 2, 3].map((index) => (
+        <div key={index} className="border border-border bg-paper">
+          <div className={index === 0 ? "h-full w-1.5 bg-accent" : "h-full w-1.5 bg-secondary"} />
+        </div>
+      ))}
+    </div>
   );
 }
 
@@ -112,10 +191,10 @@ function PlanSpecMeta({ spec }: { readonly spec: SlideSpec }) {
   return (
     <dl className="mt-3 grid gap-2 text-xs sm:grid-cols-2">
       <Meta label="시각화" value={spec.visualComposition ?? spec.visualType} />
-      <Meta label="근거" value={spec.evidence.length ? spec.evidence.join(", ") : "없음"} />
+      <Meta label="사용할 자료" value={spec.evidence.length ? spec.evidence.join(", ") : "없음"} />
       <Meta label="본문" value={(spec.bodyPoints ?? []).join(", ")} />
       <Meta label="편집 요소" value={spec.editableElements.join(", ")} />
-      <Meta label="출처 제약" value={(spec.dataSourceConstraints ?? []).join(", ")} wide />
+      <Meta label="자료 사용 조건" value={(spec.dataSourceConstraints ?? []).join(", ")} wide />
     </dl>
   );
 }

@@ -28,7 +28,7 @@ describe("minimal design approval UI", () => {
       </>,
     );
 
-    expect(markup.includes("Design System ID")).toBe(true);
+    expect(markup.includes("디자인 ID")).toBe(true);
     expect(markup.includes("ds_001")).toBe(true);
     expect(markup.includes("JSON")).toBe(true);
     expect(markup.includes("do not invent chart values")).toBe(true);
@@ -57,11 +57,11 @@ describe("minimal design approval UI", () => {
       </>,
     );
 
-    expect(markup.includes("Token Editor")).toBe(true);
+    expect(markup.includes("디자인 조정")).toBe(true);
     expect(markup.includes("background")).toBe(true);
     expect(markup.includes("#F7F4EF")).toBe(true);
-    expect(markup.includes("Typography")).toBe(true);
-    expect(markup.includes("Negative Rules")).toBe(true);
+    expect(markup.includes("글꼴 크기")).toBe(true);
+    expect(markup.includes("피해야 할 표현")).toBe(true);
     expect(markup.includes("do not invent chart values")).toBe(true);
     expect(markup.includes("디자인 수정 저장")).toBe(true);
     expect(markup.includes("디자인 시스템을 승인하고 레이아웃 초안 생성 시작")).toBe(true);

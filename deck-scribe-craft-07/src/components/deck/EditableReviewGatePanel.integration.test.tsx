@@ -27,9 +27,9 @@ describe("editable review gate UI", () => {
       <>
         <EditableReviewGatePanel report={report} />
         <GateBar
-          hint="편집 가능성 검증을 통과해야 편집기로 이동할 수 있습니다."
+          hint="레이어가 준비되면 편집기에서 바로 조정할 수 있습니다."
           approve={{
-            label: "변환 결과를 승인하고 편집기 열기",
+            label: "편집기에서 계속 조정하기",
             onClick: () => undefined,
             disabled: !report.canApprove,
           }}
@@ -40,7 +40,7 @@ describe("editable review gate UI", () => {
     // Then
     expect(markup.includes('data-editable-review-gate="blocked"')).toBe(true);
     expect(markup.includes("편집 가능성 검증")).toBe(true);
-    expect(markup.includes("승인 차단")).toBe(true);
+    expect(markup.includes("레이어를 보완해야 승인할 수 있음")).toBe(true);
     expect(markup.includes("Slide 2 has no editable layers.")).toBe(true);
     expect(markup.includes("disabled")).toBe(true);
   });

@@ -11,7 +11,6 @@ import {
   LayoutStage,
   GenerateStage,
   ReviewStage,
-  VectorizeStage,
   EditorStage,
   ExportStage,
 } from "@/components/deck/stages";
@@ -80,6 +79,10 @@ function ProjectStagePage() {
     return <Navigate to="/project/$projectId/$step" params={{ projectId, step: "project" }} />;
   }
 
+  if (step === "vectorize") {
+    return <Navigate to="/project/$projectId/$step" params={{ projectId, step: "editor" }} />;
+  }
+
   if (!isStepReachable(project, step)) {
     return (
       <Navigate
@@ -90,8 +93,8 @@ function ProjectStagePage() {
   }
 
   return (
-    <div className="grid min-h-screen bg-background lg:grid-cols-[280px_1fr]">
-      <aside className="flex flex-col border-b border-border bg-paper lg:sticky lg:top-0 lg:h-screen lg:border-b-0 lg:border-r">
+    <div className="grid h-screen overflow-hidden bg-background lg:grid-cols-[280px_1fr]">
+      <aside className="flex min-h-0 flex-col border-b border-border bg-paper lg:h-screen lg:border-b-0 lg:border-r">
         <div className="border-b border-border px-4 py-4">
           <Link
             to="/"
@@ -104,7 +107,7 @@ function ProjectStagePage() {
             {project.aspectRatio} · {project.slideCount}장
           </div>
         </div>
-        <div className="flex-1 overflow-y-auto py-3">
+        <div className="desktop-scroll flex-1 py-3">
           <Stepper project={project} />
         </div>
         <div className="border-t border-border px-4 py-3 text-[11px] text-muted-foreground">
@@ -112,7 +115,7 @@ function ProjectStagePage() {
           <div className="mt-1 font-mono">{project.stage}</div>
         </div>
       </aside>
-      <main className="min-h-screen min-w-0">
+      <main className="min-h-0 min-w-0 overflow-hidden">
         {step === "project" && <ProjectStage project={project} />}
         {step === "interview" && <InterviewStage project={project} />}
         {step === "research" && <ResearchStage project={project} />}
@@ -121,7 +124,6 @@ function ProjectStagePage() {
         {step === "layout" && <LayoutStage project={project} />}
         {step === "generate" && <GenerateStage project={project} />}
         {step === "review" && <ReviewStage project={project} />}
-        {step === "vectorize" && <VectorizeStage project={project} />}
         {step === "editor" && <EditorStage project={project} />}
         {step === "export" && <ExportStage project={project} />}
       </main>

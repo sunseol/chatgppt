@@ -63,15 +63,15 @@ export type StepKey =
 export const STEPS: { key: StepKey; label: string; sub: string }[] = [
   { key: "project", label: "프로젝트", sub: "Brief Setup" },
   { key: "interview", label: "인터뷰", sub: "Intent Discovery" },
-  { key: "research", label: "조사", sub: "Sources & Claims" },
-  { key: "plan", label: "기획", sub: "Deck Plan MD" },
-  { key: "design", label: "디자인 시스템", sub: "Tokens & Rules" },
-  { key: "layout", label: "레이아웃", sub: "HTML Prototype" },
-  { key: "generate", label: "생성", sub: "Slide Images" },
-  { key: "review", label: "검토", sub: "Revise & Approve" },
-  { key: "vectorize", label: "변환", sub: "Editable Layers" },
-  { key: "editor", label: "편집기", sub: "Canvas Edit" },
-  { key: "export", label: "내보내기", sub: "Final Report" },
+  { key: "research", label: "조사", sub: "출처와 주장 확인" },
+  { key: "plan", label: "기획", sub: "슬라이드 구조" },
+  { key: "design", label: "디자인 시스템", sub: "색상과 글꼴" },
+  { key: "layout", label: "레이아웃", sub: "배치 초안" },
+  { key: "generate", label: "생성", sub: "슬라이드 이미지" },
+  { key: "review", label: "검토", sub: "수정과 승인" },
+  { key: "vectorize", label: "편집 준비", sub: "자동 레이어 준비" },
+  { key: "editor", label: "편집기", sub: "캔버스 편집" },
+  { key: "export", label: "내보내기", sub: "최종 파일" },
 ];
 
 export interface InterviewBrief {
@@ -254,7 +254,7 @@ export function stageToStep(stage: Stage): StepKey {
     case "VECTORIZE_PENDING":
     case "VECTORIZING":
     case "EDITABLE_REVIEW_PENDING":
-      return "vectorize";
+      return "editor";
     case "EDITOR":
       return "editor";
     case "FINAL_REPORTING":

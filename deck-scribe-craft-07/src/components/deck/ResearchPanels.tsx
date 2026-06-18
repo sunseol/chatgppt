@@ -8,45 +8,12 @@ import type {
   FactCheckReport,
   ResearchChart,
   ResearchDataset,
-  Source,
 } from "@/lib/deck-types";
-
-export function SourceReviewList({ sources }: { readonly sources: readonly Source[] }) {
-  return (
-    <section>
-      <h2 className="mb-4 font-serif text-xl">출처 · Sources ({sources.length})</h2>
-      <ul className="space-y-3">
-        {sources.map((source) => (
-          <li key={source.id} className="border border-border bg-paper p-4">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <div className="text-sm font-medium">{source.title}</div>
-                <div className="mt-1 text-xs text-muted-foreground">
-                  {source.publisher} · {source.year} · {source.sourceType}
-                </div>
-                <div className="mt-2 font-mono text-[11px] text-muted-foreground">{source.id}</div>
-              </div>
-              <div className="flex flex-col items-end gap-2">
-                <Badge
-                  variant={source.grade === "A" ? "default" : "secondary"}
-                  className={source.grade === "A" ? "bg-foreground text-background" : ""}
-                >
-                  등급 {source.grade}
-                </Badge>
-                <Badge variant="outline">{source.usePolicy}</Badge>
-              </div>
-            </div>
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}
 
 export function ClaimReviewList({ claims }: { readonly claims: readonly Claim[] }) {
   return (
     <section>
-      <h2 className="mb-4 font-serif text-xl">주장 · Claims ({claims.length})</h2>
+      <h2 className="mb-4 font-serif text-xl">핵심 주장 ({claims.length})</h2>
       <ul className="space-y-3">
         {claims.map((claim) => (
           <li key={claim.id} className="border border-border bg-paper p-4">
@@ -65,7 +32,7 @@ export function ClaimReviewList({ claims }: { readonly claims: readonly Claim[] 
               <ReferenceBadges label="dataset" values={claim.datasetIds} />
               {claim.needsUserReview && (
                 <Badge variant="outline" className="border-warning text-warning">
-                  review required
+                  사용자 확인 필요
                 </Badge>
               )}
               {claim.sourceIds.length === 0 && (
@@ -91,7 +58,7 @@ export function DatasetReviewList({
   return (
     <section className="border border-border bg-paper p-4">
       <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
-        데이터셋 · 차트
+        데이터와 차트
       </div>
       <div className="mt-3 grid gap-3 text-sm md:grid-cols-2">
         {datasets.map((dataset) => (
@@ -118,7 +85,9 @@ export function DatasetReviewList({
 export function FactCheckReview({ report }: { readonly report: FactCheckReport }) {
   return (
     <section className="border border-border bg-paper p-4">
-      <div className="text-[11px] uppercase tracking-wider text-muted-foreground">Fact Check</div>
+      <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
+        조사 결과 확인
+      </div>
       <p className="mt-2 text-sm">{report.summary}</p>
       <IssueList issues={report.issues} />
       {report.uncertainItems.length > 0 && (

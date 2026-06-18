@@ -22,13 +22,22 @@ PNG2SVG is not cleared for direct merge, vendoring, or MVP bundle inclusion. The
 
 ## Current Rust/Tauri Inventory
 
-No Rust or Tauri manifest exists in this worktree:
+The worktree now includes the Tauri v2 desktop scaffold:
 
-- `Cargo.toml`: not present
-- `Cargo.lock`: not present
-- `tauri.conf.json`: not present
+- `src-tauri/Cargo.toml`
+- `src-tauri/tauri.conf.json`
+- `src-tauri/capabilities/default.json`
 
-Result: there are no current Rust crate licenses to inventory. Before DF-157 packaging or any Tauri backend merge, rerun this review against the final `Cargo.lock` and Tauri plugin capability list.
+Declared Rust crates:
+
+| Crate         | Scope            | Version requirement | Expected license disposition |
+| ------------- | ---------------- | ------------------: | ---------------------------- |
+| `tauri`       | runtime          |                 `2` | Apache-2.0 OR MIT            |
+| `serde`       | runtime          |                 `1` | Apache-2.0 OR MIT            |
+| `serde_json`  | runtime          |                 `1` | Apache-2.0 OR MIT            |
+| `tauri-build` | build dependency |                 `2` | Apache-2.0 OR MIT            |
+
+The default Tauri capability is intentionally empty and grants no native permissions. Rerun this report against `src-tauri/Cargo.lock` whenever Tauri plugins, native permissions, or Rust crates are added.
 
 ## Top-Level Runtime Dependencies
 
@@ -193,12 +202,12 @@ Risk disposition:
 
 ## Release Gate
 
-DF-156 is passable for the current TypeScript-only MVP branch with these conditions:
+DF-156 is passable for the current MVP branch with these conditions:
 
 1. Keep the PNG2SVG repository as reference-only until license provenance is resolved.
 2. Do not bundle the PNG2SVG Figma plugin in MVP builds.
 3. Include MPL-2.0 and CC-BY-4.0 entries in third-party notices if packaging includes the related transitive packages.
-4. Rerun this report once Tauri/Rust manifests exist.
+4. Rerun this report whenever `src-tauri/Cargo.lock` or Tauri permissions change.
 5. Keep generated slide/export font paths on local system fallback fonts; do not depend on Google Fonts for export output.
 
 ## Reproducible Commands

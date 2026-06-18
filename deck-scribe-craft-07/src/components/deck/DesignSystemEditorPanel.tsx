@@ -28,7 +28,7 @@ export function DesignSystemEditorPanel({
 }) {
   return (
     <section className="border border-border bg-paper p-4">
-      <div className="text-[11px] uppercase tracking-wider text-muted-foreground">Token Editor</div>
+      <div className="text-[11px] uppercase tracking-wider text-muted-foreground">디자인 조정</div>
       <ColorEditor design={design} disabled={disabled} onChange={onChange} />
       <TypographyEditor design={design} disabled={disabled} onChange={onChange} />
       <NegativeRulesEditor design={design} disabled={disabled} onChange={onChange} />
@@ -57,7 +57,7 @@ function ColorEditor({
 }) {
   return (
     <div className="mt-4">
-      <div className="text-xs font-medium">Color Tokens</div>
+      <div className="text-xs font-medium">색상</div>
       <div className="mt-2 grid gap-2 sm:grid-cols-2">
         {DESIGN_COLOR_KEYS.map((key) => (
           <Label key={key} className="grid gap-1 text-xs">
@@ -95,7 +95,7 @@ function TypographyEditor({
 }) {
   return (
     <div className="mt-5">
-      <div className="text-xs font-medium">Typography</div>
+      <div className="text-xs font-medium">글꼴 크기</div>
       <div className="mt-2 space-y-2">
         {DESIGN_TYPOGRAPHY_KEYS.map((key) => (
           <div key={key} className="grid grid-cols-[72px_1fr_1fr] items-end gap-2">
@@ -160,7 +160,7 @@ function NegativeRulesEditor({
 }) {
   return (
     <div className="mt-5">
-      <Label className="text-xs font-medium">Negative Rules</Label>
+      <Label className="text-xs font-medium">피해야 할 표현</Label>
       <Textarea
         value={design.negativeRules.join("\n")}
         disabled={disabled}

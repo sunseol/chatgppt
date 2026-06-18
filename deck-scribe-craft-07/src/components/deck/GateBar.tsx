@@ -9,7 +9,7 @@ export function GateBar(props: {
 }) {
   const { back, regenerate, approve, hint } = props;
   return (
-    <div className="sticky bottom-0 z-20 border-t border-border bg-background/95 backdrop-blur">
+    <div className="z-20 shrink-0 border-t border-border bg-background/95 backdrop-blur">
       <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-8 sm:py-4">
         <div className="min-w-0 text-xs leading-relaxed text-muted-foreground">{hint}</div>
         <div className="flex flex-wrap items-center justify-end gap-2">

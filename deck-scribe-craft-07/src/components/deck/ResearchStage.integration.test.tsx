@@ -6,15 +6,15 @@ import {
   DatasetReviewList,
   FactCheckReview,
   ReinforcementRequest,
-  SourceReviewList,
 } from "@/components/deck/ResearchPanels";
+import { SourceReviewList } from "@/components/deck/ResearchSourcePreview";
 import { mockBrief, mockResearch } from "@/lib/mock-ai";
 
 function fixtureMarkup() {
   const pack = mockResearch(mockBrief("투자자 피치덱", 8, "16:9"));
   return renderToStaticMarkup(
     <>
-      <SourceReviewList sources={pack.sources} />
+      <SourceReviewList sources={pack.sources} claims={pack.claims} />
       <ClaimReviewList claims={pack.claims} />
       <DatasetReviewList datasets={pack.datasets} charts={pack.charts} />
       <FactCheckReview report={pack.factCheckReport} />
@@ -42,7 +42,8 @@ describe("research review UI", () => {
     expect(markup.includes("등급 A")).toBe(true);
     expect(markup.includes("claim_004")).toBe(true);
     expect(markup.includes("dataset_001")).toBe(true);
-    expect(markup.includes("Fact Check")).toBe(true);
+    expect(markup.includes("조사 결과 확인")).toBe(true);
+    expect(markup.includes("포함 이유")).toBe(true);
     expect(markup.includes("claim_004는 출처 없는 가설로 표시됨")).toBe(true);
     expect(markup.includes("보강 요청")).toBe(true);
   });
