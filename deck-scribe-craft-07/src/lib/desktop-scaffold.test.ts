@@ -45,8 +45,19 @@ describe("desktop scaffold", () => {
     expect(config.bundle?.targets?.includes("dmg")).toBe(true);
     expect(config.bundle?.icon).toEqual(["icons/icon.png"]);
   });
+
+  test("prerenders the root HTML shell required by the Tauri bundle", () => {
+    const viteConfig = readText("../../vite.config.ts");
+
+    expect(viteConfig.includes("prerender")).toBe(true);
+    expect(viteConfig.includes('outputPath: "/index.html"')).toBe(true);
+  });
 });
 
 function readJson<T>(path: string): T {
   return JSON.parse(readFileSync(new URL(path, import.meta.url), "utf8")) as T;
+}
+
+function readText(path: string): string {
+  return readFileSync(new URL(path, import.meta.url), "utf8");
 }
