@@ -1,0 +1,20 @@
+HTTP/2 200 
+date: Thu, 18 Jun 2026 13:48:40 GMT
+content-type: text/html; charset=utf-8
+content-location: Overview.html
+last-modified: Thu, 12 Dec 2024 10:36:22 GMT
+cf-cache-status: HIT
+cache-control: public, max-age=86400, s-maxage=2592001
+vary: Accept-Encoding,Origin
+access-control-allow-origin: *
+x-backend: www-mirrors
+x-request-id: 9ff280cabab228d4
+strict-transport-security: max-age=15552000; includeSubdomains; preload
+content-security-policy: frame-ancestors 'self' https://cms.w3.org/ https://cms-dev.w3.org/; upgrade-insecure-requests
+x-content-type-options: nosniff
+set-cookie: __cf_bm=jntU1HWvwcXWWPSz12n0I0oaRFt4ZN2zMni_QyfbLZA-1781790520.3204074-1.0.1.1-bBI2SMkIoh..VnYH_s0307VboVSfTDYOJz.Ni8sbGliOOHDrvWOzxG4S2ODcIxpIHO4dWFYVItBHG_nu8M0UxAzAwqL_a8cTafjH4Gcr9ZOGGnmCtVOwo0YRktWddPR1; HttpOnly; SameSite=None; Secure; Path=/; Domain=w3.org; Expires=Thu, 18 Jun 2026 14:18:40 GMT
+age: 2435315
+server: cloudflare
+cf-ray: a0dac0bfff5cdf70-ICN
+alt-svc: h3=":443"; ma=86400
+

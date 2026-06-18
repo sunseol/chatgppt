@@ -107,6 +107,104 @@ describe("research pack schema", () => {
     expect(parsed.factCheckReport.uncertainItems.length).toBe(1);
   });
 
+  test("preserves live source capture metadata on parsed sources", () => {
+    const parsed = parseResearchPack({
+      ...validPack,
+      sources: [
+        {
+          ...validPack.sources[0],
+          capture: {
+            originalUrl: "https://example.gov/ev",
+            finalUrl: "https://example.gov/ev?download=1",
+            fetchedAt: 1_789_300_001,
+            mimeType: "text/html",
+            statusCode: 200,
+            contentHash: "sha256:source-content",
+            rawArchivePath: "docs/live-source-capture-bundle/html_001/original.html",
+            textArchivePath: "docs/live-source-capture-bundle/html_001/extracted.txt",
+            extractedTextHash: "sha256:source-text",
+            version: 1,
+          },
+        },
+      ],
+    });
+
+    expect(parsed.sources[0].capture?.finalUrl).toBe("https://example.gov/ev?download=1");
+    expect(parsed.sources[0].capture?.contentHash).toBe("sha256:source-content");
+    expect(parsed.sources[0].capture?.version).toBe(1);
+  });
+
+  test("preserves source decisions and reinforcement requests", () => {
+    const parsed = parseResearchPack({
+      ...validPack,
+      review: {
+        sourceDecisions: [
+          {
+            sourceId: "src_001",
+            decision: "excluded",
+            reason: "source is not official enough",
+            decidedAt: 1_789_500_000,
+          },
+        ],
+        reinforcementRequests: [
+          {
+            id: "reinforce_1",
+            prompt: "정부 원자료로 보강",
+            status: "pending",
+            requestedAt: 1_789_500_010,
+          },
+        ],
+      },
+    });
+
+    expect(parsed.review?.sourceDecisions[0]?.decision).toBe("excluded");
+    expect(parsed.review?.reinforcementRequests[0]?.status).toBe("pending");
+    expect(parsed.review?.reinforcementRequests[0]?.prompt).toBe("정부 원자료로 보강");
+  });
+
+  test("preserves live evidence references and provider provenance lineage", () => {
+    const parsed = parseResearchPack({
+      ...validPack,
+      liveEvidenceRefs: [
+        {
+          id: "ev_001",
+          claimId: "claim_001",
+          sourceId: "src_001",
+          sourceArtifactPath: "docs/live-source-capture-bundle/html_001/original.html",
+          kind: "quote_span",
+          quoteSpan: {
+            start: 0,
+            end: 4,
+            text: "12.4",
+          },
+          datasetId: "dataset_001",
+        },
+      ],
+      provenanceLineage: [
+        {
+          artifactId: "research_001",
+          executionMode: "production",
+          providerKind: "codex",
+          authMode: "codex_session",
+          modelOrRuntime: "codex-cli 0.139.0",
+          promptVersion: "live_research_pack@v1",
+          durationMs: 2200,
+          inputArtifactIds: ["source_capture_bundle_001"],
+          fixture: false,
+          turnId: "turn_research_001",
+          threadId: "thread_project_001",
+        },
+      ],
+    });
+
+    expect(parsed.liveEvidenceRefs?.[0]?.id).toBe("ev_001");
+    expect(parsed.liveEvidenceRefs?.[0]?.sourceArtifactPath).toBe(
+      "docs/live-source-capture-bundle/html_001/original.html",
+    );
+    expect(parsed.provenanceLineage?.[0]?.turnId).toBe("turn_research_001");
+    expect(parsed.provenanceLineage?.[0]?.fixture).toBe(false);
+  });
+
   test("rejects major numeric claims without required number metadata", () => {
     const invalid = {
       ...validPack,

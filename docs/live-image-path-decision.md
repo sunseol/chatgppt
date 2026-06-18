@@ -1,0 +1,45 @@
+# Live Image Path Decision
+
+Date: 2026-06-18
+
+Scope: DF-230 production image generation path lock.
+
+Status: partial local contract
+
+## Contract added
+
+`src/lib/image-path-decision.ts` defines the production image path decision record used to prevent an unverified image route from entering production choices.
+
+- A path is `locked` only when setup is ready, the decision records billing owner and provider permissions, the selected provider route matches the stored artifact provider, the artifact contains PNG binary data with a PNG signature, a binary artifact path is present, and OpenAI image artifacts include a request id.
+- Without one real image artifact, the decision is `blocked` with `missing_real_image_artifact`.
+- Incomplete setup remains blocked with setup codes such as `requiresApiCredential` or `requiresOrganizationVerification`.
+- Incomplete decision evidence remains blocked with `missing_billing_owner`, `missing_required_permissions`, `invalid_image_binary`, `missing_binary_artifact`, `artifact_provider_mismatch`, or `missing_request_id`.
+- `fixtureFallbackAllowed: false` is fixed on every decision record.
+- `getProductionImageProviderChoices` returns an empty list for blocked decisions.
+- `src/lib/production-image-generation-gate.ts` allows the `mock` provider only in development mode.
+- Production generation is blocked with `missing_image_path_decision` until `DeckProject.imagePathDecision` contains a locked decision record.
+- A blocked decision forwards `image_path_not_locked` plus the underlying decision blockers to the Generate stage.
+- `src/components/deck/GenerateStage.tsx` disables the production image generation action when this gate is blocked, so the stage cannot return mock preview output as a fixture fallback.
+
+## Decision inputs recorded
+
+- Provider id and auth mode from `decideImageProviderFeasibility`.
+- Target model: `gpt-image-2`.
+- Billing owner.
+- Required permissions.
+- Organization verification status.
+- Excluded routes.
+- Binary artifact path and provider request id when a real image artifact exists.
+- The production project-level `imagePathDecision` used by the Generate stage gate.
+
+## Verification
+
+- `bun test src/lib/image-path-decision.test.ts` passes: 6 tests.
+- `bun test src/lib/image-path-decision.test.ts src/lib/image-provider-feasibility.test.ts src/lib/slide-image-provider.test.ts` passes: 14 tests.
+- `bun test src/lib/production-image-generation-gate.test.ts src/components/deck/GenerateStage.integration.test.tsx` passes: 5 tests. The SSR GenerateStage test emits the existing TanStack Router context warning but verifies the production image path Lock blocker markup.
+- `bun run typecheck` passes.
+- `bun run lint` passes with the existing six React Fast Refresh warnings only.
+
+## Remaining Live work
+
+DF-230 is not ready to close. The local decision record and Generate-stage gate now prevent fixture fallback and unverified production choices, but the acceptance criteria still require one successful real image request and one stored binary output artifact from the selected route.

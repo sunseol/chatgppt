@@ -21,6 +21,7 @@ export type SlideContextBundle = {
   readonly bundleId: string;
   readonly deckContextId: string;
   readonly deckContextHash: string;
+  readonly designSystemId: string;
   readonly globalSummary: {
     readonly goal: string;
     readonly audience: string;
@@ -103,6 +104,7 @@ function buildBundle(input: {
     )}`,
     deckContextId: input.context.deckContextId,
     deckContextHash: input.context.hash,
+    designSystemId: input.design.id,
     globalSummary: {
       goal: input.brief.goal,
       audience: input.brief.audience,

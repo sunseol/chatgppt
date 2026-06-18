@@ -1,18 +1,19 @@
 import type { GeneratedSlide } from "./deck-types";
 import { hashContent } from "./artifacts";
 import { createPromptUsageRecord, type PromptUsageRecord } from "./prompt-assets";
-import {
-  createProviderJobManager,
-  type ProviderJob,
-  type ProviderJobManager,
-} from "./provider-job-manager";
+import { createProviderJobManager, type ProviderJobManager } from "./provider-job-manager";
 import type { SlideContextBundle } from "./slide-context-bundle";
+import {
+  runSlideGenerationTask,
+  type SlideGenerationQueueTask,
+} from "./slide-generation-queue-executor";
 import type {
   RunSlideGenerationQueueInput,
   SlideGenerationFailure,
   SlideGenerationQueueContext,
   SlideGenerationQueueProgress,
   SlideGenerationQueueResult,
+  SlideGenerationRetryProvenance,
   SlideGenerationWorkerInput,
 } from "./slide-generation-queue-types";
 export type {
@@ -24,12 +25,6 @@ export type {
   SlideGenerationWorkerInput,
 } from "./slide-generation-queue-types";
 
-interface SlideGenerationQueueTask {
-  readonly bundle: SlideContextBundle;
-  readonly job: ProviderJob;
-  readonly promptUsage: PromptUsageRecord;
-}
-
 export async function runSlideGenerationQueue(
   input: RunSlideGenerationQueueInput,
 ): Promise<SlideGenerationQueueResult> {
@@ -38,10 +33,17 @@ export async function runSlideGenerationQueue(
   const queueContext = contextResult.context;
 
   const manager = input.manager ?? createProviderJobManager({ createId: queueJobIds() });
-  const tasks = input.bundles.map((bundle) => createTask(bundle, manager, input.providerId));
-  const progress = createProgressTracker(tasks.length, input.onProgress);
-  const slides: GeneratedSlide[] = [];
+  const completedSlides = completedSlidesForBundles(input.bundles, input.completedSlides ?? []);
+  const pendingBundles = pendingBundlesForCompletedSlides(input.bundles, completedSlides);
+  const tasks = pendingBundles.map((bundle) => createTask(bundle, manager, input.providerId));
+  const progress = createProgressTracker(
+    input.bundles.length,
+    input.onProgress,
+    completedSlides.length,
+  );
+  const slides: GeneratedSlide[] = [...completedSlides];
   const failures: SlideGenerationFailure[] = [];
+  const retryProvenance: SlideGenerationRetryProvenance[] = [];
   let cursor = 0;
 
   async function runWorker(): Promise<void> {
@@ -49,7 +51,21 @@ export async function runSlideGenerationQueue(
       const task = tasks[cursor];
       cursor += 1;
       if (!task) return;
-      await runTask(task, queueContext, input.generateSlide, manager, slides, failures, progress);
+      const result = await runSlideGenerationTask({
+        task,
+        context: queueContext,
+        generateSlide: input.generateSlide,
+        manager,
+        options: {
+          isCancellationRequested: input.isCancellationRequested,
+          retryPolicy: input.retryPolicy,
+          waitForRetry: input.waitForRetry,
+        },
+      });
+      if (result.kind === "succeeded") slides.push(result.slide);
+      else failures.push(result.failure);
+      retryProvenance.push(...result.retryProvenance);
+      progress.mark(result.kind === "succeeded");
     }
   }
 
@@ -64,6 +80,7 @@ export async function runSlideGenerationQueue(
     failures,
     jobs: manager.snapshot(),
     promptUsages: tasks.map((task) => task.promptUsage),
+    retryProvenance,
     progress: progress.current(),
   };
 }
@@ -81,6 +98,7 @@ function createQueueContext(bundles: readonly SlideContextBundle[]):
   const context: SlideGenerationQueueContext = {
     deckContextId: first.deckContextId,
     deckContextHash: first.deckContextHash,
+    designSystemId: first.designSystemId,
     designTokenHash: designTokenHash(first),
     layoutPrototypeId: first.layoutPrototype.layoutPrototypeId,
     slideCount: bundles.length,
@@ -91,6 +109,9 @@ function createQueueContext(bundles: readonly SlideContextBundle[]):
   }
   if (bundles.some((bundle) => bundle.deckContextHash !== context.deckContextHash)) {
     issues.push("All slide jobs must share one Deck Context hash.");
+  }
+  if (bundles.some((bundle) => bundle.designSystemId !== context.designSystemId)) {
+    issues.push("All slide jobs must share one Design System id.");
   }
   if (bundles.some((bundle) => designTokenHash(bundle) !== context.designTokenHash)) {
     issues.push("All slide jobs must share one Design System hash.");
@@ -124,42 +145,12 @@ function createTask(
   };
 }
 
-async function runTask(
-  task: SlideGenerationQueueTask,
-  context: SlideGenerationQueueContext,
-  generateSlide: (input: SlideGenerationWorkerInput) => Promise<GeneratedSlide>,
-  manager: ProviderJobManager,
-  slides: GeneratedSlide[],
-  failures: SlideGenerationFailure[],
-  progress: ReturnType<typeof createProgressTracker>,
-): Promise<void> {
-  const completed = await manager.run(task.job.id, async (job) => {
-    job.reportProgress({ percent: 10, message: "Preparing frozen slide context" });
-    const slide = await generateSlide({
-      bundle: task.bundle,
-      deckContextId: context.deckContextId,
-      deckContextHash: context.deckContextHash,
-      designTokenHash: context.designTokenHash,
-      layoutPrototypeId: context.layoutPrototypeId,
-      promptUsage: task.promptUsage,
-    });
-    job.reportProgress({ percent: 100, message: "Slide generation completed" });
-    return slide;
-  });
-
-  if (completed.status === "succeeded" && completed.output !== undefined) {
-    slides.push(completed.output);
-  } else {
-    failures.push(createFailure(task, completed));
-  }
-  progress.mark(completed.status === "succeeded");
-}
-
 function createProgressTracker(
   total: number,
   onProgress?: (progress: SlideGenerationQueueProgress) => void,
+  initialCompleted = 0,
 ) {
-  let completed = 0;
+  let completed = initialCompleted;
   let failed = 0;
   return {
     mark(succeeded: boolean) {
@@ -170,22 +161,6 @@ function createProgressTracker(
     current() {
       return currentProgress(completed, failed, total);
     },
-  };
-}
-
-function createFailure(
-  task: SlideGenerationQueueTask,
-  completed: ProviderJob<GeneratedSlide>,
-): SlideGenerationFailure {
-  const errorMessage = completed.errorMessage ?? "Slide generation failed.";
-  const slideNumber = task.bundle.slideSpec.slideNumber;
-  return {
-    jobId: task.job.id,
-    bundleId: task.bundle.bundleId,
-    slideNumber,
-    retryable: true,
-    errorMessage,
-    userMessage: `Slide ${slideNumber} failed: ${errorMessage}. Retry is available.`,
   };
 }
 
@@ -212,6 +187,22 @@ function queueStatus(
 
 function designTokenHash(bundle: SlideContextBundle): string {
   return hashContent(JSON.stringify(bundle.designTokens));
+}
+
+function completedSlidesForBundles(
+  bundles: readonly SlideContextBundle[],
+  completedSlides: readonly GeneratedSlide[],
+): readonly GeneratedSlide[] {
+  const bundleSlideNumbers = new Set(bundles.map((bundle) => bundle.slideSpec.slideNumber));
+  return completedSlides.filter((slide) => bundleSlideNumbers.has(slide.number));
+}
+
+function pendingBundlesForCompletedSlides(
+  bundles: readonly SlideContextBundle[],
+  completedSlides: readonly GeneratedSlide[],
+): readonly SlideContextBundle[] {
+  const completedSlideNumbers = new Set(completedSlides.map((slide) => slide.number));
+  return bundles.filter((bundle) => !completedSlideNumbers.has(bundle.slideSpec.slideNumber));
 }
 
 function queueJobIds(): () => string {

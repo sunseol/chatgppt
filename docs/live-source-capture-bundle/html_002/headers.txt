@@ -1,0 +1,12 @@
+HTTP/2 200 
+date: Thu, 18 Jun 2026 08:19:37 GMT
+content-type: text/html
+access-control-allow-origin: *
+set-cookie: __cf_bm=_coGhvbsuFYmURwQPaEIKLXfbXl.PNS3KoZ1bgaQH9o-1781770776.7089138-1.0.1.1-I.24gM6zZM_TrF0Yckk1dVbEZwl_0wIKY5_.Jr.38vXTzGmCcry6XdcJevuVCHGCrk4F6PMsJNoC6ePBl8_MNBI3KLXSdyor4Vf45.zwu.barPyMf5v5165wJ.ggGv0m; HttpOnly; SameSite=None; Secure; Path=/; Domain=rfc-editor.org; Expires=Thu, 18 Jun 2026 08:49:37 GMT
+link: <https://www.rfc-editor.org/info/rfc9110/>; rel="canonical"
+cf-r2-served: 1
+etag: W/"0d9f5fb8eb38d3c08b055f9b0671d68b"
+server: cloudflare
+cf-ray: a0d8deba686595d0-ICN
+alt-svc: h3=":443"; ma=86400
+

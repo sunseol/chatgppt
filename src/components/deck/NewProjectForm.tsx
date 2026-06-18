@@ -6,9 +6,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ProviderCapabilityMatrix } from "@/components/deck/ProviderCapabilityMatrix";
+import { newProjectProviderMatrixInput } from "@/lib/client-provider-runtime-selection";
 import { createProject } from "@/lib/deck-store";
 import { createProviderCapabilityMatrixView } from "@/lib/provider-capability-view";
-import { ProviderCapabilities } from "@/lib/provider-types";
 
 const SAMPLES = [
   {
@@ -31,15 +31,9 @@ const SAMPLES = [
   },
 ];
 
-const NEW_PROJECT_PROVIDER_MATRIX = createProviderCapabilityMatrixView({
-  providerName: "Mock Provider",
-  status: {
-    kind: "connected",
-    providerId: "mock",
-    message: "Local workflow prototype provider is connected.",
-  },
-  capabilities: ProviderCapabilities,
-});
+const NEW_PROJECT_PROVIDER_MATRIX = createProviderCapabilityMatrixView(
+  newProjectProviderMatrixInput,
+);
 
 export function NewProjectForm({ onCreated }: { onCreated?: () => void }) {
   const navigate = useNavigate();

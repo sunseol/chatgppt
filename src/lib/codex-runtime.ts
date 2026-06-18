@@ -43,6 +43,46 @@ export type CodexRuntimeStatus =
       readonly message: string;
     };
 
+export type CodexAppServerBootstrapEvidence =
+  | { readonly kind: "notStarted" }
+  | {
+      readonly kind: "running";
+      readonly cliVersion: string;
+      readonly appServerVersion: string;
+    }
+  | {
+      readonly kind: "startFailed";
+      readonly exitCode: number;
+      readonly stderr: string;
+    };
+
+export type CodexAppServerBootstrapStatus =
+  | {
+      readonly kind: "ready";
+      readonly cliVersion: string;
+      readonly appServerVersion: string;
+      readonly message: string;
+    }
+  | {
+      readonly kind: "notRunning";
+      readonly message: string;
+      readonly remediation: string;
+      readonly retryable: true;
+    }
+  | {
+      readonly kind: "standaloneInstallMissing";
+      readonly message: string;
+      readonly remediation: string;
+      readonly retryable: true;
+    }
+  | {
+      readonly kind: "startFailed";
+      readonly exitCode: number;
+      readonly message: string;
+      readonly remediation: string;
+      readonly retryable: true;
+    };
+
 export function evaluateCodexRuntime(evidence: CodexRuntimeEvidence): CodexRuntimeStatus {
   if (evidence.kind === "missing") {
     return {
@@ -84,6 +124,53 @@ export function evaluateCodexRuntime(evidence: CodexRuntimeEvidence): CodexRunti
   };
 }
 
+export function evaluateCodexAppServerBootstrap(
+  evidence: CodexAppServerBootstrapEvidence,
+): CodexAppServerBootstrapStatus {
+  switch (evidence.kind) {
+    case "running":
+      return {
+        kind: "ready",
+        cliVersion: evidence.cliVersion,
+        appServerVersion: evidence.appServerVersion,
+        message: `Codex App Server ${evidence.appServerVersion} is running.`,
+      };
+    case "notStarted":
+      return {
+        kind: "notRunning",
+        message: "Codex App Server is not running.",
+        remediation: "Start the Codex app-server daemon before running Live text jobs.",
+        retryable: true,
+      };
+    case "startFailed":
+      return failedAppServerBootstrap(evidence);
+    default:
+      return assertNever(evidence);
+  }
+}
+
+function failedAppServerBootstrap(
+  evidence: Extract<CodexAppServerBootstrapEvidence, { readonly kind: "startFailed" }>,
+): CodexAppServerBootstrapStatus {
+  if (evidence.stderr.includes("managed standalone Codex install not found")) {
+    return {
+      kind: "standaloneInstallMissing",
+      message: "Codex App Server cannot start because the managed standalone install is missing.",
+      remediation:
+        "Install the standalone Codex package with the official installer, then retry app-server daemon start.",
+      retryable: true,
+    };
+  }
+
+  return {
+    kind: "startFailed",
+    exitCode: evidence.exitCode,
+    message: "Codex App Server failed to start.",
+    remediation: "Inspect the app-server daemon stderr and retry after fixing the runtime issue.",
+    retryable: true,
+  };
+}
+
 function isSupportedVersion(version: string): boolean {
   return (
     compareVersions(version, SUPPORTED_CODEX_RUNTIME.minInclusive) >= 0 &&
@@ -104,4 +191,8 @@ function compareVersions(left: string, right: string): number {
 function parseVersion(version: string): readonly [number, number, number] {
   const [major = "0", minor = "0", patch = "0"] = version.split(".");
   return [Number(major), Number(minor), Number(patch)];
+}
+
+function assertNever(value: never): never {
+  throw new Error(`Unhandled Codex app-server evidence: ${String(value)}`);
 }

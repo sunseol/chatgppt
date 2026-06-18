@@ -1,19 +1,11 @@
 import { createFileRoute, Link, useParams, Navigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ComponentType } from "react";
 import { isStepReachable, stageToStep, useProject } from "@/lib/deck-store";
 import { Stepper } from "@/components/deck/Stepper";
 import {
-  ProjectStage,
-  InterviewStage,
-  ResearchStage,
-  PlanStage,
-  DesignStage,
-  LayoutStage,
-  GenerateStage,
-  ReviewStage,
-  EditorStage,
-  ExportStage,
-} from "@/components/deck/stages";
+  ProductionWorkflowStage,
+  type WorkflowStageProps,
+} from "@/components/deck/ProductionWorkflowStage";
 import type { StepKey } from "@/lib/deck-types";
 import { ChevronLeft } from "lucide-react";
 
@@ -116,17 +108,37 @@ function ProjectStagePage() {
         </div>
       </aside>
       <main className="min-h-0 min-w-0 overflow-hidden">
-        {step === "project" && <ProjectStage project={project} />}
-        {step === "interview" && <InterviewStage project={project} />}
-        {step === "research" && <ResearchStage project={project} />}
-        {step === "plan" && <PlanStage project={project} />}
-        {step === "design" && <DesignStage project={project} />}
-        {step === "layout" && <LayoutStage project={project} />}
-        {step === "generate" && <GenerateStage project={project} />}
-        {step === "review" && <ReviewStage project={project} />}
-        {step === "editor" && <EditorStage project={project} />}
-        {step === "export" && <ExportStage project={project} />}
+        <WorkflowStage project={project} step={step} />
       </main>
     </div>
   );
+}
+
+function WorkflowStage(props: WorkflowStageProps) {
+  if (import.meta.env.PROD) return <ProductionWorkflowStage {...props} />;
+  return <DevelopmentWorkflowStageLoader {...props} />;
+}
+
+function DevelopmentWorkflowStageLoader(props: WorkflowStageProps) {
+  const [Component, setComponent] = useState<ComponentType<WorkflowStageProps>>();
+
+  useEffect(() => {
+    let mounted = true;
+    void import("@/components/deck/DevelopmentWorkflowStage").then((module) => {
+      if (mounted) setComponent(() => module.DevelopmentWorkflowStage);
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  if (Component === undefined) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="font-serif text-2xl">워크플로 불러오는 중</div>
+      </div>
+    );
+  }
+
+  return <Component {...props} />;
 }
