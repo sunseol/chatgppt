@@ -129,6 +129,21 @@ describe("live manual QA evidence", () => {
     if (result.kind !== "blocked") return;
     expect(result.issues.map((issue) => issue.code)).toEqual(["invalid_real_source_url"]);
   });
+
+  test("blocks placeholder domains as opened source evidence", () => {
+    // Given
+    const evidence = completeEvidence({
+      openedRealSourceUrls: ["https://example.com/live-source"],
+    });
+
+    // When
+    const result = evaluateLiveManualQaEvidence(evidence);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual(["placeholder_real_source_url"]);
+  });
 });
 
 function completeEvidence(patch: Partial<LiveManualQaEvidence> = {}): LiveManualQaEvidence {
@@ -141,7 +156,7 @@ function completeEvidence(patch: Partial<LiveManualQaEvidence> = {}): LiveManual
       { targetId: "slide_generation", understood: true },
       { targetId: "export", understood: true },
     ],
-    openedRealSourceUrls: ["https://example.com/live-source"],
+    openedRealSourceUrls: ["https://www.w3.org/TR/WCAG22/"],
     regeneratedSlideIds: ["slide-3"],
     editedTitleSlideIds: ["slide-3"],
     openedExports: MANUAL_QA_EXPORTS,

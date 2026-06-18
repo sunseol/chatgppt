@@ -47,6 +47,7 @@ export type LiveManualQaIssueCode =
   | "approval_target_misunderstood"
   | "missing_real_source_open"
   | "invalid_real_source_url"
+  | "placeholder_real_source_url"
   | "missing_slide_regeneration"
   | "missing_title_edit"
   | "missing_export_open"
