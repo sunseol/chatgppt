@@ -146,7 +146,20 @@ Using the current `codex app-server --stdio` binary through a temporary runtime 
 - The persisted question artifact hash was `sha256:8c2149f2`.
 - The workflow produced eight follow-up questions and required answers for `mustInclude`, `coreMessage`, `desiredOutcome`, `tone`, and `mustAvoid`.
 
-This proves the library-level desktop interview workflow can now pass a live App Server structured `questions` turn into DeckForge artifact persistence. It remains short of DF-213/DF-215 closure because the run was not driven from the packaged production UI and did not yet complete follow-up answers, Brief generation, Deck Plan, Design System, or Layout IR.
+This proves the library-level desktop interview workflow can now pass a live App Server structured `questions` turn into DeckForge artifact persistence. It remains short of DF-213/DF-215 closure because the run was not driven from the packaged production UI and did not yet complete follow-up answers or Brief generation.
+
+## Library-Level Text Pipeline Workflow Recheck
+
+Using the current `codex app-server --stdio` binary through the same temporary runtime-adapter boundary on 2026-06-19, `runDesktopLiveTextPipelineProductionWorkflow` completed the production Deck Plan, Design System, and Layout IR stages with real App Server structured turns:
+
+- Workflow result: `ready`.
+- Resulting project stage: `LAYOUT_APPROVAL_PENDING`.
+- Deck Plan artifact: `p_live_text_pipeline_20260619_deck_plan_live`, thread `019edbf8-da2a-7c60-9854-b031e54501c1`, turn `019edbf8-dce2-7a51-90ff-6fdb46137aaa`, hash `sha256:26f87b8c`, prompt version `deck_plan_desktop@v1`, duration 80,923 ms.
+- Design System artifact: `p_live_text_pipeline_20260619_design_system_live`, thread `019edbfa-14d8-7b00-a9d3-ef8b5aea6da9`, turn `019edbfa-171c-7983-b2b8-33de3ead05f3`, hash `sha256:52bf2e5c`, prompt version `design_system_desktop@v1`, duration 81,551 ms.
+- Layout IR artifact: `p_live_text_pipeline_20260619_layout_ir_live`, thread `019edbfb-536a-73f3-be20-80c1f434b09e`, turn `019edbfb-55b5-7973-b2e2-a9825d7aa9d4`, hash `sha256:5e92ef55`, prompt version `layout_ir_desktop@v1`, duration 137,636 ms.
+- The persisted bundle contained five planned slides, design id `brief_live_pipeline_20260619_design_system`, and five Layout IR slides.
+
+This proves the library-level desktop text-pipeline workflow can pass three authenticated App Server structured turns into DeckForge artifact persistence. It remains short of DF-214/DF-215 closure because the run was not driven from the packaged production UI, used preapproved local Brief/Research inputs, and did not include schema-repair, project restart, or full interview-through-export evidence.
 
 ## Desktop Bridge Command Coverage
 
@@ -162,7 +175,7 @@ The App Server smoke path and reusable structured-turn path are now represented 
 - `src/lib/desktop-live-text-pipeline-workflow.ts` and `src/lib/desktop-live-text-pipeline-jobs.ts` build desktop Plan/Design/Layout stage prompts, parse structured outputs, run all three desktop turns through the Tauri bridge adapter, and pass accepted outputs to the live text persistence gate.
 - `ProductionWorkflowStage` now uses that bridge detector when no test override is supplied, so packaged Tauri runtime can move the production text gate from `missing` to `available`.
 - `src/lib/desktop-live-interview-workflow.ts` and `src/lib/desktop-live-interview-jobs.ts` build the desktop interview `questions` prompt, parse structured `InterviewQuestionPlan` output, run the desktop `questions` turn through the Tauri bridge adapter, and create a persisted live question artifact when follow-up answers are still required.
-- `ProductionTextWorkflowLauncher` now wires the ready production text-pipeline button to the desktop Plan/Design/Layout launcher and persists the ready project patch after accepted live outputs.
+- `ProductionTextWorkflowLauncher` now wires the ready production text-pipeline button to the desktop Plan/Design/Layout launcher and persists the ready project patch after accepted live outputs; a library-level live run through that same workflow produced real Deck Plan, Design System, and Layout IR artifacts.
 - The same launcher wires the ready production interview button to the desktop `questions` launcher and stores the resulting live question artifact record on the project.
 - `src/lib/live-text-smoke-gate.ts` now evaluates a complete DF-215 smoke bundle across `questions`, `brief`, `deck_plan`, `design_system`, and `layout_ir` artifacts plus post-resume turn evidence.
 - The smoke bundle gate blocks missing or duplicate text stages, `non_codex_text_artifact`, `non_production_text_artifact`, non-session Codex auth, mock/fixture lineage contamination, `text_artifact_missing_turn_id`, `text_artifact_missing_thread_id`, missing resume evidence, incomplete resume turns, `missing_resume_next_turn`, and resume turns that do not continue from an already produced text artifact.
@@ -180,7 +193,7 @@ Local verification:
 - `bun test src/lib/live-text-smoke-gate.test.ts` covers the full text smoke bundle contract, mock/fixture and missing-turn rejection, and the requirement for a completed post-resume next turn.
 - `bun run typecheck`, targeted ESLint, and the TypeScript no-excuse checker pass for the bridge and production UI files.
 
-This is still not a full DeckForge Live text run. The reusable command can execute schema-constrained turns and return App Server notifications, the library-level desktop interview workflow has now persisted a live `questions` artifact from a real App Server turn, the production interview button can launch the live `questions` turn, and the production Plan/Design/Layout button is wired to call the desktop launcher. A recorded packaged-app run with authenticated follow-up/Brief turns and persisted full text artifacts is still required.
+This is still not a full DeckForge Live text run. The reusable command can execute schema-constrained turns and return App Server notifications, the library-level desktop interview workflow has now persisted a live `questions` artifact from a real App Server turn, the production interview button can launch the live `questions` turn, the production Plan/Design/Layout button is wired to call the desktop launcher, and the library-level text pipeline has now persisted live Plan/Design/Layout artifacts from real App Server turns. A recorded packaged-app run with authenticated follow-up/Brief turns and persisted end-to-end text artifacts is still required.
 
 ## Crash/Restart Evidence
 
@@ -224,9 +237,9 @@ After restart, `codex app-server --stdio` completed another authenticated health
 | authenticated health turn | pass | `account/read` confirmed ChatGPT auth, then `thread/start` and `turn/start` produced completed thread/turn ids. |
 | schema-constrained structured turn | pass | `turn/start` accepted an `outputSchema`, streamed `item/agentMessage/delta`, emitted `thread/tokenUsage/updated`, and completed turn `019edb09-77f6-7332-a8d1-e9f6240bf331` on thread `019edb09-7568-70e2-a74c-5f2cc47e48fc`; the current recheck completed turn `019edb32-0a20-7812-ba4b-8603beb1b4aa` on thread `019edb32-07eb-7902-85bd-04823b1c47c2`; the goal-continuation recheck completed turn `019edbdc-6472-7252-a846-334f23436989` on thread `019edbdc-61ca-7fc1-9cb4-9146ef9a1237`. |
 | desktop Tauri bridge command | partial | `deckforge_codex_app_server_smoke` and `deckforge_codex_app_server_structured_turn` are registered, compile, have Rust protocol tests, have Zod-parsed TS bridge adapters, and the library-level desktop interview workflow consumed a real App Server structured turn; packaged-app manual invocation is not yet recorded. |
-| Mock 없이 전체 텍스트 경로 완료 | partial | App Server health turns work, the library-level desktop interview workflow produced a live `questions` artifact, the Plan/Design/Layout production button is wired to the desktop structured-turn launcher, and `evaluateLiveTextSmokeGate` now rejects incomplete text-stage bundles; the production app has not yet recorded a full interview through Layout IR live Codex-only run. |
-| 생성 artifact provider가 모두 live Codex | partial | The smoke bundle gate rejects non-Codex, non-production, non-session-auth, mock, and fixture artifacts; the library-level desktop interview workflow produced one live Codex `questions` artifact, but the full production text artifact set has not been generated. |
-| turn id 없는 AI artifact 0개 | partial | The smoke bundle gate counts and rejects text artifacts without turn ids, health/resume/structured probe turns have turn ids, and the library-level live `questions` artifact has turn `019edbeb-0baf-71e3-85be-a4c331202d4b`; the full production workflow artifact set is still missing. |
+| Mock 없이 전체 텍스트 경로 완료 | partial | App Server health turns work, the library-level desktop interview workflow produced a live `questions` artifact, the library-level desktop text pipeline produced live Deck Plan, Design System, and Layout IR artifacts, the Plan/Design/Layout production button is wired to the desktop structured-turn launcher, and `evaluateLiveTextSmokeGate` now rejects incomplete text-stage bundles; the production app has not yet recorded a packaged full interview through Layout IR live Codex-only run. |
+| 생성 artifact provider가 모두 live Codex | partial | The smoke bundle gate rejects non-Codex, non-production, non-session-auth, mock, and fixture artifacts; library-level desktop workflows produced live Codex `questions`, `deck_plan`, `design_system`, and `layout_ir` artifacts, but the packaged production text artifact set has not been generated. |
+| turn id 없는 AI artifact 0개 | partial | The smoke bundle gate counts and rejects text artifacts without turn ids, health/resume/structured probe turns have turn ids, the library-level live `questions` artifact has turn `019edbeb-0baf-71e3-85be-a4c331202d4b`, and the library-level Plan/Design/Layout artifacts have turns `019edbf8-dce2-7a51-90ff-6fdb46137aaa`, `019edbfa-171c-7983-b2b8-33de3ead05f3`, and `019edbfb-55b5-7973-b2e2-a9825d7aa9d4`; packaged production artifact evidence is still missing. |
 | 프로젝트 재개 후 다음 turn 실행 가능 | partial | `thread/resume` plus a second turn succeeded for the App Server thread, and the smoke bundle gate requires a completed next turn after a produced text-artifact turn; DeckForge project reopen/resume is not verified. |
 
 ## Conclusion
