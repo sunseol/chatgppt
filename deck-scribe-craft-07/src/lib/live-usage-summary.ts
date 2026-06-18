@@ -18,8 +18,10 @@ export type LiveUsageStageSummary = {
 
 export type LiveUsageSummaryIssueCode =
   | "missing_provider_usage_summary"
+  | "invalid_usage_amount"
   | "invalid_duration"
   | "invalid_retry_count"
+  | "invalid_cost_amount"
   | "unlabelled_estimated_cost"
   | "estimated_cost_marked_actual"
   | "missing_image_billing_confirmation";
@@ -39,8 +41,10 @@ export function evaluateLiveUsageSummary(
 ): LiveUsageSummaryResult {
   const issues = stages.flatMap((stage) => [
     ...providerUsageIssues(stage),
+    ...usageAmountIssues(stage),
     ...durationIssues(stage),
     ...retryIssues(stage),
+    ...costAmountIssues(stage),
     ...costLabelIssues(stage),
     ...imageBillingIssues(stage),
   ]);
@@ -69,6 +73,16 @@ function providerUsageIssues(stage: LiveUsageStageSummary): readonly LiveUsageSu
     : [];
 }
 
+function usageAmountIssues(stage: LiveUsageStageSummary): readonly LiveUsageSummaryIssue[] {
+  const usage = stage.usage;
+  if (usage === undefined) return [];
+  return validUsageAmount(usage.inputTokens) &&
+    validUsageAmount(usage.outputTokens) &&
+    validUsageAmount(usage.imageCount)
+    ? []
+    : [issue("invalid_usage_amount", stage, "Usage amounts must be non-negative integers.")];
+}
+
 function durationIssues(stage: LiveUsageStageSummary): readonly LiveUsageSummaryIssue[] {
   return Number.isFinite(stage.durationMs) && stage.durationMs >= 0
     ? []
@@ -79,6 +93,13 @@ function retryIssues(stage: LiveUsageStageSummary): readonly LiveUsageSummaryIss
   return Number.isInteger(stage.retryCount) && stage.retryCount >= 0
     ? []
     : [issue("invalid_retry_count", stage, "Retry count must be a non-negative integer.")];
+}
+
+function costAmountIssues(stage: LiveUsageStageSummary): readonly LiveUsageSummaryIssue[] {
+  const cost = stage.usage?.estimatedCostUsd;
+  return cost === undefined || (Number.isFinite(cost) && cost >= 0)
+    ? []
+    : [issue("invalid_cost_amount", stage, "Cost amounts must be finite and non-negative.")];
 }
 
 function costLabelIssues(stage: LiveUsageStageSummary): readonly LiveUsageSummaryIssue[] {
@@ -155,6 +176,10 @@ function imageBillingDisclosure(
   stage: LiveUsageStageSummary,
 ): LiveImageBillingDisclosure | undefined {
   return stage.imageBillingDisclosure ?? stage.usage?.imageBillingDisclosure;
+}
+
+function validUsageAmount(amount: number | undefined): boolean {
+  return amount === undefined || (Number.isInteger(amount) && amount >= 0);
 }
 
 function issue(

@@ -90,6 +90,42 @@ describe("live usage summary", () => {
     if (result.kind !== "blocked") return;
     expect(result.issues.map((issue) => issue.code)).toEqual(["estimated_cost_marked_actual"]);
   });
+
+  test("blocks impossible usage and cost amounts", () => {
+    // Given
+    const disclosure = {
+      apiKeyRequired: true,
+      userConfirmed: true,
+      label: "API key billing confirmed",
+    };
+    const stages = [
+      stage("plan", {
+        providerUsageProvided: true,
+        usage: { inputTokens: -1, outputTokens: 0.5 },
+      }),
+      stage("generate", {
+        providerKind: "openaiImage",
+        usage: {
+          imageCount: -2,
+          estimatedCostUsd: Number.NaN,
+          imageBillingDisclosure: disclosure,
+        },
+        costLabel: "estimate",
+      }),
+    ];
+
+    // When
+    const result = evaluateLiveUsageSummary(stages);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "invalid_usage_amount",
+      "invalid_usage_amount",
+      "invalid_cost_amount",
+    ]);
+  });
 });
 
 function completeStages(): readonly LiveUsageStageSummary[] {
