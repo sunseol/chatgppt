@@ -7,7 +7,7 @@ Scope: DF-245 internal production package and clean macOS account validation.
 ## Package inputs
 
 - Internal unsigned archive: `dist/deckforge-macos-dry-run.tgz`.
-- Internal archive SHA-256: `f68bd2d52314ff8a2de13f3e3938b4a9530f87a48dd18c951ef933c6416bf2be`.
+- Internal archive SHA-256: `f8376b9c523dd8663300cd94dbd905917959fa7841fa12ae010ab1235adca8cb`.
 - Unsigned Tauri DMG: `release-artifacts/DeckForge_0.1.0_aarch64.dmg`.
 - DMG SHA-256: `dce2ba0c8a3b26a21fed1f4692e635e7d0feb39624eb96ba6b7bf87f41879a1f`.
 
@@ -32,7 +32,7 @@ Before sharing any production candidate, scan the extracted app and DMG staging 
 
 Any hit in production resources blocks release unless it is part of documentation that clearly labels the build as internal only.
 
-Latest local dry-run package scan on 2026-06-19 found no hits for mock provider ids, mock provider labels, mock stage function names, fixture paths, test files, concrete secret values, local absolute workspace paths, `.omx/`, or `.playwright-mcp/` paths in `dist/client`, `dist/server`, or `dist/deckforge-macos-dry-run/DeckForge.app`. The regenerated archive contains 17 app files, is 272 KB compressed, and the extracted dry-run app bundle is 1.0 MB.
+Latest local dry-run package scan on 2026-06-19 for PR branch `jacobex/live-issue-contracts` found no hits for mock provider ids, mock provider labels, mock stage function names, fixture paths, test files, concrete secret values, local absolute workspace paths, `.omx/`, or `.playwright-mcp/` paths in `dist/client`, `dist/server`, or `dist/deckforge-macos-dry-run/DeckForge.app`. The regenerated archive contains 17 app files, is 272 KB compressed, and the extracted dry-run app bundle is 1.0 MB.
 
 The broader scan does find expected guard-code literals and status copy: `mock_lineage_contamination`, `fixture_lineage_contamination`, `pending_reinforcement_request`, `summary_without_original`, `missing_provenance`, production messages that say mock stages are not run in production, and secret-redaction regex definitions such as `API_KEY_PATTERN`, `SECRET_ASSIGNMENT_PATTERN`, and `Bearer` token redaction expressions. Those strings are release/research approval gate rejection reasons or redaction guards, not bundled mock resources or actual secrets.
 

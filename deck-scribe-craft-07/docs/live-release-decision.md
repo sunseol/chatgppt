@@ -21,10 +21,10 @@ The current worktree has stronger Live-readiness contracts than the previous moc
 
 ## Latest local verification
 
-- `bun run verify` passes: typecheck, 544 tests, and production build.
+- `bun run verify` passes: typecheck, 606 tests, and production build.
 - `bun run lint` exits 0 with six pre-existing React Fast Refresh warnings in shared UI files.
 - `bun run package:dry-run` creates `dist/deckforge-macos-dry-run.tgz`.
-- Dry-run archive SHA-256: `3c15121b7fd11559b98c4ba751ccdac89a9990a669b7612e95b3cdfd94d0edf3`.
+- Dry-run archive SHA-256: `f8376b9c523dd8663300cd94dbd905917959fa7841fa12ae010ab1235adca8cb`.
 - Current unsigned DMG SHA-256: `dce2ba0c8a3b26a21fed1f4692e635e7d0feb39624eb96ba6b7bf87f41879a1f`.
 - Package content scan finds no hits for mock provider ids, mock provider labels, mock stage function names, `mock-provider`, `MOCK MODE`, fixture paths, test files, local developer absolute paths, `.omx/`, `.playwright-mcp/`, or concrete secret values in `dist/client`, `dist/server`, or the extracted dry-run app bundle. The broader mock/fixture/research approval/secret matches are expected production guard-code literals, production status copy, and secret-redaction regex definitions: `mock_lineage_contamination`, `fixture_lineage_contamination`, `pending_reinforcement_request`, `summary_without_original`, `missing_provenance`, and `API_KEY_PATTERN`.
 
