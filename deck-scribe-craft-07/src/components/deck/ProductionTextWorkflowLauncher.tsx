@@ -10,6 +10,7 @@ import {
   runDesktopLiveInterviewProductionWorkflow,
 } from "@/lib/desktop-live-interview-workflow";
 import { runDesktopLiveTextPipelineProductionWorkflow } from "@/lib/desktop-live-text-pipeline-workflow";
+import { createLiveInterviewAnswerMap } from "@/lib/live-interview-answer-map";
 import { createProviderJobManager } from "@/lib/provider-job-manager";
 import type { ProductionTextWorkflowBridgeStatus } from "@/lib/production-text-workflow-gate";
 
@@ -60,7 +61,7 @@ async function runInterviewQuestions(
     const result = await runDesktopLiveInterviewProductionWorkflow({
       project,
       jobManager,
-      answers: {},
+      answers: createLiveInterviewAnswerMap(project),
       createdAt: Date.now(),
     });
     switch (result.kind) {

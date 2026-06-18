@@ -4,7 +4,7 @@ import {
   type DesktopProductionCodexAppServerJobInput,
 } from "./desktop-codex-app-server-production-job";
 import type { DeckforgeTauriRuntime } from "./desktop-app-server-bridge";
-import { interviewQuestionPlanJob } from "./desktop-live-interview-jobs";
+import { interviewBriefJob, interviewQuestionPlanJob } from "./desktop-live-interview-jobs";
 import {
   createLiveInterviewPersistence,
   type LiveInterviewPersistenceResult,
@@ -42,12 +42,28 @@ export async function runDesktopLiveInterviewProductionWorkflow(
   );
   if (questionPlan.kind === "job_failed") return questionPlan;
 
+  const preflight = createLiveInterviewPersistence({
+    projectId: input.project.id,
+    createdAt: input.createdAt,
+    ...(input.version === undefined ? {} : { version: input.version }),
+    questionPlan: questionPlan.accepted,
+    answers: input.answers,
+  });
+  if (!shouldRunBriefTurn(preflight)) return preflight;
+
+  const brief = await runDesktopInterviewStageJob(
+    "brief",
+    interviewBriefJob({ ...input, questionPlan: questionPlan.accepted }),
+  );
+  if (brief.kind === "job_failed") return brief;
+
   return createLiveInterviewPersistence({
     projectId: input.project.id,
     createdAt: input.createdAt,
     ...(input.version === undefined ? {} : { version: input.version }),
     questionPlan: questionPlan.accepted,
     answers: input.answers,
+    brief: brief.accepted,
   });
 }
 
@@ -79,4 +95,20 @@ async function runDesktopInterviewStageJob<TValue>(
     job,
     message: job.errorMessage ?? `Desktop Codex App Server job did not accept ${stage}.`,
   };
+}
+
+function shouldRunBriefTurn(result: LiveInterviewPersistenceResult): boolean {
+  switch (result.kind) {
+    case "follow_up_required":
+    case "ready":
+      return false;
+    case "blocked":
+      return result.issues.every((issue) => issue.code === "missing_brief_artifact");
+    default:
+      return assertNever(result);
+  }
+}
+
+function assertNever(value: never): never {
+  throw new Error(`Unhandled desktop live interview result: ${JSON.stringify(value)}`);
 }

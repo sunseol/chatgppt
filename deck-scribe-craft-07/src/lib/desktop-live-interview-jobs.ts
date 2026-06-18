@@ -1,14 +1,22 @@
 import { z } from "zod";
-import type { DeckProject } from "./deck-types";
+import type { DeckProject, InterviewBrief } from "./deck-types";
 import type { DesktopProductionCodexAppServerJobInput } from "./desktop-codex-app-server-production-job";
 import type { DeckforgeTauriRuntime } from "./desktop-app-server-bridge";
+import { InterviewBriefSchema } from "./interview-brief";
 import type { InterviewQuestionPlan } from "./interview-questions";
+import type { LiveInterviewAnswerMap } from "./live-interview-cutover";
+import type { StructuredCodexAccepted } from "./codex-structured-task-runner";
 import type { ProviderJobManager } from "./provider-job-manager";
 
 export type DesktopLiveInterviewJobContext = {
   readonly project: DeckProject;
   readonly jobManager: ProviderJobManager;
   readonly tauriRuntime?: DeckforgeTauriRuntime;
+};
+
+export type DesktopLiveInterviewBriefJobContext = DesktopLiveInterviewJobContext & {
+  readonly questionPlan: StructuredCodexAccepted<InterviewQuestionPlan>;
+  readonly answers: LiveInterviewAnswerMap;
 };
 
 const InterviewQuestionFieldSchema = z.union([
@@ -114,6 +122,39 @@ const InterviewQuestionPlanOutputSchema = {
   },
 } as const;
 
+const InterviewBriefOutputSchema = {
+  type: "object",
+  additionalProperties: false,
+  required: [
+    "id",
+    "goal",
+    "audience",
+    "desiredOutcome",
+    "slideCount",
+    "aspectRatio",
+    "language",
+    "tone",
+    "mustInclude",
+    "mustAvoid",
+    "successCriteria",
+    "openQuestions",
+  ],
+  properties: {
+    id: { type: "string", minLength: 1 },
+    goal: { type: "string", minLength: 1 },
+    audience: { type: "string", minLength: 1 },
+    desiredOutcome: { type: "string", minLength: 1 },
+    slideCount: { type: "integer", minimum: 1 },
+    aspectRatio: { type: "string", enum: ["16:9", "4:3"] },
+    language: { type: "string", enum: ["ko", "en", "mixed"] },
+    tone: { type: "array", items: { type: "string", minLength: 1 } },
+    mustInclude: { type: "array", items: { type: "string", minLength: 1 } },
+    mustAvoid: { type: "array", items: { type: "string", minLength: 1 } },
+    successCriteria: { type: "array", items: { type: "string", minLength: 1 } },
+    openQuestions: { type: "array", items: { type: "string" } },
+  },
+} as const;
+
 export function interviewQuestionPlanJob(
   input: DesktopLiveInterviewJobContext,
 ): DesktopProductionCodexAppServerJobInput<InterviewQuestionPlan> {
@@ -135,8 +176,40 @@ export function interviewQuestionPlanJob(
   };
 }
 
+export function interviewBriefJob(
+  input: DesktopLiveInterviewBriefJobContext,
+): DesktopProductionCodexAppServerJobInput<InterviewBrief> {
+  return {
+    tauriRuntime: input.tauriRuntime,
+    jobManager: input.jobManager,
+    capability: "interview",
+    description: "Run live interview brief desktop App Server turn",
+    artifactId: interviewBriefArtifactId(input.project),
+    parse: parseInterviewBrief,
+    promptVersion: "interview_brief@v1",
+    inputArtifactIds: [input.questionPlan.provenance.artifactId],
+    turnRequest: {
+      prompt: interviewBriefPrompt(input),
+      outputSchema: InterviewBriefOutputSchema,
+      model: "gpt-5.4",
+      networkAccess: false,
+    },
+  };
+}
+
 function parseInterviewQuestionPlan(value: unknown) {
   const parsed = InterviewQuestionPlanSchema.safeParse(value);
+  if (!parsed.success) {
+    return {
+      kind: "invalid" as const,
+      issues: parsed.error.issues.map((issue) => issue.message),
+    };
+  }
+  return { kind: "valid" as const, value: parsed.data };
+}
+
+function parseInterviewBrief(value: unknown) {
+  const parsed = InterviewBriefSchema.safeParse(value);
   if (!parsed.success) {
     return {
       kind: "invalid" as const,
@@ -160,6 +233,27 @@ function interviewQuestionsPrompt(project: DeckProject): string {
   ].join("\n");
 }
 
+function interviewBriefPrompt(input: DesktopLiveInterviewBriefJobContext): string {
+  return [
+    "# Interview Brief",
+    "Return JSON only matching the InterviewBrief shape.",
+    "Do not include approvedHash.",
+    `Project id: ${input.project.id}`,
+    `Initial prompt: ${input.project.initialPrompt}`,
+    `Question artifact id: ${input.questionPlan.provenance.artifactId}`,
+    `Question draft JSON: ${JSON.stringify(input.questionPlan.value.draft)}`,
+    `Question list JSON: ${JSON.stringify(input.questionPlan.value.questions)}`,
+    `Open questions JSON: ${JSON.stringify(input.questionPlan.value.openQuestions)}`,
+    `User answers JSON: ${JSON.stringify(input.answers)}`,
+    "Use the question draft plus user answers to produce an approvable interview brief.",
+    "Keep any unresolved items in openQuestions; otherwise return an empty openQuestions array.",
+  ].join("\n");
+}
+
 function interviewQuestionArtifactId(project: DeckProject): string {
   return `${project.id}_questions_live`;
+}
+
+function interviewBriefArtifactId(project: DeckProject): string {
+  return `${project.id}_brief_live`;
 }

@@ -33,7 +33,15 @@ codex app-server --stdio  # schema-constrained structured probe
 - `codex app-server --stdio` accepted a JSON-RPC `initialize` request and returned a protocol response:
 
 ```json
-{"id":1,"result":{"userAgent":"Codex Desktop/0.139.0 (Mac OS 26.5.1; arm64) dumb (deckforge-smoke; 0.1.0)","codexHome":"/Users/jake/.codex","platformFamily":"unix","platformOs":"macos"}}
+{
+  "id": 1,
+  "result": {
+    "userAgent": "Codex Desktop/0.139.0 (Mac OS 26.5.1; arm64) dumb (deckforge-smoke; 0.1.0)",
+    "codexHome": "/Users/jake/.codex",
+    "platformFamily": "unix",
+    "platformOs": "macos"
+  }
+}
 ```
 
 - The stdio initialize run also emitted `remoteControl/status/changed` with `status: "disabled"`, so this proves protocol initialize over stdio, not a durable managed daemon or remote-control connection.
@@ -55,7 +63,17 @@ Codex CLI 0.141.0 installed successfully.
 `PATH="/Users/jake/.local/bin:$PATH" codex app-server daemon bootstrap` then returned:
 
 ```json
-{"status":"bootstrapped","backend":"pid","autoUpdateEnabled":true,"remoteControlEnabled":false,"managedCodexPath":"/Users/jake/.codex/packages/standalone/current/codex","managedCodexVersion":"0.141.0","socketPath":"/Users/jake/.codex/app-server-control/app-server-control.sock","cliVersion":"0.141.0","appServerVersion":"0.141.0"}
+{
+  "status": "bootstrapped",
+  "backend": "pid",
+  "autoUpdateEnabled": true,
+  "remoteControlEnabled": false,
+  "managedCodexPath": "/Users/jake/.codex/packages/standalone/current/codex",
+  "managedCodexVersion": "0.141.0",
+  "socketPath": "/Users/jake/.codex/app-server-control/app-server-control.sock",
+  "cliVersion": "0.141.0",
+  "appServerVersion": "0.141.0"
+}
 ```
 
 `PATH="/Users/jake/.local/bin:$PATH" codex doctor --json` reported `app_server.status` as `ok`, with `summary: "background server is running"` and `mode: "persistent"`.
@@ -84,7 +102,13 @@ Using `codex app-server --stdio` with the standalone 0.141.0 binary on 2026-06-1
 - The final assistant message matched the requested schema:
 
 ```json
-{"artifact":"deckforge_live_structured_probe","stage":"health_structured_turn","mock":false,"fixture":false,"status":"ok"}
+{
+  "artifact": "deckforge_live_structured_probe",
+  "stage": "health_structured_turn",
+  "mock": false,
+  "fixture": false,
+  "status": "ok"
+}
 ```
 
 Output SHA-256: `0a9d15bd5720bde9ffc8f5a42d38e4bd37b9099bb3d8d328ff3e8349959a955d`.
@@ -103,7 +127,13 @@ Using the current `codex app-server --stdio` binary and protocol schema on 2026-
 - The final assistant message matched the requested schema:
 
 ```json
-{"artifact":"deckforge_live_current_smoke","stage":"current_health","mock":false,"fixture":false,"status":"ok"}
+{
+  "artifact": "deckforge_live_current_smoke",
+  "stage": "current_health",
+  "mock": false,
+  "fixture": false,
+  "status": "ok"
+}
 ```
 
 Output SHA-256: `d165df896f4a80c9bbecaa36262b1b5540adc11591c0138ebea93b1dcb773b4c`.
@@ -125,7 +155,13 @@ Using the current `codex app-server --stdio` binary and protocol schema on 2026-
 - The final assistant message matched the requested schema:
 
 ```json
-{"artifact":"deckforge_live_goal_continuation_smoke","stage":"goal_continuation_health","mock":false,"fixture":false,"status":"ok"}
+{
+  "artifact": "deckforge_live_goal_continuation_smoke",
+  "stage": "goal_continuation_health",
+  "mock": false,
+  "fixture": false,
+  "status": "ok"
+}
 ```
 
 Output SHA-256: `8b579a44dbdd4d90050087ecbc8be606ba407d53a9893effd8961a64b8db5c68`.
@@ -145,8 +181,12 @@ Using the current `codex app-server --stdio` binary through a temporary runtime 
 - The live App Server turn was `019edbeb-0baf-71e3-85be-a4c331202d4b`.
 - The persisted question artifact hash was `sha256:8c2149f2`.
 - The workflow produced eight follow-up questions and required answers for `mustInclude`, `coreMessage`, `desiredOutcome`, `tone`, and `mustAvoid`.
+- After the desktop workflow was extended to run the `brief` turn when answers are present, a second library-level live run completed both stages and returned `ready`.
+- Ready run question artifact: `p_goal_live_interview_20260619_brief_questions_live`, thread `019edc17-adba-7101-8554-e4067aa84b62`, turn `019edc17-b011-74d2-ae54-49842b7abd9d`, hash `sha256:b97f92d0`, prompt version `interview_questions_desktop@v1`, duration 139,900 ms.
+- Ready run Brief artifact: `p_goal_live_interview_20260619_brief_brief_live`, thread `019edc19-ce10-7c32-acbd-a3ec406e7d7b`, turn `019edc19-d06e-7793-9fbc-80ec053bb9fa`, hash `sha256:4dabd196`, prompt version `interview_brief@v1`, duration 173,967 ms.
+- The Brief artifact cited `p_goal_live_interview_20260619_brief_questions_live` in `inputArtifactIds`, proving the second-turn question input lineage.
 
-This proves the library-level desktop interview workflow can now pass a live App Server structured `questions` turn into DeckForge artifact persistence. It remains short of DF-213/DF-215 closure because the run was not driven from the packaged production UI and did not yet complete follow-up answers or Brief generation.
+This proves the library-level desktop interview workflow can now pass live App Server structured `questions` and `brief` turns into DeckForge artifact persistence. It remains short of DF-213/DF-215 closure because the run was not driven from the packaged production UI and did not exercise the required follow-up-turn path for missing answers.
 
 ## Library-Level Text Pipeline Workflow Recheck
 
@@ -174,12 +214,13 @@ The App Server smoke path and reusable structured-turn path are now represented 
 - `src/lib/desktop-codex-app-server-production-job.ts` feeds structured-turn notifications into `runProductionCodexAppServerJob`, so the existing event mapper and Job Manager provenance path can consume desktop App Server turns.
 - `src/lib/desktop-live-text-pipeline-workflow.ts` and `src/lib/desktop-live-text-pipeline-jobs.ts` build desktop Plan/Design/Layout stage prompts, parse structured outputs, run all three desktop turns through the Tauri bridge adapter, and pass accepted outputs to the live text persistence gate.
 - `ProductionWorkflowStage` now uses that bridge detector when no test override is supplied, so packaged Tauri runtime can move the production text gate from `missing` to `available`.
-- `src/lib/desktop-live-interview-workflow.ts` and `src/lib/desktop-live-interview-jobs.ts` build the desktop interview `questions` prompt, parse structured `InterviewQuestionPlan` output, run the desktop `questions` turn through the Tauri bridge adapter, and create a persisted live question artifact when follow-up answers are still required.
+- `src/lib/desktop-live-interview-workflow.ts` and `src/lib/desktop-live-interview-jobs.ts` build the desktop interview `questions` and `brief` prompts, parse structured `InterviewQuestionPlan` and `InterviewBrief` output, run the desktop `questions` turn through the Tauri bridge adapter, create a persisted live question artifact when follow-up answers are still required, and run a second desktop `brief` turn when answers are present.
 - `ProductionTextWorkflowLauncher` now wires the ready production text-pipeline button to the desktop Plan/Design/Layout launcher and persists the ready project patch after accepted live outputs; a library-level live run through that same workflow produced real Deck Plan, Design System, and Layout IR artifacts.
-- The same launcher wires the ready production interview button to the desktop `questions` launcher and stores the resulting live question artifact record on the project.
+- `src/lib/live-interview-answer-map.ts` converts an existing project draft Brief plus initial prompt into the answer map consumed by the desktop live interview launcher.
+- The same launcher wires the ready production interview button to the desktop interview launcher, passes draft-Brief answers when present, stores the resulting live question artifact record when follow-up is still required, and can apply the ready Brief patch after both live turns complete.
 - `src/lib/live-text-smoke-gate.ts` now evaluates a complete DF-215 smoke bundle across `questions`, `brief`, `deck_plan`, `design_system`, and `layout_ir` artifacts plus post-resume turn evidence.
 - The smoke bundle gate blocks missing or duplicate text stages, `non_codex_text_artifact`, `non_production_text_artifact`, non-session Codex auth, mock/fixture lineage contamination, `text_artifact_missing_turn_id`, `text_artifact_missing_thread_id`, missing resume evidence, incomplete resume turns, `missing_resume_next_turn`, and resume turns that do not continue from an already produced text artifact.
-- Desktop `questions`, Design System, and Layout IR stage jobs now send App Server strict response schemas with nested `additionalProperties: false` object definitions instead of loose object schemas rejected by the live response-format validator.
+- Desktop `questions`, `brief`, Design System, and Layout IR stage jobs now send App Server strict response schemas with nested `additionalProperties: false` object definitions instead of loose object schemas rejected by the live response-format validator.
 
 Local verification:
 
@@ -187,13 +228,14 @@ Local verification:
 - `cargo clippy --manifest-path src-tauri/Cargo.toml --all-targets --all-features -- -D warnings` passes for the desktop command code.
 - `bun test src/lib/desktop-app-server-bridge.test.ts src/lib/desktop-codex-app-server-production-job.test.ts src/lib/codex-app-server-production-job.test.ts src/lib/codex-app-server-event-mapper.test.ts` covers missing bridge, smoke evidence parsing, structured-turn evidence parsing, typed command errors, and notification flow into production Job Manager provenance.
 - `bun test src/lib/desktop-live-text-pipeline-workflow.test.ts` covers the app-level desktop launcher calling three structured turns before persistence and blocking before turn invocation when prerequisites are missing.
-- `bun test src/lib/desktop-live-interview-workflow.test.ts` covers the app-level desktop interview launcher calling a structured `questions` turn and preserving the question artifact record.
+- `bun test src/lib/live-interview-answer-map.test.ts` covers draft-Brief answer handoff for the production interview launcher.
+- `bun test src/lib/desktop-live-interview-workflow.test.ts` covers the app-level desktop interview launcher calling a structured `questions` turn, preserving the question artifact record when follow-up is required, calling a second structured `brief` turn after supplied answers, preserving question input lineage, and keeping both response schemas strict.
 - `bun test src/lib/desktop-live-text-pipeline-workflow.test.ts` covers App Server strict response schemas for Deck Plan, Design System, and Layout IR stage jobs.
 - `bun test src/lib/codex-app-server-event-mapper.test.ts` covers current nested App Server error notifications and failed turn completion mapping.
 - `bun test src/lib/live-text-smoke-gate.test.ts` covers the full text smoke bundle contract, mock/fixture and missing-turn rejection, and the requirement for a completed post-resume next turn.
 - `bun run typecheck`, targeted ESLint, and the TypeScript no-excuse checker pass for the bridge and production UI files.
 
-This is still not a full DeckForge Live text run. The reusable command can execute schema-constrained turns and return App Server notifications, the library-level desktop interview workflow has now persisted a live `questions` artifact from a real App Server turn, the production interview button can launch the live `questions` turn, the production Plan/Design/Layout button is wired to call the desktop launcher, and the library-level text pipeline has now persisted live Plan/Design/Layout artifacts from real App Server turns. A recorded packaged-app run with authenticated follow-up/Brief turns and persisted end-to-end text artifacts is still required.
+This is still not a full DeckForge Live text run. The reusable command can execute schema-constrained turns and return App Server notifications, the library-level desktop interview workflow has now persisted live `questions` and `brief` artifacts from real App Server turns, the production interview button can launch that desktop interview path, the production Plan/Design/Layout button is wired to call the desktop launcher, and the library-level text pipeline has now persisted live Plan/Design/Layout artifacts from real App Server turns. A recorded packaged-app run with authenticated follow-up behavior and persisted end-to-end text artifacts is still required.
 
 ## Crash/Restart Evidence
 
@@ -216,7 +258,16 @@ Caused by:
 `PATH="/Users/jake/.local/bin:$PATH" codex app-server daemon start` then started a new daemon process:
 
 ```json
-{"status":"started","backend":"pid","pid":5889,"managedCodexPath":"/Users/jake/.codex/packages/standalone/current/codex","managedCodexVersion":"0.141.0","socketPath":"/Users/jake/.codex/app-server-control/app-server-control.sock","cliVersion":"0.141.0","appServerVersion":"0.141.0"}
+{
+  "status": "started",
+  "backend": "pid",
+  "pid": 5889,
+  "managedCodexPath": "/Users/jake/.codex/packages/standalone/current/codex",
+  "managedCodexVersion": "0.141.0",
+  "socketPath": "/Users/jake/.codex/app-server-control/app-server-control.sock",
+  "cliVersion": "0.141.0",
+  "appServerVersion": "0.141.0"
+}
 ```
 
 After restart, `codex app-server --stdio` completed another authenticated health turn:
@@ -227,21 +278,21 @@ After restart, `codex app-server --stdio` completed another authenticated health
 
 ## Acceptance Criteria Check
 
-| Requirement | Status | Evidence |
-| --- | --- | --- |
-| supported runtime/protocol 범위 기록 | pass | CLI `0.141.0`; generated protocol schemas include v1 `initialize` and v2 `thread/start`, `thread/resume`, `turn/start`, and notification schemas. |
-| JSON-RPC initialize 성공 | pass | `codex app-server --stdio` returned `codexHome`, `platformFamily`, `platformOs`, and `userAgent` for request id `1`. |
-| stdout/stderr protocol/log 채널 분리 | pass | protocol responses were emitted as JSON on stdout while local MCP/plugin warnings were emitted separately as log events. |
-| durable daemon bootstrap | pass | standalone 0.141.0 install exists, daemon bootstrap returned `bootstrapped`, and doctor reports persistent App Server running. |
-| 비정상 종료 후 재시작 경로 | pass | `kill -9` made the control socket refuse connections; `daemon start` launched new pid `5889`; post-restart health turn completed. |
-| authenticated health turn | pass | `account/read` confirmed ChatGPT auth, then `thread/start` and `turn/start` produced completed thread/turn ids. |
-| schema-constrained structured turn | pass | `turn/start` accepted an `outputSchema`, streamed `item/agentMessage/delta`, emitted `thread/tokenUsage/updated`, and completed turn `019edb09-77f6-7332-a8d1-e9f6240bf331` on thread `019edb09-7568-70e2-a74c-5f2cc47e48fc`; the current recheck completed turn `019edb32-0a20-7812-ba4b-8603beb1b4aa` on thread `019edb32-07eb-7902-85bd-04823b1c47c2`; the goal-continuation recheck completed turn `019edbdc-6472-7252-a846-334f23436989` on thread `019edbdc-61ca-7fc1-9cb4-9146ef9a1237`. |
-| desktop Tauri bridge command | partial | `deckforge_codex_app_server_smoke` and `deckforge_codex_app_server_structured_turn` are registered, compile, have Rust protocol tests, have Zod-parsed TS bridge adapters, and the library-level desktop interview workflow consumed a real App Server structured turn; packaged-app manual invocation is not yet recorded. |
-| Mock 없이 전체 텍스트 경로 완료 | partial | App Server health turns work, the library-level desktop interview workflow produced a live `questions` artifact, the library-level desktop text pipeline produced live Deck Plan, Design System, and Layout IR artifacts, the Plan/Design/Layout production button is wired to the desktop structured-turn launcher, and `evaluateLiveTextSmokeGate` now rejects incomplete text-stage bundles; the production app has not yet recorded a packaged full interview through Layout IR live Codex-only run. |
-| 생성 artifact provider가 모두 live Codex | partial | The smoke bundle gate rejects non-Codex, non-production, non-session-auth, mock, and fixture artifacts; library-level desktop workflows produced live Codex `questions`, `deck_plan`, `design_system`, and `layout_ir` artifacts, but the packaged production text artifact set has not been generated. |
-| turn id 없는 AI artifact 0개 | partial | The smoke bundle gate counts and rejects text artifacts without turn ids, health/resume/structured probe turns have turn ids, the library-level live `questions` artifact has turn `019edbeb-0baf-71e3-85be-a4c331202d4b`, and the library-level Plan/Design/Layout artifacts have turns `019edbf8-dce2-7a51-90ff-6fdb46137aaa`, `019edbfa-171c-7983-b2b8-33de3ead05f3`, and `019edbfb-55b5-7973-b2e2-a9825d7aa9d4`; packaged production artifact evidence is still missing. |
-| 프로젝트 재개 후 다음 turn 실행 가능 | partial | `thread/resume` plus a second turn succeeded for the App Server thread, and the smoke bundle gate requires a completed next turn after a produced text-artifact turn; DeckForge project reopen/resume is not verified. |
+| Requirement                              | Status  | Evidence                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| ---------------------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| supported runtime/protocol 범위 기록     | pass    | CLI `0.141.0`; generated protocol schemas include v1 `initialize` and v2 `thread/start`, `thread/resume`, `turn/start`, and notification schemas.                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| JSON-RPC initialize 성공                 | pass    | `codex app-server --stdio` returned `codexHome`, `platformFamily`, `platformOs`, and `userAgent` for request id `1`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| stdout/stderr protocol/log 채널 분리     | pass    | protocol responses were emitted as JSON on stdout while local MCP/plugin warnings were emitted separately as log events.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| durable daemon bootstrap                 | pass    | standalone 0.141.0 install exists, daemon bootstrap returned `bootstrapped`, and doctor reports persistent App Server running.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| 비정상 종료 후 재시작 경로               | pass    | `kill -9` made the control socket refuse connections; `daemon start` launched new pid `5889`; post-restart health turn completed.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| authenticated health turn                | pass    | `account/read` confirmed ChatGPT auth, then `thread/start` and `turn/start` produced completed thread/turn ids.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| schema-constrained structured turn       | pass    | `turn/start` accepted an `outputSchema`, streamed `item/agentMessage/delta`, emitted `thread/tokenUsage/updated`, and completed turn `019edb09-77f6-7332-a8d1-e9f6240bf331` on thread `019edb09-7568-70e2-a74c-5f2cc47e48fc`; the current recheck completed turn `019edb32-0a20-7812-ba4b-8603beb1b4aa` on thread `019edb32-07eb-7902-85bd-04823b1c47c2`; the goal-continuation recheck completed turn `019edbdc-6472-7252-a846-334f23436989` on thread `019edbdc-61ca-7fc1-9cb4-9146ef9a1237`.                                                                                                                      |
+| desktop Tauri bridge command             | partial | `deckforge_codex_app_server_smoke` and `deckforge_codex_app_server_structured_turn` are registered, compile, have Rust protocol tests, have Zod-parsed TS bridge adapters, and the library-level desktop interview workflow consumed real App Server structured turns for both `questions` and `brief`; packaged-app manual invocation is not yet recorded.                                                                                                                                                                                                                                                          |
+| Mock 없이 전체 텍스트 경로 완료          | partial | App Server health turns work, the library-level desktop interview workflow produced live `questions` and `brief` artifacts, the library-level desktop text pipeline produced live Deck Plan, Design System, and Layout IR artifacts, the Plan/Design/Layout production button is wired to the desktop structured-turn launcher, and `evaluateLiveTextSmokeGate` now rejects incomplete text-stage bundles; the production app has not yet recorded a packaged full interview through Layout IR live Codex-only run.                                                                                                  |
+| 생성 artifact provider가 모두 live Codex | partial | The smoke bundle gate rejects non-Codex, non-production, non-session-auth, mock, and fixture artifacts; library-level desktop workflows produced live Codex `questions`, `brief`, `deck_plan`, `design_system`, and `layout_ir` artifacts, but the packaged production text artifact set has not been generated.                                                                                                                                                                                                                                                                                                     |
+| turn id 없는 AI artifact 0개             | partial | The smoke bundle gate counts and rejects text artifacts without turn ids, health/resume/structured probe turns have turn ids, the library-level live `questions` artifact has turn `019edbeb-0baf-71e3-85be-a4c331202d4b`, the ready interview run has question turn `019edc17-b011-74d2-ae54-49842b7abd9d` and Brief turn `019edc19-d06e-7793-9fbc-80ec053bb9fa`, and the library-level Plan/Design/Layout artifacts have turns `019edbf8-dce2-7a51-90ff-6fdb46137aaa`, `019edbfa-171c-7983-b2b8-33de3ead05f3`, and `019edbfb-55b5-7973-b2e2-a9825d7aa9d4`; packaged production artifact evidence is still missing. |
+| 프로젝트 재개 후 다음 turn 실행 가능     | partial | `thread/resume` plus a second turn succeeded for the App Server thread, and the smoke bundle gate requires a completed next turn after a produced text-artifact turn; DeckForge project reopen/resume is not verified.                                                                                                                                                                                                                                                                                                                                                                                               |
 
 ## Conclusion
 
-The local machine is authenticated for Codex CLI, now has the standalone 0.141.0 App Server install, and can run a persistent App Server daemon. Stdio protocol initialize, authenticated account read, thread creation, a completed health turn, thread resume, a second completed turn, forced daemon crash, daemon restart, post-restart health turn, and schema-constrained structured probe turns all succeeded, including the current recheck with thread `019edb32-07eb-7902-85bd-04823b1c47c2` and turn `019edb32-0a20-7812-ba4b-8603beb1b4aa`, plus the goal-continuation recheck with thread `019edbdc-61ca-7fc1-9cb4-9146ef9a1237` and turn `019edbdc-6472-7252-a846-334f23436989`. The app now has Tauri commands and TypeScript adapters for both App Server smoke evidence and reusable structured turns, and the structured-turn notifications can flow into the production Job Manager provenance path. The interview production button is wired to call the desktop `questions` launcher and preserve its artifact record; the library-level desktop interview workflow has now persisted a live `questions` artifact from turn `019edbeb-0baf-71e3-85be-a4c331202d4b`; the Plan/Design/Layout production button is wired to call the desktop structured-turn launcher and persist the ready patch after accepted outputs with strict response schemas. `evaluateLiveTextSmokeGate` now prevents DF-215 from being marked ready unless all text artifacts are live Codex production artifacts with turn/thread ids and a completed post-resume next turn. DF-210 still needs clean-machine reproduction before it should be marked Verified Live. DF-211 now has a real protocol-level structured event log, current error-event mapping, and a desktop structured-turn command surface. DF-213/DF-214/DF-215 still need a recorded packaged-app live run that persists real DeckForge artifacts, and DF-215 remains partial because the actual DeckForge text pipeline has not yet completed interview through Layout IR with live Codex-only artifacts.
+The local machine is authenticated for Codex CLI, now has the standalone 0.141.0 App Server install, and can run a persistent App Server daemon. Stdio protocol initialize, authenticated account read, thread creation, a completed health turn, thread resume, a second completed turn, forced daemon crash, daemon restart, post-restart health turn, and schema-constrained structured probe turns all succeeded, including the current recheck with thread `019edb32-07eb-7902-85bd-04823b1c47c2` and turn `019edb32-0a20-7812-ba4b-8603beb1b4aa`, plus the goal-continuation recheck with thread `019edbdc-61ca-7fc1-9cb4-9146ef9a1237` and turn `019edbdc-6472-7252-a846-334f23436989`. The app now has Tauri commands and TypeScript adapters for both App Server smoke evidence and reusable structured turns, and the structured-turn notifications can flow into the production Job Manager provenance path. The interview production button is wired to call the desktop interview launcher; the library-level desktop interview workflow has now persisted live `questions` and `brief` artifacts from turns `019edc17-b011-74d2-ae54-49842b7abd9d` and `019edc19-d06e-7793-9fbc-80ec053bb9fa`; the Plan/Design/Layout production button is wired to call the desktop structured-turn launcher and persist the ready patch after accepted outputs with strict response schemas. `evaluateLiveTextSmokeGate` now prevents DF-215 from being marked ready unless all text artifacts are live Codex production artifacts with turn/thread ids and a completed post-resume next turn. DF-210 still needs clean-machine reproduction before it should be marked Verified Live. DF-211 now has a real protocol-level structured event log, current error-event mapping, and a desktop structured-turn command surface. DF-213/DF-214/DF-215 still need a recorded packaged-app live run that persists real DeckForge artifacts, and DF-215 remains partial because the actual packaged DeckForge text pipeline has not yet completed interview through Layout IR with live Codex-only artifacts.
