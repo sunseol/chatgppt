@@ -17,6 +17,7 @@ const DOCS = {
   usageSummary: new URL("../../docs/live-usage-summary.md", import.meta.url),
   runbook: new URL("../../docs/production-clean-machine-runbook.md", import.meta.url),
   textSmoke: new URL("../../docs/live_text_smoke_report.md", import.meta.url),
+  projectThreadLifecycle: new URL("../../docs/live-project-thread-lifecycle.md", import.meta.url),
   manualQa: new URL("../../docs/live-manual-qa-checklist.md", import.meta.url),
   decision: new URL("../../docs/live-release-decision.md", import.meta.url),
 } as const;
@@ -101,6 +102,7 @@ describe("live readiness documentation", () => {
 
   test("records the live text smoke gate attempt and current remaining blockers", () => {
     const textSmoke = readDoc(DOCS.textSmoke);
+    const projectThreadLifecycle = readDoc(DOCS.projectThreadLifecycle);
 
     expect(textSmoke.includes("DF-215")).toBe(true);
     expect(textSmoke.includes("codex login status")).toBe(true);
@@ -115,6 +117,10 @@ describe("live readiness documentation", () => {
     expect(textSmoke.includes("text_artifact_missing_turn_id")).toBe(true);
     expect(textSmoke.includes("missing_resume_next_turn")).toBe(true);
     expect(textSmoke.includes("Smoke result: partial")).toBe(true);
+    expect(projectThreadLifecycle.includes("DF-212")).toBe(true);
+    expect(projectThreadLifecycle.includes("evaluateProjectThreadResumeEvidence")).toBe(true);
+    expect(projectThreadLifecycle.includes("019edc28-bf27-7380-b7d2-65405e6c6758")).toBe(true);
+    expect(projectThreadLifecycle.includes("packaged desktop restart/reopen run")).toBe(true);
   });
 
   test("records the live interview cutover contract", () => {
