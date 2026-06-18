@@ -163,15 +163,29 @@ function imageArtifactIssues(
   imageArtifacts: readonly ProviderArtifactProvenance[],
 ): readonly LiveGoldenPathE2EIssue[] {
   const liveImages = liveImageArtifacts(imageArtifacts);
-  return liveImages.length >= 5
-    ? []
-    : [
-        liveGoldenPathIssue(
-          "insufficient_live_image_artifacts",
-          "At least five live image artifacts are required.",
-          [String(liveImages.length)],
-        ),
-      ];
+  const artifactIds = liveImages.map((artifact) => artifact.artifactId);
+  const distinctArtifactIds = new Set(artifactIds);
+  const duplicates = duplicateValues(artifactIds);
+  return [
+    ...(duplicates.length === 0
+      ? []
+      : [
+          liveGoldenPathIssue(
+            "duplicate_live_image_artifact",
+            "Live Golden Path image artifacts must be distinct.",
+            duplicates,
+          ),
+        ]),
+    ...(distinctArtifactIds.size >= 5
+      ? []
+      : [
+          liveGoldenPathIssue(
+            "insufficient_live_image_artifacts",
+            "At least five distinct live image artifacts are required.",
+            [String(distinctArtifactIds.size)],
+          ),
+        ]),
+  ];
 }
 
 function restartIssues(bundle: LiveGoldenPathE2EBundle): readonly LiveGoldenPathE2EIssue[] {
@@ -216,4 +230,17 @@ function missingStepScreenshots(screenshots: readonly string[]): readonly string
 function stem(filename: string): string {
   const extensionIndex = filename.lastIndexOf(".");
   return extensionIndex === -1 ? filename : filename.slice(0, extensionIndex);
+}
+
+function duplicateValues(values: readonly string[]): readonly string[] {
+  const seen = new Set<string>();
+  const duplicates = new Set<string>();
+  for (const value of values) {
+    if (seen.has(value)) {
+      duplicates.add(value);
+    } else {
+      seen.add(value);
+    }
+  }
+  return [...duplicates];
 }

@@ -151,6 +151,23 @@ describe("live golden path E2E evidence", () => {
       "validation_bundle_missing_image_artifact",
     ]);
   });
+
+  test("blocks repeated live image artifact ids from satisfying the five-image requirement", () => {
+    // Given
+    const repeatedImages = Array.from({ length: 5 }, () => imageArtifact(1, "live_image_1"));
+    const bundle = completeBundle({ imageArtifacts: repeatedImages });
+
+    // When
+    const result = evaluateLiveGoldenPathE2EBundle(bundle);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "duplicate_live_image_artifact",
+      "insufficient_live_image_artifacts",
+    ]);
+  });
 });
 
 function completeBundle(patch: Partial<LiveGoldenPathE2EBundle> = {}): LiveGoldenPathE2EBundle {

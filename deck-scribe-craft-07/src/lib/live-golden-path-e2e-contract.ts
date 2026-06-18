@@ -71,6 +71,7 @@ export type LiveGoldenPathE2EIssueCode =
   | "fixture_lineage_contamination"
   | "insufficient_live_sources"
   | "missing_primary_source"
+  | "duplicate_live_image_artifact"
   | "insufficient_live_image_artifacts"
   | "missing_restart_reopen_evidence"
   | "secret_leak";
