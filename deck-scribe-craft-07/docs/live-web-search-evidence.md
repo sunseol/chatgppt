@@ -1,10 +1,10 @@
 # Live Web Search Evidence
 
-Date: 2026-06-18
+Date: 2026-06-19
 
 Scope: DF-221 Codex Live Web Search Connection.
 
-Status: partial local contract
+Status: verified live worker evidence
 
 ## Contract added
 
@@ -29,6 +29,7 @@ Status: partial local contract
 
 - `bun test src/lib/live-web-search-evidence.test.ts src/lib/research-pack-web-search.test.ts src/lib/desktop-live-web-search-workflow.test.ts src/components/deck/ProductionResearchWebSearchLauncher.integration.test.tsx` passes.
 - `bun run typecheck` passes.
+- Live App Server `web_search` Research turn `019edc32-6efe-7280-a2c1-47fb1d6b0ebf` completed with six live candidates across six domains and zero `validateLiveWebSearchEvidence` blockers.
 
 ## Live App Server Recheck
 
@@ -39,7 +40,12 @@ Using the current `codex app-server --stdio` binary through the same temporary r
 - `src/lib/desktop-live-web-search-workflow.test.ts` now locks this with `uses an App Server supported response schema for live web search`.
 - After removing the unsupported `format` keyword, the same workflow advanced past schema validation and started live turn `019edc05-daa6-7a52-abed-358f8c7912aa` on thread `019edc05-d881-7da3-8dd7-caaa6e33f24a`.
 - That live turn did not emit `turn/completed` before the 360 second local adapter timeout, so no candidate evidence from this recheck is counted as DF-221 completion evidence.
+- A later rerun with a 720 second adapter timeout completed live App Server thread `019edc32-6c92-7371-b34d-e6e7858253db` and turn `019edc32-6efe-7280-a2c1-47fb1d6b0ebf` in 315,804 ms.
+- The workflow patch stored artifact provenance for `p_df221_live_web_search_20260619_live_web_search`, prompt version `research_web_search_desktop@v1`, input artifact `brief_df221_live_web_search`, execution mode `production`, provider kind `codex`, auth mode `codex_session`, fixture `false`, and the durable thread/turn ids.
+- The accepted evidence recorded six live queries, six live candidates, six distinct source domains, and a live latestness benchmark for `oracle_fy2026_official`.
+- Candidate URLs included `investor.oracle.com`, `investor.atmeta.com`, `ir.aboutamazon.com`, `www.microsoft.com`, `abc.xyz`, and `hai.stanford.edu`.
+- `validateLiveWebSearchEvidence` returned no blocking issue codes, and the resulting `ResearchPack.webSearchEvidence` plus `ResearchPack.provenanceLineage` were present in the workflow patch.
 
 ## Remaining Live work
 
-DF-221 is not ready to close. The local evidence gate prevents cached/mock search output from being counted as Live evidence, and the production Research step now has an app-level desktop launcher for a live `web_search` turn. The current App Server schema blocker is fixed, but it still needs a recorded authenticated packaged-app run that completes and produces at least three live source candidates from distinct domains.
+DF-221's worker-level acceptance criteria are satisfied by the completed live App Server `web_search` Research turn and three-domain evidence. Packaged Golden Path research execution, source capture/recapture, claim evidence extraction, Research approval, and final release validation remain tracked by DF-222, DF-223, DF-224, DF-241, and DF-247 rather than this ticket.

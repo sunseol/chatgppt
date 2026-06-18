@@ -52,6 +52,9 @@ describe("live readiness research documentation", () => {
     expect(webSearchEvidence.includes("insufficient_live_domains")).toBe(true);
     expect(webSearchEvidence.includes("cached_latestness_benchmark")).toBe(true);
     expect(webSearchEvidence.includes("ResearchPack.webSearchEvidence")).toBe(true);
+    expect(webSearchEvidence.includes("Status: verified live worker evidence")).toBe(true);
+    expect(webSearchEvidence.includes("019edc32-6efe-7280-a2c1-47fb1d6b0ebf")).toBe(true);
+    expect(webSearchEvidence.includes("six live candidates across six domains")).toBe(true);
   });
 
   test("records the live evidence, claim, and dataset pipeline contract", () => {

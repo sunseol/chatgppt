@@ -6,13 +6,13 @@ This report defines the 5 live benchmark scenarios required by DF-242. It does n
 
 ## 5 live benchmark scenarios
 
-| ID                    | Scenario                           | Required evidence                                            | Current result                                              |
-| --------------------- | ---------------------------------- | ------------------------------------------------------------ | ----------------------------------------------------------- |
-| korean_business       | Korean business proposal, 5 slides | Live text turns, 3 source URLs, 5 live images, export bundle | Blocked - text stages still use mock generation.            |
-| market_research       | Fresh market research deck         | Live search across 3 domains, source capture, evidence map   | Blocked - desktop live web-search launcher exists, but no authenticated packaged-app three-domain run is recorded. |
-| chart_report          | Chart-heavy report                 | Dataset evidence, editable chart overlay, report provenance  | Blocked - source capture and live dataset evidence missing. |
-| image_intro           | Image-centered introduction        | 5 binary live image artifacts with request ids               | Blocked - Generate stage still queues provider `mock`.      |
-| revision_regeneration | Edit and full-slide regeneration   | must_keep, must_change, before/after approval                | Blocked - review UI edits local descriptors.                |
+| ID                    | Scenario                           | Required evidence                                            | Current result                                                                                                                                                             |
+| --------------------- | ---------------------------------- | ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| korean_business       | Korean business proposal, 5 slides | Live text turns, 3 source URLs, 5 live images, export bundle | Blocked - text stages still use mock generation.                                                                                                                           |
+| market_research       | Fresh market research deck         | Live search across 3 domains, source capture, evidence map   | Blocked - DF-221 worker live web-search now has a completed six-domain App Server turn, but benchmark output still lacks packaged source capture and evidence-map bundles. |
+| chart_report          | Chart-heavy report                 | Dataset evidence, editable chart overlay, report provenance  | Blocked - source capture and live dataset evidence missing.                                                                                                                |
+| image_intro           | Image-centered introduction        | 5 binary live image artifacts with request ids               | Blocked - Generate stage still queues provider `mock`.                                                                                                                     |
+| revision_regeneration | Edit and full-slide regeneration   | must_keep, must_change, before/after approval                | Blocked - review UI edits local descriptors.                                                                                                                               |
 
 ## Failure taxonomy
 
