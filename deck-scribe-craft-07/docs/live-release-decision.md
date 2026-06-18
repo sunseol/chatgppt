@@ -21,12 +21,12 @@ The current worktree has stronger Live-readiness contracts than the previous moc
 
 ## Latest local verification
 
-- `bun run verify` passes: typecheck, 610 tests, and production build.
+- `bun run verify` passes: typecheck, 619 tests, and production build.
 - `bun run lint` exits 0 with six pre-existing React Fast Refresh warnings in shared UI files.
 - `bun run package:dry-run` creates `dist/deckforge-macos-dry-run.tgz`.
-- Dry-run archive SHA-256: `1746e13e33cba8c87d2a8ddcb7bb1e0a0898bc43e3cf65787bdab2282401c161`.
+- Dry-run archive SHA-256: `39274abf4bf0a164fd837ddaba8ea7fe2cb063550e523328c324f6e62eaa5adb`.
 - Current unsigned DMG SHA-256: `dce2ba0c8a3b26a21fed1f4692e635e7d0feb39624eb96ba6b7bf87f41879a1f`.
-- Package content scan finds no hits for mock provider ids, mock provider labels, mock stage function names, `mock-provider`, `MOCK MODE`, fixture paths, test files, local developer absolute paths, `.omx/`, `.playwright-mcp/`, or concrete secret values in `dist/client`, `dist/server`, or the extracted dry-run app bundle. The broader mock/fixture/research approval/secret matches are expected production guard-code literals, production status copy, and secret-redaction regex definitions: `mock_lineage_contamination`, `fixture_lineage_contamination`, `pending_reinforcement_request`, `summary_without_original`, `missing_provenance`, and `API_KEY_PATTERN`.
+- Package content scan finds no hits for mock provider ids, mock provider labels, mock stage function names, `mock-provider`, `MOCK MODE`, fixture paths, test files, local developer absolute paths, `.omx/`, `.playwright-mcp/`, bundled `auth.json` or `.codex` payload files, or OpenAI/Codex secret-like values in `dist/client`, `dist/server`, or the extracted dry-run app bundle. The broader mock/fixture/research approval/secret matches are expected production guard-code literals, production status copy, secret-redaction regex definitions, sensitive-path guards, and Tailwind/class-merge CSS utility identifiers: `mock_lineage_contamination`, `fixture_lineage_contamination`, `pending_reinforcement_request`, `summary_without_original`, `missing_provenance`, `API_KEY_PATTERN`, `SECRET_ASSIGNMENT_PATTERN`, `.codex/auth.json`, and `sk-image-linear-from-pos`.
 
 ## Known limits
 

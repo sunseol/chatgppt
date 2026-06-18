@@ -7,7 +7,7 @@ Scope: DF-245 internal production package and clean macOS account validation.
 ## Package inputs
 
 - Internal unsigned archive: `dist/deckforge-macos-dry-run.tgz`.
-- Internal archive SHA-256: `1746e13e33cba8c87d2a8ddcb7bb1e0a0898bc43e3cf65787bdab2282401c161`.
+- Internal archive SHA-256: `39274abf4bf0a164fd837ddaba8ea7fe2cb063550e523328c324f6e62eaa5adb`.
 - Unsigned Tauri DMG: `release-artifacts/DeckForge_0.1.0_aarch64.dmg`.
 - DMG SHA-256: `dce2ba0c8a3b26a21fed1f4692e635e7d0feb39624eb96ba6b7bf87f41879a1f`.
 
@@ -32,9 +32,9 @@ Before sharing any production candidate, scan the extracted app and DMG staging 
 
 Any hit in production resources blocks release unless it is part of documentation that clearly labels the build as internal only.
 
-Latest local dry-run package scan on 2026-06-19 for PR branch `jacobex/live-issue-contracts` found no hits for mock provider ids, mock provider labels, mock stage function names, fixture paths, test files, concrete secret values, local absolute workspace paths, `.omx/`, or `.playwright-mcp/` paths in `dist/client`, `dist/server`, or `dist/deckforge-macos-dry-run/DeckForge.app`. The regenerated archive contains 17 app files, is 272 KB compressed, and the extracted dry-run app bundle is 1.0 MB.
+Latest local dry-run package scan on 2026-06-19 for PR branch `jacobex/live-issue-contracts` found no hits for mock provider ids, mock provider labels, mock stage function names, fixture paths, test files, OpenAI/Codex secret-like values, bundled `auth.json` or `.codex` payload files, local absolute workspace paths, `.omx/`, or `.playwright-mcp/` paths in `dist/client`, `dist/server`, or `dist/deckforge-macos-dry-run/DeckForge.app`. The regenerated archive SHA-256 is `39274abf4bf0a164fd837ddaba8ea7fe2cb063550e523328c324f6e62eaa5adb`; it contains 17 app files, is 279,124 bytes compressed, and the extracted dry-run app bundle is 1,028 KiB.
 
-The broader scan does find expected guard-code literals and status copy: `mock_lineage_contamination`, `fixture_lineage_contamination`, `pending_reinforcement_request`, `summary_without_original`, `missing_provenance`, production messages that say mock stages are not run in production, and secret-redaction regex definitions such as `API_KEY_PATTERN`, `SECRET_ASSIGNMENT_PATTERN`, and `Bearer` token redaction expressions. Those strings are release/research approval gate rejection reasons or redaction guards, not bundled mock resources or actual secrets.
+The broader scan does find expected guard-code literals and status copy: `mock_lineage_contamination`, `fixture_lineage_contamination`, `pending_reinforcement_request`, `summary_without_original`, `missing_provenance`, production messages that say mock stages are not run in production, and secret-redaction regex definitions such as `API_KEY_PATTERN`, `SECRET_ASSIGNMENT_PATTERN`, `.codex/auth.json`, and `Bearer` token redaction expressions. Broad `sk-*` scans also match Tailwind/class-merge names such as `sk-image-linear-from-pos`. Those strings are release/research approval gate rejection reasons, redaction guards, sensitive-path guards, or CSS utility identifiers, not bundled mock resources or actual secrets.
 
 ## Local evidence contract
 
