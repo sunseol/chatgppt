@@ -7,7 +7,7 @@ Scope: DF-245 internal production package and clean macOS account validation.
 ## Package inputs
 
 - Internal unsigned archive: `dist/deckforge-macos-dry-run.tgz`.
-- Internal archive SHA-256: `f8376b9c523dd8663300cd94dbd905917959fa7841fa12ae010ab1235adca8cb`.
+- Internal archive SHA-256: `1746e13e33cba8c87d2a8ddcb7bb1e0a0898bc43e3cf65787bdab2282401c161`.
 - Unsigned Tauri DMG: `release-artifacts/DeckForge_0.1.0_aarch64.dmg`.
 - DMG SHA-256: `dce2ba0c8a3b26a21fed1f4692e635e7d0feb39624eb96ba6b7bf87f41879a1f`.
 
