@@ -1,5 +1,6 @@
 import { Layers, Maximize2 } from "lucide-react";
 import { EditorCanvasPanel } from "@/components/deck/EditorCanvasPanel";
+import { ConversionLayerPreview, SlideLayerThumbnail } from "@/components/deck/EditorVisualPreview";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,8 +14,9 @@ import type { EditorCanvasRenderModel } from "@/lib/editor-canvas-model";
 
 export function EditorConversionPanel() {
   return (
-    <div className="grid min-h-[420px] place-items-center border border-border bg-paper p-8 text-center">
-      <div>
+    <div className="grid min-h-[420px] place-items-center border border-border bg-paper p-8">
+      <div className="flex w-full max-w-3xl flex-col items-center text-center">
+        <ConversionLayerPreview />
         <Layers className="mx-auto h-8 w-8 animate-pulse text-accent" />
         <h2 className="mt-4 font-serif text-2xl">편집 가능한 레이어로 준비 중</h2>
         <p className="mt-2 text-sm text-muted-foreground">
@@ -44,12 +46,13 @@ export function SlideList({
           <button
             type="button"
             onClick={() => onSelect(model.slideNumber)}
-            className={`w-full border px-3 py-2 text-left text-xs ${
+            className={`flex w-full items-center gap-3 border px-3 py-2 text-left text-xs ${
               selected === model.slideNumber
                 ? "border-foreground bg-paper"
                 : "border-transparent hover:bg-paper"
             }`}
           >
+            <SlideLayerThumbnail model={model} selected={selected === model.slideNumber} />
             <span className="font-mono text-muted-foreground">
               #{String(model.slideNumber).padStart(2, "0")}
             </span>

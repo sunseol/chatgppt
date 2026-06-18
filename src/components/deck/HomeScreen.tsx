@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { HomeProjectList } from "@/components/deck/HomeProjectList";
 import { NewProjectForm } from "@/components/deck/NewProjectForm";
+import { WorkflowMiniMap } from "@/components/deck/ProjectVisualPreview";
 import { useProjectList } from "@/lib/deck-store";
 import { stageToStep } from "@/lib/deck-types";
 
@@ -23,6 +24,8 @@ export function HomeScreen() {
   const [createOpen, setCreateOpen] = useState(false);
   const [toolDialog, setToolDialog] = useState<ToolDialog | null>(null);
   const [hydrated, setHydrated] = useState(false);
+  const activeProject = projects[0];
+  const activeStage = hydrated ? (activeProject?.stage ?? "PROJECT_CREATED") : "PROJECT_CREATED";
 
   useEffect(() => {
     setHydrated(true);
@@ -105,6 +108,9 @@ export function HomeScreen() {
         <aside className="border-l border-border bg-paper p-5">
           <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
             현재 작업 기준
+          </div>
+          <div className="mt-4">
+            <WorkflowMiniMap activeStep={activeStage} />
           </div>
           <div className="mt-4 space-y-3 text-sm">
             <SideNote title="단계별 확인" body="각 단계의 결과를 보고 다음 단계로 넘어갑니다." />

@@ -1,3 +1,4 @@
+import { BarChart3, FileText } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { Claim, Source } from "@/lib/deck-types";
 
@@ -13,30 +14,81 @@ export function SourceReviewList({
       <h2 className="mb-4 font-serif text-xl">출처 미리보기 ({sources.length})</h2>
       <ul className="space-y-3">
         {sources.map((source) => (
-          <li key={source.id} className="border border-border bg-paper p-4">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <div className="text-sm font-medium">{source.title}</div>
-                <div className="mt-1 text-xs text-muted-foreground">
-                  {source.publisher} · {source.year} · {source.sourceType}
+          <li
+            key={source.id}
+            className="grid gap-4 border border-border bg-paper p-4 lg:grid-cols-[156px_1fr]"
+          >
+            <SourceDocumentPreview source={source} claims={claims} />
+            <div>
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <div className="text-sm font-medium">{source.title}</div>
+                  <div className="mt-1 text-xs text-muted-foreground">
+                    {source.publisher} · {source.year} · {source.sourceType}
+                  </div>
+                  <div className="mt-2 font-mono text-[11px] text-muted-foreground">
+                    {source.id}
+                  </div>
                 </div>
-                <div className="mt-2 font-mono text-[11px] text-muted-foreground">{source.id}</div>
+                <div className="flex flex-col items-end gap-2">
+                  <Badge
+                    variant={source.grade === "A" ? "default" : "secondary"}
+                    className={source.grade === "A" ? "bg-foreground text-background" : ""}
+                  >
+                    등급 {source.grade}
+                  </Badge>
+                  <Badge variant="outline">{sourcePolicyLabel(source.usePolicy)}</Badge>
+                </div>
               </div>
-              <div className="flex flex-col items-end gap-2">
-                <Badge
-                  variant={source.grade === "A" ? "default" : "secondary"}
-                  className={source.grade === "A" ? "bg-foreground text-background" : ""}
-                >
-                  등급 {source.grade}
-                </Badge>
-                <Badge variant="outline">{sourcePolicyLabel(source.usePolicy)}</Badge>
-              </div>
+              <SourceUsagePreview source={source} claims={claims} />
             </div>
-            <SourceUsagePreview source={source} claims={claims} />
           </li>
         ))}
       </ul>
     </section>
+  );
+}
+
+function SourceDocumentPreview({
+  source,
+  claims,
+}: {
+  readonly source: Source;
+  readonly claims: readonly Claim[];
+}) {
+  const linkedClaims = claims.filter((claim) => claim.sourceIds.includes(source.id));
+  const bars = linkedClaims.length > 0 ? linkedClaims.slice(0, 4) : [undefined, undefined];
+  return (
+    <div className="min-h-[132px] border border-border bg-background p-3">
+      <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+        <span className="flex items-center gap-1">
+          <FileText className="h-3 w-3" />
+          {source.sourceType}
+        </span>
+        <span>{source.grade}</span>
+      </div>
+      <div className="mt-3 space-y-1.5">
+        <div className="h-1.5 w-4/5 bg-foreground/25" />
+        <div className="h-1.5 w-full bg-foreground/15" />
+        <div className="h-1.5 w-2/3 bg-foreground/15" />
+      </div>
+      <div className="mt-4 flex h-11 items-end gap-1 border-l border-b border-border pl-2">
+        {bars.map((claim, index) => (
+          <div
+            key={claim?.id ?? index}
+            className={claim?.hasNumber ? "w-5 bg-accent" : "w-5 bg-foreground/25"}
+            style={{ height: `${42 + index * 12}%` }}
+          />
+        ))}
+      </div>
+      <div className="mt-3 flex items-center justify-between text-[10px] text-muted-foreground">
+        <span className="flex items-center gap-1">
+          <BarChart3 className="h-3 w-3" />
+          연결 주장
+        </span>
+        <span>{linkedClaims.length}개</span>
+      </div>
+    </div>
   );
 }
 

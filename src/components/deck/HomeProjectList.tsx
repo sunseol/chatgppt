@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Plus, Trash2 } from "lucide-react";
 import { LocalProjectDataControls } from "@/components/deck/LocalProjectDataControls";
+import { ProjectDeckThumbnail } from "@/components/deck/ProjectVisualPreview";
 import { Button } from "@/components/ui/button";
 import { deleteProject } from "@/lib/deck-store";
 import { buildLocalProjectFolderExport } from "@/lib/local-data-control";
@@ -72,7 +73,10 @@ function ProjectRow({
   const label = STEPS.find((item) => item.key === step)?.label ?? step;
   const needsReview = Object.keys(project.invalidated).length;
   return (
-    <li className="grid grid-cols-[minmax(0,1fr)_120px_120px_52px] items-center gap-4 px-5 py-4">
+    <li className="grid grid-cols-[138px_minmax(0,1fr)_120px_120px_52px] items-center gap-4 px-5 py-4">
+      <Link to="/project/$projectId/$step" params={{ projectId: project.id, step }}>
+        <ProjectDeckThumbnail project={project} compact />
+      </Link>
       <div className="min-w-0">
         <Link
           to="/project/$projectId/$step"

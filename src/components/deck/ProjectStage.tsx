@@ -1,5 +1,6 @@
 import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ProjectDeckThumbnail } from "@/components/deck/ProjectVisualPreview";
 import { StageHeader, StageScroll, StageShell } from "@/components/deck/stage-shared";
 import { updateProject } from "@/lib/deck-store";
 import type { DeckProject } from "@/lib/deck-types";
@@ -46,29 +47,24 @@ function ProjectPreview({ project }: { readonly project: DeckProject }) {
   return (
     <section className="border border-border bg-paper p-4">
       <div className="text-[11px] uppercase tracking-wider text-muted-foreground">미리보기</div>
-      <div className="mt-3 overflow-hidden border border-border bg-background">
-        <div className="aspect-video p-5">
-          <div className="flex h-full flex-col justify-between">
-            <div>
-              <div className="h-1 w-12 bg-accent" />
-              <h2 className="mt-5 line-clamp-2 font-serif text-2xl leading-tight">
-                {project.name}
-              </h2>
-              <p className="mt-3 line-clamp-4 text-sm text-muted-foreground">
-                {project.initialPrompt}
-              </p>
-            </div>
-            <div className="flex items-center justify-between border-t border-border pt-3 text-xs text-muted-foreground">
-              <span>{project.aspectRatio}</span>
-              <span>{project.slideCount}장</span>
-            </div>
-          </div>
-        </div>
+      <div className="mt-3">
+        <ProjectDeckThumbnail project={project} />
       </div>
-      <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
-        인터뷰를 시작하면 이 요청을 바탕으로 목적, 청중, 포함할 내용을 정리합니다.
-      </p>
+      <div className="mt-3 grid grid-cols-3 gap-2 text-xs">
+        <PreviewStat label="비율" value={project.aspectRatio} />
+        <PreviewStat label="언어" value={project.language.toUpperCase()} />
+        <PreviewStat label="분량" value={`${project.slideCount}장`} />
+      </div>
     </section>
+  );
+}
+
+function PreviewStat({ label, value }: { readonly label: string; readonly value: string }) {
+  return (
+    <div className="border border-border bg-background px-3 py-2">
+      <div className="text-[10px] uppercase text-muted-foreground">{label}</div>
+      <div className="mt-1 font-medium">{value}</div>
+    </div>
   );
 }
 

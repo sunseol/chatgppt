@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import {
   DESIGN_APPROVAL_CTA_LABEL,
+  DesignSystemComponentPreviewPanel,
   DesignSystemColorTokensPanel,
   DesignSystemEditorPanel,
   DesignSystemJsonPanel,
@@ -105,6 +106,7 @@ export function DesignStage({ project }: { readonly project: DeckProject }) {
           <div className="grid gap-8 lg:grid-cols-2">
             <div className="space-y-6">
               <DesignSystemPreviewPanel design={ds} previewTitle={project.brief?.goal ?? "Title"} />
+              <DesignSystemComponentPreviewPanel design={ds} />
               <DesignSystemTypographyPanel design={ds} />
               <DesignSystemColorTokensPanel design={ds} />
             </div>

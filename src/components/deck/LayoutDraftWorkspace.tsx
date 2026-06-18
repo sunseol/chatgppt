@@ -50,6 +50,7 @@ export function LayoutDraftWorkspace({
 }) {
   const largeSlideData = layout.slides.find((slide) => slide.number === largeSlide);
   const largeSpec = project.plan?.slides.find((slide) => slide.number === largeSlide);
+  const selectedSlideData = layout.slides.find((slide) => slide.number === selectedSlide);
   return (
     <>
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
@@ -106,8 +107,12 @@ export function LayoutDraftWorkspace({
         </div>
         <LayoutRevisionPanel
           selectedSlide={selectedSlide}
+          selectedSlideData={selectedSlideData}
+          canvas={project.design?.canvas}
+          selectedLayerId={selectedLayerId}
           revisionDraft={revisionDraft}
           revisionRequests={revisionRequests}
+          onSelectedLayer={onSelectedLayer}
           onRevisionDraft={onRevisionDraft}
           onApplyRevision={onApplyRevision}
         />
@@ -141,21 +146,42 @@ export function LayoutDraftWorkspace({
 
 function LayoutRevisionPanel({
   selectedSlide,
+  selectedSlideData,
+  canvas,
+  selectedLayerId,
   revisionDraft,
   revisionRequests,
+  onSelectedLayer,
   onRevisionDraft,
   onApplyRevision,
 }: {
   readonly selectedSlide: number;
+  readonly selectedSlideData: LayoutPrototype["slides"][number] | undefined;
+  readonly canvas: NonNullable<DeckProject["design"]>["canvas"] | undefined;
+  readonly selectedLayerId: string | null;
   readonly revisionDraft: string;
   readonly revisionRequests: Record<number, string>;
+  readonly onSelectedLayer: (layerId: string) => void;
   readonly onRevisionDraft: (value: string) => void;
   readonly onApplyRevision: () => void;
 }) {
+  const selectedLayer = selectedSlideData?.domLayers.find((layer) => layer.id === selectedLayerId);
   return (
     <aside className="border border-border bg-paper p-4">
       <div className="text-[11px] uppercase tracking-wider text-muted-foreground">수정 요청</div>
       <p className="mt-2 text-sm font-medium">{selectedSlide}번 슬라이드</p>
+      {selectedSlideData && canvas ? (
+        <LayerSelectionMap
+          slide={selectedSlideData}
+          canvas={canvas}
+          selectedLayerId={selectedLayerId}
+          onSelectedLayer={onSelectedLayer}
+        />
+      ) : null}
+      <div className="mt-3 border border-border bg-background px-3 py-2 text-xs">
+        <span className="text-muted-foreground">선택 레이어</span>
+        <span className="ml-2 font-medium">{selectedLayer?.role ?? "전체 초안"}</span>
+      </div>
       <Textarea
         value={revisionDraft}
         onChange={(event) => onRevisionDraft(event.target.value)}
@@ -180,5 +206,45 @@ function LayoutRevisionPanel({
         ))}
       </ul>
     </aside>
+  );
+}
+
+function LayerSelectionMap({
+  slide,
+  canvas,
+  selectedLayerId,
+  onSelectedLayer,
+}: {
+  readonly slide: LayoutPrototype["slides"][number];
+  readonly canvas: NonNullable<DeckProject["design"]>["canvas"];
+  readonly selectedLayerId: string | null;
+  readonly onSelectedLayer: (layerId: string) => void;
+}) {
+  return (
+    <div className="mt-3 aspect-video overflow-hidden border border-border bg-background">
+      <div className="relative h-full w-full">
+        {slide.domLayers.map((layer) => (
+          <button
+            key={layer.id}
+            type="button"
+            title={layer.role}
+            onClick={() => onSelectedLayer(layer.id)}
+            className={`absolute border text-[9px] ${
+              selectedLayerId === layer.id
+                ? "border-accent bg-accent/25"
+                : "border-foreground/20 bg-paper/80"
+            }`}
+            style={{
+              left: `${(layer.bounds.x / canvas.w) * 100}%`,
+              top: `${(layer.bounds.y / canvas.h) * 100}%`,
+              width: `${(layer.bounds.w / canvas.w) * 100}%`,
+              height: `${(layer.bounds.h / canvas.h) * 100}%`,
+            }}
+          >
+            <span className="sr-only">{layer.role}</span>
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }
