@@ -1,4 +1,5 @@
 import { outputBundleIssues } from "./live-benchmark-output-bundle";
+import { packageHashIssues } from "./live-benchmark-package-hash";
 
 export const LIVE_BENCHMARK_IDS = [
   "korean_business",
@@ -53,6 +54,7 @@ export type LiveBenchmarkEvidenceBundle = {
 export type LiveBenchmarkEvidenceIssueCode =
   | "missing_benchmark_scenario"
   | "missing_benchmark_package_hash"
+  | "invalid_benchmark_package_hash"
   | "missing_output_bundle"
   | "missing_output_bundle_manifest"
   | "duplicate_output_bundle"
@@ -88,7 +90,7 @@ export function evaluateLiveBenchmarkEvidence(
   const passedLiveCount = countPassedLiveBenchmarks(bundle.runs);
   const issues = [
     ...scenarioIssues(bundle.runs),
-    ...packageHashIssues(bundle),
+    ...packageHashIssues(bundle.packageArchiveSha256),
     ...outputBundleIssues(bundle.runs, bundle.packageArchiveSha256),
     ...mockScoreIssues(bundle.runs),
     ...failureDomainIssues(bundle.runs),
@@ -121,20 +123,6 @@ function countPassedLiveBenchmarks(runs: readonly LiveBenchmarkRun[]): number {
   return runs.filter(
     (run) => run.status === "passed" && run.source === "live" && run.goldenPathCompleted,
   ).length;
-}
-
-function packageHashIssues(
-  bundle: LiveBenchmarkEvidenceBundle,
-): readonly LiveBenchmarkEvidenceIssue[] {
-  return bundle.packageArchiveSha256.trim().length > 0
-    ? []
-    : [
-        issue(
-          "missing_benchmark_package_hash",
-          "Live benchmark evidence must name the package archive SHA-256 it validates.",
-          ["missing"],
-        ),
-      ];
 }
 
 function scenarioIssues(runs: readonly LiveBenchmarkRun[]): readonly LiveBenchmarkEvidenceIssue[] {

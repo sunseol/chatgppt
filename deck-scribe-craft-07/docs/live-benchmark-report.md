@@ -34,7 +34,7 @@ Release requirement: at least 4 of 5 live benchmarks must pass without counting 
 `src/lib/live-benchmark-evidence.ts` validates the DF-242 evidence bundle before benchmark results can count toward Live release. The bundle must include:
 
 - exactly the five required scenarios listed above
-- the package archive SHA-256 for the release candidate under benchmark
+- the 64-character package archive SHA-256 for the release candidate under benchmark
 - output bundle 5 sets, one distinct bundle per benchmark
 - output bundle manifests matching their benchmark id, bundle path, and package archive SHA-256
 - passed benchmark bundle manifests with a scenario report, final export artifact id, `live_e2e_report.md`, at least 10 step screenshots, at least 3 source artifacts, and at least 5 image artifacts
@@ -47,6 +47,7 @@ Blocking issue codes:
 
 - `missing_benchmark_scenario`
 - `missing_benchmark_package_hash`
+- `invalid_benchmark_package_hash`
 - `missing_output_bundle`
 - `missing_output_bundle_manifest`
 - `duplicate_output_bundle`

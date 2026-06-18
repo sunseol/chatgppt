@@ -165,6 +165,28 @@ describe("live benchmark evidence", () => {
     if (result.kind !== "blocked") return;
     expect(result.issues.map((issue) => issue.code)).toEqual(["output_bundle_package_mismatch"]);
   });
+
+  test("blocks benchmark package hashes that are not SHA-256 digests", () => {
+    // Given
+    const invalidPackageSha = "not-a-sha";
+    const bundle = completeBundle({
+      packageArchiveSha256: invalidPackageSha,
+      runs: LIVE_BENCHMARK_IDS.map((id) =>
+        withPackageArchiveSha(
+          run(id, id === "revision_regeneration" ? "failed" : "passed"),
+          invalidPackageSha,
+        ),
+      ),
+    });
+
+    // When
+    const result = evaluateLiveBenchmarkEvidence(bundle);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual(["invalid_benchmark_package_hash"]);
+  });
 });
 
 function completeBundle(
@@ -217,5 +239,15 @@ function withOutputBundlePath(run: LiveBenchmarkRun, path: string): LiveBenchmar
     ...run,
     outputBundlePath: path,
     outputBundle: { ...run.outputBundle, path },
+  };
+}
+
+function withPackageArchiveSha(
+  run: LiveBenchmarkRun,
+  packageArchiveSha256: string,
+): LiveBenchmarkRun {
+  return {
+    ...run,
+    outputBundle: { ...run.outputBundle, packageArchiveSha256 },
   };
 }
