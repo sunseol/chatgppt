@@ -87,6 +87,10 @@ describe("live readiness research documentation", () => {
     expect(researchApproval.includes("ResearchPack.provenanceLineage")).toBe(true);
     expect(researchApproval.includes("ResearchPack.sources[].capture")).toBe(true);
     expect(researchApproval.includes("empty gate inputs")).toBe(true);
+    expect(researchApproval.includes("approved research artifact record")).toBe(true);
+    expect(
+      researchApproval.includes("projects/{projectId}/research/research.v{version}.json"),
+    ).toBe(true);
   });
 });
 

@@ -44,11 +44,22 @@ export function ProductionResearchReview({ project }: { readonly project: DeckPr
     setReinforcementRequest("");
   };
   const approveResearch = () => {
-    const result = createLiveResearchApprovalPatch({ pack: research });
+    const result = createLiveResearchApprovalPatch({
+      pack: research,
+      projectId: project.id,
+      version: nextResearchApprovalVersion(project),
+      approvedAt: Date.now(),
+    });
     if (result.kind === "blocked") return;
     setResearch(result.patch.research);
     updateProject(project.id, { research: result.patch.research });
-    approveStage(project.id, "research", result.patch.stage, result.approvedHash);
+    approveStage(
+      project.id,
+      "research",
+      result.patch.stage,
+      result.approvedHash,
+      result.approvalArtifact.record,
+    );
   };
   const gate = evaluateLiveResearchApprovalGate({
     pack: research,
@@ -95,6 +106,10 @@ export function ProductionResearchReview({ project }: { readonly project: DeckPr
       </div>
     </section>
   );
+}
+
+function nextResearchApprovalVersion(project: DeckProject): number {
+  return project.approvalLog.filter((entry) => entry.stage === "research").length + 1;
 }
 
 function ProductionResearchIssues({

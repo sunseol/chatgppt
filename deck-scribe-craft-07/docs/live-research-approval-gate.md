@@ -1,6 +1,6 @@
 # Live Research Approval Gate
 
-Date: 2026-06-18
+Date: 2026-06-19
 
 Scope: DF-224 Live Research Review and Approval Gate.
 
@@ -19,7 +19,7 @@ Status: partial local contract
 - Complete evidence plus complete production Codex provenance returns `kind: "ready"`.
 - `ResearchPack.provenanceLineage` persists provider lineage through Research Pack parsing and approved Research Pack artifacts.
 - `createLiveResearchDeckPlanInput` forwards only `researchPackId` and `approvedResearchPackHash` to the downstream live deck-plan input.
-- `src/lib/live-research-approval-action.ts` creates the production approval patch only after the live gate is ready, writes `ResearchPack.approvedHash`, and returns the DF-214 deck-plan input containing `approvedResearchPackHash`.
+- `src/lib/live-research-approval-action.ts` creates the production approval patch only after the live gate is ready, writes `ResearchPack.approvedHash`, returns the DF-214 deck-plan input containing `approvedResearchPackHash`, and creates an approved research artifact record at `projects/{projectId}/research/research.v{version}.json`.
 
 ## Review UI contract
 
@@ -38,6 +38,8 @@ Approval depends on complete `ResearchPack.sources[].capture`, so a source must 
 
 `src/components/deck/ProductionResearchReview.tsx` now renders a persisted Research Pack on the production research step when one exists. It passes persisted `ResearchPack.liveEvidenceRefs` and `ResearchPack.provenanceLineage` into `evaluateLiveResearchApprovalGate` instead of empty gate inputs, shows `SourceReviewList` with preserved `ResearchPack.sources[].capture` metadata and saved evidence references, exposes source exclusion controls and a production reinforcement request control, renders a `Live research approval gate` blocker summary, and enables `Live Research Pack 승인` only when evidence/provenance is ready.
 
+When the ready-state approval action runs, it records the approved research artifact record in the stage approval log instead of relying on a generic inferred research artifact id. That makes the DF-214 handoff auditable through the same artifact id/version/path contract as other approved stage outputs.
+
 ## Verification
 
 - `bun test src/lib/live-research-approval-gate.test.ts src/lib/live-research-source-capture-gate.test.ts` passes: 7 tests.
@@ -52,4 +54,4 @@ Approval depends on complete `ResearchPack.sources[].capture`, so a source must 
 
 ## Remaining Live work
 
-DF-224 is not ready to close. The review UI and approval gate contracts exist locally, and production can now display a persisted Research Pack, source exclusion/reinforcement controls, approval blockers, saved source capture metadata, saved evidence references, saved provider provenance, and a ready-state approval action that writes `approvedResearchPackHash` for DF-214. A non-simulated packaged-app live research approval manual QA run is still required.
+DF-224 is not ready to close. The review UI and approval gate contracts exist locally, and production can now display a persisted Research Pack, source exclusion/reinforcement controls, approval blockers, saved source capture metadata, saved evidence references, saved provider provenance, and a ready-state approval action that writes `approvedResearchPackHash` plus an approved research artifact record for DF-214. A non-simulated packaged-app live research approval manual QA run is still required.

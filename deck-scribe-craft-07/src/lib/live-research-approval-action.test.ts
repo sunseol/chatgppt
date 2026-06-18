@@ -8,13 +8,26 @@ describe("live research approval action", () => {
     const pack = readyResearchPack();
 
     // When
-    const result = createLiveResearchApprovalPatch({ pack });
+    const result = createLiveResearchApprovalPatch({
+      pack,
+      projectId: "project_live_research",
+      version: 1,
+      approvedAt: 1_789_300_020,
+    });
 
     // Then
     expect(result.kind).toBe("ready");
     if (result.kind !== "ready") throw new Error("Expected live research approval to be ready.");
     expect(result.patch.stage).toBe("PLANNING");
     expect(result.patch.research.approvedHash).toBe(result.approvedHash);
+    expect(result.approvalArtifact.record.id).toBe("project_live_research_research_v1");
+    expect(result.approvalArtifact.record.projectId).toBe("project_live_research");
+    expect(result.approvalArtifact.record.type).toBe("research");
+    expect(result.approvalArtifact.record.version).toBe(1);
+    expect(result.approvalArtifact.record.path).toBe(
+      "projects/project_live_research/research/research.v1.json",
+    );
+    expect(result.approvalArtifact.record.createdAt).toBe(1_789_300_020);
     expect(result.deckPlanInput).toEqual({
       researchPackId: "research_approved",
       approvedResearchPackHash: result.approvedHash,
@@ -26,7 +39,12 @@ describe("live research approval action", () => {
     const pack = { ...readyResearchPack(), liveEvidenceRefs: [] };
 
     // When
-    const result = createLiveResearchApprovalPatch({ pack });
+    const result = createLiveResearchApprovalPatch({
+      pack,
+      projectId: "project_live_research",
+      version: 1,
+      approvedAt: 1_789_300_020,
+    });
 
     // Then
     expect(result.kind).toBe("blocked");
