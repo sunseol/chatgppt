@@ -11,6 +11,7 @@ import type {
   ProviderJobManagerOptions,
   ProviderJobProgress,
   ProviderJobRunContext,
+  ProviderImageBillingDisclosure,
   ProviderUsageSummary,
 } from "./provider-job-types";
 
@@ -28,6 +29,7 @@ export type {
   ProviderJobProgress,
   ProviderJobRunContext,
   ProviderJobStatus,
+  ProviderImageBillingDisclosure,
   ProviderUsageSummary,
 } from "./provider-job-types";
 

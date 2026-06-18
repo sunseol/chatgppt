@@ -92,4 +92,33 @@ describe("full audit log", () => {
     expect(report.includes("cost estimate $0.0400")).toBe(true);
     expect(report.includes("cost $0.0400")).toBe(false);
   });
+
+  test("preserves image API key billing disclosure in report usage", () => {
+    const event = createAuditLogEvent({
+      eventId: "evt_provider_image_billing",
+      eventType: "provider.job.summary",
+      traceId: "trace_provider_image_billing",
+      timestamp: 2_600,
+      stage: "generate",
+      usageSummary: {
+        imageCount: 5,
+        estimatedCostUsd: 0.18,
+        imageBillingDisclosure: {
+          apiKeyRequired: true,
+          userConfirmed: true,
+          label: "API key billing confirmed",
+        },
+      },
+    });
+
+    const report = formatAuditLogForReport([event]);
+
+    expect(event.usageSummary?.imageBillingDisclosure).toEqual({
+      apiKeyRequired: true,
+      userConfirmed: true,
+      label: "API key billing confirmed",
+    });
+    expect(report.includes("images 5")).toBe(true);
+    expect(report.includes("API key billing confirmed")).toBe(true);
+  });
 });

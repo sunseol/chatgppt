@@ -120,7 +120,13 @@ function usageItems(usageSummary: ProviderUsageSummary | undefined): readonly st
     usageSummary.estimatedCostUsd === undefined
       ? ""
       : `cost estimate $${usageSummary.estimatedCostUsd.toFixed(4)}`,
+    imageBillingDisclosureItem(usageSummary),
   ].filter(isNonEmpty);
+}
+
+function imageBillingDisclosureItem(usageSummary: ProviderUsageSummary): string {
+  const label = usageSummary.imageBillingDisclosure?.label.trim();
+  return label === undefined ? "" : label;
 }
 
 function isNonEmpty(value: string): boolean {

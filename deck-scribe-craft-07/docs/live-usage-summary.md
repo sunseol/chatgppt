@@ -54,9 +54,12 @@ The provider job progress panel now renders DF-244 usage context for any job tha
 - retry count as `retries N`
 - token/image usage items such as `input 25006`, `output 141`, or `images 1`
 - `estimatedCostUsd` only as `cost estimate $...`, never as exact `cost $...`
+- image API key billing disclosure labels such as `API key billing confirmed`
 
-`src/components/deck/ProviderJobProgressPanel.integration.test.tsx` locks the rendered app surface for the live Codex usage probe shape: provider `codex`, duration `7158ms`, `retries 1`, `input 25006`, `output 141`, and `cost estimate $0.0400`.
+`src/components/deck/ProviderJobProgressPanel.integration.test.tsx` locks the rendered app surface for the live Codex usage probe shape: provider `codex`, duration `7158ms`, `retries 1`, `input 25006`, `output 141`, and `cost estimate $0.0400`. It also locks the image usage shape with `images 5`, `cost estimate $0.1800`, and `API key billing confirmed`.
+
+`src/lib/audit-log.ts` preserves the same image billing disclosure label in report usage lines while continuing to redact secret-like text from the displayed label.
 
 ## Remaining Live Evidence
 
-The local contract, one live Codex text usage probe, and app progress-panel usage display are ready, but DF-244 still needs manual QA against the packaged app surface plus real image billing/API-key disclosure evidence.
+The local contract, one live Codex text usage probe, app progress-panel usage display, and report/audit image billing disclosure display are ready, but DF-244 still needs manual QA against the packaged app surface with real provider image billing/API-key disclosure payloads.

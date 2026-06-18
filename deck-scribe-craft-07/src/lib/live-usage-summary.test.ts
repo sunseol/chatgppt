@@ -100,13 +100,16 @@ function completeStages(): readonly LiveUsageStageSummary[] {
       providerKind: "openaiImage",
       durationMs: 1_200,
       retryCount: 1,
-      usage: { imageCount: 5, estimatedCostUsd: 0.18 },
-      costLabel: "estimate",
-      imageBillingDisclosure: {
-        apiKeyRequired: true,
-        userConfirmed: true,
-        label: "API key billing confirmed",
+      usage: {
+        imageCount: 5,
+        estimatedCostUsd: 0.18,
+        imageBillingDisclosure: {
+          apiKeyRequired: true,
+          userConfirmed: true,
+          label: "API key billing confirmed",
+        },
       },
+      costLabel: "estimate",
     }),
   ];
 }

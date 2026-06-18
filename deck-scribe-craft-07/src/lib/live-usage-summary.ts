@@ -1,13 +1,9 @@
-import type { ProviderUsageSummary } from "./provider-job-manager";
+import type { ProviderImageBillingDisclosure, ProviderUsageSummary } from "./provider-job-manager";
 import type { ProviderKind } from "./provider-types";
 
 export type LiveCostLabel = "actual" | "estimate" | "hidden";
 
-export type LiveImageBillingDisclosure = {
-  readonly apiKeyRequired: boolean;
-  readonly userConfirmed: boolean;
-  readonly label: string;
-};
+export type LiveImageBillingDisclosure = ProviderImageBillingDisclosure;
 
 export type LiveUsageStageSummary = {
   readonly stageId: string;
@@ -111,7 +107,7 @@ function costLabelIssues(stage: LiveUsageStageSummary): readonly LiveUsageSummar
 
 function imageBillingIssues(stage: LiveUsageStageSummary): readonly LiveUsageSummaryIssue[] {
   if (!isImageGenerationStage(stage)) return [];
-  const disclosure = stage.imageBillingDisclosure;
+  const disclosure = imageBillingDisclosure(stage);
   return disclosure?.userConfirmed === true && disclosure.label.trim().length > 0
     ? []
     : [
@@ -151,8 +147,14 @@ function costText(stage: LiveUsageStageSummary): string {
 }
 
 function billingText(stage: LiveUsageStageSummary): string {
-  const label = stage.imageBillingDisclosure?.label;
+  const label = imageBillingDisclosure(stage)?.label;
   return label === undefined || label.trim().length === 0 ? "" : ` · ${label}`;
+}
+
+function imageBillingDisclosure(
+  stage: LiveUsageStageSummary,
+): LiveImageBillingDisclosure | undefined {
+  return stage.imageBillingDisclosure ?? stage.usage?.imageBillingDisclosure;
 }
 
 function issue(

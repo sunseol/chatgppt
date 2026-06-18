@@ -7,11 +7,18 @@ export interface ProviderJobProgress {
   readonly message: string;
 }
 
+export interface ProviderImageBillingDisclosure {
+  readonly apiKeyRequired: boolean;
+  readonly userConfirmed: boolean;
+  readonly label: string;
+}
+
 export interface ProviderUsageSummary {
   readonly inputTokens?: number;
   readonly outputTokens?: number;
   readonly imageCount?: number;
   readonly estimatedCostUsd?: number;
+  readonly imageBillingDisclosure?: ProviderImageBillingDisclosure;
 }
 
 export interface ProviderJob<TOutput = unknown> {

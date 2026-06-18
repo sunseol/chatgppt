@@ -1,5 +1,9 @@
 import type { StepKey } from "./deck-types";
-import type { ProviderJob, ProviderUsageSummary } from "./provider-job-manager";
+import type {
+  ProviderImageBillingDisclosure,
+  ProviderJob,
+  ProviderUsageSummary,
+} from "./provider-job-manager";
 import { redactSensitiveText } from "./redaction";
 
 export type AuditEventType =
@@ -127,6 +131,19 @@ function copyUsageSummary(summary: ProviderUsageSummary): ProviderUsageSummary {
     ...(summary.estimatedCostUsd === undefined
       ? {}
       : { estimatedCostUsd: summary.estimatedCostUsd }),
+    ...(summary.imageBillingDisclosure === undefined
+      ? {}
+      : { imageBillingDisclosure: copyImageBillingDisclosure(summary.imageBillingDisclosure) }),
+  };
+}
+
+function copyImageBillingDisclosure(
+  disclosure: ProviderImageBillingDisclosure,
+): ProviderImageBillingDisclosure {
+  return {
+    apiKeyRequired: disclosure.apiKeyRequired,
+    userConfirmed: disclosure.userConfirmed,
+    label: disclosure.label,
   };
 }
 
@@ -138,6 +155,12 @@ function formatUsageSummary(summary: ProviderUsageSummary): string {
     summary.estimatedCostUsd === undefined
       ? ""
       : `cost estimate $${summary.estimatedCostUsd.toFixed(4)}`,
+    imageBillingDisclosureText(summary),
   ].filter((part) => part.length > 0);
   return parts.length === 0 ? "none" : parts.join(" · ");
+}
+
+function imageBillingDisclosureText(summary: ProviderUsageSummary): string {
+  const label = summary.imageBillingDisclosure?.label.trim();
+  return label === undefined ? "" : redactSensitiveText(label);
 }
