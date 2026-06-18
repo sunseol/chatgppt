@@ -7,7 +7,14 @@ import {
   QuestionAnswerPanel,
   RevisionRequest,
 } from "@/components/deck/InterviewPanels";
-import { EmptyAction, InvalidatedBanner, StageHeader } from "@/components/deck/stage-shared";
+import {
+  EmptyAction,
+  InvalidatedBanner,
+  StageHeader,
+  StageScroll,
+  StageShell,
+} from "@/components/deck/stage-shared";
+import { Button } from "@/components/ui/button";
 import { createBriefDraft, createQuestionPlan } from "@/components/deck/interview-stage-model";
 import type { InterviewAnswerMap } from "@/components/deck/interview-stage-model";
 import { approveStage, invalidateDownstream, updateProject } from "@/lib/deck-store";
@@ -21,10 +28,12 @@ export function InterviewStage({ project }: { readonly project: DeckProject }) {
   const [brief, setBrief] = useState<InterviewBrief | undefined>(project.brief);
   const [busy, setBusy] = useState(false);
   const [revisionRequest, setRevisionRequest] = useState("");
+  const [questionsOpen, setQuestionsOpen] = useState(!project.brief);
   const invalidated = !!project.invalidated.interview;
 
   useEffect(() => {
     setBrief(project.brief);
+    setQuestionsOpen(!project.brief);
   }, [project.brief]);
 
   const generate = async () => {
@@ -33,6 +42,7 @@ export function InterviewStage({ project }: { readonly project: DeckProject }) {
     const next = createBriefDraft(project, questionPlan, answers);
     updateProject(project.id, { brief: next, stage: "INTERVIEW_APPROVAL_PENDING" });
     setBrief(next);
+    setQuestionsOpen(false);
     invalidateDownstream(project.id, "interview");
     setBusy(false);
   };
@@ -60,13 +70,17 @@ export function InterviewStage({ project }: { readonly project: DeckProject }) {
   };
 
   return (
-    <div className="flex min-h-full flex-col">
-      <div className="mx-auto w-full max-w-5xl flex-1 px-8 py-12">
+    <StageShell>
+      <StageScroll className="mx-auto max-w-5xl px-8">
         <StageHeader num="01" sub="Interview · Intent Discovery" title="사용자 의도 인터뷰" />
         <InvalidatedBanner on={invalidated && !!brief} />
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
           <section className="space-y-6">
-            <QuestionAnswerPanel plan={questionPlan} answers={answers} onAnswers={setAnswers} />
+            {!brief || questionsOpen ? (
+              <QuestionAnswerPanel plan={questionPlan} answers={answers} onAnswers={setAnswers} />
+            ) : (
+              <CollapsedInterviewInput onOpen={() => setQuestionsOpen(true)} />
+            )}
             {!brief ? (
               <EmptyAction
                 label="질문 답변을 바탕으로 인터뷰 브리프 초안 생성"
@@ -87,14 +101,21 @@ export function InterviewStage({ project }: { readonly project: DeckProject }) {
             />
           </aside>
         </div>
-      </div>
+      </StageScroll>
       <GateBar
         hint={
           brief
             ? "인터뷰 브리프를 검토하고 승인하면 조사 단계가 시작됩니다."
             : "질문에 답하고 인터뷰 초안을 생성해주세요."
         }
-        regenerate={brief ? { label: "다시 생성", onClick: generate } : undefined}
+        regenerate={
+          brief
+            ? {
+                label: questionsOpen ? "다시 생성" : "입력 다시 열기",
+                onClick: questionsOpen ? generate : () => setQuestionsOpen(true),
+              }
+            : undefined
+        }
         approve={
           brief
             ? {
@@ -107,6 +128,22 @@ export function InterviewStage({ project }: { readonly project: DeckProject }) {
             : undefined
         }
       />
-    </div>
+    </StageShell>
+  );
+}
+
+function CollapsedInterviewInput({ onOpen }: { readonly onOpen: () => void }) {
+  return (
+    <section className="flex items-center justify-between gap-4 border border-border bg-paper p-4">
+      <div>
+        <div className="text-sm font-medium">인터뷰 답변이 브리프로 정리되었습니다.</div>
+        <p className="mt-1 text-xs text-muted-foreground">
+          답변을 바꿔 다시 생성할 때만 입력 폼을 열어주세요.
+        </p>
+      </div>
+      <Button variant="outline" size="sm" onClick={onOpen}>
+        입력 다시 열기
+      </Button>
+    </section>
   );
 }

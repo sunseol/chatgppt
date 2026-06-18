@@ -6,9 +6,15 @@ import {
   DatasetReviewList,
   FactCheckReview,
   ReinforcementRequest,
-  SourceReviewList,
 } from "@/components/deck/ResearchPanels";
-import { EmptyAction, InvalidatedBanner, StageHeader } from "@/components/deck/stage-shared";
+import { SourceReviewList } from "@/components/deck/ResearchSourcePreview";
+import {
+  EmptyAction,
+  InvalidatedBanner,
+  StageHeader,
+  StageScroll,
+  StageShell,
+} from "@/components/deck/stage-shared";
 import { approveStage, invalidateDownstream, updateProject } from "@/lib/deck-store";
 import type { DeckProject, FactCheckIssue, ResearchPack } from "@/lib/deck-types";
 import { hash, mockResearch } from "@/lib/mock-ai";
@@ -70,9 +76,9 @@ export function ResearchStage({ project }: { readonly project: DeckProject }) {
   const validation = pack ? validateResearchPack(pack) : undefined;
 
   return (
-    <div className="flex min-h-full flex-col">
-      <div className="mx-auto w-full max-w-6xl flex-1 px-8 py-12">
-        <StageHeader num="02" sub="Research · Sources & Claims" title="조사 자료 검증" />
+    <StageShell>
+      <StageScroll className="mx-auto max-w-6xl px-8">
+        <StageHeader num="02" sub="Research" title="조사 자료 검증" />
         <InvalidatedBanner on={invalidated && !!pack} />
         {!pack ? (
           <EmptyAction
@@ -83,7 +89,7 @@ export function ResearchStage({ project }: { readonly project: DeckProject }) {
         ) : (
           <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_360px]">
             <div className="space-y-8">
-              <SourceReviewList sources={pack.sources} />
+              <SourceReviewList sources={pack.sources} claims={pack.claims} />
               <ClaimReviewList claims={pack.claims} />
               <DatasetReviewList datasets={pack.datasets} charts={pack.charts} />
             </div>
@@ -98,7 +104,7 @@ export function ResearchStage({ project }: { readonly project: DeckProject }) {
             </aside>
           </div>
         )}
-      </div>
+      </StageScroll>
       <GateBar
         hint={
           pack
@@ -116,6 +122,6 @@ export function ResearchStage({ project }: { readonly project: DeckProject }) {
             : undefined
         }
       />
-    </div>
+    </StageShell>
   );
 }

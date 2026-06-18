@@ -1,0 +1,11 @@
+# DeckForge Internal Test Build
+
+This folder contains the unsigned macOS internal test DMG generated from the
+Tauri release build.
+
+- File: `DeckForge_0.1.0_aarch64.dmg`
+- SHA-256: `b4dfb8049936a6f39a5b86289e92a8f1f0a69d9c658d7bba40cb82717941b610`
+- Built on: 2026-06-18
+
+This build is not signed or notarized, so macOS Gatekeeper may warn during
+installation.

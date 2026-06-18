@@ -24,14 +24,14 @@ describe("SourceMapReviewPanel", () => {
       />,
     );
 
-    expect(markup.includes("슬라이드별 근거 맵")).toBe(true);
+    expect(markup.includes("슬라이드별 자료 연결")).toBe(true);
     expect(markup.includes("slide_01")).toBe(true);
     expect(markup.includes("claim_001")).toBe(true);
     expect(markup.includes("src_001")).toBe(true);
     expect(markup.includes("dataset_001")).toBe(true);
     expect(markup.includes("claim_bad")).toBe(true);
-    expect(markup.includes("이미지 생성 차단")).toBe(true);
-    expect(markup.includes("Source Map 보정 요청")).toBe(true);
+    expect(markup.includes("다음 단계로 가기 전에 확인 필요")).toBe(true);
+    expect(markup.includes("자료 연결 수정 요청")).toBe(true);
   });
 });
 

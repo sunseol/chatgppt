@@ -14,7 +14,7 @@ export function PlanValidationSummary({ result }: { readonly result: SlideSpecPa
           승인 가능
         </div>
         <p className="mt-1 text-xs text-muted-foreground">
-          {result.specs.length}개 슬라이드가 구조화된 Slide Spec으로 파싱되었습니다.
+          {result.specs.length}개 슬라이드 구조를 읽었습니다.
         </p>
       </section>
     );
@@ -43,7 +43,7 @@ export function PlanSlideSpecPreview({ specs }: { readonly specs: readonly Slide
           <FileText className="h-4 w-4 text-accent" />
           파싱된 슬라이드
         </div>
-        <span className="font-mono text-xs text-muted-foreground">{specs.length} specs</span>
+        <span className="font-mono text-xs text-muted-foreground">{specs.length}개</span>
       </div>
       {specs.length === 0 ? (
         <div className="px-4 py-8 text-sm text-muted-foreground">
@@ -112,10 +112,10 @@ function PlanSpecMeta({ spec }: { readonly spec: SlideSpec }) {
   return (
     <dl className="mt-3 grid gap-2 text-xs sm:grid-cols-2">
       <Meta label="시각화" value={spec.visualComposition ?? spec.visualType} />
-      <Meta label="근거" value={spec.evidence.length ? spec.evidence.join(", ") : "없음"} />
+      <Meta label="사용할 자료" value={spec.evidence.length ? spec.evidence.join(", ") : "없음"} />
       <Meta label="본문" value={(spec.bodyPoints ?? []).join(", ")} />
       <Meta label="편집 요소" value={spec.editableElements.join(", ")} />
-      <Meta label="출처 제약" value={(spec.dataSourceConstraints ?? []).join(", ")} wide />
+      <Meta label="자료 사용 조건" value={(spec.dataSourceConstraints ?? []).join(", ")} wide />
     </dl>
   );
 }

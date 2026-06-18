@@ -45,7 +45,7 @@ describe("workflow engine", () => {
       { step: "plan", stage: "DESIGNING" },
       { step: "design", stage: "PROTOTYPING_LAYOUT" },
       { step: "layout", stage: "GENERATING_SLIDES" },
-      { step: "review", stage: "VECTORIZE_PENDING" },
+      { step: "review", stage: "EDITOR" },
       { step: "vectorize", stage: "EDITOR" },
       { step: "editor", stage: "FINAL_REPORTING" },
     ];
@@ -60,7 +60,6 @@ describe("workflow engine", () => {
       layout: true,
       generate: true,
       review: true,
-      vectorize: true,
       editor: true,
       export: true,
     });

@@ -29,14 +29,14 @@ export function SourceMapReviewPanel({
         <div>
           <div className="flex items-center gap-2 text-sm font-medium">
             <Link2 className="h-4 w-4 text-accent" />
-            슬라이드별 근거 맵
+            슬라이드별 자료 연결
           </div>
           <p className="mt-1 text-xs text-muted-foreground">
-            {review.slides.length} slides · {review.issueCount} issues
+            {review.slides.length}장 중 확인할 항목 {review.issueCount}개
           </p>
         </div>
         <Badge variant={blocked ? "destructive" : "secondary"}>
-          {blocked ? "이미지 생성 차단" : "생성 가능"}
+          {blocked ? "확인 필요" : "다음 단계 가능"}
         </Badge>
       </div>
 
@@ -44,7 +44,7 @@ export function SourceMapReviewPanel({
         <div className="mt-4 border border-destructive/30 bg-destructive/10 p-3">
           <div className="flex items-center gap-2 text-xs font-medium text-destructive">
             <AlertTriangle className="h-3.5 w-3.5" />
-            이미지 생성 차단
+            다음 단계로 가기 전에 확인 필요
           </div>
           <ul className="mt-2 space-y-1 text-xs text-muted-foreground">
             {review.imageGenerationGate.reasons.map((reason) => (
@@ -62,14 +62,14 @@ export function SourceMapReviewPanel({
 
       <div className="mt-4 border-t border-border pt-4">
         <Label className="text-[11px] uppercase tracking-wider text-muted-foreground">
-          Source Map 보정 요청
+          자료 연결 수정 요청
         </Label>
         <Textarea
           value={correctionText}
           disabled={disabled}
           onChange={(event) => onCorrectionTextChange(event.target.value)}
           rows={4}
-          placeholder="예: slide_03의 claim_002에 src_002와 dataset_002를 연결"
+          placeholder="예: 3번 슬라이드의 시장 수치에는 src_002와 dataset_002를 연결"
           className="mt-2 text-sm"
         />
         <Button
@@ -80,7 +80,7 @@ export function SourceMapReviewPanel({
           onClick={onApplyCorrection}
           className="mt-3 w-full"
         >
-          보정 요청 반영
+          수정 요청 반영
         </Button>
       </div>
     </section>
@@ -97,11 +97,11 @@ function SourceMapSlideRow({ slide }: { readonly slide: SlideSourceMapReviewEntr
         </Badge>
       </div>
       <div className="mt-3 space-y-2 text-xs">
-        <ReferenceGroup label="claim" references={slide.claims} />
-        <ReferenceGroup label="source" references={slide.sources} />
-        <ReferenceGroup label="dataset" references={slide.datasets} />
+        <ReferenceGroup label="주장" references={slide.claims} />
+        <ReferenceGroup label="출처" references={slide.sources} />
+        <ReferenceGroup label="데이터" references={slide.datasets} />
         {slide.rejectedClaims.length > 0 && (
-          <ReferenceGroup label="rejected" references={slide.rejectedClaims} warning />
+          <ReferenceGroup label="제외된 주장" references={slide.rejectedClaims} warning />
         )}
       </div>
       {slide.issueMessages.length > 0 && (
@@ -133,7 +133,7 @@ function ReferenceGroup({
       </div>
       <div className="flex flex-wrap gap-1.5">
         {references.length === 0 ? (
-          <span className="text-muted-foreground">none</span>
+          <span className="text-muted-foreground">없음</span>
         ) : (
           references.map((reference) => (
             <Badge

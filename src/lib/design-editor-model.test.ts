@@ -43,7 +43,6 @@ describe("design editor model", () => {
       layout: true,
       generate: true,
       review: true,
-      vectorize: true,
       editor: true,
       export: true,
     });

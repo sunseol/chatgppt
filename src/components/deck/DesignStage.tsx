@@ -2,13 +2,22 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import {
   DESIGN_APPROVAL_CTA_LABEL,
+  DesignSystemColorTokensPanel,
   DesignSystemEditorPanel,
   DesignSystemJsonPanel,
+  DesignSystemNegativeRulesPanel,
   DesignSystemPreviewPanel,
   DesignSystemSummaryPanel,
+  DesignSystemTypographyPanel,
 } from "@/components/deck/DesignPanels";
 import { GateBar } from "@/components/deck/GateBar";
-import { EmptyAction, InvalidatedBanner, StageHeader } from "@/components/deck/stage-shared";
+import {
+  EmptyAction,
+  InvalidatedBanner,
+  StageHeader,
+  StageScroll,
+  StageShell,
+} from "@/components/deck/stage-shared";
 import { approveStage, invalidateDownstream, updateProject } from "@/lib/deck-store";
 import { createApprovedDesignSystemArtifact } from "@/lib/design-system";
 import { createDesignDraftUpdate } from "@/lib/design-editor-model";
@@ -82,8 +91,8 @@ export function DesignStage({ project }: { readonly project: DeckProject }) {
   };
 
   return (
-    <div className="flex min-h-full flex-col">
-      <div className="mx-auto w-full max-w-5xl flex-1 px-4 pb-32 pt-12 sm:px-8">
+    <StageShell>
+      <StageScroll className="mx-auto max-w-6xl px-4 sm:px-8">
         <StageHeader num="04" sub="Design System" title="디자인 시스템" />
         <InvalidatedBanner on={invalidated && !!ds} />
         {!ds ? (
@@ -95,10 +104,12 @@ export function DesignStage({ project }: { readonly project: DeckProject }) {
         ) : (
           <div className="grid gap-8 lg:grid-cols-2">
             <div className="space-y-6">
-              <DesignSystemSummaryPanel design={ds} />
               <DesignSystemPreviewPanel design={ds} previewTitle={project.brief?.goal ?? "Title"} />
+              <DesignSystemTypographyPanel design={ds} />
+              <DesignSystemColorTokensPanel design={ds} />
             </div>
             <div className="space-y-6">
+              <DesignSystemSummaryPanel design={ds} />
               <DesignSystemEditorPanel
                 design={ds}
                 dirty={dirty}
@@ -106,17 +117,18 @@ export function DesignStage({ project }: { readonly project: DeckProject }) {
                 onChange={updateDesignDraft}
                 onSave={saveEditedDesign}
               />
+              <DesignSystemNegativeRulesPanel design={ds} />
               <DesignSystemJsonPanel design={ds} />
             </div>
           </div>
         )}
-      </div>
+      </StageScroll>
       <GateBar
         hint={ds ? "모든 슬라이드는 이 시스템을 강제 적용합니다." : ""}
         regenerate={ds ? { label: "다시 생성", onClick: generate } : undefined}
         approve={ds ? { label: DESIGN_APPROVAL_CTA_LABEL, onClick: approve } : undefined}
       />
-    </div>
+    </StageShell>
   );
 }
 

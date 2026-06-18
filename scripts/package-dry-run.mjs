@@ -102,7 +102,7 @@ Contents:
 
 Limitations:
 - This is not a notarized release artifact.
-- This is not a Tauri bundle.
+- This is not the final Tauri bundle; use bun run tauri:build for native packaging.
 - The launcher requires Bun on the test machine.
 - Code signing and notarization require Apple Developer credentials and a hardened runtime capable final app bundle.
 `;

@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { SlidePreview } from "@/components/deck/SlidePreview";
 import type { DesignSystem } from "@/lib/deck-types";
+import { FONT_POLICY } from "@/lib/font-policy";
 
 export const DESIGN_APPROVAL_CTA_LABEL = "디자인 시스템을 승인하고 레이아웃 초안 생성 시작";
 export { DesignSystemEditorPanel } from "@/components/deck/DesignSystemEditorPanel";
@@ -51,6 +52,33 @@ export function DesignSystemColorTokensPanel({ design }: { readonly design: Desi
   );
 }
 
+export function DesignSystemTypographyPanel({ design }: { readonly design: DesignSystem }) {
+  return (
+    <PanelBlock label="Typography">
+      <div className="space-y-4">
+        <TypeSample
+          label="H1 제목"
+          value={design.typography.titleStyle}
+          family={FONT_POLICY.serifFamily}
+          className="text-3xl font-semibold"
+        />
+        <TypeSample
+          label="H2 섹션 제목"
+          value={design.typography.title.style}
+          family={FONT_POLICY.serifFamily}
+          className="text-xl font-semibold"
+        />
+        <TypeSample
+          label="본문"
+          value={design.typography.bodyStyle}
+          family={FONT_POLICY.sansFamily}
+          className="text-base"
+        />
+      </div>
+    </PanelBlock>
+  );
+}
+
 export function DesignSystemNegativeRulesPanel({ design }: { readonly design: DesignSystem }) {
   return (
     <PanelBlock label="Negative Rules">
@@ -82,7 +110,7 @@ export function DesignSystemPreviewPanel({
 }) {
   return (
     <PanelBlock label="Sample preview">
-      <div className="aspect-video w-full">
+      <div className="aspect-video w-full overflow-hidden border border-border bg-background">
         <SlidePreview
           design={design}
           spec={{
@@ -107,6 +135,27 @@ function PanelBlock({ label, children }: { readonly label: string; readonly chil
     <div className="border border-border bg-paper p-4">
       <div className="text-[11px] uppercase tracking-wider text-muted-foreground">{label}</div>
       <div className="mt-2">{children}</div>
+    </div>
+  );
+}
+
+function TypeSample({
+  label,
+  value,
+  family,
+  className,
+}: {
+  readonly label: string;
+  readonly value: string;
+  readonly family: string;
+  readonly className: string;
+}) {
+  return (
+    <div>
+      <div className="text-[11px] uppercase tracking-wider text-muted-foreground">{label}</div>
+      <div className={`mt-1 break-words ${className}`} style={{ fontFamily: family }}>
+        {value}
+      </div>
     </div>
   );
 }

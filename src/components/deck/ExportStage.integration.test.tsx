@@ -8,13 +8,13 @@ describe("export stage", () => {
   test("renders PNG and redacted project export actions", () => {
     const markup = renderToStaticMarkup(<ExportStage project={exportProjectFixture()} />);
 
-    expect(markup.includes("PNG Slide 01")).toBe(true);
-    expect(markup.includes("SVG Slide 01")).toBe(true);
-    expect(markup.includes("Hybrid SVG Slide 01")).toBe(true);
+    expect(markup.includes("PNG 01")).toBe(true);
+    expect(markup.includes("SVG 01")).toBe(true);
+    expect(markup.includes("편집용 SVG 01")).toBe(true);
     expect(markup.includes("SVG export · 데모에서 비활성화")).toBe(false);
-    expect(markup.includes("PPTX Package")).toBe(true);
+    expect(markup.includes("PPTX 파일")).toBe(true);
     expect(markup.includes("PPTX export · 데모에서 비활성화")).toBe(false);
-    expect(markup.includes("Project (.json)")).toBe(true);
+    expect(markup.includes("프로젝트 파일 (.json)")).toBe(true);
     expect(markup.includes("project_001_export_v1")).toBe(true);
     expect(markup.includes("sha256:")).toBe(true);
   });
@@ -24,8 +24,8 @@ describe("export stage", () => {
       <ExportStage project={{ ...exportProjectFixture(), invalidated: { layout: true } }} />,
     );
 
-    expect(markup.includes("Final export blocked")).toBe(true);
-    expect(markup.includes("Invalidated layout must be regenerated or re-approved.")).toBe(true);
+    expect(markup.includes("내보내기 전에 확인이 필요합니다.")).toBe(true);
+    expect(markup.includes("layout 단계 결과를 다시 확인해야 합니다.")).toBe(true);
   });
 });
 

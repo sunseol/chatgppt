@@ -5,9 +5,12 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo",
+    "Malgun Gothic", "Noto Sans KR", sans-serif;
   --font-serif: ui-serif, Georgia, "Times New Roman", "AppleMyungjo", "Noto Serif KR", serif;
-  --font-mono: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  --font-mono:
+    ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 
   --radius-sm: 4px;
   --radius-md: 6px;
@@ -117,15 +120,26 @@
     border-color: var(--color-border);
   }
 
-  html, body {
+  html,
+  body {
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
     font-feature-settings: "ss01", "cv11";
+    height: 100%;
     line-height: 1.42;
+    overflow: hidden;
+    overscroll-behavior: none;
   }
 
-  h1, h2, h3, h4 {
+  * {
+    overscroll-behavior: none;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
     font-family: var(--font-serif);
     letter-spacing: 0;
     line-height: 1.16;
@@ -133,16 +147,25 @@
 }
 
 @layer utilities {
-  .font-serif { font-family: var(--font-serif); }
-  .font-mono { font-family: var(--font-mono); }
+  .font-serif {
+    font-family: var(--font-serif);
+  }
+  .font-mono {
+    font-family: var(--font-mono);
+  }
 
   .hairline {
     border-color: var(--color-border);
   }
 
   .grain {
-    background-image:
-      radial-gradient(oklch(0.22 0.025 260 / 0.03) 1px, transparent 1px);
+    background-image: radial-gradient(oklch(0.22 0.025 260 / 0.03) 1px, transparent 1px);
     background-size: 4px 4px;
+  }
+
+  .desktop-scroll {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: none;
   }
 }

@@ -8,7 +8,13 @@ import {
   PlanValidationSummary,
 } from "@/components/deck/PlanPanels";
 import { SourceMapReviewPanel } from "@/components/deck/SourceMapReviewPanel";
-import { EmptyAction, InvalidatedBanner, StageHeader } from "@/components/deck/stage-shared";
+import {
+  EmptyAction,
+  InvalidatedBanner,
+  StageHeader,
+  StageScroll,
+  StageShell,
+} from "@/components/deck/stage-shared";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
@@ -88,7 +94,7 @@ export function PlanStage({ project }: { readonly project: DeckProject }) {
   const applySourceMapCorrectionRequest = () => {
     const request = sourceMapCorrectionRequest.trim();
     if (!request) return;
-    setEdited((current) => `${current.trimEnd()}\n\n## Source Map 보정 요청\n- 요청: ${request}\n`);
+    setEdited((current) => `${current.trimEnd()}\n\n## 자료 연결 수정 요청\n- 요청: ${request}\n`);
     setSourceMapCorrectionRequest("");
   };
 
@@ -111,9 +117,9 @@ export function PlanStage({ project }: { readonly project: DeckProject }) {
   };
 
   return (
-    <div className="flex min-h-full flex-col">
-      <div className="mx-auto w-full max-w-6xl flex-1 px-4 pb-32 pt-12 sm:px-8">
-        <StageHeader num="03" sub="Plan · Markdown" title="슬라이드 기획" />
+    <StageShell>
+      <StageScroll className="mx-auto max-w-6xl px-4 sm:px-8">
+        <StageHeader num="03" sub="Plan" title="슬라이드 기획" />
         <InvalidatedBanner on={invalidated && !!plan} />
         {!plan ? (
           <EmptyAction
@@ -124,25 +130,25 @@ export function PlanStage({ project }: { readonly project: DeckProject }) {
         ) : (
           <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_360px]">
             <div>
-              <Tabs defaultValue="markdown">
+              <Tabs defaultValue="preview">
                 <TabsList>
-                  <TabsTrigger value="markdown">
-                    <FileText className="h-3.5 w-3.5" /> 마크다운
-                  </TabsTrigger>
                   <TabsTrigger value="preview">
                     파싱 미리보기 ({parseResult.specs.length})
                   </TabsTrigger>
+                  <TabsTrigger value="markdown">
+                    <FileText className="h-3.5 w-3.5" /> 원문 기획 보기
+                  </TabsTrigger>
                 </TabsList>
+                <TabsContent value="preview" className="mt-4">
+                  <PlanSlideSpecPreview specs={parseResult.specs} />
+                </TabsContent>
                 <TabsContent value="markdown" className="mt-4">
                   <Textarea
                     value={edited}
                     onChange={(event) => setEdited(event.target.value)}
-                    rows={28}
+                    rows={22}
                     className="font-mono text-xs leading-relaxed"
                   />
-                </TabsContent>
-                <TabsContent value="preview" className="mt-4">
-                  <PlanSlideSpecPreview specs={parseResult.specs} />
                 </TabsContent>
               </Tabs>
             </div>
@@ -176,12 +182,12 @@ export function PlanStage({ project }: { readonly project: DeckProject }) {
             </aside>
           </div>
         )}
-      </div>
+      </StageScroll>
       <GateBar
         hint={
           plan
             ? parseResult.valid
-              ? "현재 마크다운은 승인 가능한 Slide Spec으로 파싱됩니다."
+              ? "슬라이드 구조를 확인했습니다. 승인하면 디자인 시스템을 만들 수 있습니다."
               : "검증 오류를 해결해야 디자인 시스템 생성으로 넘어갈 수 있습니다."
             : ""
         }
@@ -196,6 +202,6 @@ export function PlanStage({ project }: { readonly project: DeckProject }) {
             : undefined
         }
       />
-    </div>
+    </StageShell>
   );
 }

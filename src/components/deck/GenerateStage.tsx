@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { GateBar } from "@/components/deck/GateBar";
+import { GeneratedSlideGrid } from "@/components/deck/GeneratedSlideGrid";
 import { ProviderJobProgressPanel } from "@/components/deck/ProviderJobProgressPanel";
-import { SlidePreview } from "@/components/deck/SlidePreview";
-import { EmptyAction, StageHeader } from "@/components/deck/stage-shared";
+import { EmptyAction, StageHeader, StageScroll, StageShell } from "@/components/deck/stage-shared";
 import { fakeAsync } from "@/components/deck/stage-timing";
 import { invalidateDownstream, updateProject } from "@/lib/deck-store";
 import type { DeckProject, GeneratedSlide } from "@/lib/deck-types";
@@ -20,7 +21,6 @@ import {
   serializeProviderJobRecoverySnapshot,
   type ProviderJobRecoverySnapshot,
 } from "@/lib/provider-job-recovery";
-import { Sparkles } from "lucide-react";
 
 const GENERATE_STEP = "generate";
 
@@ -49,7 +49,7 @@ export function GenerateStage({ project }: { readonly project: DeckProject }) {
     const queued = manager.enqueue({
       providerId: "mock",
       capability: "imageGeneration",
-      description: "Generate slide images",
+      description: "슬라이드 이미지 생성",
     });
     syncJob(project.id, manager, queued, setJob, setRecovered);
     await runGeneration(queued.id);
@@ -77,7 +77,7 @@ export function GenerateStage({ project }: { readonly project: DeckProject }) {
     setSlides(draft);
 
     const completed = await manager.run(jobId, async (context) => {
-      context.reportProgress({ percent: 5, message: "Preparing approved deck context" });
+      context.reportProgress({ percent: 5, message: "승인한 레이아웃을 준비하는 중" });
       for (let index = 0; index < target.length; index++) {
         if (context.isCancellationRequested()) throw new ProviderJobCancelledError(jobId);
         await fakeAsync(null, 250);
@@ -99,7 +99,7 @@ export function GenerateStage({ project }: { readonly project: DeckProject }) {
         syncJob(
           project.id,
           manager,
-          context.reportProgress({ percent, message: `Generated ${index + 1}/${target.length}` }),
+          context.reportProgress({ percent, message: `${index + 1}/${target.length}장 생성 완료` }),
           setJob,
           setRecovered,
         );
@@ -112,16 +112,21 @@ export function GenerateStage({ project }: { readonly project: DeckProject }) {
     if (completed.status !== "succeeded") return;
     updateProject(project.id, { slides: target, stage: "SLIDE_REVIEW_PENDING" });
     invalidateDownstream(project.id, "generate");
+  };
+
+  const openReview = () => {
     navigate({
       to: "/project/$projectId/$step",
       params: { projectId: project.id, step: "review" },
     });
   };
 
+  const readyForReview = slides?.every((slide) => slide.status === "ready") ?? false;
+
   return (
-    <div className="flex min-h-full flex-col">
-      <div className="mx-auto w-full max-w-6xl flex-1 px-8 py-12">
-        <StageHeader num="06" sub="Generate · Parallel" title="슬라이드 이미지 병렬 생성" />
+    <StageShell>
+      <StageScroll className="mx-auto max-w-6xl px-8">
+        <StageHeader num="06" sub="Generate" title="슬라이드 이미지 생성" />
         {job ? (
           <ProviderJobProgressPanel
             stageLabel="슬라이드 이미지 생성"
@@ -135,7 +140,7 @@ export function GenerateStage({ project }: { readonly project: DeckProject }) {
         ) : null}
         {!slides ? (
           <EmptyAction
-            label="Frozen Deck Context + 승인된 레이아웃으로 슬라이드 병렬 생성"
+            label="승인한 레이아웃으로 슬라이드 이미지 생성"
             busy={busy}
             onClick={generate}
           />
@@ -150,42 +155,23 @@ export function GenerateStage({ project }: { readonly project: DeckProject }) {
               </div>
               <div className="font-mono text-xs text-muted-foreground">{progress}%</div>
             </div>
-            <div className="grid grid-cols-3 gap-4 xl:grid-cols-4">
-              {slides.map((slide) => {
-                const spec = project.plan?.slides.find(
-                  (planSlide) => planSlide.number === slide.number,
-                );
-                if (!spec || !project.design) return null;
-                return (
-                  <div key={slide.number} className="border border-border bg-paper">
-                    <div className="aspect-video w-full bg-background">
-                      {slide.status === "generating" ? (
-                        <div className="flex h-full items-center justify-center text-xs text-muted-foreground">
-                          <Sparkles className="mr-2 h-3 w-3 animate-pulse" /> generating…
-                        </div>
-                      ) : (
-                        <SlidePreview
-                          design={project.design}
-                          spec={spec}
-                          slide={slide}
-                          mode="image"
-                        />
-                      )}
-                    </div>
-                    <div className="flex items-center justify-between border-t border-border px-3 py-2 text-xs">
-                      <span className="font-mono text-muted-foreground">
-                        #{String(slide.number).padStart(2, "0")}
-                      </span>
-                      <span className="text-muted-foreground">v{slide.version}</span>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+            <GeneratedSlideGrid project={project} slides={slides} />
           </>
         )}
-      </div>
-    </div>
+      </StageScroll>
+      <GateBar
+        hint={readyForReview ? "생성이 끝났습니다. 결과를 확인한 뒤 검토로 이동하세요." : ""}
+        approve={
+          slides
+            ? {
+                label: "검토로 이동",
+                onClick: openReview,
+                disabled: !readyForReview,
+              }
+            : undefined
+        }
+      />
+    </StageShell>
   );
 }
 

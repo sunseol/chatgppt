@@ -29,10 +29,9 @@ export function ProviderJobProgressPanel({
             {view.recovered ? <span className="text-accent">재시작 복구됨</span> : null}
           </div>
         </div>
-        <div className="text-right text-xs text-muted-foreground">
-          <div>job_id</div>
-          <div className="mt-1 font-mono text-foreground">{view.jobId}</div>
-          <div className="mt-1">{view.attemptLabel}</div>
+        <div className="text-right text-xs text-muted-foreground" title={view.jobId}>
+          <div>진행 상태</div>
+          <div className="mt-1 text-foreground">{view.attemptLabel}</div>
         </div>
       </div>
 
