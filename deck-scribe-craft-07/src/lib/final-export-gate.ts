@@ -70,7 +70,11 @@ export function evaluateFinalExportGate(input: {
     ...exportPackageIssues(summary),
     ...reportIssues(reportMarkdown, summary),
     ...productionLineageIssues(input.executionMode, input.lineage ?? []),
-    ...liveReportLineageIssues(input.executionMode, input.liveReportLineage),
+    ...liveReportLineageIssues(
+      input.executionMode,
+      input.project.slideCount,
+      input.liveReportLineage,
+    ),
   ];
   const warnings = developmentLineageWarnings(input.executionMode, input.lineage ?? []);
   if (issues.length > 0) return { kind: "blocked", issues };
@@ -94,6 +98,7 @@ export function evaluateFinalExportGate(input: {
 
 function liveReportLineageIssues(
   executionMode: ExecutionMode | undefined,
+  expectedSlideCount: number,
   liveReportLineage: readonly LiveSlideReportLineage[] | undefined,
 ): readonly FinalExportGateIssue[] {
   if (executionMode !== "production") return [];
@@ -107,6 +112,7 @@ function liveReportLineageIssues(
   }
   const validation = validateLiveGenerationReportLineage({
     executionMode,
+    expectedSlideCount,
     slides: liveReportLineage,
   });
   if (validation.kind === "ready") return [];

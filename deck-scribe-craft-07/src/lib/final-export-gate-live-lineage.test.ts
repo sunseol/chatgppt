@@ -35,6 +35,22 @@ describe("final export gate live report lineage", () => {
     expect(result.issues[0]?.slideNumber).toBe(1);
   });
 
+  test("blocks production export when live report lineage omits project slides", () => {
+    const result = evaluateFinalExportGate({
+      project: projectFixture({ slideCount: 2 }),
+      exportPackage: exportSummaryFixture(),
+      reportMarkdown: reportFixture(),
+      executionMode: "production",
+      lineage: providerLineageFixture(),
+      liveReportLineage: [liveReportLineageFixture()],
+    });
+
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual(["missing_slide_lineage"]);
+    expect(result.issues[0]?.slideNumber).toBe(2);
+  });
+
   test("allows production final export when provider and slide report lineage are complete", () => {
     const result = evaluateFinalExportGate({
       project: projectFixture(),
@@ -49,7 +65,7 @@ describe("final export gate live report lineage", () => {
   });
 });
 
-function projectFixture(): DeckProject {
+function projectFixture(patch: Partial<DeckProject> = {}): DeckProject {
   return {
     id: "project_001",
     name: "Gate Fixture",
@@ -62,6 +78,7 @@ function projectFixture(): DeckProject {
     updatedAt: 2_000,
     invalidated: {},
     approvalLog: [],
+    ...patch,
   };
 }
 

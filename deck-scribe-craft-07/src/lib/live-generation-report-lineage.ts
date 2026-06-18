@@ -1,8 +1,10 @@
 import { redactSensitiveText } from "./redaction";
 import type { ExecutionMode, ProviderArtifactProvenance } from "./provider-provenance";
+import { slideCoverageIssues } from "./live-generation-report-slide-coverage";
 
 export type LiveGenerationReportLineageIssueCode =
   | "missing_source_trace"
+  | "missing_slide_lineage"
   | "missing_text_turn"
   | "missing_text_artifact"
   | "missing_image_artifact"
@@ -65,9 +67,13 @@ export function formatLiveGenerationReportLineage(
 
 export function validateLiveGenerationReportLineage(input: {
   readonly executionMode: ExecutionMode;
+  readonly expectedSlideCount?: number;
   readonly slides: readonly LiveSlideReportLineage[];
 }): LiveGenerationReportLineageValidation {
-  const issues = input.slides.flatMap((slide) => slideIssues(input.executionMode, slide));
+  const issues = [
+    ...slideCoverageIssues(input.expectedSlideCount, input.slides),
+    ...input.slides.flatMap((slide) => slideIssues(input.executionMode, slide)),
+  ];
   return issues.length === 0 ? { kind: "ready" } : { kind: "blocked", issues };
 }
 

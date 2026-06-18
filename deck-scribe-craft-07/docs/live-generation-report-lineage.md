@@ -10,6 +10,7 @@ The live generation report must preserve slide-level lineage from the approved r
 
 Each production slide report must include:
 
+- one lineage entry for every project slide number
 - source ids used by the slide
 - text turn id, text thread id, text artifact id, and text provider kind
 - image request id, image artifact id, and image provider kind
@@ -25,6 +26,7 @@ The report renderer uses the labels `text turn`, `image request`, `prompt`, `fix
 `src/lib/live-generation-report-lineage.ts` blocks final report/export readiness when any of these conditions appear:
 
 - `missing_source_trace`: a slide has no source ids.
+- `missing_slide_lineage`: one or more project slide numbers have no report lineage entry.
 - `missing_text_turn`: text lineage is missing a turn id or thread id.
 - `missing_text_artifact`: text lineage is missing a text artifact id.
 - `missing_image_artifact`: image lineage is missing an image artifact id.
@@ -39,12 +41,12 @@ The report renderer uses the labels `text turn`, `image request`, `prompt`, `fix
 - `secret_leak`: project export content contains secret-like text after redaction scan.
 - `missing_live_report_lineage`: production export was requested without slide-level live report lineage.
 
-`src/lib/final-export-gate.ts` now requires slide-level live report lineage in production mode and forwards live lineage validation failures, including `missing_text_artifact`, `missing_image_artifact`, `image_artifact_slide_mismatch`, `missing_image_request`, `invalid_compositor_hash`, `invalid_export_hash`, `mock_lineage_contamination`, `fixture_lineage_contamination`, `export_compositor_mismatch`, and `secret_leak`, into the final export gate issues.
+`src/lib/final-export-gate.ts` now requires slide-level live report lineage in production mode and forwards live lineage validation failures, including `missing_slide_lineage`, `missing_text_artifact`, `missing_image_artifact`, `image_artifact_slide_mismatch`, `missing_image_request`, `invalid_compositor_hash`, `invalid_export_hash`, `mock_lineage_contamination`, `fixture_lineage_contamination`, `export_compositor_mismatch`, and `secret_leak`, into the final export gate issues.
 
 ## Local Evidence
 
 - `src/lib/live-generation-report-lineage.test.ts` verifies the formatted report section, complete production lineage, blocked missing artifact ids, invalid export/compositor hashes, and contaminated exports.
-- `src/lib/final-export-gate.test.ts` verifies that production export is blocked when slide-level live report lineage is missing or incomplete and is allowed only when provider provenance plus slide report lineage are complete.
+- `src/lib/final-export-gate.test.ts` verifies that production export is blocked when slide-level live report lineage is missing, incomplete, or omits project slides and is allowed only when provider provenance plus slide report lineage are complete.
 - `src/lib/generation-report.test.ts` verifies existing generation report provider provenance fields including turn id, request id, prompt version, and fixture flag.
 - `src/lib/final-export-gate.test.ts` verifies the existing final export gate still blocks incomplete or contaminated export summaries.
 - `src/lib/project-export.test.ts` verifies project export uses approved layout PNGs and redacts project file content.
