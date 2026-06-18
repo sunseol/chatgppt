@@ -38,6 +38,35 @@ describe("live full-slide regeneration artifact version", () => {
     ]);
     expect(result.preservedSlide).toEqual(approvedSlideFixture());
   });
+
+  test("blocks a regenerated background without provider request id evidence", async () => {
+    // Given
+    const store = createImageArtifactStore({ write: async () => undefined });
+    const candidateBackground = await storeSlideImageArtifact({
+      store,
+      projectId: "project_001",
+      artifact: imageArtifact({ providerId: "codex", omitRequestId: true }),
+      version: 2,
+      createdAt: 1_789_900_011,
+    });
+
+    // When
+    const result = createLiveSlideRegenerationCandidate({
+      request: requestFixture(),
+      originalSlide: approvedSlideFixture(),
+      candidateBackground,
+      candidateDeckContextId: "deckctx_001",
+      candidateDesignSystemId: "design_001",
+      candidateVersion: 2,
+    });
+
+    // Then
+    expect(result.kind).toBe("failed");
+    if (result.kind !== "failed") return;
+    expect(result.failure.issues.map((issue) => issue.code)).toEqual([
+      "missing_regeneration_request_id",
+    ]);
+  });
 });
 
 function requestFixture(): LiveSlideRegenerationRequest {
@@ -65,9 +94,14 @@ function approvedSlideFixture(): GeneratedSlide {
   };
 }
 
-function imageArtifact(): SlideImageArtifact {
+function imageArtifact(
+  options: {
+    readonly providerId?: SlideImageArtifact["providerId"];
+    readonly omitRequestId?: true;
+  } = {},
+): SlideImageArtifact {
   return {
-    providerId: "openaiImage",
+    providerId: options.providerId ?? "openaiImage",
     slideNumber: 3,
     aspectRatio: "16:9",
     canvas: { width: 1600, height: 900 },
@@ -80,7 +114,7 @@ function imageArtifact(): SlideImageArtifact {
     prompt: { id: "slide_generation", version: "v1", hash: "sha256:prompt" },
     request: {
       model: "gpt-image-2",
-      requestId: "img_req_revised",
+      ...(options.omitRequestId === true ? {} : { requestId: "img_req_revised" }),
       size: "1600x900",
       quality: "high",
       latencyMs: 2_000,

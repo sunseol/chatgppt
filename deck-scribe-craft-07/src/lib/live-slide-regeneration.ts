@@ -12,7 +12,8 @@ export type LiveSlideRegenerationIssueCode =
   | "background_artifact_not_new"
   | "background_artifact_version_mismatch"
   | "slide_id_mismatch"
-  | "stale_candidate_version";
+  | "stale_candidate_version"
+  | "missing_regeneration_request_id";
 
 export interface LiveSlideRegenerationIssue {
   readonly code: LiveSlideRegenerationIssueCode;

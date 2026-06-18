@@ -41,6 +41,15 @@ export function candidateIssues(input: {
           },
         ]
       : []),
+    ...(input.candidateBackground.metadata.request.requestId?.trim()
+      ? []
+      : [
+          {
+            code: "missing_regeneration_request_id" as const,
+            slideNumber: input.request.slideNumber,
+            message: "Regenerated background must preserve a provider request id.",
+          },
+        ]),
     ...(input.candidateBackground.binary.artifactId !== input.request.originalBackgroundArtifactId
       ? []
       : [
