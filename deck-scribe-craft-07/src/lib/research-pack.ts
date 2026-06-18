@@ -1,5 +1,6 @@
 import type { ArtifactRecord } from "./artifacts";
 import { createArtifactRecord } from "./artifacts";
+import type { LiveWebSearchEvidence } from "./live-web-search-evidence";
 import { parseResearchPack } from "./research-pack-schema";
 import type {
   Claim,
@@ -10,10 +11,19 @@ import type {
   ResearchDataset,
   ResearchDatasetRow,
   ResearchPack,
+  ResearchReinforcementRequest,
+  ResearchSourceCaptureMetadata,
   Source,
 } from "./research-types";
+import type { LiveResearchEvidenceReference } from "./live-research-evidence";
+import type { ProviderArtifactProvenance } from "./provider-provenance";
 
 export { parseResearchPack } from "./research-pack-schema";
+export {
+  LiveResearchEvidenceReferenceSchema,
+  LiveWebSearchEvidenceSchema,
+  ProviderArtifactProvenanceSchema,
+} from "./research-pack-live-schema";
 export {
   ClaimSchema,
   FactCheckIssueSchema,
@@ -23,6 +33,8 @@ export {
   ResearchDatasetRowSchema,
   ResearchDatasetSchema,
   ResearchPackSchema,
+  ResearchReviewStateSchema,
+  ResearchSourceCaptureMetadataSchema,
   SourceSchema,
 } from "./research-pack-schema";
 
@@ -39,13 +51,32 @@ export interface ApproveResearchPackInput {
 }
 
 export type ImmutableResearchPack = Readonly<
-  Omit<ResearchPack, "sources" | "claims" | "datasets" | "charts" | "factCheckReport">
+  Omit<
+    ResearchPack,
+    | "sources"
+    | "claims"
+    | "datasets"
+    | "charts"
+    | "factCheckReport"
+    | "webSearchEvidence"
+    | "liveEvidenceRefs"
+    | "provenanceLineage"
+  >
 > & {
-  readonly sources: readonly Readonly<Source>[];
+  readonly sources: readonly ImmutableSource[];
   readonly claims: readonly ImmutableClaim[];
   readonly datasets: readonly ImmutableResearchDataset[];
   readonly charts: readonly ImmutableResearchChart[];
   readonly factCheckReport: ImmutableFactCheckReport;
+  readonly webSearchEvidence?: Readonly<LiveWebSearchEvidence>;
+  readonly liveEvidenceRefs?: readonly Readonly<LiveResearchEvidenceReference>[];
+  readonly provenanceLineage?: readonly Readonly<ProviderArtifactProvenance>[];
+  readonly review?: ImmutableResearchReviewState;
+};
+
+type ImmutableSource = Readonly<Omit<Source, "capture" | "captureHistory">> & {
+  readonly capture?: Readonly<ResearchSourceCaptureMetadata>;
+  readonly captureHistory?: readonly Readonly<ResearchSourceCaptureMetadata>[];
 };
 
 type ImmutableClaim = Readonly<
@@ -72,6 +103,13 @@ type ImmutableFactCheckReport = Readonly<Omit<FactCheckReport, "issues" | "uncer
   readonly uncertainItems: readonly string[];
 };
 
+type ImmutableResearchReviewState = {
+  readonly sourceDecisions: readonly Readonly<
+    NonNullable<ResearchPack["review"]>["sourceDecisions"][number]
+  >[];
+  readonly reinforcementRequests: readonly Readonly<ResearchReinforcementRequest>[];
+};
+
 export function createApprovedResearchPackArtifact(
   input: ApproveResearchPackInput,
 ): ApprovedResearchPackArtifact {
@@ -94,12 +132,34 @@ function cloneImmutableResearchPack(pack: ResearchPack): ImmutableResearchPack {
     datasets: Object.freeze(pack.datasets.map(freezeDataset)),
     charts: Object.freeze(pack.charts.map(freezeChart)),
     factCheckReport: freezeFactCheckReport(pack.factCheckReport),
+    ...(pack.webSearchEvidence === undefined
+      ? {}
+      : { webSearchEvidence: freezeLiveWebSearchEvidence(pack.webSearchEvidence) }),
+    ...(pack.liveEvidenceRefs === undefined
+      ? {}
+      : { liveEvidenceRefs: Object.freeze(pack.liveEvidenceRefs.map(freezeLiveEvidenceRef)) }),
+    ...(pack.provenanceLineage === undefined
+      ? {}
+      : { provenanceLineage: Object.freeze(pack.provenanceLineage.map(freezeProvenance)) }),
+    ...(pack.review === undefined ? {} : { review: freezeResearchReviewState(pack.review) }),
     ...(pack.approvedHash === undefined ? {} : { approvedHash: pack.approvedHash }),
   });
 }
 
-function freezeSource(source: Source): Readonly<Source> {
-  return Object.freeze({ ...source });
+function freezeSource(source: Source): ImmutableSource {
+  return Object.freeze({
+    ...source,
+    ...(source.capture === undefined ? {} : { capture: freezeSourceCapture(source.capture) }),
+    ...(source.captureHistory === undefined
+      ? {}
+      : { captureHistory: Object.freeze(source.captureHistory.map(freezeSourceCapture)) }),
+  });
+}
+
+function freezeSourceCapture(
+  capture: ResearchSourceCaptureMetadata,
+): Readonly<ResearchSourceCaptureMetadata> {
+  return Object.freeze({ ...capture });
 }
 
 function freezeClaim(claim: Claim): ImmutableClaim {
@@ -146,4 +206,48 @@ function freezeFactCheckReport(report: FactCheckReport): ImmutableFactCheckRepor
 
 function freezeFactCheckIssue(issue: FactCheckIssue): Readonly<FactCheckIssue> {
   return Object.freeze({ ...issue });
+}
+
+function freezeLiveWebSearchEvidence(
+  evidence: LiveWebSearchEvidence,
+): Readonly<LiveWebSearchEvidence> {
+  return Object.freeze({
+    ...evidence,
+    queries: Object.freeze([...evidence.queries]),
+    candidates: Object.freeze(
+      evidence.candidates.map((candidate) => Object.freeze({ ...candidate })),
+    ),
+    latestnessBenchmark: Object.freeze({
+      ...evidence.latestnessBenchmark,
+      candidateIds: Object.freeze([...evidence.latestnessBenchmark.candidateIds]),
+    }),
+  });
+}
+
+function freezeLiveEvidenceRef(
+  evidenceRef: LiveResearchEvidenceReference,
+): Readonly<LiveResearchEvidenceReference> {
+  return Object.freeze({ ...evidenceRef });
+}
+
+function freezeProvenance(
+  provenance: ProviderArtifactProvenance,
+): Readonly<ProviderArtifactProvenance> {
+  return Object.freeze({
+    ...provenance,
+    inputArtifactIds: Object.freeze([...provenance.inputArtifactIds]),
+  });
+}
+
+function freezeResearchReviewState(
+  review: NonNullable<ResearchPack["review"]>,
+): ImmutableResearchReviewState {
+  return Object.freeze({
+    sourceDecisions: Object.freeze(
+      review.sourceDecisions.map((decision) => Object.freeze({ ...decision })),
+    ),
+    reinforcementRequests: Object.freeze(
+      review.reinforcementRequests.map((request) => Object.freeze({ ...request })),
+    ),
+  });
 }

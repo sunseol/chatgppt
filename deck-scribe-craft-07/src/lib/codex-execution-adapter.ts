@@ -99,6 +99,8 @@ function assertCodexConnected(status: ProviderStatus): void {
     case "connected":
       return;
     case "requiresAuth":
+    case "needsApiKey":
+    case "liveTestFailed":
     case "unavailable":
       throw new CodexExecutionUnavailableError(status.message);
     default:

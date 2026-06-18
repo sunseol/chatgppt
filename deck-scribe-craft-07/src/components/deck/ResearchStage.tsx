@@ -16,8 +16,9 @@ import {
   StageShell,
 } from "@/components/deck/stage-shared";
 import { approveStage, invalidateDownstream, updateProject } from "@/lib/deck-store";
-import type { DeckProject, FactCheckIssue, ResearchPack } from "@/lib/deck-types";
+import type { DeckProject, ResearchPack } from "@/lib/deck-types";
 import { hash, mockResearch } from "@/lib/mock-ai";
+import { excludeResearchSource, requestResearchReinforcement } from "@/lib/research-review-actions";
 import { validateResearchPack } from "@/lib/research-validator";
 
 async function delay<T>(value: T, ms = 900): Promise<T> {
@@ -45,24 +46,31 @@ export function ResearchStage({ project }: { readonly project: DeckProject }) {
 
   const applyReinforcementRequest = () => {
     if (!pack || !reinforcementRequest.trim()) return;
-    const message = `보강 요청: ${reinforcementRequest.trim()}`;
-    const issue: FactCheckIssue = {
-      id: `issue_reinforce_${pack.factCheckReport.issues.length + 1}`,
-      severity: "info",
-      message,
-      uncertain: true,
-    };
-    const next = {
-      ...pack,
-      factCheckReport: {
-        ...pack.factCheckReport,
-        issues: [...pack.factCheckReport.issues, issue],
-        uncertainItems: [...pack.factCheckReport.uncertainItems, message],
-      },
-    };
+    const next = requestResearchReinforcement({
+      pack,
+      prompt: reinforcementRequest,
+      requestedAt: Date.now(),
+    });
+    persistResearchReview(next);
+    setReinforcementRequest("");
+  };
+
+  const excludeSource = (sourceId: string) => {
+    if (!pack) return;
+    persistResearchReview(
+      excludeResearchSource({
+        pack,
+        sourceId,
+        reason: "User excluded source during research review.",
+        decidedAt: Date.now(),
+      }),
+    );
+  };
+
+  const persistResearchReview = (next: ResearchPack) => {
     setPack(next);
     updateProject(project.id, { research: next, stage: "RESEARCH_APPROVAL_PENDING" });
-    setReinforcementRequest("");
+    invalidateDownstream(project.id, "research");
   };
 
   const approve = () => {
@@ -89,7 +97,11 @@ export function ResearchStage({ project }: { readonly project: DeckProject }) {
         ) : (
           <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_360px]">
             <div className="space-y-8">
-              <SourceReviewList sources={pack.sources} claims={pack.claims} />
+              <SourceReviewList
+                sources={pack.sources}
+                claims={pack.claims}
+                onExcludeSource={excludeSource}
+              />
               <ClaimReviewList claims={pack.claims} />
               <DatasetReviewList datasets={pack.datasets} charts={pack.charts} />
             </div>

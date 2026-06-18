@@ -33,6 +33,16 @@ export type ProviderStatus =
       readonly message: string;
     }
   | {
+      readonly kind: "needsApiKey";
+      readonly providerId: string;
+      readonly message: string;
+    }
+  | {
+      readonly kind: "liveTestFailed";
+      readonly providerId: string;
+      readonly message: string;
+    }
+  | {
       readonly kind: "unavailable";
       readonly providerId: string;
       readonly message: string;

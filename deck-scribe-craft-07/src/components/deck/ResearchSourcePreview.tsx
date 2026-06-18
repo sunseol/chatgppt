@@ -1,13 +1,25 @@
 import { BarChart3, FileText } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  LiveSourceEvidencePreview,
+  type SourceCaptureMetadata,
+} from "@/components/deck/ResearchSourceEvidencePreview";
+import type { LiveResearchEvidenceReference } from "@/lib/live-research-evidence";
 import type { Claim, Source } from "@/lib/deck-types";
 
 export function SourceReviewList({
   sources,
   claims,
+  liveEvidenceRefs = [],
+  captureMetadata = [],
+  onExcludeSource,
 }: {
   readonly sources: readonly Source[];
   readonly claims: readonly Claim[];
+  readonly liveEvidenceRefs?: readonly LiveResearchEvidenceReference[];
+  readonly captureMetadata?: readonly SourceCaptureMetadata[];
+  readonly onExcludeSource?: (sourceId: string) => void;
 }) {
   return (
     <section>
@@ -26,6 +38,11 @@ export function SourceReviewList({
                   <div className="mt-1 text-xs text-muted-foreground">
                     {source.publisher} · {source.year} · {source.sourceType}
                   </div>
+                  {source.url ? (
+                    <div className="mt-2 break-all font-mono text-[11px] text-muted-foreground">
+                      {source.url}
+                    </div>
+                  ) : null}
                   <div className="mt-2 font-mono text-[11px] text-muted-foreground">
                     {source.id}
                   </div>
@@ -38,8 +55,24 @@ export function SourceReviewList({
                     등급 {source.grade}
                   </Badge>
                   <Badge variant="outline">{sourcePolicyLabel(source.usePolicy)}</Badge>
+                  {onExcludeSource ? (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => onExcludeSource(source.id)}
+                    >
+                      출처 제외
+                    </Button>
+                  ) : null}
                 </div>
               </div>
+              <LiveSourceEvidencePreview
+                source={source}
+                claims={claims}
+                evidenceRefs={liveEvidenceRefs}
+                metadata={captureMetadata}
+              />
               <SourceUsagePreview source={source} claims={claims} />
             </div>
           </li>

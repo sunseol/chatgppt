@@ -135,7 +135,9 @@ function formatUsageSummary(summary: ProviderUsageSummary): string {
     summary.inputTokens === undefined ? "" : `input ${summary.inputTokens}`,
     summary.outputTokens === undefined ? "" : `output ${summary.outputTokens}`,
     summary.imageCount === undefined ? "" : `images ${summary.imageCount}`,
-    summary.estimatedCostUsd === undefined ? "" : `cost $${summary.estimatedCostUsd.toFixed(4)}`,
+    summary.estimatedCostUsd === undefined
+      ? ""
+      : `cost estimate $${summary.estimatedCostUsd.toFixed(4)}`,
   ].filter((part) => part.length > 0);
   return parts.length === 0 ? "none" : parts.join(" · ");
 }

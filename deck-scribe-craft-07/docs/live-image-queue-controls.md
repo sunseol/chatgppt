@@ -1,0 +1,30 @@
+# Live Image Queue Controls
+
+Date: 2026-06-18
+
+Ticket: DF-233
+
+Status: Partial, external evidence required
+
+## Contract Summary
+
+DF-233 requires the live image queue to throttle concurrent work, retry only transient provider failures, support user cancellation, and resume without regenerating completed slides. The local queue now keeps those controls in the slide generation boundary so production runs cannot silently rerun successful images or treat cancellation as a normal success.
+
+## Local Evidence
+
+- `src/lib/slide-generation-queue.ts` still bounds concurrency with `maxParallel`, now also accepts `completedSlides` so partial resume skips already generated slide numbers.
+- `src/lib/slide-generation-retry-policy.ts` classifies retry decisions through image provider failure kinds and applies exponential backoff for transient `rate_limit`, `server`, and unknown failures only when a retry policy allows more attempts.
+- `src/lib/slide-generation-queue-executor.ts` records retry provenance on failed slides and successful-after-retry slides: job id, bundle id, slide number, attempt, failure kind, message, and retry delay history.
+- `SlideGenerationQueueResult.retryProvenance` preserves retry events even when a slide eventually succeeds, so live QA can audit transient `rate_limit` or `server` recovery instead of seeing only the final success.
+- `isCancellationRequested` prevents later provider calls after a user cancellation and records cancelled jobs plus slide failures instead of leaving background work running.
+- `src/lib/slide-generation-queue-live-controls.test.ts` covers bounded `rate_limit` retry, max-attempt `server` retry provenance, cancellation, and partial resume behavior.
+
+## Verification
+
+- `bun test src/lib/slide-generation-queue-live-controls.test.ts src/lib/slide-generation-queue.test.ts src/lib/live-background-batch.test.ts`
+- `bun run typecheck`
+- `bun run lint`
+
+## Remaining Live Work
+
+The current repository has not yet executed live throttling against a real image provider. DF-233 remains open until a production image run captures actual rate limit or 5xx retry evidence, user cancellation manual QA, and partial resume after app restart with real stored image artifacts.

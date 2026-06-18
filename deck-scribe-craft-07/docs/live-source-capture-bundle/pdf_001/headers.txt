@@ -1,0 +1,22 @@
+HTTP/2 200 
+date: Thu, 18 Jun 2026 08:19:05 GMT
+content-type: application/pdf; qs=0.001
+content-length: 13264
+last-modified: Mon, 27 Aug 2007 17:15:36 GMT
+etag: "33d0-438b181451e00"
+accept-ranges: bytes
+x-robots-tag: noindex
+cache-control: public, max-age=2592000, s-maxage=2592000, s-maxage=2592001
+x-backend: www-mirrors
+x-request-id: a0d0597dc92fa2f2
+strict-transport-security: max-age=15552000; includeSubdomains; preload
+content-security-policy: frame-ancestors 'self' https://cms.w3.org/ https://cms-dev.w3.org/; upgrade-insecure-requests
+x-content-type-options: nosniff
+set-cookie: __cf_bm=yoTSmrinF2j78WueJ627IAPArHB82xHGDLWad4MxLDw-1781770745.2742972-1.0.1.1-L2FAtuID.ca6awBJvfE9QQej7aL6f3n0AXDLA.RbIHVRuem7DHBdR9WjTiS7f9PAxzlHGEC6UNmkhFVtUwJm5kUiPWTTE_KEzl4Rwe_iqfPZHxV05C.VgiNz6XIgv6RF; HttpOnly; SameSite=None; Secure; Path=/; Domain=w3.org; Expires=Thu, 18 Jun 2026 08:49:05 GMT
+age: 89312
+cf-cache-status: HIT
+vary: accept-encoding
+server: cloudflare
+cf-ray: a0d8ddf5f8b6eaaa-ICN
+alt-svc: h3=":443"; ma=86400
+
