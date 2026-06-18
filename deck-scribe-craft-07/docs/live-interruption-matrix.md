@@ -69,6 +69,20 @@ Using the production `fetchResearchSource` path on 2026-06-19 KST, a live HTTPS 
 
 This proves an interrupted live source fetch returns a retryable failed state without creating a completed source artifact.
 
+## Live Cancel No-Background-Completion Evidence
+
+Using `codex-cli 0.141.0` and App Server `0.141.0` on 2026-06-19 KST, a second long live text turn was interrupted and then observed for another 3,009 ms after `turn/completed`.
+
+- Thread: `019edc60-600b-78d3-9e6f-2c0ca3b99061`
+- Interrupted turn: `019edc60-6250-7ba1-bdc4-86c28083c19d`
+- `turn/completed` status: `interrupted`
+- `thread/read` status for the turn: `interrupted`
+- `thread/turns/list` status for the turn: `interrupted`
+- Late `item/completed` notifications for the interrupted turn: 0
+- Evidence digest over the no-background-completion observation: `f35c082c75b37ccbe7e8e5eddf1907e61e66171e13d94dd2c4df50fe3060b62f`
+
+This proves the current App Server interrupt path does not produce a delayed completed item after cancellation.
+
 ## Remaining Live Evidence
 
-The local contract is ready and live text-turn plus source-fetch interruption have been verified, but DF-243 still requires the rest of the live interruption test matrix against live image partial resume, persisted cancel-signal behavior, and interrupted artifact approval/export before the issue can close.
+The local contract is ready and live text-turn, source-fetch interruption, and App Server no-background-completion behavior have been verified, but DF-243 still requires the rest of the live interruption test matrix against live image partial resume, app-level persisted cancel-signal snapshots, and interrupted artifact approval/export before the issue can close.

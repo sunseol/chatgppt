@@ -247,6 +247,11 @@ describe("live readiness documentation", () => {
         "a472a031283e5a2ce537801d43a15b2d121241d823397868b81437c50e78bc3d",
       ),
     ).toBe(true);
+    expect(
+      interruptionMatrix.includes(
+        "f35c082c75b37ccbe7e8e5eddf1907e61e66171e13d94dd2c4df50fe3060b62f",
+      ),
+    ).toBe(true);
   });
 
   test("records the live usage, latency, retry, and billing display contract", () => {
