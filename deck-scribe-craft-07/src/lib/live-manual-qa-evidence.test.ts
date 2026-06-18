@@ -75,6 +75,7 @@ describe("live manual QA evidence", () => {
     expect(result.issues.map((issue) => issue.code)).toEqual([
       "setup_over_time",
       "approval_target_misunderstood",
+      "missing_approval_target_check",
       "missing_real_source_open",
       "missing_slide_regeneration",
       "missing_title_edit",
@@ -99,6 +100,21 @@ describe("live manual QA evidence", () => {
     expect(result.issues.map((issue) => issue.code).includes("tester_not_non_developer")).toBe(
       true,
     );
+  });
+
+  test("blocks manual QA evidence that skips approval targets", () => {
+    // Given
+    const evidence = completeEvidence({
+      approvalTargetChecks: [{ targetId: "research_pack", understood: true }],
+    });
+
+    // When
+    const result = evaluateLiveManualQaEvidence(evidence);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual(["missing_approval_target_check"]);
   });
 
   test("blocks opened source evidence that is not a real URL", () => {

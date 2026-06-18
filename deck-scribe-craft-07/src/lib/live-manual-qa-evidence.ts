@@ -4,6 +4,8 @@ export const MANUAL_QA_SETUP_TASKS = ["new_project", "login_check", "prompt_inpu
 
 export const MANUAL_QA_EXPORTS = ["png", "project", "report"] as const;
 
+export const MANUAL_QA_APPROVAL_TARGETS = ["research_pack", "slide_generation", "export"] as const;
+
 export const MANUAL_QA_TESTER_ROLES = ["non_developer", "developer"] as const;
 
 export type ManualQaSetupTask = (typeof MANUAL_QA_SETUP_TASKS)[number];
@@ -41,6 +43,7 @@ export type LiveManualQaEvidence = {
 export type LiveManualQaIssueCode =
   | "tester_not_non_developer"
   | "setup_over_time"
+  | "missing_approval_target_check"
   | "approval_target_misunderstood"
   | "missing_real_source_open"
   | "invalid_real_source_url"
@@ -153,16 +156,29 @@ function setupIssues(evidence: LiveManualQaEvidence): readonly LiveManualQaIssue
 function approvalIssues(
   checks: readonly ManualQaApprovalTargetCheck[],
 ): readonly LiveManualQaIssue[] {
+  const present = new Set(nonEmpty(checks.map((check) => check.targetId)));
+  const missing = MANUAL_QA_APPROVAL_TARGETS.filter((target) => !present.has(target));
   const failed = checks.filter((check) => !check.understood || check.targetId.trim().length === 0);
-  return checks.length > 0 && failed.length === 0
-    ? []
-    : [
-        issue(
-          "approval_target_misunderstood",
-          "Tester must understand every approval button target.",
-          failed.map((check) => check.targetId || "missing approval target"),
-        ),
-      ];
+  return [
+    ...(failed.length === 0
+      ? []
+      : [
+          issue(
+            "approval_target_misunderstood",
+            "Tester must understand every approval button target.",
+            failed.map((check) => check.targetId || "missing approval target"),
+          ),
+        ]),
+    ...(missing.length === 0
+      ? []
+      : [
+          issue(
+            "missing_approval_target_check",
+            "Manual QA must check every approval button target.",
+            missing,
+          ),
+        ]),
+  ];
 }
 
 function exportIssues(exports: readonly ManualQaExport[]): readonly LiveManualQaIssue[] {

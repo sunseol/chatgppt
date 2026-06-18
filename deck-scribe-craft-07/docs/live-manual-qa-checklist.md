@@ -41,20 +41,20 @@ Within 10 minutes, the tester must:
 
 - `sessionDurationMs` at or below 600000 and completed setup tasks `new_project`, `login_check`, `prompt_input`
 - `testerRole` set to `non_developer`
-- approval target checks with every target understood
+- approval target checks for `research_pack`, `slide_generation`, and `export`, with every target understood
 - at least one opened real HTTP(S) source URL
 - at least one regenerated slide id and one edited title slide id
 - opened export artifacts `png`, `project`, and `report`
 - zero critical errors, zero mock indicators, and zero placeholder outputs
 - a severity issue list using P0/P1/P2
 
-Blocker codes: `tester_not_non_developer`, `setup_over_time`, `approval_target_misunderstood`, `missing_real_source_open`, `invalid_real_source_url`, `missing_slide_regeneration`, `missing_title_edit`, `missing_export_open`, `critical_issue_present`, `mock_indicator_present`, `placeholder_output_present`, `missing_severity_issue_list`.
+Blocker codes: `tester_not_non_developer`, `setup_over_time`, `missing_approval_target_check`, `approval_target_misunderstood`, `missing_real_source_open`, `invalid_real_source_url`, `missing_slide_regeneration`, `missing_title_edit`, `missing_export_open`, `critical_issue_present`, `mock_indicator_present`, `placeholder_output_present`, `missing_severity_issue_list`.
 
 ## Pass criteria
 
 - Project task completes within 10 minutes.
 - Tester is not a developer or implementation contributor.
-- Tester explains every approval gate target.
+- Tester explains the research, slide generation, and export approval gate targets.
 - At least one real source is opened and understood.
 - One slide is regenerated and accepted or rejected.
 - One title edit survives export.
