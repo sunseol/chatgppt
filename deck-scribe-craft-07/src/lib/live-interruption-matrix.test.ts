@@ -130,6 +130,30 @@ describe("live interruption matrix", () => {
     ]);
   });
 
+  test("blocks fixture and test interruption evidence masquerading as live jobs", () => {
+    // Given
+    const matrix = completeMatrix({
+      scenarios: LIVE_INTERRUPTION_SCENARIOS.map((id) =>
+        scenario(id, {
+          liveJobId: id === "fetch_shutdown" ? "test_fetch_job" : `fixture_job_${id}`,
+          recoverySnapshotPath:
+            id === "cancel_job" ? "recovery/fake-cancel.json" : `fixtures/${id}.json`,
+        }),
+      ),
+    });
+
+    // When
+    const result = evaluateLiveInterruptionMatrix(matrix);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "missing_live_job_evidence",
+      "missing_recovery_snapshot",
+    ]);
+  });
+
   test("blocks interrupted artifact gate evidence that did not exercise approval and export gates", () => {
     // Given
     const matrix = completeMatrix({

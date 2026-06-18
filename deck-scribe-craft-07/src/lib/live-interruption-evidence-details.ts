@@ -8,10 +8,16 @@ export function scenarioEvidenceDetailIssues(
   scenarios: readonly LiveInterruptionScenarioEvidence[],
 ): readonly LiveInterruptionIssue[] {
   const missingLiveJobs = scenarios
-    .filter((scenario) => !scenario.liveJobId.trim() || scenario.liveJobId.startsWith("mock_"))
+    .filter(
+      (scenario) => !scenario.liveJobId.trim() || hasSyntheticEvidenceMarker(scenario.liveJobId),
+    )
     .map((scenario) => scenario.id);
   const missingSnapshots = scenarios
-    .filter((scenario) => !scenario.recoverySnapshotPath.endsWith(".json"))
+    .filter(
+      (scenario) =>
+        !scenario.recoverySnapshotPath.endsWith(".json") ||
+        hasSyntheticEvidenceMarker(scenario.recoverySnapshotPath),
+    )
     .map((scenario) => scenario.id);
   const missingAppCancelSnapshots = scenarios
     .filter(
@@ -89,6 +95,11 @@ export function scenarioEvidenceDetailIssues(
           ),
         ]),
   ];
+}
+
+function hasSyntheticEvidenceMarker(value: string): boolean {
+  const normalized = value.toLowerCase();
+  return ["mock", "fixture", "test", "fake"].some((marker) => normalized.includes(marker));
 }
 
 function issue(

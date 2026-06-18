@@ -8,7 +8,7 @@ Ticket: DF-243
 
 The Live interruption matrix validates that provider interruptions do not corrupt project state or allow partial artifacts into approval/export.
 
-Every scenario must carry a non-mock live job id plus a persisted recovery snapshot path. The cancellation scenario must record persisted cancel signal evidence and an app-storage recovery snapshot. The interrupted artifact gate scenario must explicitly exercise both approval and export gates, even when no interrupted artifact becomes approvable or exportable.
+Every scenario must carry a non-synthetic live job id plus a persisted recovery snapshot path. Job ids or snapshots marked as `mock`, `fixture`, `test`, or `fake` are not accepted as Live interruption evidence. The cancellation scenario must record persisted cancel signal evidence and an app-storage recovery snapshot. The interrupted artifact gate scenario must explicitly exercise both approval and export gates, even when no interrupted artifact becomes approvable or exportable.
 
 Required scenarios:
 
@@ -23,8 +23,8 @@ Required scenarios:
 `src/lib/live-interruption-matrix.ts` returns these issue codes:
 
 - `missing_interruption_scenario`: a required matrix scenario is absent.
-- `missing_live_job_evidence`: a scenario lacks a non-mock live job id.
-- `missing_recovery_snapshot`: a scenario lacks a persisted recovery snapshot.
+- `missing_live_job_evidence`: a scenario lacks a non-synthetic live job id.
+- `missing_recovery_snapshot`: a scenario lacks a persisted, non-synthetic recovery snapshot.
 - `missing_app_cancel_snapshot`: cancellation evidence lacks an app-storage recovery snapshot.
 - `missing_cancel_signal_evidence`: cancellation evidence lacks a persisted cancel signal.
 - `unsafe_recovered_job_state`: interrupted text/fetch job recovered as queued, running, or succeeded.
@@ -39,7 +39,7 @@ Required scenarios:
 
 ## Local Evidence
 
-- `src/lib/live-interruption-matrix.test.ts` verifies safe recovery, summary formatting, live job/snapshot/app-storage cancel snapshot/cancel signal evidence requirements, unsafe restart/resume/cancel/approval/export blockers, and cancellation attempts that still complete artifacts after cancellation.
+- `src/lib/live-interruption-matrix.test.ts` verifies safe recovery, summary formatting, live job/snapshot/app-storage cancel snapshot/cancel signal evidence requirements, fixture/test/fake interruption evidence rejection, unsafe restart/resume/cancel/approval/export blockers, and cancellation attempts that still complete artifacts after cancellation.
 - `src/lib/provider-job-recovery.ts` preserves job snapshots for restart recovery.
 - `src/lib/slide-generation-queue-live-controls.test.ts` already covers retry, partial image resume, and cancellation behavior at the queue level.
 
