@@ -4,7 +4,7 @@ import type { ProviderJob } from "@/lib/provider-job-manager";
 import { ProviderJobProgressPanel } from "./ProviderJobProgressPanel";
 
 describe("provider job progress panel", () => {
-  test("renders current stage job id progress cancel action and partial artifacts", () => {
+  test("renders current stage progress cancel action and partial artifacts", () => {
     const markup = renderToStaticMarkup(
       <ProviderJobProgressPanel
         stageLabel="슬라이드 이미지 생성"
@@ -17,8 +17,8 @@ describe("provider job progress panel", () => {
 
     expect(markup.includes("현재 단계")).toBe(true);
     expect(markup.includes("슬라이드 이미지 생성")).toBe(true);
-    expect(markup.includes("job_id")).toBe(true);
-    expect(markup.includes("job_panel_running")).toBe(true);
+    expect(markup.includes("진행 상태")).toBe(true);
+    expect(markup.includes("job_id")).toBe(false);
     expect(markup.includes("45%")).toBe(true);
     expect(markup.includes("취소 요청")).toBe(true);
     expect(markup.includes("중간 산출물")).toBe(true);
@@ -55,12 +55,12 @@ function runningJob(): ProviderJob {
     id: "job_panel_running",
     providerId: "mock",
     capability: "imageGeneration",
-    description: "Generate slide images",
+    description: "슬라이드 이미지 생성",
     status: "running",
     createdAt: 10,
     startedAt: 11,
     attempt: 1,
-    progress: { percent: 45, message: "Drafting slide images" },
+    progress: { percent: 45, message: "슬라이드 이미지 생성 중" },
     cancelRequested: false,
     partialResult: {
       kind: "preview",

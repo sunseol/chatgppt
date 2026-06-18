@@ -47,7 +47,9 @@ export function evaluateFinalExportGate(input: {
   if (!summary) {
     return {
       kind: "blocked",
-      issues: [{ code: "missing_export_package", message: "Export package is required." }],
+      issues: [
+        { code: "missing_export_package", message: "내보내기 파일을 먼저 준비해야 합니다." },
+      ],
     };
   }
   return {
@@ -62,7 +64,7 @@ function workflowErrorIssues(project: DeckProject): readonly FinalExportGateIssu
   return (project.workflowErrors ?? []).filter(workflowErrorBlocksFinalApproval).map((error) => ({
     code: "fatal_workflow_error",
     step: error.stage,
-    message: `${error.stage} ${error.kind} error must be resolved before final export.`,
+    message: `${error.stage} 단계의 오류를 해결해야 내보낼 수 있습니다.`,
   }));
 }
 
@@ -72,29 +74,31 @@ function invalidatedIssues(project: DeckProject): readonly FinalExportGateIssue[
     .map(([step]) => ({
       code: "invalidated_artifact",
       step,
-      message: `Invalidated ${step} must be regenerated or re-approved.`,
+      message: `${step} 단계 결과를 다시 확인해야 합니다.`,
     }));
 }
 
 function exportPackageIssues(
   summary: ProjectExportSummary | undefined,
 ): readonly FinalExportGateIssue[] {
-  if (!summary) return [{ code: "missing_export_package", message: "Export package is required." }];
+  if (!summary) {
+    return [{ code: "missing_export_package", message: "내보내기 파일을 먼저 준비해야 합니다." }];
+  }
   const issues: FinalExportGateIssue[] = [];
   if (summary.pngCount <= 0) {
-    issues.push({ code: "missing_png_export", message: "At least one PNG export is required." });
+    issues.push({ code: "missing_png_export", message: "PNG 파일이 1개 이상 필요합니다." });
   }
   if (summary.svgCount <= 0) {
-    issues.push({ code: "missing_svg_export", message: "At least one SVG export is required." });
+    issues.push({ code: "missing_svg_export", message: "SVG 파일이 1개 이상 필요합니다." });
   }
   if (summary.hybridSvgCount <= 0) {
     issues.push({
       code: "missing_hybrid_svg_export",
-      message: "At least one hybrid SVG export is required.",
+      message: "편집용 SVG 파일이 1개 이상 필요합니다.",
     });
   }
   if (summary.projectFilePath.trim().length === 0) {
-    issues.push({ code: "missing_project_file", message: "Project file export is required." });
+    issues.push({ code: "missing_project_file", message: "프로젝트 파일이 필요합니다." });
   }
   return issues;
 }
@@ -110,7 +114,7 @@ function reportIssues(
   return [
     {
       code: "missing_generation_report",
-      message: "Generation Report must include prompt versions and export artifact lineage.",
+      message: "생성 보고서에 프롬프트 버전과 내보내기 정보가 필요합니다.",
     },
   ];
 }

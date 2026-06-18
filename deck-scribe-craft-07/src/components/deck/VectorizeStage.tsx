@@ -44,24 +44,20 @@ export function VectorizeStage({ project }: { readonly project: DeckProject }) {
   return (
     <div className="flex min-h-full flex-col">
       <div className="mx-auto w-full max-w-6xl flex-1 px-8 py-12">
-        <StageHeader num="08" sub="Vectorize · PNG → Editable Layers" title="편집 가능 변환" />
+        <StageHeader num="08" sub="Editor Prep" title="편집 레이어 준비" />
         {!layers ? (
-          <EmptyAction
-            label="DOM layer metadata + Slide Spec 기반으로 편집 가능한 레이어 모델 생성"
-            busy={busy}
-            onClick={convert}
-          />
+          <EmptyAction label="슬라이드를 텍스트와 도형 단위로 준비" busy={busy} onClick={convert} />
         ) : (
           <VectorizeReview project={project} layers={layers} report={report} />
         )}
       </div>
       <GateBar
-        hint={layers ? "편집 가능성 검증을 통과해야 편집기로 이동할 수 있습니다." : ""}
-        regenerate={layers ? { label: "재변환", onClick: convert } : undefined}
+        hint={layers ? "레이어가 준비되면 편집기에서 바로 조정할 수 있습니다." : ""}
+        regenerate={layers ? { label: "다시 준비", onClick: convert } : undefined}
         approve={
           layers
             ? {
-                label: "변환 결과를 승인하고 편집기 열기",
+                label: "편집기에서 계속 조정하기",
                 onClick: approve,
                 disabled: !report.canApprove,
               }

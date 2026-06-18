@@ -32,7 +32,7 @@ describe("plan editor UI", () => {
       </>,
     );
 
-    expect(markup.includes("승인 차단")).toBe(true);
+    expect(markup.includes("수정하면 승인할 수 있음")).toBe(true);
     expect(markup.includes("Slide 1 is missing body points.")).toBe(true);
     expect(markup.includes("파싱된 슬라이드")).toBe(true);
     expect(markup.includes("수정 요청")).toBe(true);

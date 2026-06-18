@@ -1,13 +1,30 @@
 import { AlertTriangle, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import type { ReactNode } from "react";
+
+export function StageShell({ children }: { readonly children: ReactNode }) {
+  return <div className="flex h-full min-h-0 flex-col overflow-hidden">{children}</div>;
+}
+
+export function StageScroll({
+  children,
+  className,
+}: {
+  readonly children: ReactNode;
+  readonly className?: string;
+}) {
+  return (
+    <div className={`desktop-scroll w-full flex-1 pb-28 pt-8 ${className ?? ""}`}>{children}</div>
+  );
+}
 
 export function StageHeader({ num, title, sub }: { num: string; title: string; sub: string }) {
   return (
-    <header className="mb-8">
+    <header className="mb-6">
       <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-accent">
         {num} · {sub}
       </div>
-      <h1 className="mt-2 font-serif text-4xl tracking-tight">{title}</h1>
+      <h1 className="mt-2 font-serif text-3xl tracking-tight xl:text-4xl">{title}</h1>
     </header>
   );
 }
@@ -20,7 +37,7 @@ export function InvalidatedBanner({ on }: { on: boolean }) {
       <div>
         <div className="font-medium">상위 단계가 변경되어 이 단계는 재승인이 필요합니다.</div>
         <div className="mt-1 text-xs text-muted-foreground">
-          다시 생성하거나 검토 후 승인을 진행해주세요. 이전 승인 해시는 무효 처리됩니다.
+          앞 단계의 내용이 바뀌었습니다. 이 단계 결과를 다시 확인한 뒤 승인해주세요.
         </div>
       </div>
     </div>

@@ -1,18 +1,22 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { ActionableErrorPanel } from "@/components/deck/ActionableErrorPanel";
-import { Button } from "@/components/ui/button";
 import { GateBar } from "@/components/deck/GateBar";
-import { SlidePreview } from "@/components/deck/SlidePreview";
+import { LayoutDraftWorkspace } from "@/components/deck/LayoutDraftWorkspace";
 import { LayoutValidationPanel } from "@/components/deck/LayoutValidationPanel";
-import { EmptyAction, InvalidatedBanner, StageHeader } from "@/components/deck/stage-shared";
+import {
+  EmptyAction,
+  InvalidatedBanner,
+  StageHeader,
+  StageScroll,
+  StageShell,
+} from "@/components/deck/stage-shared";
 import { approveStage, invalidateDownstream, updateProject } from "@/lib/deck-store";
 import { canGenerateLayoutPrototype } from "@/lib/workflow-engine";
 import { hash, mockLayout } from "@/lib/mock-ai";
 import { createLayoutRenderWorkflowError } from "@/components/deck/layout-stage-errors";
 import {
   canApproveLayout,
-  layoutThumbnailSource,
   LAYOUT_APPROVAL_CTA_LABEL,
 } from "@/components/deck/layout-approval-model";
 import type { DeckProject, LayoutPrototype } from "@/lib/deck-types";
@@ -28,6 +32,11 @@ export function LayoutStage({ project }: { readonly project: DeckProject }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<WorkflowErrorRecord | undefined>();
   const [revisionSlides, setRevisionSlides] = useState<readonly number[]>([]);
+  const [revisionDraft, setRevisionDraft] = useState("");
+  const [revisionRequests, setRevisionRequests] = useState<Record<number, string>>({});
+  const [selectedSlide, setSelectedSlide] = useState(project.layout?.slides[0]?.number ?? 1);
+  const [selectedLayerId, setSelectedLayerId] = useState<string | null>(null);
+  const [largeSlide, setLargeSlide] = useState<number | null>(null);
   const invalidated = !!project.invalidated.layout;
   const validation = lp?.validationReport;
 
@@ -35,6 +44,8 @@ export function LayoutStage({ project }: { readonly project: DeckProject }) {
     setLp(project.layout);
     setError(undefined);
     setRevisionSlides([]);
+    setSelectedSlide(project.layout?.slides[0]?.number ?? 1);
+    setSelectedLayerId(null);
   }, [project.layout]);
 
   const generate = async () => {
@@ -73,6 +84,7 @@ export function LayoutStage({ project }: { readonly project: DeckProject }) {
   };
 
   const toggleRevision = (slideNumber: number) => {
+    setSelectedSlide(slideNumber);
     setRevisionSlides((current) =>
       current.includes(slideNumber)
         ? current.filter((number) => number !== slideNumber)
@@ -80,10 +92,35 @@ export function LayoutStage({ project }: { readonly project: DeckProject }) {
     );
   };
 
+  const applyRevisionRequest = () => {
+    const request = revisionDraft.trim();
+    if (!request) return;
+    setRevisionRequests((current) => ({ ...current, [selectedSlide]: request }));
+    setRevisionSlides((current) =>
+      current.includes(selectedSlide) ? current : [...current, selectedSlide],
+    );
+    setRevisionDraft("");
+  };
+
+  const moveLayoutLayer = (
+    slideNumber: number,
+    layerId: string,
+    delta: { readonly x: number; readonly y: number },
+  ) => {
+    const design = project.design;
+    if (!design) return;
+    setLp((current) => {
+      if (!current) return current;
+      const next = moveLayerInLayout(current, slideNumber, layerId, delta, design);
+      updateProject(project.id, { layout: next, stage: "LAYOUT_APPROVAL_PENDING" });
+      return next;
+    });
+  };
+
   return (
-    <div className="flex min-h-full flex-col">
-      <div className="mx-auto w-full max-w-6xl flex-1 px-8 py-12">
-        <StageHeader num="05" sub="Layout · HTML Prototype" title="레이아웃 초안" />
+    <StageShell>
+      <StageScroll className="mx-auto max-w-6xl px-8">
+        <StageHeader num="05" sub="Layout" title="레이아웃 초안" />
         <InvalidatedBanner on={invalidated && !!lp} />
         {error ? <ActionableErrorPanel error={error} onRetry={generate} /> : null}
         {lp ? <LayoutValidationPanel report={validation} /> : null}
@@ -97,68 +134,27 @@ export function LayoutStage({ project }: { readonly project: DeckProject }) {
           </span>
         </div>
         {!lp ? (
-          <EmptyAction
-            label="제한된 컴포넌트로 HTML 레이아웃 + DOM layer metadata 생성"
-            busy={busy}
-            onClick={generate}
-          />
+          <EmptyAction label="조정 가능한 레이아웃 초안 생성" busy={busy} onClick={generate} />
         ) : (
-          <div className="grid grid-cols-2 gap-6 xl:grid-cols-3">
-            {lp.slides.map((slide) => {
-              const spec = project.plan?.slides.find(
-                (planSlide) => planSlide.number === slide.number,
-              );
-              if (!spec || !project.design) return null;
-              const thumbnail = layoutThumbnailSource(slide);
-              const requested = revisionSlides.includes(slide.number);
-              return (
-                <div key={slide.number} className="border border-border bg-paper">
-                  <div className="aspect-video w-full bg-background">
-                    {thumbnail ? (
-                      <img
-                        src={thumbnail}
-                        alt={`Slide ${slide.number} layout thumbnail`}
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <SlidePreview
-                        design={project.design}
-                        spec={spec}
-                        slide={{
-                          number: slide.number,
-                          version: 1,
-                          status: "ready",
-                          imageDescriptor: "",
-                        }}
-                        mode="layout"
-                      />
-                    )}
-                  </div>
-                  <div className="flex items-center justify-between gap-2 border-t border-border px-3 py-2 text-xs">
-                    <span className="font-mono text-muted-foreground">
-                      #{String(slide.number).padStart(2, "0")} · {slide.componentType}
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <span className="text-muted-foreground">
-                        layers · {slide.domLayers.length}
-                      </span>
-                      <Button
-                        type="button"
-                        variant={requested ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => toggleRevision(slide.number)}
-                        className="h-7 px-2 text-[11px]"
-                      >
-                        {requested ? "수정 요청됨" : "수정 요청"}
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          <LayoutDraftWorkspace
+            layout={lp}
+            project={project}
+            revisionSlides={revisionSlides}
+            selectedSlide={selectedSlide}
+            selectedLayerId={selectedLayerId}
+            revisionDraft={revisionDraft}
+            revisionRequests={revisionRequests}
+            largeSlide={largeSlide}
+            onSelectedSlide={setSelectedSlide}
+            onSelectedLayer={setSelectedLayerId}
+            onRevisionDraft={setRevisionDraft}
+            onApplyRevision={applyRevisionRequest}
+            onToggleRevision={toggleRevision}
+            onLargeSlide={setLargeSlide}
+            onMoveLayer={moveLayoutLayer}
+          />
         )}
-      </div>
+      </StageScroll>
       <GateBar
         hint={lp ? `${revisionSlides.length}건 수정 요청 · 검증 후 승인` : ""}
         back={lp ? { label: "디자인으로 돌아가기", onClick: backToDesign } : undefined}
@@ -173,6 +169,48 @@ export function LayoutStage({ project }: { readonly project: DeckProject }) {
             : undefined
         }
       />
-    </div>
+    </StageShell>
   );
+}
+
+function moveLayerInLayout(
+  layout: LayoutPrototype,
+  slideNumber: number,
+  layerId: string,
+  delta: { readonly x: number; readonly y: number },
+  design: NonNullable<DeckProject["design"]>,
+): LayoutPrototype {
+  return {
+    ...layout,
+    slides: layout.slides.map((slide) =>
+      slide.number === slideNumber ? moveLayerInSlide(slide, layerId, delta, design) : slide,
+    ),
+  };
+}
+
+function moveLayerInSlide(
+  slide: LayoutPrototype["slides"][number],
+  layerId: string,
+  delta: { readonly x: number; readonly y: number },
+  design: NonNullable<DeckProject["design"]>,
+): LayoutPrototype["slides"][number] {
+  return {
+    ...slide,
+    domLayers: slide.domLayers.map((layer) =>
+      layer.id === layerId
+        ? {
+            ...layer,
+            bounds: {
+              ...layer.bounds,
+              x: clamp(layer.bounds.x + delta.x, 0, design.canvas.w - layer.bounds.w),
+              y: clamp(layer.bounds.y + delta.y, 0, design.canvas.h - layer.bounds.h),
+            },
+          }
+        : layer,
+    ),
+  };
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), max);
 }

@@ -1,9 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { EditorCanvasPanel } from "@/components/deck/EditorCanvasPanel";
+import {
+  EditorCanvasDialog,
+  EditorConversionPanel,
+  EditorStats,
+  LargeEditButton,
+  LayerList,
+  SlideList,
+} from "@/components/deck/EditorStagePanels";
 import { EditorTextInspector } from "@/components/deck/EditorTextInspector";
 import { GateBar } from "@/components/deck/GateBar";
-import { StageHeader } from "@/components/deck/stage-shared";
+import { StageHeader, StageScroll, StageShell } from "@/components/deck/stage-shared";
+import { fakeAsync } from "@/components/deck/stage-timing";
 import { useEditorAutosave } from "@/components/deck/useEditorAutosave";
 import type { DeckProject, EditableLayerModel } from "@/lib/deck-types";
 import {
@@ -11,6 +20,7 @@ import {
   buildEditorCanvasModel,
   estimateDeckOpenPerformance,
 } from "@/lib/editor-canvas-model";
+import { applyUpdatedTransform } from "@/lib/editor-stage-model";
 import {
   moveDeckLayer,
   resizeDeckLayer,
@@ -18,12 +28,15 @@ import {
 } from "@/lib/editor-object-transform";
 import { applyDeckLayerTextEdit, serializeEditorLayersForExport } from "@/lib/editor-text-edit";
 import { updateProject } from "@/lib/deck-store";
+import { mockLayers } from "@/lib/mock-ai";
 
 export function EditorStage({ project }: { readonly project: DeckProject }) {
   const navigate = useNavigate();
   const [layers, setLayers] = useState<EditableLayerModel[]>(project.layers ?? []);
   const [selected, setSelected] = useState(layers[0]?.slideNumber ?? 1);
   const [selectedLayerId, setSelectedLayerId] = useState<string | null>(null);
+  const [conversionBusy, setConversionBusy] = useState(false);
+  const [largeEditOpen, setLargeEditOpen] = useState(false);
 
   useEffect(() => {
     const nextLayers = project.layers ?? [];
@@ -35,6 +48,22 @@ export function EditorStage({ project }: { readonly project: DeckProject }) {
     );
     setSelectedLayerId(null);
   }, [project.layers]);
+
+  useEffect(() => {
+    if (layers.length > 0 || conversionBusy || !project.plan || !project.design) return;
+    let cancelled = false;
+    setConversionBusy(true);
+    void fakeAsync(null, 1100).then(() => {
+      if (cancelled || !project.plan || !project.design) return;
+      const nextLayers = mockLayers(project.plan, project.design);
+      setLayers(nextLayers);
+      updateProject(project.id, { layers: nextLayers, stage: "EDITOR" });
+      setConversionBusy(false);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [conversionBusy, layers.length, project.design, project.id, project.plan]);
 
   const current = layers.find((model) => model.slideNumber === selected);
   const selectedLayer = current?.layers.find((layer) => layer.id === selectedLayerId);
@@ -77,8 +106,7 @@ export function EditorStage({ project }: { readonly project: DeckProject }) {
   };
 
   const applyTransform = (result: EditorTransformResult) => {
-    if (result.kind !== "updated") return;
-    persistLayers([...result.models]);
+    applyUpdatedTransform(result, persistLayers);
   };
 
   const moveLayer = (layerId: string, delta: { readonly x: number; readonly y: number }) => {
@@ -117,148 +145,77 @@ export function EditorStage({ project }: { readonly project: DeckProject }) {
   };
 
   return (
-    <div className="flex min-h-full flex-col">
-      <div className="mx-auto w-full max-w-[1500px] flex-1 px-8 py-12">
+    <StageShell>
+      <StageScroll className="max-w-none px-6">
         <StageHeader num="09" sub="Editor · Canvas" title="편집기" />
-        <div className="grid grid-cols-[140px_minmax(460px,1fr)_280px] gap-5">
-          <SlideList
-            layers={layers}
-            selected={selected}
-            onSelect={(slideNumber) => {
-              setSelected(slideNumber);
-              setSelectedLayerId(null);
-            }}
-          />
-          <div className="border border-border bg-paper">
-            {canvasModel ? (
-              <EditorCanvasPanel
-                model={canvasModel}
+        {layers.length === 0 ? (
+          <EditorConversionPanel />
+        ) : (
+          <div className="grid min-h-[calc(100vh-190px)] grid-cols-[120px_minmax(0,1fr)_300px] gap-5">
+            <SlideList
+              layers={layers}
+              selected={selected}
+              onSelect={(slideNumber) => {
+                setSelected(slideNumber);
+                setSelectedLayerId(null);
+              }}
+            />
+            <div className="min-h-0 border border-border bg-paper">
+              <div className="flex items-center justify-between border-b border-border px-3 py-2">
+                <div className="text-xs text-muted-foreground">
+                  {String(selected).padStart(2, "0")}번 슬라이드 편집
+                </div>
+                <LargeEditButton onClick={() => setLargeEditOpen(true)} />
+              </div>
+              {canvasModel ? (
+                <EditorCanvasPanel
+                  model={canvasModel}
+                  selectedLayerId={selectedLayerId}
+                  onSelectLayer={setSelectedLayerId}
+                  onMoveLayer={moveLayer}
+                  onResizeLayer={resizeLayer}
+                />
+              ) : (
+                <div className="grid aspect-video place-items-center text-sm text-muted-foreground">
+                  편집 가능한 레이어가 없습니다.
+                </div>
+              )}
+            </div>
+            <aside>
+              <EditorStats
+                layerCount={exportPayload.layerCount}
+                textLayerCount={exportPayload.textLayerCount}
+                performancePassed={performance?.passed ?? false}
+              />
+              <LayerList
+                current={current}
                 selectedLayerId={selectedLayerId}
                 onSelectLayer={setSelectedLayerId}
-                onMoveLayer={moveLayer}
-                onResizeLayer={resizeLayer}
               />
-            ) : (
-              <div className="grid aspect-video place-items-center text-sm text-muted-foreground">
-                편집 가능한 레이어가 없습니다.
-              </div>
-            )}
+              <EditorTextInspector
+                layer={selectedLayer}
+                exportHash={exportPayload.hash}
+                onTextChange={updateLayerText}
+              />
+            </aside>
           </div>
-          <aside>
-            <EditorStats
-              layerCount={exportPayload.layerCount}
-              textLayerCount={exportPayload.textLayerCount}
-              performancePassed={performance?.passed ?? false}
-            />
-            <LayerList
-              current={current}
-              selectedLayerId={selectedLayerId}
-              onSelectLayer={setSelectedLayerId}
-            />
-            <EditorTextInspector
-              layer={selectedLayer}
-              exportHash={exportPayload.hash}
-              onTextChange={updateLayerText}
-            />
-          </aside>
-        </div>
-      </div>
-      <GateBar
-        hint="편집을 마치면 최종 보고서를 생성합니다."
-        approve={{ label: "최종화하고 내보내기로 이동", onClick: finalize }}
+        )}
+      </StageScroll>
+      {layers.length > 0 ? (
+        <GateBar
+          hint="편집을 마치면 최종 보고서를 생성합니다."
+          approve={{ label: "최종화하고 내보내기로 이동", onClick: finalize }}
+        />
+      ) : null}
+      <EditorCanvasDialog
+        open={largeEditOpen}
+        model={canvasModel}
+        selectedLayerId={selectedLayerId}
+        onOpenChange={setLargeEditOpen}
+        onSelectLayer={setSelectedLayerId}
+        onMoveLayer={moveLayer}
+        onResizeLayer={resizeLayer}
       />
-    </div>
-  );
-}
-
-function SlideList({
-  layers,
-  selected,
-  onSelect,
-}: {
-  readonly layers: readonly EditableLayerModel[];
-  readonly selected: number;
-  readonly onSelect: (slideNumber: number) => void;
-}) {
-  return (
-    <ul className="max-h-[70vh] space-y-1 overflow-y-auto">
-      {layers.map((model) => (
-        <li key={model.slideNumber}>
-          <button
-            type="button"
-            onClick={() => onSelect(model.slideNumber)}
-            className={`w-full border px-3 py-2 text-left text-xs ${
-              selected === model.slideNumber
-                ? "border-foreground bg-paper"
-                : "border-transparent hover:bg-paper"
-            }`}
-          >
-            <span className="font-mono text-muted-foreground">
-              #{String(model.slideNumber).padStart(2, "0")}
-            </span>
-          </button>
-        </li>
-      ))}
-    </ul>
-  );
-}
-
-function LayerList({
-  current,
-  selectedLayerId,
-  onSelectLayer,
-}: {
-  readonly current: EditableLayerModel | undefined;
-  readonly selectedLayerId: string | null;
-  readonly onSelectLayer: (layerId: string) => void;
-}) {
-  return (
-    <>
-      <div className="mt-5 text-[11px] uppercase tracking-wider text-muted-foreground">Layers</div>
-      <ul className="mt-2 space-y-1">
-        {current?.layers.map((layer) => (
-          <li key={layer.id}>
-            <button
-              type="button"
-              onClick={() => onSelectLayer(layer.id)}
-              disabled={!layer.editable}
-              className={`flex w-full items-center justify-between border px-3 py-2 text-left text-xs ${
-                selectedLayerId === layer.id ? "border-accent bg-paper" : "border-border"
-              } ${!layer.editable ? "opacity-40" : "hover:bg-paper"}`}
-            >
-              <span>{layer.role}</span>
-              <span className="font-mono text-muted-foreground">{layer.type}</span>
-            </button>
-          </li>
-        ))}
-      </ul>
-    </>
-  );
-}
-
-function EditorStats({
-  layerCount,
-  textLayerCount,
-  performancePassed,
-}: {
-  readonly layerCount: number;
-  readonly textLayerCount: number;
-  readonly performancePassed: boolean;
-}) {
-  return (
-    <div className="grid grid-cols-3 gap-2 text-xs">
-      <Stat label="layers" value={String(layerCount)} />
-      <Stat label="text" value={String(textLayerCount)} />
-      <Stat label="5s" value={performancePassed ? "pass" : "check"} />
-    </div>
-  );
-}
-
-function Stat({ label, value }: { readonly label: string; readonly value: string }) {
-  return (
-    <div className="border border-border bg-background px-3 py-2">
-      <div className="font-mono text-[10px] uppercase text-muted-foreground">{label}</div>
-      <div className="mt-1 font-medium">{value}</div>
-    </div>
+    </StageShell>
   );
 }

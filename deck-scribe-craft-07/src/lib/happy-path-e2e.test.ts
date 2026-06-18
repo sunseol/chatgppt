@@ -78,9 +78,6 @@ function requiredStages(): readonly Stage[] {
     "LAYOUT_APPROVAL_PENDING",
     "GENERATING_SLIDES",
     "SLIDE_REVIEW_PENDING",
-    "VECTORIZE_PENDING",
-    "VECTORIZING",
-    "EDITABLE_REVIEW_PENDING",
     "EDITOR",
     "FINAL_REPORTING",
     "EXPORT_READY",
@@ -88,5 +85,5 @@ function requiredStages(): readonly Stage[] {
 }
 
 function requiredApprovalSteps(): readonly StepKey[] {
-  return ["interview", "research", "plan", "design", "layout", "review", "vectorize", "editor"];
+  return ["interview", "research", "plan", "design", "layout", "review", "editor"];
 }

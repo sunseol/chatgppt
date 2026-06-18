@@ -16,9 +16,7 @@ describe("workflow stepper model", () => {
     expect(
       items.find((item) => item.key === "generate")?.detail.includes("레이아웃 승인 후 접근"),
     ).toBe(true);
-    expect(items.find((item) => item.key === "layout")?.detail.includes("재생성 또는 재승인")).toBe(
-      true,
-    );
+    expect(items.find((item) => item.key === "layout")?.detail.includes("다시 확인")).toBe(true);
   });
 });
 

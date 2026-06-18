@@ -39,7 +39,7 @@ export function mockPlan(brief: InterviewBrief, _research: ResearchPack): DeckPl
       title: "강제 워크플로우 솔루션",
       role: "Solution",
       coreMessage: "11단계 승인 게이트로 생성 품질을 보장",
-      bodyPoints: ["브리프 승인", "조사 검증", "기획 승인", "편집 가능 변환"],
+      bodyPoints: ["브리프 승인", "조사 검증", "기획 승인", "편집 가능한 캔버스"],
       visualType: "워크플로우 다이어그램",
       visualComposition: "워크플로우 다이어그램",
       evidence: [],
@@ -60,7 +60,7 @@ export function mockPlan(brief: InterviewBrief, _research: ResearchPack): DeckPl
     {
       title: "비즈니스 모델",
       role: "Business",
-      coreMessage: "구독형 SaaS + 엔터프라이즈 라이선스",
+      coreMessage: "팀 단위 요금제와 기업 맞춤 도입으로 확장",
       bodyPoints: ["개인/팀 구독", "엔터프라이즈 라이선스", "제작 워크플로우 관리"],
       visualType: "가격 카드 3종",
       visualComposition: "가격 카드 3종",

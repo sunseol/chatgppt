@@ -16,7 +16,7 @@ export function EditableReviewGatePanel({ report }: { readonly report: EditableR
           <div>
             <div className="text-sm font-medium">편집 가능성 검증</div>
             <div className="text-xs text-muted-foreground">
-              {blocked ? "승인 차단" : "승인 가능"}
+              {blocked ? "레이어를 보완해야 승인할 수 있음" : "승인 가능"}
             </div>
           </div>
         </div>
