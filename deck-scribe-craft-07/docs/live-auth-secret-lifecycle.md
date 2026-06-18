@@ -33,10 +33,10 @@ Observed local runtime:
 Dry-run package evidence:
 
 - Archive: `dist/deckforge-macos-dry-run.tgz`
-- SHA-256: `8229be0e887250722b93d5c3398e3ab77ce360b7e23a15e6a02b7354c0e92b73`
-- Archive size: 279,547 bytes
+- SHA-256: `377df1eabfc41128c08d24f6c00a40b2f80dac01ccd7f4fc90e810f16924d20e`
+- Archive size: 281,804 bytes
 - Extracted app bundle: `dist/deckforge-macos-dry-run/DeckForge.app`
-- App bundle size: 1,028 KiB
+- App bundle size: 1,032 KiB
 - App bundle files: 17
 - Archive members: 26
 
