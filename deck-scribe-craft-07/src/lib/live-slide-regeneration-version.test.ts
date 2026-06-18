@@ -1,12 +1,11 @@
 import { describe, expect, test } from "bun:test";
-import type { GeneratedSlide } from "./deck-types";
 import { createImageArtifactStore, storeSlideImageArtifact } from "./image-artifact-store";
+import { createLiveSlideRegenerationCandidate } from "./live-slide-regeneration";
 import {
-  createLiveSlideRegenerationCandidate,
-  type LiveSlideRegenerationRequest,
-} from "./live-slide-regeneration";
-import { encodeSolidPngDataUrl } from "./png-encoder";
-import type { SlideImageArtifact } from "./slide-image-provider";
+  approvedSlideFixture,
+  liveRegenerationRequestFixture,
+  slideImageArtifactFixture,
+} from "./live-slide-regeneration-test-fixtures";
 
 describe("live full-slide regeneration artifact version", () => {
   test("blocks a regenerated background whose stored version does not match the candidate slide", async () => {
@@ -15,14 +14,14 @@ describe("live full-slide regeneration artifact version", () => {
     const candidateBackground = await storeSlideImageArtifact({
       store,
       projectId: "project_001",
-      artifact: imageArtifact(),
+      artifact: slideImageArtifactFixture(),
       version: 1,
       createdAt: 1_789_900_010,
     });
 
     // When
     const result = createLiveSlideRegenerationCandidate({
-      request: requestFixture(),
+      request: liveRegenerationRequestFixture(),
       originalSlide: approvedSlideFixture(),
       candidateBackground,
       candidateDeckContextId: "deckctx_001",
@@ -45,14 +44,14 @@ describe("live full-slide regeneration artifact version", () => {
     const candidateBackground = await storeSlideImageArtifact({
       store,
       projectId: "project_001",
-      artifact: imageArtifact({ providerId: "codex", omitRequestId: true }),
+      artifact: slideImageArtifactFixture({ providerId: "codex", omitRequestId: true }),
       version: 2,
       createdAt: 1_789_900_011,
     });
 
     // When
     const result = createLiveSlideRegenerationCandidate({
-      request: requestFixture(),
+      request: liveRegenerationRequestFixture(),
       originalSlide: approvedSlideFixture(),
       candidateBackground,
       candidateDeckContextId: "deckctx_001",
@@ -67,58 +66,33 @@ describe("live full-slide regeneration artifact version", () => {
       "missing_regeneration_request_id",
     ]);
   });
+
+  test("blocks a regenerated background that reuses the original provider request id", async () => {
+    // Given
+    const store = createImageArtifactStore({ write: async () => undefined });
+    const candidateBackground = await storeSlideImageArtifact({
+      store,
+      projectId: "project_001",
+      artifact: slideImageArtifactFixture({ requestId: "img_req_original" }),
+      version: 2,
+      createdAt: 1_789_900_012,
+    });
+
+    // When
+    const result = createLiveSlideRegenerationCandidate({
+      request: liveRegenerationRequestFixture(),
+      originalSlide: approvedSlideFixture(),
+      candidateBackground,
+      candidateDeckContextId: "deckctx_001",
+      candidateDesignSystemId: "design_001",
+      candidateVersion: 2,
+    });
+
+    // Then
+    expect(result.kind).toBe("failed");
+    if (result.kind !== "failed") return;
+    expect(result.failure.issues.map((issue) => issue.code)).toEqual([
+      "regeneration_request_id_not_new",
+    ]);
+  });
 });
-
-function requestFixture(): LiveSlideRegenerationRequest {
-  return {
-    requestId: "rev_235",
-    slideNumber: 3,
-    originalSlideVersion: 1,
-    deckContextId: "deckctx_001",
-    designSystemId: "design_001",
-    slidePlanId: "plan_001",
-    slideSpecHash: "sha256:slide-spec",
-    editInstruction: "차트를 더 크게",
-    mustKeep: ["title text"],
-    mustChange: ["chart area size"],
-    originalBackgroundArtifactId: "project_001_image_slide_003_v0",
-  };
-}
-
-function approvedSlideFixture(): GeneratedSlide {
-  return {
-    number: 3,
-    version: 1,
-    status: "approved",
-    imageDescriptor: "project_001_image_slide_003_v0",
-  };
-}
-
-function imageArtifact(
-  options: {
-    readonly providerId?: SlideImageArtifact["providerId"];
-    readonly omitRequestId?: true;
-  } = {},
-): SlideImageArtifact {
-  return {
-    providerId: options.providerId ?? "openaiImage",
-    slideNumber: 3,
-    aspectRatio: "16:9",
-    canvas: { width: 1600, height: 900 },
-    layoutReference: { screenshot: "slide_003_layout.png", mode: "composition-reference" },
-    imageDataUrl: encodeSolidPngDataUrl({
-      width: 1,
-      height: 1,
-      color: { r: 20, g: 40, b: 60, a: 255 },
-    }),
-    prompt: { id: "slide_generation", version: "v1", hash: "sha256:prompt" },
-    request: {
-      model: "gpt-image-2",
-      ...(options.omitRequestId === true ? {} : { requestId: "img_req_revised" }),
-      size: "1600x900",
-      quality: "high",
-      latencyMs: 2_000,
-    },
-    generatedAt: 1_789_900_000,
-  };
-}

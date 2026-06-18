@@ -1,13 +1,16 @@
 import { describe, expect, test } from "bun:test";
-import type { GeneratedSlide, SlideSpec } from "./deck-types";
 import { createImageArtifactStore, storeSlideImageArtifact } from "./image-artifact-store";
 import {
   approveLiveSlideRegenerationCandidate,
   buildLiveSlideRegenerationRequest,
   createLiveSlideRegenerationCandidate,
 } from "./live-slide-regeneration";
-import { encodeSolidPngDataUrl } from "./png-encoder";
-import { createSlideRevisionRequest, type SlideRevisionRequest } from "./slide-revision-model";
+import {
+  approvedSlideFixture,
+  revisionRequestFixture,
+  slideImageArtifactFixture,
+  slideSpecFixture,
+} from "./live-slide-regeneration-test-fixtures";
 import type { SlideImageArtifact } from "./slide-image-provider";
 
 describe("live full-slide regeneration", () => {
@@ -23,6 +26,7 @@ describe("live full-slide regeneration", () => {
       slideSpec: slideSpecFixture(),
       currentSlide: approvedSlideFixture(),
       originalBackgroundArtifactId: "project_001_image_slide_003_v1",
+      originalBackgroundRequestId: "img_req_original",
     });
 
     // Then
@@ -34,6 +38,7 @@ describe("live full-slide regeneration", () => {
     expect(result.request.mustKeep.includes("chart area size")).toBe(false);
     expect(result.request.mustChange).toEqual(["chart area size"]);
     expect(result.request.originalBackgroundArtifactId).toBe("project_001_image_slide_003_v1");
+    expect(result.request.originalBackgroundRequestId).toBe("img_req_original");
     expect(result.request.slideSpecHash.startsWith("sha256:")).toBe(true);
   });
 
@@ -47,6 +52,7 @@ describe("live full-slide regeneration", () => {
       slideSpec: slideSpecFixture(),
       currentSlide: approvedSlideFixture(),
       originalBackgroundArtifactId: stored.original.binary.artifactId,
+      originalBackgroundRequestId: stored.originalRequestId,
     });
     if (requestResult.kind !== "ready") throw new Error("Expected live regeneration request.");
     const originalSlides = [approvedSlideFixture()];
@@ -92,6 +98,7 @@ describe("live full-slide regeneration", () => {
       slideSpec: slideSpecFixture(),
       currentSlide: approvedSlideFixture(),
       originalBackgroundArtifactId: stored.original.binary.artifactId,
+      originalBackgroundRequestId: stored.originalRequestId,
     });
     if (requestResult.kind !== "ready") throw new Error("Expected live regeneration request.");
 
@@ -125,6 +132,7 @@ describe("live full-slide regeneration", () => {
       slideSpec: slideSpecFixture(),
       currentSlide: approvedSlideFixture(),
       originalBackgroundArtifactId: stored.original.binary.artifactId,
+      originalBackgroundRequestId: stored.originalRequestId,
     });
     if (requestResult.kind !== "ready") throw new Error("Expected live regeneration request.");
 
@@ -155,10 +163,11 @@ async function storedBackgrounds(
   } = {},
 ) {
   const store = createImageArtifactStore({ write: async () => undefined });
+  const originalRequestId = "img_req_original";
   const original = await storeSlideImageArtifact({
     store,
     projectId: "project_001",
-    artifact: imageArtifact(3, "openaiImage", "img_req_original"),
+    artifact: slideImageArtifactFixture({ requestId: originalRequestId }),
     version: 1,
     createdAt: 1_789_900_001,
   });
@@ -167,101 +176,12 @@ async function storedBackgrounds(
     : await storeSlideImageArtifact({
         store,
         projectId: "project_001",
-        artifact: imageArtifact(3, options.candidateProviderId ?? "openaiImage", "img_req_revised"),
+        artifact: slideImageArtifactFixture({
+          providerId: options.candidateProviderId ?? "openaiImage",
+          requestId: "img_req_revised",
+        }),
         version: 2,
         createdAt: 1_789_900_002,
       });
-  return { original, candidate };
-}
-
-function revisionRequestFixture(): SlideRevisionRequest {
-  return createSlideRevisionRequest({
-    projectId: "project_001",
-    instruction: "오른쪽 차트를 더 크게 만들어줘.",
-    slide: approvedSlideFixture(),
-    slideSpec: slideSpecFixture(),
-    design: {
-      id: "design_001",
-      canvas: { ratio: "16:9", w: 1600, h: 900, safeMargin: { x: 80, y: 80 } },
-      grid: { columns: 12, gutter: 24 },
-      colors: {
-        background: "#ffffff",
-        textPrimary: "#111111",
-        textSecondary: "#555555",
-        primary: "#006adc",
-        secondary: "#22aa99",
-        accent: "#ffcc00",
-      },
-      typography: {
-        titleStyle: "bold",
-        bodyStyle: "regular",
-        title: { style: "bold", minPx: 40, maxPx: 72 },
-        body: { style: "regular", minPx: 22, maxPx: 34 },
-        caption: { style: "regular", minPx: 14, maxPx: 20 },
-        number: { style: "bold", minPx: 36, maxPx: 64 },
-      },
-      layoutRules: [],
-      componentRules: [],
-      visualLanguage: "clean",
-      negativeRules: [],
-      approvedHash: "sha256:design",
-    },
-    plan: {
-      id: "plan_001",
-      markdown: "# plan",
-      slides: [slideSpecFixture()],
-      approvedHash: "sha256:plan",
-    },
-    now: () => 1_789_900_000,
-    createId: () => "rev_235",
-  });
-}
-
-function approvedSlideFixture(): GeneratedSlide {
-  return {
-    number: 3,
-    version: 1,
-    status: "approved",
-    imageDescriptor: "project_001_image_slide_003_v1",
-  };
-}
-
-function slideSpecFixture(): SlideSpec {
-  return {
-    number: 3,
-    title: "시장 기회",
-    role: "Market",
-    coreMessage: "시장이 빠르게 커진다",
-    visualType: "chart",
-    evidence: ["claim_001"],
-    editableElements: ["title", "body", "chart", "source"],
-  };
-}
-
-function imageArtifact(
-  slideNumber: number,
-  providerId: SlideImageArtifact["providerId"],
-  requestId: string,
-): SlideImageArtifact {
-  return {
-    providerId,
-    slideNumber,
-    aspectRatio: "16:9",
-    canvas: { width: 1600, height: 900 },
-    layoutReference: { screenshot: "slide_003_layout.png", mode: "composition-reference" },
-    imageDataUrl: encodeSolidPngDataUrl({
-      width: 1,
-      height: 1,
-      color: { r: 20, g: 40, b: 60, a: 255 },
-    }),
-    prompt: { id: "slide_generation", version: "v1", hash: "sha256:prompt" },
-    request: {
-      model: "gpt-image-2",
-      requestId,
-      size: "1600x900",
-      quality: "high",
-      latencyMs: 2_000,
-    },
-    generatedAt: 1_789_900_000,
-  };
+  return { original, candidate, originalRequestId };
 }

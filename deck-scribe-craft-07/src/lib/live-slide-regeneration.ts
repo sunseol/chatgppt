@@ -13,7 +13,8 @@ export type LiveSlideRegenerationIssueCode =
   | "background_artifact_version_mismatch"
   | "slide_id_mismatch"
   | "stale_candidate_version"
-  | "missing_regeneration_request_id";
+  | "missing_regeneration_request_id"
+  | "regeneration_request_id_not_new";
 
 export interface LiveSlideRegenerationIssue {
   readonly code: LiveSlideRegenerationIssueCode;
@@ -33,6 +34,7 @@ export interface LiveSlideRegenerationRequest {
   readonly mustKeep: readonly string[];
   readonly mustChange: readonly string[];
   readonly originalBackgroundArtifactId: string;
+  readonly originalBackgroundRequestId: string;
 }
 
 export type BuildLiveSlideRegenerationRequestResult =
@@ -76,6 +78,7 @@ export function buildLiveSlideRegenerationRequest(input: {
   readonly slideSpec: SlideSpec;
   readonly currentSlide: GeneratedSlide;
   readonly originalBackgroundArtifactId: string;
+  readonly originalBackgroundRequestId: string;
 }): BuildLiveSlideRegenerationRequestResult {
   const issues = [
     ...slideSpecIssues(input.revisionRequest, input.slideSpec, input.currentSlide),
@@ -96,6 +99,7 @@ export function buildLiveSlideRegenerationRequest(input: {
       mustKeep: input.revisionRequest.mustKeep,
       mustChange: input.revisionRequest.mustChange,
       originalBackgroundArtifactId: input.originalBackgroundArtifactId,
+      originalBackgroundRequestId: input.originalBackgroundRequestId,
     },
   };
 }

@@ -13,6 +13,8 @@ export function candidateIssues(input: {
   readonly candidateDesignSystemId: string;
   readonly candidateVersion: number;
 }): readonly LiveSlideRegenerationIssue[] {
+  const candidateRequestId = input.candidateBackground.metadata.request.requestId?.trim();
+  const originalRequestId = input.request.originalBackgroundRequestId.trim();
   return [
     ...(input.candidateDeckContextId === input.request.deckContextId
       ? []
@@ -41,7 +43,7 @@ export function candidateIssues(input: {
           },
         ]
       : []),
-    ...(input.candidateBackground.metadata.request.requestId?.trim()
+    ...(candidateRequestId
       ? []
       : [
           {
@@ -50,6 +52,17 @@ export function candidateIssues(input: {
             message: "Regenerated background must preserve a provider request id.",
           },
         ]),
+    ...(candidateRequestId &&
+    candidateRequestId === originalRequestId &&
+    input.candidateBackground.binary.artifactId !== input.request.originalBackgroundArtifactId
+      ? [
+          {
+            code: "regeneration_request_id_not_new" as const,
+            slideNumber: input.request.slideNumber,
+            message: "Regenerated background must use a new provider request id.",
+          },
+        ]
+      : []),
     ...(input.candidateBackground.binary.artifactId !== input.request.originalBackgroundArtifactId
       ? []
       : [
