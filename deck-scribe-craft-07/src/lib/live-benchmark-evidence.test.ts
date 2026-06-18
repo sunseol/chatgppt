@@ -8,6 +8,8 @@ import {
   type LiveBenchmarkRun,
 } from "./live-benchmark-evidence";
 
+const PACKAGE_SHA = "377df1eabfc41128c08d24f6c00a40b2f80dac01ccd7f4fc90e810f16924d20e";
+
 describe("live benchmark evidence", () => {
   test("passes five Live benchmark scenarios when four complete the Golden Path", () => {
     // Given
@@ -107,6 +109,7 @@ describe("live benchmark evidence", () => {
           outputBundle: {
             path: "bundles/other.zip",
             benchmarkId: "market_research",
+            packageArchiveSha256: PACKAGE_SHA,
             reportPath: "",
             goldenPathReportPath: "reports/mock.md",
             exportArtifactId: "",
@@ -135,6 +138,33 @@ describe("live benchmark evidence", () => {
       "output_bundle_golden_path_evidence_missing",
     ]);
   });
+
+  test("blocks benchmark bundles from a different package candidate", () => {
+    // Given
+    const bundle = completeBundle({
+      runs: [
+        {
+          ...run("korean_business", "passed"),
+          outputBundle: {
+            ...run("korean_business", "passed").outputBundle,
+            packageArchiveSha256: "old-package-sha",
+          },
+        },
+        run("market_research", "passed"),
+        run("chart_report", "passed"),
+        run("image_intro", "passed"),
+        run("revision_regeneration", "failed", "editor"),
+      ],
+    });
+
+    // When
+    const result = evaluateLiveBenchmarkEvidence(bundle);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual(["output_bundle_package_mismatch"]);
+  });
 });
 
 function completeBundle(
@@ -142,6 +172,7 @@ function completeBundle(
 ): LiveBenchmarkEvidenceBundle {
   return {
     reportPath: "docs/live-benchmark-report.md",
+    packageArchiveSha256: PACKAGE_SHA,
     runs: [
       run("korean_business", "passed"),
       run("market_research", "passed"),
@@ -170,6 +201,7 @@ function run(
     outputBundle: {
       path: `bundles/${id}.zip`,
       benchmarkId: id,
+      packageArchiveSha256: PACKAGE_SHA,
       reportPath: `reports/${id}.md`,
       goldenPathReportPath: "live_e2e_report.md",
       exportArtifactId: status === "passed" ? `${id}_export` : "",

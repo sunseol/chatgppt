@@ -8,6 +8,7 @@ import type {
 
 export function outputBundleIssues(
   runs: readonly LiveBenchmarkRun[],
+  packageArchiveSha256: string,
 ): readonly LiveBenchmarkEvidenceIssue[] {
   const missing = runs.filter((run) => !run.outputBundlePath.trim()).map((run) => run.id);
   const missingManifests = runs.filter((run) => !run.outputBundle.path.trim()).map((run) => run.id);
@@ -19,6 +20,13 @@ export function outputBundleIssues(
           run.outputBundle.path.trim() &&
           run.outputBundle.path !== run.outputBundlePath) ||
         run.outputBundle.benchmarkId !== run.id,
+    )
+    .map((run) => run.id);
+  const packageMismatched = runs
+    .filter(
+      (run) =>
+        run.outputBundle.path.trim() &&
+        run.outputBundle.packageArchiveSha256 !== packageArchiveSha256,
     )
     .map((run) => run.id);
   const missingReports = runs
@@ -62,6 +70,15 @@ export function outputBundleIssues(
             "output_bundle_benchmark_mismatch",
             "Output bundle manifests must match the benchmark id and bundle path.",
             mismatched,
+          ),
+        ]),
+    ...(packageMismatched.length === 0
+      ? []
+      : [
+          issue(
+            "output_bundle_package_mismatch",
+            "Output bundle manifests must match the package archive SHA-256 under benchmark.",
+            packageMismatched,
           ),
         ]),
     ...(missingReports.length === 0
