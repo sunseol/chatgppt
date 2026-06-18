@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { z } from "zod";
 import { runDesktopLiveWebSearchResearchWorkflow } from "./desktop-live-web-search-workflow";
+import { liveWebSearchEvidenceJob } from "./desktop-live-web-search-jobs";
 import { createProviderJobManager } from "./provider-job-manager";
 import type { DeckProject, InterviewBrief } from "./deck-types";
 import type { DeckforgeTauriRuntime } from "./desktop-app-server-bridge";
@@ -58,6 +59,20 @@ describe("desktop live web search workflow", () => {
     expect(calls).toEqual([]);
     if (result.kind !== "launch_blocked") throw new Error("Expected launch blocker.");
     expect(result.issues.map((issue) => issue.code)).toEqual(["missing_live_brief"]);
+  });
+
+  test("uses an App Server supported response schema for live web search", () => {
+    // Given
+    const spec = liveWebSearchEvidenceJob({
+      project: projectFixture({ brief: briefFixture() }),
+      jobManager: createProviderJobManager(),
+    });
+
+    // When
+    const unsupportedPaths = findUnsupportedResponseSchemaPaths(spec.turnRequest.outputSchema);
+
+    // Then
+    expect(unsupportedPaths).toEqual([]);
   });
 });
 
@@ -185,4 +200,26 @@ function liveSearchEvidence(): LiveWebSearchEvidence {
       candidateIds: ["candidate_001", "candidate_002", "candidate_003"],
     },
   };
+}
+
+function findUnsupportedResponseSchemaPaths(value: unknown, path = "$"): readonly string[] {
+  if (!isRecord(value)) return [];
+
+  const ownIssues = Object.keys(value).includes("format") ? [`${path}.format`] : [];
+  const properties = value["properties"];
+  const propertyIssues = isRecord(properties)
+    ? Object.entries(properties).flatMap(([key, child]) =>
+        findUnsupportedResponseSchemaPaths(child, `${path}.properties.${key}`),
+      )
+    : [];
+  const itemIssues =
+    value["type"] === "array"
+      ? findUnsupportedResponseSchemaPaths(value["items"], `${path}.items`)
+      : [];
+
+  return [...ownIssues, ...propertyIssues, ...itemIssues];
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
 }

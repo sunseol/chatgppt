@@ -29,7 +29,7 @@ const LiveWebSearchOutputSchema = {
         required: ["id", "url", "title", "discoveredAt", "query", "sourceCandidateType", "mode"],
         properties: {
           id: { type: "string", minLength: 1 },
-          url: { type: "string", format: "uri" },
+          url: { type: "string", minLength: 1 },
           title: { type: "string", minLength: 1 },
           discoveredAt: { type: "integer", minimum: 0 },
           query: { type: "string", minLength: 1 },
