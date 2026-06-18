@@ -22,7 +22,7 @@ export interface SlideImageCanvas {
 }
 
 export interface SlideImageRequestMetadata {
-  readonly model: typeof TARGET_IMAGE_MODEL;
+  readonly model: string;
   readonly requestId?: string;
   readonly size?: string;
   readonly quality?: string;

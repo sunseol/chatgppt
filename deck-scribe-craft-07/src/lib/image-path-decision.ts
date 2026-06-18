@@ -17,6 +17,7 @@ export type ImagePathBlockerCode =
   | "missing_binary_artifact"
   | "invalid_image_binary"
   | "artifact_provider_mismatch"
+  | "artifact_model_mismatch"
   | "missing_request_id";
 
 export type ImagePathBlocker = {
@@ -125,6 +126,15 @@ function artifactBlockers(input: {
           {
             code: "artifact_provider_mismatch" as const,
             message: "The stored image artifact does not match the selected provider route.",
+          },
+        ]),
+    ...(artifact.request?.model === undefined ||
+    artifact.request.model === input.feasibility.targetModel
+      ? []
+      : [
+          {
+            code: "artifact_model_mismatch" as const,
+            message: "The stored image artifact request model does not match the selected route.",
           },
         ]),
     ...(hasPngSignatureDataUrl(artifact.imageDataUrl)

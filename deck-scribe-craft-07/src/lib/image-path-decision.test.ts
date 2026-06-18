@@ -145,6 +145,38 @@ describe("image path decision record", () => {
     expect(getProductionImageProviderChoices(record)).toEqual([]);
   });
 
+  test("rejects a successful artifact whose request model differs from the locked route", () => {
+    // Given
+    const feasibility = decideImageProviderFeasibility({
+      codexImageCapability: "unknown",
+      apiCredential: "available",
+      organizationVerification: "verified",
+    });
+
+    // When
+    const record = createImagePathDecisionRecord({
+      decisionId: "image_path_model_mismatch",
+      decidedAt: 1_789_700_006,
+      feasibility,
+      successfulArtifact: {
+        ...realImageArtifact(),
+        request: {
+          ...realImageArtifact().request,
+          model: "gpt-image-old",
+        },
+      },
+      binaryArtifactPath: "artifacts/images/slide_001.png",
+      billingOwner: "openai_api_project",
+      requiredPermissions: ["images.generate", "model:gpt-image-2"],
+      organizationVerification: "verified",
+    });
+
+    // Then
+    expect(record.status).toBe("blocked");
+    expect(record.blockers.map((blocker) => blocker.code)).toEqual(["artifact_model_mismatch"]);
+    expect(getProductionImageProviderChoices(record)).toEqual([]);
+  });
+
   test("blocks route locking when required decision metadata is incomplete", () => {
     // Given
     const feasibility = decideImageProviderFeasibility({
