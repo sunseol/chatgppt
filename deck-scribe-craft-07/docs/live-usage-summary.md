@@ -27,7 +27,7 @@ Before image generation, the UI must make API key and billing usage visible and 
 
 - `src/lib/live-usage-summary.test.ts` verifies stage-level provider/duration/retry display, estimated cost formatting, usage recording, estimated-cost-as-actual blockers, and image billing confirmation blockers.
 - `src/lib/live-app-server-usage-summary.ts` converts `thread/tokenUsage/updated` notifications from `codex app-server --stdio` into `LiveUsageStageSummary.usage`, and deliberately leaves `usage` empty when the provider supplied a malformed usage notification so `missing_provider_usage_summary` blocks the summary.
-- `src/lib/provider-job-progress-view.ts` already exposes job status, retry availability, recovered state, partial artifacts, and redacted failure messages.
+- `src/lib/provider-job-progress-view.ts` and `src/components/deck/ProviderJobProgressPanel.tsx` expose app-surface provider id, execution duration, retry count, token/image usage, and estimated provider cost as `cost estimate` while still preserving job status, retry availability, recovered state, partial artifacts, and redacted failure messages.
 - `src/lib/audit-log.ts` records provider usage summaries into report audit events and renders `estimatedCostUsd` as `cost estimate`, not as an exact charge.
 
 ## Live Codex Usage Probe
@@ -45,6 +45,18 @@ On 2026-06-19 a live `codex app-server --stdio` structured-turn probe completed 
 
 `createCodexAppServerUsageStageSummary` maps that notification to a DF-244 stage summary with provider `codex`, duration, retry count, and usage `{ inputTokens: 25006, outputTokens: 141 }`. `evaluateLiveUsageSummary` returns `ready` for that text usage stage, and `formatLiveUsageSummary` renders `input 25006 · output 141`.
 
+## App Surface Usage Display
+
+The provider job progress panel now renders DF-244 usage context for any job that carries `ProviderUsageSummary`:
+
+- provider id under `제공자`
+- measured execution duration under `실행 시간`
+- retry count as `retries N`
+- token/image usage items such as `input 25006`, `output 141`, or `images 1`
+- `estimatedCostUsd` only as `cost estimate $...`, never as exact `cost $...`
+
+`src/components/deck/ProviderJobProgressPanel.integration.test.tsx` locks the rendered app surface for the live Codex usage probe shape: provider `codex`, duration `7158ms`, `retries 1`, `input 25006`, `output 141`, and `cost estimate $0.0400`.
+
 ## Remaining Live Evidence
 
-The local contract and one live Codex text usage probe are ready, but DF-244 still needs usage summary manual QA in the app surface plus real image billing/API-key disclosure evidence.
+The local contract, one live Codex text usage probe, and app progress-panel usage display are ready, but DF-244 still needs manual QA against the packaged app surface plus real image billing/API-key disclosure evidence.

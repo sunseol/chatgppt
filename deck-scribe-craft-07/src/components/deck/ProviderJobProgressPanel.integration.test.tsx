@@ -48,6 +48,41 @@ describe("provider job progress panel", () => {
     expect(markup.includes("provider.ts")).toBe(false);
     expect(markup.includes("sk-secret")).toBe(false);
   });
+
+  test("renders provider duration retry count usage and cost estimate", () => {
+    const markup = renderToStaticMarkup(
+      <ProviderJobProgressPanel
+        stageLabel="Live text turn"
+        job={{
+          ...runningJob(),
+          providerId: "codex",
+          capability: "deckPlan",
+          status: "succeeded",
+          startedAt: 10,
+          finishedAt: 7_168,
+          attempt: 2,
+          usageSummary: {
+            inputTokens: 25_006,
+            outputTokens: 141,
+            estimatedCostUsd: 0.04,
+          },
+        }}
+        recovered={false}
+        onCancel={() => undefined}
+        onRetry={() => undefined}
+      />,
+    );
+
+    expect(markup.includes("제공자")).toBe(true);
+    expect(markup.includes("codex")).toBe(true);
+    expect(markup.includes("실행 시간")).toBe(true);
+    expect(markup.includes("7158ms")).toBe(true);
+    expect(markup.includes("retries 1")).toBe(true);
+    expect(markup.includes("input 25006")).toBe(true);
+    expect(markup.includes("output 141")).toBe(true);
+    expect(markup.includes("cost estimate $0.0400")).toBe(true);
+    expect(markup.includes("cost $0.0400")).toBe(false);
+  });
 });
 
 function runningJob(): ProviderJob {

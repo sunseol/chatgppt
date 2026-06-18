@@ -45,6 +45,32 @@ export function ProviderJobProgressPanel({
       </div>
       <div className="mt-2 text-xs text-muted-foreground">{view.message}</div>
 
+      <dl className="mt-4 grid gap-3 text-xs text-muted-foreground sm:grid-cols-3">
+        <div>
+          <dt>제공자</dt>
+          <dd className="mt-1 font-mono text-foreground">{view.providerLabel}</dd>
+        </div>
+        <div>
+          <dt>실행 시간</dt>
+          <dd className="mt-1 font-mono text-foreground">{view.durationLabel}</dd>
+        </div>
+        <div>
+          <dt>Retry</dt>
+          <dd className="mt-1 font-mono text-foreground">{view.retryLabel}</dd>
+        </div>
+      </dl>
+
+      {view.usageItems.length > 0 ? (
+        <div className="mt-4">
+          <div className="text-xs font-medium">사용량</div>
+          <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+            {view.usageItems.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
       {view.failureSummary ? (
         <div className="mt-4 flex items-start gap-2 border border-destructive/30 bg-destructive/10 p-3 text-xs">
           <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-destructive" />

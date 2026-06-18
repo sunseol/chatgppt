@@ -38,6 +38,32 @@ describe("provider job progress view", () => {
     expect(view.failureSummary?.includes("internal/render.ts")).toBe(false);
     expect(view.failureSummary?.includes("sk-secret")).toBe(false);
   });
+
+  test("summarizes provider duration retry count and supplied usage", () => {
+    const view = createProviderJobProgressView({
+      stageLabel: "Live text turn",
+      job: {
+        ...runningJob(),
+        providerId: "codex",
+        capability: "deckPlan",
+        status: "succeeded",
+        startedAt: 10,
+        finishedAt: 7_168,
+        attempt: 2,
+        usageSummary: {
+          inputTokens: 25_006,
+          outputTokens: 141,
+          estimatedCostUsd: 0.04,
+        },
+      },
+      recovered: false,
+    });
+
+    expect(view.providerLabel).toBe("codex");
+    expect(view.durationLabel).toBe("7158ms");
+    expect(view.retryLabel).toBe("retries 1");
+    expect(view.usageItems).toEqual(["input 25006", "output 141", "cost estimate $0.0400"]);
+  });
 });
 
 function runningJob(): ProviderJob {
