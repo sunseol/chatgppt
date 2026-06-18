@@ -40,6 +40,21 @@ Required scenarios:
 - `src/lib/provider-job-recovery.ts` preserves job snapshots for restart recovery.
 - `src/lib/slide-generation-queue-live-controls.test.ts` already covers retry, partial image resume, and cancellation behavior at the queue level.
 
+## Live Text Turn Interrupt Evidence
+
+Using `codex-cli 0.141.0` and App Server `0.141.0` on 2026-06-19 KST, a direct JSON-RPC probe started a long authenticated text turn and immediately sent `turn/interrupt` after `turn/started`.
+
+- Thread: `019edc5a-0a48-7ec2-aa86-c539ed9546b1`
+- Interrupted turn: `019edc5a-0cc0-7031-915a-5fc6d65c6d86`
+- Duration: 927 ms
+- Observed methods: `remoteControl/status/changed`, `thread/started`, `warning`, `mcpServer/startupStatus/updated`, `thread/status/changed`, `turn/started`, `turn/completed`
+- `turn/completed` status: `interrupted`
+- `thread/read` status for the turn: `interrupted`
+- `thread/turns/list` status for the turn: `interrupted`
+- Evidence digest over the read/list summaries and observed method list: `27855e9afff031bc49c87bb08bb46ea6ac9a5436e4a2eef9ecb74382e62809b6`
+
+This proves the current App Server can persist an interrupted live text turn without accepting a completed artifact.
+
 ## Remaining Live Evidence
 
-The local contract is ready, but DF-243 still requires a real live interruption test matrix against authenticated text turns, live fetches, and live image jobs before the issue can close.
+The local contract is ready and live text-turn interruption has been verified, but DF-243 still requires the rest of the live interruption test matrix against live fetches, live image partial resume, persisted cancel-signal behavior, and interrupted artifact approval/export before the issue can close.

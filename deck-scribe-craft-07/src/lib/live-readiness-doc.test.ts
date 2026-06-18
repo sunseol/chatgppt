@@ -234,6 +234,13 @@ describe("live readiness documentation", () => {
     expect(interruptionMatrix.includes("cancelled_job_still_running")).toBe(true);
     expect(interruptionMatrix.includes("cancelled_job_completed_after_cancel")).toBe(true);
     expect(interruptionMatrix.includes("interrupted_artifact_approvable")).toBe(true);
+    expect(interruptionMatrix.includes("turn/interrupt")).toBe(true);
+    expect(interruptionMatrix.includes("019edc5a-0cc0-7031-915a-5fc6d65c6d86")).toBe(true);
+    expect(
+      interruptionMatrix.includes(
+        "27855e9afff031bc49c87bb08bb46ea6ac9a5436e4a2eef9ecb74382e62809b6",
+      ),
+    ).toBe(true);
   });
 
   test("records the live usage, latency, retry, and billing display contract", () => {
