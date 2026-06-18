@@ -96,6 +96,29 @@ describe("live generation report lineage", () => {
       "invalid_export_hash",
     ]);
   });
+
+  test("blocks image artifacts that point at a different slide", () => {
+    // Given
+    const [base] = completeLineage();
+    if (!base) throw new Error("Expected lineage fixture.");
+
+    // When
+    const validation = validateLiveGenerationReportLineage({
+      executionMode: "production",
+      slides: [
+        {
+          ...base,
+          slideNumber: 2,
+          imageArtifactId: "project_001_image_slide_001_v1",
+        },
+      ],
+    });
+
+    // Then
+    expect(validation.kind).toBe("blocked");
+    if (validation.kind !== "blocked") return;
+    expect(validation.issues.map((issue) => issue.code)).toEqual(["image_artifact_slide_mismatch"]);
+  });
 });
 
 function completeLineage(): readonly LiveSlideReportLineage[] {

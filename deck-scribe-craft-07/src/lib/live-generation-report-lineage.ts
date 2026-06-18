@@ -6,6 +6,7 @@ export type LiveGenerationReportLineageIssueCode =
   | "missing_text_turn"
   | "missing_text_artifact"
   | "missing_image_artifact"
+  | "image_artifact_slide_mismatch"
   | "missing_image_request"
   | "missing_prompt_version"
   | "invalid_compositor_hash"
@@ -111,6 +112,15 @@ function slideIssues(
             message: "Live image lineage requires an image artifact id.",
           },
         ]),
+    ...(imageArtifactMatchesSlide(slide.imageArtifactId, slide.slideNumber)
+      ? []
+      : [
+          {
+            code: "image_artifact_slide_mismatch" as const,
+            slideNumber: slide.slideNumber,
+            message: "Live image artifact id must match the reported slide number.",
+          },
+        ]),
     ...(slide.imageRequestId
       ? []
       : [
@@ -202,4 +212,12 @@ function joinOrNone(values: readonly string[]): string {
 
 function isSha256Digest(value: string): boolean {
   return /^sha256:[a-f0-9]{64}$/.test(value);
+}
+
+function imageArtifactMatchesSlide(imageArtifactId: string, slideNumber: number): boolean {
+  return !imageArtifactId.trim() || imageArtifactId.includes(`_slide_${pad3(slideNumber)}_`);
+}
+
+function pad3(value: number): string {
+  return String(value).padStart(3, "0");
 }
