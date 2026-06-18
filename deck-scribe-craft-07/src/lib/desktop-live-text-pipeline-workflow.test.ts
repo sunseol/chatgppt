@@ -3,6 +3,7 @@ import {
   runDesktopLiveTextPipelineProductionWorkflow,
   type DesktopLiveTextPipelineWorkflowResult,
 } from "./desktop-live-text-pipeline-workflow";
+import { deckPlanJob, designSystemJob, layoutIrJob } from "./desktop-live-text-pipeline-jobs";
 import { completeBrief, pipelineFixtures } from "./live-text-artifact-persistence.fixtures";
 import { createProviderJobManager } from "./provider-job-manager";
 import type { DeckProject, ResearchPack } from "./deck-types";
@@ -66,6 +67,28 @@ describe("desktop live text pipeline workflow", () => {
     if (result.kind !== "launch_blocked") return;
     expect(result.issues.map((issue) => issue.code)).toEqual(["missing_live_brief"]);
     expect(manager.snapshot()).toEqual([]);
+  });
+
+  test("uses App Server strict response schemas for every live text pipeline stage", () => {
+    // Given
+    const fixtures = pipelineFixtures();
+    const context = {
+      project: projectFixture(),
+      jobManager: createProviderJobManager(),
+    };
+    const jobs = [
+      ["deck_plan", deckPlanJob(context)],
+      ["design_system", designSystemJob(context, "deckctx_schema_check", fixtures.plan)],
+      ["layout_ir", layoutIrJob(context, "Return a Layout IR JSON object.")],
+    ] as const;
+
+    // When
+    const looseObjectPaths = jobs.flatMap(([stage, job]) =>
+      findLooseObjectSchemaPaths(job.turnRequest.outputSchema).map((path) => `${stage}:${path}`),
+    );
+
+    // Then
+    expect(looseObjectPaths).toEqual([]);
   });
 });
 
@@ -153,4 +176,25 @@ function sequentialIds(prefix: string): () => string {
     value += 1;
     return `${prefix}_${value}`;
   };
+}
+
+function findLooseObjectSchemaPaths(value: unknown, path = "$"): readonly string[] {
+  if (!isRecord(value)) return [];
+
+  const ownIssues =
+    value["type"] === "object" && value["additionalProperties"] !== false ? [path] : [];
+  const properties = value["properties"];
+  const propertyIssues = isRecord(properties)
+    ? Object.entries(properties).flatMap(([key, child]) =>
+        findLooseObjectSchemaPaths(child, `${path}.properties.${key}`),
+      )
+    : [];
+  const itemIssues =
+    value["type"] === "array" ? findLooseObjectSchemaPaths(value["items"], `${path}.items`) : [];
+
+  return [...ownIssues, ...propertyIssues, ...itemIssues];
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
 }

@@ -5,6 +5,10 @@ import type { DeckPlan, DeckProject, DesignSystem } from "./deck-types";
 import { DesignSystemSchema } from "./design-system";
 import type { DesktopProductionCodexAppServerJobInput } from "./desktop-codex-app-server-production-job";
 import type { DeckforgeTauriRuntime } from "./desktop-app-server-bridge";
+import {
+  DesignSystemOutputSchema,
+  LayoutIROutputSchema,
+} from "./desktop-live-text-pipeline-output-schemas";
 import { LayoutIRSchema, type LayoutIR } from "./layout-ir";
 import { parseDeckPlanMarkdown } from "./slide-spec-parser";
 import type { ProviderJobManager } from "./provider-job-manager";
@@ -27,11 +31,6 @@ const DeckPlanOutputSchema = {
   properties: {
     markdown: { type: "string", minLength: 1 },
   },
-} as const;
-
-const StructuredObjectOutputSchema = {
-  type: "object",
-  additionalProperties: true,
 } as const;
 
 export function deckPlanJob(
@@ -74,7 +73,7 @@ export function designSystemJob(
     inputArtifactIds: [plan.id],
     turnRequest: {
       prompt: designSystemPrompt(brief.id, deckContextId, plan),
-      outputSchema: StructuredObjectOutputSchema,
+      outputSchema: DesignSystemOutputSchema,
       model: "gpt-5.4",
       networkAccess: false,
     },
@@ -96,7 +95,7 @@ export function layoutIrJob(
     inputArtifactIds: [deckPlanArtifactId(input.project), designSystemArtifactId(input.project)],
     turnRequest: {
       prompt: `${prompt}\n\nReturn JSON only. Do not wrap in Markdown fences.`,
-      outputSchema: StructuredObjectOutputSchema,
+      outputSchema: LayoutIROutputSchema,
       model: "gpt-5.4",
       networkAccess: false,
     },

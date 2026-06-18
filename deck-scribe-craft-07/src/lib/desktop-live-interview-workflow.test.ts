@@ -3,6 +3,7 @@ import {
   createLiveInterviewQuestionArtifactPatch,
   runDesktopLiveInterviewProductionWorkflow,
 } from "./desktop-live-interview-workflow";
+import { interviewQuestionPlanJob } from "./desktop-live-interview-jobs";
 import { planInterviewQuestions } from "./interview-questions";
 import { createProviderJobManager } from "./provider-job-manager";
 import type { DeckProject } from "./deck-types";
@@ -36,6 +37,20 @@ describe("desktop live interview workflow", () => {
     expect(result.questionArtifact.record.artifactType).toBe("interview_questions");
     expect(result.questionArtifact.record.turnId).toBe("turn_interview_questions_live_desktop");
     expect(result.nextTurn.inputArtifactIds).toEqual(["p_desktop_interview_questions_live"]);
+  });
+
+  test("uses an App Server strict response schema for live interview questions", () => {
+    // Given
+    const spec = interviewQuestionPlanJob({
+      project: projectFixture(),
+      jobManager: createProviderJobManager(),
+    });
+
+    // When
+    const looseObjectPaths = findLooseObjectSchemaPaths(spec.turnRequest.outputSchema);
+
+    // Then
+    expect(looseObjectPaths).toEqual([]);
   });
 
   test("creates a project patch that preserves live interview question artifacts", () => {
@@ -125,4 +140,25 @@ function projectFixture(patch: Partial<DeckProject> = {}): DeckProject {
     approvalLog: [],
     ...patch,
   };
+}
+
+function findLooseObjectSchemaPaths(value: unknown, path = "$"): readonly string[] {
+  if (!isRecord(value)) return [];
+
+  const ownIssues =
+    value["type"] === "object" && value["additionalProperties"] !== false ? [path] : [];
+  const properties = value["properties"];
+  const propertyIssues = isRecord(properties)
+    ? Object.entries(properties).flatMap(([key, child]) =>
+        findLooseObjectSchemaPaths(child, `${path}.properties.${key}`),
+      )
+    : [];
+  const itemIssues =
+    value["type"] === "array" ? findLooseObjectSchemaPaths(value["items"], `${path}.items`) : [];
+
+  return [...ownIssues, ...propertyIssues, ...itemIssues];
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
 }

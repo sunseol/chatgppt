@@ -97,6 +97,62 @@ describe("Codex App Server event mapper", () => {
     expect(completed.output?.provenance.turnId).toBe("019edb09-77f6-7332-a8d1-e9f6240bf331");
     expect(completed.output?.provenance.inputArtifactIds).toEqual(["brief_001"]);
   });
+
+  test("maps current App Server nested error notifications into a failed event", () => {
+    const mapping = collectCodexAppServerTaskEvents({
+      runtime: "codex-app-server 0.141.0",
+      promptVersion: "interview_questions_desktop@v1",
+      durationMs: 4_100,
+      inputArtifactIds: ["project_001"],
+      notifications: [
+        {
+          method: "turn/started",
+          params: {
+            threadId: "thread_live_schema_error",
+            turn: { id: "turn_live_schema_error" },
+          },
+        },
+        {
+          method: "error",
+          params: {
+            error: {
+              message:
+                "Invalid schema for response_format 'codex_output_schema': additionalProperties is required to be false.",
+              codexErrorInfo: "other",
+              additionalDetails: null,
+            },
+            willRetry: false,
+            threadId: "thread_live_schema_error",
+            turnId: "turn_live_schema_error",
+          },
+        },
+        {
+          method: "turn/completed",
+          params: {
+            threadId: "thread_live_schema_error",
+            turn: {
+              id: "turn_live_schema_error",
+              status: "failed",
+              error: {
+                message:
+                  "Invalid schema for response_format 'codex_output_schema': additionalProperties is required to be false.",
+              },
+            },
+          },
+        },
+      ],
+    });
+
+    expect(mapping.issues).toEqual([]);
+    const failedEvent = mapping.events.find((event) => event.kind === "failed");
+    expect(failedEvent).toEqual({
+      kind: "failed",
+      threadId: "thread_live_schema_error",
+      turnId: "turn_live_schema_error",
+      message:
+        "Invalid schema for response_format 'codex_output_schema': additionalProperties is required to be false.",
+    });
+  });
 });
 
 async function* eventStream<TEvent>(events: readonly TEvent[]): AsyncIterable<TEvent> {

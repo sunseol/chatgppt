@@ -23,6 +23,7 @@ type MappingState = {
   readonly turnId?: string;
   readonly outputText: string;
   readonly finalText?: string;
+  readonly failed?: boolean;
 };
 
 type MappingResult = {
@@ -135,6 +136,25 @@ function mapTurnCompleted(
     getString(params, "turnId") ?? getNestedString(params, "turn", "id") ?? state.turnId;
   if (!threadId || !turnId) return invalid(state, "turn/completed requires threadId and turn id.");
 
+  const turn = getRecord(params, "turn");
+  if (turn && getString(turn, "status") === "failed") {
+    if (state.failed) {
+      return { state: { ...state, threadId, turnId, failed: true }, events: [], issues: [] };
+    }
+    return {
+      state: { ...state, threadId, turnId, failed: true },
+      events: [
+        {
+          kind: "failed",
+          threadId,
+          turnId,
+          message: getNestedString(turn, "error", "message") ?? "Codex App Server turn failed.",
+        },
+      ],
+      issues: [],
+    };
+  }
+
   const parsed = parseJsonPayload(state.finalText ?? state.outputText);
   if (parsed.kind === "invalid") return invalid({ ...state, threadId, turnId }, parsed.issue);
 
@@ -161,13 +181,17 @@ function mapError(
   notification: CodexAppServerJsonRpcNotification,
 ): MappingResult {
   const params = paramsRecord(notification);
-  const message = params ? getString(params, "message") : undefined;
-  if (!state.threadId || !state.turnId || !message) {
+  const threadId = params ? (getString(params, "threadId") ?? state.threadId) : state.threadId;
+  const turnId = params ? (getString(params, "turnId") ?? state.turnId) : state.turnId;
+  const message = params
+    ? (getString(params, "message") ?? getNestedString(params, "error", "message"))
+    : undefined;
+  if (!threadId || !turnId || !message) {
     return invalid(state, "error notification requires active threadId, turnId, and message.");
   }
   return {
-    state,
-    events: [{ kind: "failed", threadId: state.threadId, turnId: state.turnId, message }],
+    state: { ...state, threadId, turnId, failed: true },
+    events: [{ kind: "failed", threadId, turnId, message }],
     issues: [],
   };
 }
