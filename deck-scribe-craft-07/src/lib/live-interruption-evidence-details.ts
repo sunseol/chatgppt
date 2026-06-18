@@ -13,8 +13,24 @@ export function scenarioEvidenceDetailIssues(
   const missingSnapshots = scenarios
     .filter((scenario) => !scenario.recoverySnapshotPath.endsWith(".json"))
     .map((scenario) => scenario.id);
+  const missingAppCancelSnapshots = scenarios
+    .filter(
+      (scenario) =>
+        scenario.id === "cancel_job" && scenario.recoverySnapshotScope !== "app_storage",
+    )
+    .map((scenario) => scenario.id);
   const missingCancelSignals = scenarios
     .filter((scenario) => scenario.id === "cancel_job" && !scenario.cancellationRecorded)
+    .map((scenario) => scenario.id);
+  const missingApprovalGateChecks = scenarios
+    .filter(
+      (scenario) => scenario.id === "interrupted_artifact_gate" && !scenario.approvalGateChecked,
+    )
+    .map((scenario) => scenario.id);
+  const missingExportGateChecks = scenarios
+    .filter(
+      (scenario) => scenario.id === "interrupted_artifact_gate" && !scenario.exportGateChecked,
+    )
     .map((scenario) => scenario.id);
 
   return [
@@ -36,6 +52,15 @@ export function scenarioEvidenceDetailIssues(
             missingSnapshots,
           ),
         ]),
+    ...(missingAppCancelSnapshots.length === 0
+      ? []
+      : [
+          issue(
+            "missing_app_cancel_snapshot",
+            "Cancellation scenario requires an app-storage recovery snapshot.",
+            missingAppCancelSnapshots,
+          ),
+        ]),
     ...(missingCancelSignals.length === 0
       ? []
       : [
@@ -43,6 +68,24 @@ export function scenarioEvidenceDetailIssues(
             "missing_cancel_signal_evidence",
             "Cancellation scenario requires persisted cancel signal evidence.",
             missingCancelSignals,
+          ),
+        ]),
+    ...(missingApprovalGateChecks.length === 0
+      ? []
+      : [
+          issue(
+            "missing_interrupted_approval_gate_evidence",
+            "Interrupted artifact scenario must exercise the approval gate.",
+            missingApprovalGateChecks,
+          ),
+        ]),
+    ...(missingExportGateChecks.length === 0
+      ? []
+      : [
+          issue(
+            "missing_interrupted_export_gate_evidence",
+            "Interrupted artifact scenario must exercise the export gate.",
+            missingExportGateChecks,
           ),
         ]),
   ];

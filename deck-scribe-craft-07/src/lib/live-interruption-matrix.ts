@@ -16,6 +16,7 @@ export type LiveRecoveredJobState =
   | "failed"
   | "cancelled"
   | "interrupted";
+export type LiveRecoverySnapshotScope = "app_storage" | "protocol_probe" | "transient";
 
 export type LiveInterruptionScenarioEvidence = {
   readonly id: LiveInterruptionScenarioId;
@@ -24,6 +25,7 @@ export type LiveInterruptionScenarioEvidence = {
   readonly completedArtifactIdsAfter: readonly string[];
   readonly liveJobId: string;
   readonly recoverySnapshotPath: string;
+  readonly recoverySnapshotScope: LiveRecoverySnapshotScope;
   readonly cancellationRecorded: boolean;
   readonly pendingImageArtifactIds: readonly string[];
   readonly resumedArtifactIds: readonly string[];
@@ -31,6 +33,8 @@ export type LiveInterruptionScenarioEvidence = {
   readonly interruptedArtifactIds: readonly string[];
   readonly approvableArtifactIds: readonly string[];
   readonly exportableArtifactIds: readonly string[];
+  readonly approvalGateChecked: boolean;
+  readonly exportGateChecked: boolean;
 };
 
 export type LiveInterruptionMatrixEvidence = {
@@ -42,12 +46,15 @@ export type LiveInterruptionIssueCode =
   | "missing_interruption_scenario"
   | "missing_live_job_evidence"
   | "missing_recovery_snapshot"
+  | "missing_app_cancel_snapshot"
   | "missing_cancel_signal_evidence"
   | "unsafe_recovered_job_state"
   | "completed_artifact_lost"
   | "unsafe_partial_image_resume"
   | "cancelled_job_still_running"
   | "cancelled_job_completed_after_cancel"
+  | "missing_interrupted_approval_gate_evidence"
+  | "missing_interrupted_export_gate_evidence"
   | "interrupted_artifact_approvable"
   | "missing_interruption_report";
 

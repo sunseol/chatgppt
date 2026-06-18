@@ -110,6 +110,7 @@ describe("live interruption matrix", () => {
         scenario(id, {
           liveJobId: id === "fetch_shutdown" ? "mock_fetch_job" : "",
           recoverySnapshotPath: "",
+          recoverySnapshotScope: id === "cancel_job" ? "protocol_probe" : "transient",
           cancellationRecorded: id !== "cancel_job",
         }),
       ),
@@ -124,7 +125,35 @@ describe("live interruption matrix", () => {
     expect(result.issues.map((issue) => issue.code)).toEqual([
       "missing_live_job_evidence",
       "missing_recovery_snapshot",
+      "missing_app_cancel_snapshot",
       "missing_cancel_signal_evidence",
+    ]);
+  });
+
+  test("blocks interrupted artifact gate evidence that did not exercise approval and export gates", () => {
+    // Given
+    const matrix = completeMatrix({
+      scenarios: LIVE_INTERRUPTION_SCENARIOS.map((id) =>
+        id === "interrupted_artifact_gate"
+          ? scenario(id, {
+              approvalGateChecked: false,
+              exportGateChecked: false,
+              approvableArtifactIds: [],
+              exportableArtifactIds: [],
+            })
+          : scenario(id),
+      ),
+    });
+
+    // When
+    const result = evaluateLiveInterruptionMatrix(matrix);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "missing_interrupted_approval_gate_evidence",
+      "missing_interrupted_export_gate_evidence",
     ]);
   });
 });
@@ -150,6 +179,7 @@ function scenario(
     completedArtifactIdsAfter: ["brief_live_001", "img_001", "img_002"],
     liveJobId: `live_job_${id}`,
     recoverySnapshotPath: `recovery/${id}.json`,
+    recoverySnapshotScope: "app_storage",
     cancellationRecorded: true,
     pendingImageArtifactIds: id === "image_partial_resume" ? ["img_003", "img_004"] : [],
     resumedArtifactIds: id === "image_partial_resume" ? ["img_003", "img_004"] : [],
@@ -157,6 +187,8 @@ function scenario(
     interruptedArtifactIds: ["partial_plan"],
     approvableArtifactIds: [],
     exportableArtifactIds: [],
+    approvalGateChecked: true,
+    exportGateChecked: true,
     ...patch,
   };
 }
