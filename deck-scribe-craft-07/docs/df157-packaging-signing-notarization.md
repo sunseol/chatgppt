@@ -4,13 +4,31 @@ Date: 2026-06-18
 
 ## Current Packaging Status
 
-The current worktree has no Tauri or Rust app bundle manifest:
+The current worktree has a Tauri v2 desktop scaffold and Rust backend package:
 
-- `Cargo.toml`: not present
-- `Cargo.lock`: not present
-- `tauri.conf.json`: not present
+- `src-tauri/Cargo.toml`
+- `src-tauri/tauri.conf.json`
+- `src-tauri/src/main.rs`
+- `src-tauri/src/lib.rs`
+- `src-tauri/capabilities/default.json`
 
-Therefore the current DF-157 package is an unsigned internal dry-run bundle, not the final Tauri desktop release package.
+The fallback `package:dry-run` artifact remains an unsigned internal bundle for quick packaging rehearsal. The final native release path is the Tauri bundle produced by `bun run tauri:build` after signing credentials and notarization are available.
+
+## Desktop Build And Quality Commands
+
+Run:
+
+```sh
+bun run quality
+bun run tauri:build
+```
+
+The combined quality gate runs TypeScript typecheck/lint/tests plus Rust format, clippy, and tests against `src-tauri/Cargo.toml`.
+
+Verified local unsigned Tauri outputs:
+
+- `src-tauri/target/release/bundle/macos/DeckForge.app`
+- `src-tauri/target/release/bundle/dmg/DeckForge_0.1.0_aarch64.dmg`
 
 ## Internal Dry-Run Command
 
@@ -37,7 +55,7 @@ Production macOS signing requires:
 
 - Apple Developer Program team membership.
 - Developer ID Application certificate installed in the signing keychain.
-- Stable bundle identifier, currently reserved in dry-run form as `app.deckforge.internal.dryrun`.
+- Stable bundle identifier, currently `app.deckforge.desktop` in `src-tauri/tauri.conf.json`.
 - Hardened runtime enabled in the final native packaging toolchain.
 - Explicit entitlements for only required capabilities.
 - Third-party license notices from DF-156 included in the distribution package.
@@ -90,10 +108,9 @@ Do not present the fallback package as a signed release. It is for internal vali
 
 ## Release Blockers Before Public Distribution
 
-- Add or restore the real Tauri v2 app manifest and Rust backend package.
-- Rerun DF-156 dependency license review against the final `Cargo.lock`.
-- Replace `app.deckforge.internal.dryrun` with the production bundle identifier.
-- Define final entitlements and Tauri permission/capability files.
+- Rerun DF-156 dependency license review against the final `src-tauri/Cargo.lock`.
+- Confirm `app.deckforge.desktop` is the production bundle identifier before public distribution.
+- Define final entitlements beyond the current empty default Tauri capability, if the app needs native permissions.
 - Sign with a Developer ID Application certificate.
 - Notarize and staple the final app.
 - Validate Gatekeeper on a clean macOS machine.
