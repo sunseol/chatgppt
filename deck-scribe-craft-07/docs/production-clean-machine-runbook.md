@@ -9,7 +9,7 @@ Scope: DF-245 internal production package and clean macOS account validation.
 - Internal unsigned archive: `dist/deckforge-macos-dry-run.tgz`.
 - Internal archive SHA-256: `39274abf4bf0a164fd837ddaba8ea7fe2cb063550e523328c324f6e62eaa5adb`.
 - Unsigned Tauri DMG: `release-artifacts/DeckForge_0.1.0_aarch64.dmg`.
-- DMG SHA-256: `dce2ba0c8a3b26a21fed1f4692e635e7d0feb39624eb96ba6b7bf87f41879a1f`.
+- DMG SHA-256: `ad8b11dee61a15c193fabfc3a7bf85110b116db65098bd2a845c2533a25dae5d`.
 
 ## Build commands
 
@@ -35,6 +35,10 @@ Any hit in production resources blocks release unless it is part of documentatio
 Latest local dry-run package scan on 2026-06-19 for PR branch `jacobex/live-issue-contracts` found no hits for mock provider ids, mock provider labels, mock stage function names, fixture paths, test files, OpenAI/Codex secret-like values, bundled `auth.json` or `.codex` payload files, local absolute workspace paths, `.omx/`, or `.playwright-mcp/` paths in `dist/client`, `dist/server`, or `dist/deckforge-macos-dry-run/DeckForge.app`. The regenerated archive SHA-256 is `39274abf4bf0a164fd837ddaba8ea7fe2cb063550e523328c324f6e62eaa5adb`; it contains 17 app files, is 279,124 bytes compressed, and the extracted dry-run app bundle is 1,028 KiB.
 
 The broader scan does find expected guard-code literals and status copy: `mock_lineage_contamination`, `fixture_lineage_contamination`, `pending_reinforcement_request`, `summary_without_original`, `missing_provenance`, production messages that say mock stages are not run in production, and secret-redaction regex definitions such as `API_KEY_PATTERN`, `SECRET_ASSIGNMENT_PATTERN`, `.codex/auth.json`, and `Bearer` token redaction expressions. Broad `sk-*` scans also match Tailwind/class-merge names such as `sk-image-linear-from-pos`. Those strings are release/research approval gate rejection reasons, redaction guards, sensitive-path guards, or CSS utility identifiers, not bundled mock resources or actual secrets.
+
+Latest local native package build on 2026-06-19 ran `bun run tauri:build`, produced `src-tauri/target/release/bundle/macos/DeckForge.app` and `release-artifacts/DeckForge_0.1.0_aarch64.dmg`, and copied the DMG into `release-artifacts/`. The DMG is 1,830,270 bytes with SHA-256 `ad8b11dee61a15c193fabfc3a7bf85110b116db65098bd2a845c2533a25dae5d`; the built app bundle has 3 files and is 4,984 KiB. Direct native bundle scan and mounted DMG scan both found 0 OpenAI/Codex secret-like values and 0 mock/fixture/test/local-path contamination hits.
+
+Signing state remains release-blocking: `codesign -dv --verbose=4` reports `Signature=adhoc` and `TeamIdentifier=not set`; `spctl --assess --type open --context context:primary-signature --verbose=4 release-artifacts/DeckForge_0.1.0_aarch64.dmg` rejects the DMG with `source=no usable signature`.
 
 ## Local evidence contract
 
@@ -83,4 +87,4 @@ If image credentials are missing, the app must show:
 
 ## Current result
 
-Blocked for final production release. The local dry-run package scan passes, but clean-machine Live execution, signing, notarization, and Gatekeeper validation are not recorded.
+Blocked for final production release. The local dry-run package scan and regenerated native DMG scan pass, but clean-machine Live execution, Developer ID signing, notarization, and Gatekeeper acceptance are not recorded.

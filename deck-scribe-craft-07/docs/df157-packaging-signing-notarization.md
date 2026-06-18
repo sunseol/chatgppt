@@ -1,6 +1,6 @@
 # DF-157 Packaging, Code Signing, Notarization Prep
 
-Date: 2026-06-18
+Date: 2026-06-19
 
 ## Current Packaging Status
 
@@ -29,6 +29,15 @@ Verified local unsigned Tauri outputs:
 
 - `src-tauri/target/release/bundle/macos/DeckForge.app`
 - `src-tauri/target/release/bundle/dmg/DeckForge_0.1.0_aarch64.dmg`
+- copied internal DMG: `release-artifacts/DeckForge_0.1.0_aarch64.dmg`
+- current internal DMG SHA-256: `ad8b11dee61a15c193fabfc3a7bf85110b116db65098bd2a845c2533a25dae5d`
+
+Latest local native package scan on 2026-06-19 found 0 OpenAI/Codex secret-like values and 0 mock/fixture/test/local-path contamination hits in both the built app bundle and a mounted copy of the DMG.
+
+Latest local signing assessment:
+
+- `codesign -dv --verbose=4 src-tauri/target/release/bundle/macos/DeckForge.app` reports `Signature=adhoc` and `TeamIdentifier=not set`.
+- `spctl --assess --type open --context context:primary-signature --verbose=4 release-artifacts/DeckForge_0.1.0_aarch64.dmg` rejects the DMG with `source=no usable signature`.
 
 ## Internal Dry-Run Command
 
