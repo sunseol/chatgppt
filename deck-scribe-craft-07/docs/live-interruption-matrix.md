@@ -55,6 +55,20 @@ Using `codex-cli 0.141.0` and App Server `0.141.0` on 2026-06-19 KST, a direct J
 
 This proves the current App Server can persist an interrupted live text turn without accepting a completed artifact.
 
+## Live Source Fetch Abort Evidence
+
+Using the production `fetchResearchSource` path on 2026-06-19 KST, a live HTTPS GET to `https://httpbin.org/delay/10` was started with an `AbortController` and aborted after 754 ms.
+
+- Fetch id: `fetch_shutdown_live_20260619`
+- Result status: `failed`
+- Retryable: `true`
+- Error: `The operation was aborted.`
+- Raw content persisted: no
+- Content hash persisted: no
+- Evidence digest over the result object: `a472a031283e5a2ce537801d43a15b2d121241d823397868b81437c50e78bc3d`
+
+This proves an interrupted live source fetch returns a retryable failed state without creating a completed source artifact.
+
 ## Remaining Live Evidence
 
-The local contract is ready and live text-turn interruption has been verified, but DF-243 still requires the rest of the live interruption test matrix against live fetches, live image partial resume, persisted cancel-signal behavior, and interrupted artifact approval/export before the issue can close.
+The local contract is ready and live text-turn plus source-fetch interruption have been verified, but DF-243 still requires the rest of the live interruption test matrix against live image partial resume, persisted cancel-signal behavior, and interrupted artifact approval/export before the issue can close.

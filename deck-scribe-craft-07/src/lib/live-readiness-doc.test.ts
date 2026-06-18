@@ -236,9 +236,15 @@ describe("live readiness documentation", () => {
     expect(interruptionMatrix.includes("interrupted_artifact_approvable")).toBe(true);
     expect(interruptionMatrix.includes("turn/interrupt")).toBe(true);
     expect(interruptionMatrix.includes("019edc5a-0cc0-7031-915a-5fc6d65c6d86")).toBe(true);
+    expect(interruptionMatrix.includes("fetch_shutdown_live_20260619")).toBe(true);
     expect(
       interruptionMatrix.includes(
         "27855e9afff031bc49c87bb08bb46ea6ac9a5436e4a2eef9ecb74382e62809b6",
+      ),
+    ).toBe(true);
+    expect(
+      interruptionMatrix.includes(
+        "a472a031283e5a2ce537801d43a15b2d121241d823397868b81437c50e78bc3d",
       ),
     ).toBe(true);
   });
