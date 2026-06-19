@@ -1,4 +1,5 @@
 import { scenarioEvidenceDetailIssues } from "./live-interruption-evidence-details";
+import { interruptionReportPathIssues } from "./live-interruption-report-path";
 
 export const LIVE_INTERRUPTION_SCENARIOS = [
   "text_turn_shutdown",
@@ -85,7 +86,7 @@ export function evaluateLiveInterruptionMatrix(
     ...partialImageResumeIssues(matrix.scenarios),
     ...cancelledJobIssues(matrix.scenarios),
     ...interruptedArtifactGateIssues(matrix.scenarios),
-    ...reportIssues(matrix.reportPath),
+    ...interruptionReportPathIssues(matrix.reportPath),
   ];
 
   return issues.length === 0 ? { kind: "ready" } : { kind: "blocked", issues };
@@ -223,16 +224,6 @@ function interruptedArtifactGateIssues(
           "Interrupted artifacts cannot be approved or exported.",
           refs,
         ),
-      ];
-}
-
-function reportIssues(reportPath: string): readonly LiveInterruptionIssue[] {
-  return reportPath.endsWith("live-interruption-matrix.md")
-    ? []
-    : [
-        issue("missing_interruption_report", "Live interruption matrix report is required.", [
-          reportPath || "missing",
-        ]),
       ];
 }
 
