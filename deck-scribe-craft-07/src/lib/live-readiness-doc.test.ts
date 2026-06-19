@@ -204,6 +204,7 @@ describe("live readiness documentation", () => {
     expect(compositorReview.includes("mock_background_artifact")).toBe(true);
     expect(compositorReview.includes("missing_stored_background_artifact")).toBe(true);
     expect(compositorReview.includes("invalid_stored_background_artifact_hash")).toBe(true);
+    expect(compositorReview.includes("missing_editable_overlay")).toBe(true);
     expect(compositorReview.includes("invalid_compositor_preview")).toBe(true);
     expect(compositorReview.includes("text_overlay_collision")).toBe(true);
     expect(compositorReview.includes("five compositor thumbnails")).toBe(true);

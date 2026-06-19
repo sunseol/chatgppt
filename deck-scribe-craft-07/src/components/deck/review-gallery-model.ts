@@ -211,13 +211,15 @@ function previewIssues(
 function overlayIssues(
   composition: FinalSlideComposition,
 ): readonly ReviewGalleryLiveCompositionIssue[] {
-  return REQUIRED_OVERLAY_ROLES.filter((role) => !composition.overlayRoles.includes(role)).map(
-    (role) => ({
-      code: "missing_editable_overlay",
-      slideNumber: composition.slideNumber,
-      message: `Missing editable ${role} overlay.`,
-    }),
-  );
+  return REQUIRED_OVERLAY_ROLES.filter(
+    (role) =>
+      !composition.overlayRoles.includes(role) ||
+      !composition.overlayBounds.some((overlay) => overlay.role === role),
+  ).map((role) => ({
+    code: "missing_editable_overlay",
+    slideNumber: composition.slideNumber,
+    message: `Missing editable ${role} overlay.`,
+  }));
 }
 
 function collisionIssues(
