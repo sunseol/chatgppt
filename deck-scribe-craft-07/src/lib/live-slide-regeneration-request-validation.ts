@@ -10,6 +10,7 @@ export function requestIssues(input: {
     ...mustKeepIssues(input.revisionRequest),
     ...mustChangeIssues(input.revisionRequest),
     ...blankTargetIssues(input.revisionRequest),
+    ...duplicateTargetIssues(input.revisionRequest),
     ...targetOverlapIssues(input.revisionRequest),
     ...originalBackgroundIssues(input),
   ];
@@ -76,6 +77,21 @@ function blankTargetIssues(
     : [];
 }
 
+function duplicateTargetIssues(
+  revisionRequest: SlideRevisionRequest,
+): readonly LiveSlideRegenerationIssue[] {
+  return hasDuplicateTarget(revisionRequest.mustKeep) ||
+    hasDuplicateTarget(revisionRequest.mustChange)
+    ? [
+        {
+          code: "duplicate_revision_target" as const,
+          slideNumber: revisionRequest.slideNumber,
+          message: "Live regeneration targets must not be duplicated.",
+        },
+      ]
+    : [];
+}
+
 function originalBackgroundIssues(input: {
   readonly revisionRequest: SlideRevisionRequest;
   readonly originalBackgroundArtifactId: string;
@@ -105,4 +121,15 @@ function originalBackgroundIssues(input: {
 
 function hasTargets(values: readonly string[]): boolean {
   return values.some((value) => value.trim());
+}
+
+function hasDuplicateTarget(values: readonly string[]): boolean {
+  const seen = new Set<string>();
+  return values.some((value) => {
+    const target = value.trim();
+    if (!target) return false;
+    if (seen.has(target)) return true;
+    seen.add(target);
+    return false;
+  });
 }

@@ -15,6 +15,7 @@ describe("live full-slide regeneration documentation", () => {
     expect(slideRegeneration.includes("missing_must_keep_targets")).toBe(true);
     expect(slideRegeneration.includes("missing_must_change_targets")).toBe(true);
     expect(slideRegeneration.includes("blank_revision_target")).toBe(true);
+    expect(slideRegeneration.includes("duplicate_revision_target")).toBe(true);
     expect(slideRegeneration.includes("revision_targets_overlap")).toBe(true);
     expect(slideRegeneration.includes("original_slide_not_approved")).toBe(true);
     expect(slideRegeneration.includes("original_slide_mismatch")).toBe(true);

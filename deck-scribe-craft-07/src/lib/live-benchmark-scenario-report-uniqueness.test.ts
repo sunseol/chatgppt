@@ -5,7 +5,7 @@ import {
   type LiveBenchmarkRun,
 } from "./live-benchmark-evidence";
 
-const PACKAGE_SHA = "1637677e8dfff5f8c0629a8c5c8d72c1c0684185aaf809cc0c0ade37a234de24";
+const PACKAGE_SHA = "0344157312036ffb0c355c0f60543bf9a88ede0c21ae99dca32d8aa6c75f7f9e";
 
 describe("live benchmark scenario report uniqueness", () => {
   test("blocks benchmark runs that reuse one scenario report", () => {
