@@ -159,6 +159,7 @@ describe("slide generation queue live controls", () => {
 
   test("records cancellation without invoking later provider calls", async () => {
     // Given
+    let cancelled = false;
     const generatedNumbers: number[] = [];
 
     // When
@@ -166,7 +167,10 @@ describe("slide generation queue live controls", () => {
       bundles: approvedBundles(4),
       manager: createProviderJobManager({ createId: sequentialIds("job_cancel") }),
       maxParallel: 1,
-      isCancellationRequested: () => generatedNumbers.length >= 1,
+      isCancellationRequested: () => cancelled,
+      onProgress: (progress) => {
+        cancelled = progress.completed >= 1;
+      },
       generateSlide: async (input) => {
         generatedNumbers.push(input.bundle.slideSpec.slideNumber);
         return generatedSlide(input.bundle.slideSpec.slideNumber);
@@ -181,6 +185,45 @@ describe("slide generation queue live controls", () => {
     expect(result.failures.map((failure) => failure.slideNumber)).toEqual([2, 3, 4]);
     expect(result.failures.every((failure) => failure.failureKind === "cancelled")).toBe(true);
     expect(result.jobs.filter((job) => job.status === "cancelled").length).toBe(3);
+  });
+
+  test("rejects an in-flight image when cancellation is requested before completion", async () => {
+    // Given
+    let cancelled = false;
+    const generatedNumbers: number[] = [];
+
+    // When
+    const result = await runSlideGenerationQueue({
+      bundles: approvedBundles(1),
+      manager: createProviderJobManager({ createId: sequentialIds("job_inflight_cancel") }),
+      isCancellationRequested: () => cancelled,
+      generateSlide: async (input) => {
+        generatedNumbers.push(input.bundle.slideSpec.slideNumber);
+        cancelled = true;
+        return generatedSlide(input.bundle.slideSpec.slideNumber);
+      },
+    });
+
+    // Then
+    expect(result.kind).toBe("ready");
+    if (result.kind !== "ready") return;
+    expect(result.status).toBe("failed");
+    expect(result.slides).toEqual([]);
+    expect(generatedNumbers).toEqual([1]);
+    expect(result.failures).toEqual([
+      {
+        jobId: "job_inflight_cancel_1",
+        bundleId: result.failures[0]?.bundleId,
+        slideNumber: 1,
+        retryable: true,
+        attempts: 1,
+        failureKind: "cancelled",
+        retryDelaysMs: [],
+        errorMessage: 'Provider job "job_inflight_cancel_1" was cancelled.',
+        userMessage: "Slide 1 was cancelled. Retry is available.",
+      },
+    ]);
+    expect(result.jobs[0]?.status).toBe("cancelled");
   });
 });
 

@@ -59,9 +59,7 @@ export async function runSlideGenerationTask(input: {
     const currentJob = input.manager.get(input.task.job.id) ?? input.task.job;
     let capturedError: unknown;
     const completed = await input.manager.run(currentJob.id, async (job) => {
-      if (job.isCancellationRequested() || input.options.isCancellationRequested?.() === true) {
-        throw new ProviderJobCancelledError(currentJob.id);
-      }
+      assertNotCancelled(input.manager, currentJob.id, job, input.options);
       try {
         const slide = await input.generateSlide({
           bundle: input.task.bundle,
@@ -73,9 +71,7 @@ export async function runSlideGenerationTask(input: {
           promptUsage: input.task.promptUsage,
           attempt: currentJob.attempt,
         });
-        if (job.isCancellationRequested()) {
-          throw new ProviderJobCancelledError(currentJob.id);
-        }
+        assertNotCancelled(input.manager, currentJob.id, job, input.options);
         return slide;
       } catch (error) {
         capturedError = error;
@@ -195,4 +191,16 @@ async function waitForRetry(
     return;
   }
   await waitForSlideGenerationRetryDelay(event.delayMs);
+}
+
+function assertNotCancelled(
+  manager: ProviderJobManager,
+  jobId: string,
+  job: { isCancellationRequested(): boolean },
+  options: Pick<RunSlideGenerationQueueInput, "isCancellationRequested">,
+): void {
+  if (job.isCancellationRequested() || options.isCancellationRequested?.() === true) {
+    manager.requestCancellation(jobId);
+    throw new ProviderJobCancelledError(jobId);
+  }
 }

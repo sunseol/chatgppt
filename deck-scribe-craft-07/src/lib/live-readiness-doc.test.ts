@@ -198,6 +198,7 @@ describe("live readiness documentation", () => {
     expect(imageQueueControls.includes("server")).toBe(true);
     expect(imageQueueControls.includes("max-attempt")).toBe(true);
     expect(imageQueueControls.includes("cancellation")).toBe(true);
+    expect(imageQueueControls.includes("in-flight cancellation")).toBe(true);
     expect(imageQueueControls.includes("retryProvenance")).toBe(true);
     expect(imageQueueControls.includes("partial resume")).toBe(true);
   });
