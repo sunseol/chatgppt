@@ -14,6 +14,7 @@ export function scenarioEvidenceDetailIssues(
     )
     .map((scenario) => scenario.id);
   const duplicateLiveJobs = duplicateLiveJobIds(scenarios);
+  const duplicateSnapshots = duplicateRecoverySnapshotPaths(scenarios);
   const missingSnapshots = scenarios
     .filter((scenario) => !isPersistedJsonEvidencePath(scenario.recoverySnapshotPath))
     .map((scenario) => scenario.id);
@@ -76,6 +77,15 @@ export function scenarioEvidenceDetailIssues(
             "duplicate_interruption_live_job",
             "Each interruption scenario requires distinct live job evidence.",
             duplicateLiveJobs,
+          ),
+        ]),
+    ...(duplicateSnapshots.length === 0
+      ? []
+      : [
+          issue(
+            "duplicate_recovery_snapshot",
+            "Each interruption scenario requires distinct recovery snapshot evidence.",
+            duplicateSnapshots,
           ),
         ]),
     ...(missingSnapshots.length === 0
@@ -142,6 +152,16 @@ function duplicateLiveJobIds(
     scenarios
       .map((scenario) => scenario.liveJobId.trim())
       .filter((liveJobId) => liveJobId.length > 0 && !hasSyntheticEvidenceMarker(liveJobId)),
+  );
+}
+
+function duplicateRecoverySnapshotPaths(
+  scenarios: readonly LiveInterruptionScenarioEvidence[],
+): readonly string[] {
+  return duplicateValues(
+    scenarios
+      .map((scenario) => scenario.recoverySnapshotPath.trim())
+      .filter((recoverySnapshotPath) => isPersistedJsonEvidencePath(recoverySnapshotPath)),
   );
 }
 

@@ -8,7 +8,7 @@ Ticket: DF-243
 
 The Live interruption matrix validates that provider interruptions do not corrupt project state or allow partial artifacts into approval/export.
 
-Every scenario must carry a distinct non-synthetic live job id plus a persisted recovery snapshot path, and the matrix itself must be documented by a non-synthetic, non-developer-local `docs/live-interruption-matrix.md` report path. Job ids, snapshots, or report paths marked as `mock`, `fixture`, `test`, or `fake` are not accepted as Live interruption evidence, and local absolute or `file://` paths are rejected. Reusing one live job id across multiple required scenarios is blocked because it can hide a missing text, fetch, image, cancellation, or approval/export run. Recovered job states are validated at runtime against the allowed taxonomy: queued, running, succeeded, failed, cancelled, and interrupted. The cancellation scenario must record both an app-storage recovery snapshot and a persisted cancel signal JSON path that targets the same live job id; a `cancellationRecorded` boolean alone is not enough Live evidence. The interrupted artifact gate scenario must explicitly exercise both approval and export gates, with persisted approval/export gate JSON paths, even when no interrupted artifact becomes approvable or exportable.
+Every scenario must carry a distinct non-synthetic live job id plus a distinct persisted recovery snapshot path, and the matrix itself must be documented by a non-synthetic, non-developer-local `docs/live-interruption-matrix.md` report path. Job ids, snapshots, or report paths marked as `mock`, `fixture`, `test`, or `fake` are not accepted as Live interruption evidence, and local absolute or `file://` paths are rejected. Reusing one live job id or recovery snapshot path across multiple required scenarios is blocked because it can hide a missing text, fetch, image, cancellation, or approval/export run. Recovered job states are validated at runtime against the allowed taxonomy: queued, running, succeeded, failed, cancelled, and interrupted. The cancellation scenario must record both an app-storage recovery snapshot and a persisted cancel signal JSON path that targets the same live job id; a `cancellationRecorded` boolean alone is not enough Live evidence. The interrupted artifact gate scenario must explicitly exercise both approval and export gates, with persisted approval/export gate JSON paths, even when no interrupted artifact becomes approvable or exportable.
 
 Required scenarios:
 
@@ -25,6 +25,7 @@ Required scenarios:
 - `missing_interruption_scenario`: a required matrix scenario is absent.
 - `missing_live_job_evidence`: a scenario lacks a non-synthetic live job id.
 - `duplicate_interruption_live_job`: multiple required scenarios reuse one live job id.
+- `duplicate_recovery_snapshot`: multiple required scenarios reuse one recovery snapshot path.
 - `invalid_recovered_job_state`: recovered job status evidence is outside the DF-243 state taxonomy.
 - `missing_recovery_snapshot`: a scenario lacks a persisted, non-synthetic, non-developer-local recovery snapshot.
 - `missing_app_cancel_snapshot`: cancellation evidence lacks an app-storage recovery snapshot.
