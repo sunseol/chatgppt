@@ -119,6 +119,9 @@ export async function runSlideGenerationTask(input: {
     };
     retryProvenance.push(retryEvent);
     await waitForRetry(input.options.waitForRetry, retryEvent);
+    if (input.options.isCancellationRequested?.() === true) {
+      return cancelTask(input.task, input.manager, retryDelaysMs, retryProvenance);
+    }
     input.manager.retry(currentJob.id);
   }
 }
