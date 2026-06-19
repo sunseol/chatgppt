@@ -129,6 +129,34 @@ describe("slide generation queue live controls", () => {
     expect(result.progress).toEqual({ completed: 5, failed: 0, total: 5, percent: 100 });
   });
 
+  test("regenerates unfinished images when resuming a partial queue", async () => {
+    // Given
+    const resumedSlides: readonly GeneratedSlide[] = [
+      generatedSlide(1),
+      { ...generatedSlide(2), status: "pending" },
+    ];
+    const generatedNumbers: number[] = [];
+
+    // When
+    const result = await runSlideGenerationQueue({
+      bundles: approvedBundles(3),
+      completedSlides: resumedSlides,
+      manager: createProviderJobManager({ createId: sequentialIds("job_resume_unfinished") }),
+      generateSlide: async (input) => {
+        generatedNumbers.push(input.bundle.slideSpec.slideNumber);
+        return generatedSlide(input.bundle.slideSpec.slideNumber);
+      },
+    });
+
+    // Then
+    expect(result.kind).toBe("ready");
+    if (result.kind !== "ready") return;
+    expect(result.status).toBe("succeeded");
+    expect(generatedNumbers).toEqual([2, 3]);
+    expect(result.slides.map((slide) => slide.number)).toEqual([1, 2, 3]);
+    expect(result.slides.find((slide) => slide.number === 2)?.status).toBe("ready");
+  });
+
   test("records cancellation without invoking later provider calls", async () => {
     // Given
     const generatedNumbers: number[] = [];

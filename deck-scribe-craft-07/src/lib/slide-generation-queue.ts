@@ -194,7 +194,13 @@ function completedSlidesForBundles(
   completedSlides: readonly GeneratedSlide[],
 ): readonly GeneratedSlide[] {
   const bundleSlideNumbers = new Set(bundles.map((bundle) => bundle.slideSpec.slideNumber));
-  return completedSlides.filter((slide) => bundleSlideNumbers.has(slide.number));
+  return completedSlides.filter(
+    (slide) => bundleSlideNumbers.has(slide.number) && isCompletedGeneratedSlide(slide),
+  );
+}
+
+function isCompletedGeneratedSlide(slide: GeneratedSlide): boolean {
+  return slide.status === "ready" || slide.status === "approved";
 }
 
 function pendingBundlesForCompletedSlides(

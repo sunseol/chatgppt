@@ -1,6 +1,6 @@
 # Live Image Queue Controls
 
-Date: 2026-06-18
+Date: 2026-06-19
 
 Ticket: DF-233
 
@@ -12,12 +12,12 @@ DF-233 requires the live image queue to throttle concurrent work, retry only tra
 
 ## Local Evidence
 
-- `src/lib/slide-generation-queue.ts` still bounds concurrency with `maxParallel`, now also accepts `completedSlides` so partial resume skips already generated slide numbers.
+- `src/lib/slide-generation-queue.ts` still bounds concurrency with `maxParallel`, now also accepts `completedSlides` so partial resume skips only already generated `ready` or `approved` slide numbers while regenerating unfinished `pending` or `generating` entries.
 - `src/lib/slide-generation-retry-policy.ts` classifies retry decisions through image provider failure kinds and applies exponential backoff for transient `rate_limit`, `server`, and unknown failures only when a retry policy allows more attempts.
 - `src/lib/slide-generation-queue-executor.ts` records retry provenance on failed slides and successful-after-retry slides: job id, bundle id, slide number, attempt, failure kind, message, and retry delay history.
 - `SlideGenerationQueueResult.retryProvenance` preserves retry events even when a slide eventually succeeds, so live QA can audit transient `rate_limit` or `server` recovery instead of seeing only the final success.
 - `isCancellationRequested` prevents later provider calls after a user cancellation and records cancelled jobs plus slide failures instead of leaving background work running.
-- `src/lib/slide-generation-queue-live-controls.test.ts` covers bounded `rate_limit` retry, max-attempt `server` retry provenance, cancellation, and partial resume behavior.
+- `src/lib/slide-generation-queue-live-controls.test.ts` covers bounded `rate_limit` retry, max-attempt `server` retry provenance, cancellation, completed-slide partial resume, and unfinished-slide regeneration during partial resume.
 
 ## Verification
 
