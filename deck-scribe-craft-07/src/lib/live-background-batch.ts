@@ -52,8 +52,14 @@ export function validateLiveBackgroundBatch(
 ): LiveBackgroundBatchValidation {
   const issues = [
     ...batchIntegrityIssues(batch),
-    ...batch.artifacts.flatMap((artifact, index) =>
-      artifactIssues(artifact, batch, storedArtifactForSlide(batch, artifact.slideNumber), index),
+    ...promptPackageCoverageIssues(batch),
+    ...batch.artifacts.flatMap((artifact) =>
+      artifactIssues(
+        artifact,
+        batch,
+        storedArtifactForSlide(batch, artifact.slideNumber),
+        promptPackageForSlide(batch, artifact.slideNumber),
+      ),
     ),
   ];
   return issues.length === 0 ? { kind: "ready" } : { kind: "blocked", issues };
@@ -72,9 +78,8 @@ function artifactIssues(
   artifact: SlideImageArtifact,
   batch: LiveBackgroundBatch,
   storedArtifact: StoredSlideImageArtifact | undefined,
-  index: number,
+  pkg: SlidePromptPackage | undefined,
 ): readonly LiveBackgroundBatchIssue[] {
-  const pkg = batch.promptPackages[index];
   if (!pkg) {
     return [
       {
@@ -102,6 +107,30 @@ function storedArtifactForSlide(
   slideNumber: number,
 ): StoredSlideImageArtifact | undefined {
   return batch.storedArtifacts?.find((stored) => stored.metadata.slideNumber === slideNumber);
+}
+
+function promptPackageCoverageIssues(
+  batch: LiveBackgroundBatch,
+): readonly LiveBackgroundBatchIssue[] {
+  const artifactSlideNumbers = new Set(batch.artifacts.map((artifact) => artifact.slideNumber));
+  return batch.promptPackages.flatMap((pkg) =>
+    artifactSlideNumbers.has(pkg.slideNumber)
+      ? []
+      : [
+          {
+            code: "slide_id_mismatch" as const,
+            slideNumber: pkg.slideNumber,
+            message: "Prompt package slide id must match a live image artifact slide id.",
+          },
+        ],
+  );
+}
+
+function promptPackageForSlide(
+  batch: LiveBackgroundBatch,
+  slideNumber: number,
+): SlidePromptPackage | undefined {
+  return batch.promptPackages.find((pkg) => pkg.slideNumber === slideNumber);
 }
 
 function providerIssues(artifact: SlideImageArtifact): readonly LiveBackgroundBatchIssue[] {

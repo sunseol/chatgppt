@@ -63,9 +63,9 @@ describe("live background batch", () => {
         promptPackages: [
           packages[0],
           { ...packages[1], deckContextId: "other_context" },
-          { ...packages[2], designSystemId: "other_design" },
+          packages[2],
           { ...packages[3], prompt: packages[3].prompt.replace("Do not render exact title", "") },
-          packages[4],
+          { ...packages[4], designSystemId: "other_design" },
         ],
       }),
     );
@@ -74,13 +74,14 @@ describe("live background batch", () => {
     expect(validation.kind).toBe("blocked");
     if (validation.kind !== "blocked") return;
     expect(validation.issues.map((issue) => issue.code)).toEqual([
+      "slide_id_mismatch",
       "mock_provider_output",
       "wrong_aspect_ratio",
       "deck_context_mismatch",
-      "slide_id_mismatch",
-      "design_system_mismatch",
+      "missing_prompt_package",
       "layout_reference_mismatch",
       "missing_text_overlay_rule",
+      "design_system_mismatch",
     ]);
   });
 
