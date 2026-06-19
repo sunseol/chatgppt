@@ -46,6 +46,7 @@ Release requirement: at least 4 of 5 live benchmarks must pass without counting 
 Blocking issue codes:
 
 - `missing_benchmark_scenario`
+- `duplicate_benchmark_scenario`
 - `missing_benchmark_package_hash`
 - `invalid_benchmark_package_hash`
 - `missing_output_bundle`

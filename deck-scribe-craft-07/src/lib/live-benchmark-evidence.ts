@@ -55,6 +55,7 @@ export type LiveBenchmarkEvidenceBundle = {
 
 export type LiveBenchmarkEvidenceIssueCode =
   | "missing_benchmark_scenario"
+  | "duplicate_benchmark_scenario"
   | "missing_benchmark_package_hash"
   | "invalid_benchmark_package_hash"
   | "missing_output_bundle"
@@ -130,15 +131,41 @@ function countPassedLiveBenchmarks(runs: readonly LiveBenchmarkRun[]): number {
 function scenarioIssues(runs: readonly LiveBenchmarkRun[]): readonly LiveBenchmarkEvidenceIssue[] {
   const present = new Set(runs.map((run) => run.id));
   const missing = LIVE_BENCHMARK_IDS.filter((id) => !present.has(id));
-  return missing.length === 0
-    ? []
-    : [
-        issue(
-          "missing_benchmark_scenario",
-          "All five Live benchmark scenarios are required.",
-          missing,
-        ),
-      ];
+  const duplicates = duplicateScenarioIds(runs);
+  return [
+    ...(missing.length === 0
+      ? []
+      : [
+          issue(
+            "missing_benchmark_scenario",
+            "All five Live benchmark scenarios are required.",
+            missing,
+          ),
+        ]),
+    ...(duplicates.length === 0
+      ? []
+      : [
+          issue(
+            "duplicate_benchmark_scenario",
+            "Each Live benchmark scenario must appear exactly once.",
+            duplicates,
+          ),
+        ]),
+  ];
+}
+
+function duplicateScenarioIds(runs: readonly LiveBenchmarkRun[]): readonly string[] {
+  const counts = runs.reduce(
+    (nextCounts, run) => ({ ...nextCounts, [run.id]: nextCounts[run.id] + 1 }),
+    {
+      korean_business: 0,
+      market_research: 0,
+      chart_report: 0,
+      image_intro: 0,
+      revision_regeneration: 0,
+    } satisfies Record<LiveBenchmarkId, number>,
+  );
+  return LIVE_BENCHMARK_IDS.filter((id) => counts[id] > 1);
 }
 
 function mockScoreIssues(runs: readonly LiveBenchmarkRun[]): readonly LiveBenchmarkEvidenceIssue[] {
