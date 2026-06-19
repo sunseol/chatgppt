@@ -32,6 +32,7 @@ export type LiveInterviewIssueCode =
   | "brief_missing_question_input"
   | "brief_missing_answer_input"
   | "brief_reused_question_turn"
+  | "brief_reused_question_artifact"
   | "interview_prompt_version_mismatch";
 
 export type LiveInterviewIssue = {
