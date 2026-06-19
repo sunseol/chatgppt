@@ -16,7 +16,7 @@ Scope: DF-214 Deck Plan, Design System, and Layout IR Live cutover contract.
 - Design System JSON must pass `DesignSystemSchema`.
 - Layout IR JSON must pass `LayoutIRSchema`, which restricts components to the approved component catalog.
 - Five-slide outputs must share one `deckContextId` and one `designSystemId`.
-- Schema failures return a live repair turn up to two attempts; after that `schema_repair_exhausted` blocks approval.
+- Schema failures return a live repair turn up to two attempts; counted repair evidence must carry fresh, nonblank repair turn ids that do not reuse the failed output turn, otherwise `invalid_repair_turn_evidence` blocks approval before `schema_repair_exhausted`.
 - Provider failure recovery has `fixtureFallbackAllowed: false` and exposes only `retry_live_turn` or `manual_input`.
 - accepted structured App Server results can be converted into persisted Plan, Design System, and Layout IR artifact records plus a `LAYOUT_APPROVAL_PENDING` project patch only after the cutover gate is ready.
 - `runLiveTextPipelineProductionWorkflow` runs the production App Server Deck Plan, Design System, and Layout IR jobs before handing accepted outputs to the persistence gate.
@@ -28,7 +28,7 @@ Scope: DF-214 Deck Plan, Design System, and Layout IR Live cutover contract.
 ## Verified Locally
 
 - `src/lib/live-text-pipeline-cutover.test.ts` accepts a five-slide live bundle with separate plan/design/layout turn provenance.
-- It schedules a repair turn for invalid Layout IR schema output and blocks after two failed repair attempts.
+- It schedules a repair turn for invalid Layout IR schema output, rejects repair evidence that lacks a fresh repair turn id, and blocks after two failed repair attempts.
 - It blocks mock/fixture provenance and non-session Codex auth with no fixture fallback.
 - It blocks slide refs that drift from the shared deck context or design system.
 - `src/lib/live-text-artifact-persistence.test.ts` verifies accepted App Server outputs persist live artifact ids/provenance, render Layout IR into a project layout prototype, and return a live repair turn instead of storing invalid plan output.

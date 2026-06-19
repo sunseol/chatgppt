@@ -144,6 +144,7 @@ describe("live readiness documentation", () => {
     expect(textPipelineCutover.includes("DF-214")).toBe(true);
     expect(textPipelineCutover.includes("DesignSystemSchema")).toBe(true);
     expect(textPipelineCutover.includes("LayoutIRSchema")).toBe(true);
+    expect(textPipelineCutover.includes("invalid_repair_turn_evidence")).toBe(true);
     expect(textPipelineCutover.includes("schema_repair_exhausted")).toBe(true);
     expect(textPipelineCutover.includes("non-session Codex auth")).toBe(true);
   });
