@@ -11,7 +11,7 @@ Scope: DF-205 / GitHub issue `#131`, Live authentication and secret lifecycle.
 | Official Codex runtime login/session flow                                       | Local runtime check uses `codex-cli 0.141.0`; `codex login status` returned `Logged in using ChatGPT` without exposing token material.                                                                                                                                                                  |
 | Do not copy raw ChatGPT/Codex access tokens into project DB                     | `serializeProjectList` redacts raw API keys, `CODEX_SESSION=...`, long Bearer tokens, and `.codex/auth.json` paths before local project DB serialization. Project persistence continues to store provider provenance and references only. Package scans below found no `auth.json` file, `.codex` directory payload, `CODEX_SESSION=...`, long Bearer token, or OpenAI key-shaped value in production assets. |
 | Store image API keys in OS keychain or equivalent secret store                  | `connectImageApiKeySecret` accepts an injected `LiveSecretStore`, writes the trimmed secret through `saveSecret`, rejects secret references that echo raw or URL-encoded key material, rejects any returned unsupported store kind or store-kind mismatch, and returns only a `LiveSecretReference` plus public label. `disconnectImageApiKeySecret` rejects store-kind mismatch before delete, deletes the stored key through `deleteSecret`, and returns a missing-credential state without returning the secret reference. |
-| Distinguish login expiry, 401, permission, and organization verification states | `classifyLiveAuthFailure` maps `session_expired` 401, generic 401, generic 403, and 403 organization-verification messages to separate user-facing states.                                                                                                                                              |
+| Distinguish login expiry, 401, permission, and organization verification states | `classifyLiveAuthFailure` normalizes provider reason/message evidence and maps `session_expired`, `login_expired`, and `Session expired` 401 failures separately from generic 401 unauthorized failures. It also keeps 403 organization-verification evidence, including `verify your organization` messages, separate from generic insufficient-permission failures. |
 | Logout cancels related live jobs and locks UI                                   | `cancelLiveJobsForAuthLogout` requests cancellation for active live jobs, and `createLiveAuthLogoutLockState` returns `uiLocked: true` with `requiresAuth` provider statuses.                                                                                                                           |
 
 ## Local package and secret scan
@@ -33,8 +33,8 @@ Observed local runtime:
 Dry-run package evidence:
 
 - Archive: `dist/deckforge-macos-dry-run.tgz`
-- SHA-256: `4d602ff9da53252fb2d256a1a2e1029905d00b2094cb6c4c6555083008edcc76`
-- Archive size: 284,908 bytes
+- SHA-256: `1724e22d62f8c011779ddaf5ae98297c1637dae48143dd884a40107630f9b0aa`
+- Archive size: 284,896 bytes
 - Extracted app bundle: `dist/deckforge-macos-dry-run/DeckForge.app`
 - App bundle size: 1,052 KiB
 - App bundle files: 17
@@ -56,6 +56,10 @@ Scan result:
 ## Project DB serialization guard
 
 `src/lib/project-list-codec.ts` now passes serialized project lists through `redactSensitiveText` before writing project DB/localStorage text. `src/lib/project-list-codec.test.ts` proves a project prompt containing `OPENAI_API_KEY=sk-live-secret123`, `Bearer codex.session.secret`, and `/Users/jake/.codex/auth.json` persists with those raw values removed and `[redacted]` markers in their place.
+
+## Auth failure classification guard
+
+`src/lib/live-auth-failure-classification.test.ts` proves that 401 expiry evidence stays `login_expired` even when the runtime reports it through provider message text or `login_expired` reason text instead of the original `session_expired` reason. It also proves that a 403 `verify your organization` provider message is classified as `organization_verification_required`, not generic insufficient permission.
 
 ## Remaining evidence before close
 

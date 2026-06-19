@@ -5,7 +5,7 @@ import {
   type LiveBenchmarkRun,
 } from "./live-benchmark-evidence";
 
-const PACKAGE_SHA = "4d602ff9da53252fb2d256a1a2e1029905d00b2094cb6c4c6555083008edcc76";
+const PACKAGE_SHA = "1724e22d62f8c011779ddaf5ae98297c1637dae48143dd884a40107630f9b0aa";
 
 describe("live benchmark export artifact uniqueness", () => {
   test("blocks passed benchmark bundles that reuse one final export artifact", () => {

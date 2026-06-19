@@ -124,8 +124,8 @@ export async function disconnectImageApiKeySecret(input: {
 }
 
 export function classifyLiveAuthFailure(input: LiveAuthFailureInput): LiveAuthFailure {
-  const message = input.providerMessage?.toLowerCase() ?? "";
-  if (input.statusCode === 401 && input.reason === "session_expired") {
+  const evidenceText = normalizedAuthFailureEvidence(input);
+  if (input.statusCode === 401 && isExpiredLoginEvidence(evidenceText)) {
     return {
       kind: "login_expired",
       userMessage: "Live login expired. Sign in again before continuing.",
@@ -137,7 +137,7 @@ export function classifyLiveAuthFailure(input: LiveAuthFailureInput): LiveAuthFa
       userMessage: "Live provider rejected the current credentials.",
     };
   }
-  if (input.statusCode === 403 && message.includes("organization verification")) {
+  if (input.statusCode === 403 && isOrganizationVerificationEvidence(evidenceText)) {
     return {
       kind: "organization_verification_required",
       userMessage: "OpenAI organization verification is required before image generation.",
@@ -153,6 +153,31 @@ export function classifyLiveAuthFailure(input: LiveAuthFailureInput): LiveAuthFa
     kind: "unknown",
     userMessage: "Live authentication failed for an unknown reason.",
   };
+}
+
+function normalizedAuthFailureEvidence(input: LiveAuthFailureInput): string {
+  return `${input.reason ?? ""} ${input.providerMessage ?? ""}`
+    .toLowerCase()
+    .replace(/[_-]+/g, " ");
+}
+
+function isExpiredLoginEvidence(text: string): boolean {
+  return (
+    text.includes("session expired") ||
+    text.includes("login expired") ||
+    (text.includes("expired") &&
+      (text.includes("session") || text.includes("login") || text.includes("sign in")))
+  );
+}
+
+function isOrganizationVerificationEvidence(text: string): boolean {
+  const namesOrganization = text.includes("organization") || /\borg\b/.test(text);
+  return (
+    text.includes("organization verification") ||
+    text.includes("org verification") ||
+    (namesOrganization &&
+      (text.includes("verify") || text.includes("verified") || text.includes("verification")))
+  );
 }
 
 export function cancelLiveJobsForAuthLogout(input: {

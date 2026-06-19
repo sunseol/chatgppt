@@ -21,12 +21,12 @@ The current worktree has stronger Live-readiness contracts than the previous moc
 
 ## Latest local verification
 
-- `bun run verify` passes: typecheck, 818 tests, and production build.
+- `bun run verify` passes: typecheck, 820 tests, and production build.
 - `bun run lint` exits 0 with six pre-existing React Fast Refresh warnings in shared UI files.
 - `bun run package:dry-run` creates `dist/deckforge-macos-dry-run.tgz`.
-- Dry-run archive SHA-256: `4d602ff9da53252fb2d256a1a2e1029905d00b2094cb6c4c6555083008edcc76`.
+- Dry-run archive SHA-256: `1724e22d62f8c011779ddaf5ae98297c1637dae48143dd884a40107630f9b0aa`.
 - Current unsigned DMG SHA-256: `ad8b11dee61a15c193fabfc3a7bf85110b116db65098bd2a845c2533a25dae5d`.
-- Package content scan finds no hits for mock provider ids, mock provider labels, mock stage function names, `mock-provider`, `MOCK MODE`, fixture paths, test files, local developer absolute paths, `.omx/`, `.playwright-mcp/`, bundled `auth.json` or `.codex` payload files, long `Bearer` tokens, or OpenAI/Codex secret-like values in `dist/client`, `dist/server`, or the extracted dry-run app bundle. The regenerated archive contains 17 app files, 26 archive members, and 284,908 compressed bytes. The broader mock/fixture/research approval/secret matches are expected production guard-code literals, production status copy, secret-redaction regex definitions, sensitive-path guards, and Tailwind/class-merge CSS utility identifiers: `mock_lineage_contamination`, `fixture_lineage_contamination`, `pending_reinforcement_request`, `summary_without_original`, `missing_provenance`, `API_KEY_PATTERN`, `SECRET_ASSIGNMENT_PATTERN`, `.codex/auth.json`, `OPENAI_API_KEY` redaction regex text, and `sk-image-linear-from-pos`.
+- Package content scan finds no hits for mock provider ids, mock provider labels, mock stage function names, `mock-provider`, `MOCK MODE`, fixture paths, test files, local developer absolute paths, `.omx/`, `.playwright-mcp/`, bundled `auth.json` or `.codex` payload files, long `Bearer` tokens, or OpenAI/Codex secret-like values in `dist/client`, `dist/server`, or the extracted dry-run app bundle. The regenerated archive contains 17 app files, 26 archive members, and 284,896 compressed bytes. The broader mock/fixture/research approval/secret matches are expected production guard-code literals, production status copy, secret-redaction regex definitions, sensitive-path guards, and Tailwind/class-merge CSS utility identifiers: `mock_lineage_contamination`, `fixture_lineage_contamination`, `pending_reinforcement_request`, `summary_without_original`, `missing_provenance`, `API_KEY_PATTERN`, `SECRET_ASSIGNMENT_PATTERN`, `.codex/auth.json`, `OPENAI_API_KEY` redaction regex text, and `sk-image-linear-from-pos`.
 - The current native package was regenerated with `bun run tauri:build`; mounted-DMG scan found 0 secret-like values and 0 mock/fixture/test/local-path contamination hits. The built app remains ad-hoc signed with no TeamIdentifier, and Gatekeeper rejects the DMG with `source=no usable signature`.
 
 ## Known limits

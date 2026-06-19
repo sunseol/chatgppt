@@ -22,10 +22,13 @@ describe("live auth secret lifecycle documentation", () => {
     expect(authSecretLifecycle.includes("disconnectImageApiKeySecret")).toBe(true);
     expect(authSecretLifecycle.includes("rejects store-kind mismatch before delete")).toBe(true);
     expect(authSecretLifecycle.includes("classifyLiveAuthFailure")).toBe(true);
+    expect(authSecretLifecycle.includes("login_expired")).toBe(true);
+    expect(authSecretLifecycle.includes("Session expired")).toBe(true);
+    expect(authSecretLifecycle.includes("verify your organization")).toBe(true);
     expect(authSecretLifecycle.includes("createLiveAuthLogoutLockState")).toBe(true);
     expect(
       authSecretLifecycle.includes(
-        "4d602ff9da53252fb2d256a1a2e1029905d00b2094cb6c4c6555083008edcc76",
+        "1724e22d62f8c011779ddaf5ae98297c1637dae48143dd884a40107630f9b0aa",
       ),
     ).toBe(true);
     expect(authSecretLifecycle.includes("OpenAI/Codex secret-like values: 0 hits")).toBe(true);
