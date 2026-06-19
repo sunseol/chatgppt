@@ -1,4 +1,5 @@
 import type { StoredSlideImageArtifact } from "./image-artifact-store";
+import { isVersionedProjectImageArtifactPath } from "./image-path-decision";
 import type { LiveBackgroundBatchIssue } from "./live-background-batch";
 import type { SlideImageArtifact } from "./slide-image-provider";
 
@@ -42,7 +43,7 @@ function storedArtifactMatches(
     stored.metadata.prompt.version === artifact.prompt.version &&
     stored.metadata.prompt.hash === artifact.prompt.hash &&
     storedRequestMatches(artifact, stored) &&
-    stored.binary.path.endsWith(".png") &&
+    isVersionedProjectImageArtifactPath(stored.binary.path) &&
     /^sha256:[a-f0-9]{64}$/.test(stored.binary.hash) &&
     stored.provenance.fixture === false
   );

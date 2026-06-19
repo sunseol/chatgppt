@@ -33,7 +33,7 @@ describe("live packaging documentation", () => {
     expect(progress.includes("developer-local persisted `releaseTrustEvidencePath`")).toBe(true);
     expect(decision.includes("releaseTrustEvidencePath")).toBe(true);
     expect(decision.includes("developer-local persisted `releaseTrustEvidencePath`")).toBe(true);
-    expect(decision.includes("763 tests")).toBe(true);
+    expect(decision.includes("764 tests")).toBe(true);
   });
 });
 
