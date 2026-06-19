@@ -85,6 +85,8 @@ describe("live readiness documentation", () => {
     expect(runbook.includes("missing_native_macos_bundle")).toBe(true);
     expect(runbook.includes("package_content_contaminated")).toBe(true);
     expect(runbook.includes("missing_clean_machine_step")).toBe(true);
+    expect(runbook.includes("10-character uppercase alphanumeric Apple TeamIdentifier")).toBe(true);
+    expect(runbook.includes("not set")).toBe(true);
     expect(manualQa.includes("DF-246")).toBe(true);
     expect(manualQa.includes("10 minutes")).toBe(true);
     expect(manualQa.includes("tester_not_non_developer")).toBe(true);

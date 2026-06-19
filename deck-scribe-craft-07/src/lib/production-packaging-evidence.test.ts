@@ -127,6 +127,28 @@ describe("production packaging evidence", () => {
       "missing_gatekeeper_acceptance",
     ]);
   });
+
+  test("blocks Developer ID trust evidence with a placeholder TeamIdentifier", () => {
+    // Given
+    const evidence = completeEvidence({
+      nativeMacosReleaseTrust: {
+        signature: "developer_id",
+        teamIdentifier: "not set",
+        notarized: true,
+        stapled: true,
+        gatekeeperAccepted: true,
+      },
+    });
+
+    // When
+    const result = evaluateProductionPackagingEvidence(evidence);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual(["missing_developer_id_signature"]);
+    expect(result.issues[0]?.refs).toEqual(["developer_id", "not set"]);
+  });
 });
 
 function completeEvidence(

@@ -131,14 +131,15 @@ function packageIssues(evidence: ProductionPackagingEvidence): readonly Producti
 function macosReleaseTrustIssues(
   trust: NativeMacosReleaseTrust,
 ): readonly ProductionPackagingIssue[] {
+  const teamIdentifier = trust.teamIdentifier.trim();
   return [
-    ...(trust.signature === "developer_id" && trust.teamIdentifier.trim().length > 0
+    ...(trust.signature === "developer_id" && isDeveloperTeamIdentifier(teamIdentifier)
       ? []
       : [
           issue(
             "missing_developer_id_signature",
             "Native macOS release must be signed with a Developer ID team identity.",
-            [trust.signature, trust.teamIdentifier || "missing_team_identifier"],
+            [trust.signature, teamIdentifier || "missing_team_identifier"],
           ),
         ]),
     ...(trust.notarized && trust.stapled
@@ -248,6 +249,10 @@ function hasNativeMacosBundle(evidence: ProductionPackagingEvidence): boolean {
 
 function isSha256(value: string): boolean {
   return /^[a-f0-9]{64}$/.test(value);
+}
+
+function isDeveloperTeamIdentifier(value: string): boolean {
+  return /^[A-Z0-9]{10}$/.test(value);
 }
 
 function issue(
