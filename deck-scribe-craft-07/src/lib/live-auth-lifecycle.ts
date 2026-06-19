@@ -64,6 +64,13 @@ export class LiveSecretInputError extends Error {
   }
 }
 
+export class LiveSecretReferenceError extends Error {
+  constructor() {
+    super("Secret store returned a reference containing raw secret material.");
+    this.name = "LiveSecretReferenceError";
+  }
+}
+
 export async function connectImageApiKeySecret(input: {
   readonly apiKey: string;
   readonly store: LiveSecretStore;
@@ -79,6 +86,8 @@ export async function connectImageApiKeySecret(input: {
     secretValue: trimmed,
     createdAt: input.now(),
   });
+  if (secretReferenceContainsRawSecret(secretReference, trimmed))
+    throw new LiveSecretReferenceError();
 
   return {
     credentialState: "stored",
@@ -154,4 +163,13 @@ export function createLiveAuthLogoutLockState(input: {
 
 function isActiveJob(status: ProviderJobStatus): boolean {
   return status === "queued" || status === "running";
+}
+
+function secretReferenceContainsRawSecret(
+  reference: LiveSecretReference,
+  rawSecret: string,
+): boolean {
+  return [reference.service, reference.account, reference.secretId].some((field) =>
+    field.includes(rawSecret),
+  );
 }

@@ -6,13 +6,13 @@ Scope: DF-205 / GitHub issue `#131`, Live authentication and secret lifecycle.
 
 ## Acceptance contract
 
-| Requirement | Local contract |
-| --- | --- |
-| Official Codex runtime login/session flow | Local runtime check uses `codex-cli 0.141.0`; `codex login status` returned `Logged in using ChatGPT` without exposing token material. |
-| Do not copy raw ChatGPT/Codex access tokens into project DB | Project persistence continues to store provider provenance and references only. Package scans below found no `auth.json` file, `.codex` directory payload, `CODEX_SESSION=...`, long Bearer token, or OpenAI key-shaped value in production assets. |
-| Store image API keys in OS keychain or equivalent secret store | `connectImageApiKeySecret` accepts an injected `LiveSecretStore`, writes the trimmed secret through `saveSecret`, and returns only a `LiveSecretReference` plus public label. The test asserts the returned JSON does not contain the raw secret. |
-| Distinguish login expiry, 401, permission, and organization verification states | `classifyLiveAuthFailure` maps `session_expired` 401, generic 401, generic 403, and 403 organization-verification messages to separate user-facing states. |
-| Logout cancels related live jobs and locks UI | `cancelLiveJobsForAuthLogout` requests cancellation for active live jobs, and `createLiveAuthLogoutLockState` returns `uiLocked: true` with `requiresAuth` provider statuses. |
+| Requirement                                                                     | Local contract                                                                                                                                                                                                                                                                                          |
+| ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Official Codex runtime login/session flow                                       | Local runtime check uses `codex-cli 0.141.0`; `codex login status` returned `Logged in using ChatGPT` without exposing token material.                                                                                                                                                                  |
+| Do not copy raw ChatGPT/Codex access tokens into project DB                     | Project persistence continues to store provider provenance and references only. Package scans below found no `auth.json` file, `.codex` directory payload, `CODEX_SESSION=...`, long Bearer token, or OpenAI key-shaped value in production assets.                                                     |
+| Store image API keys in OS keychain or equivalent secret store                  | `connectImageApiKeySecret` accepts an injected `LiveSecretStore`, writes the trimmed secret through `saveSecret`, rejects secret references that echo raw key material, and returns only a `LiveSecretReference` plus public label. The test asserts the returned JSON does not contain the raw secret. |
+| Distinguish login expiry, 401, permission, and organization verification states | `classifyLiveAuthFailure` maps `session_expired` 401, generic 401, generic 403, and 403 organization-verification messages to separate user-facing states.                                                                                                                                              |
+| Logout cancels related live jobs and locks UI                                   | `cancelLiveJobsForAuthLogout` requests cancellation for active live jobs, and `createLiveAuthLogoutLockState` returns `uiLocked: true` with `requiresAuth` provider statuses.                                                                                                                           |
 
 ## Local package and secret scan
 
