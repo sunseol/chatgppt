@@ -4,6 +4,8 @@ import type { ExecutionMode, ProviderArtifactProvenance } from "./provider-prove
 export type LiveReportProviderLinkIssueCode =
   | "missing_text_provider_lineage"
   | "missing_image_provider_lineage"
+  | "text_provider_auth_mismatch"
+  | "image_provider_auth_mismatch"
   | "text_provider_lineage_mismatch"
   | "image_provider_lineage_mismatch";
 
@@ -41,9 +43,20 @@ function textProviderLinkIssues(
       ),
     ];
   }
+  if (artifact.authMode !== "codex_session") {
+    return [
+      issue(
+        "text_provider_auth_mismatch",
+        slide,
+        slide.textArtifactId,
+        "Live report text lineage must come from an authenticated Codex session.",
+      ),
+    ];
+  }
   if (
     artifact.executionMode === "production" &&
     artifact.providerKind === slide.textProviderKind &&
+    artifact.authMode === "codex_session" &&
     artifact.turnId === slide.textTurnId &&
     artifact.threadId === slide.textThreadId &&
     artifact.fixture === slide.fixture
@@ -74,9 +87,20 @@ function imageProviderLinkIssues(
       ),
     ];
   }
+  if (artifact.authMode !== "api_key") {
+    return [
+      issue(
+        "image_provider_auth_mismatch",
+        slide,
+        slide.imageArtifactId,
+        "Live report image lineage must come from API key image-provider auth.",
+      ),
+    ];
+  }
   if (
     artifact.executionMode === "production" &&
     artifact.providerKind === slide.imageProviderKind &&
+    artifact.authMode === "api_key" &&
     artifact.requestId === slide.imageRequestId &&
     artifact.promptVersion === slide.promptVersion &&
     artifact.fixture === slide.fixture
