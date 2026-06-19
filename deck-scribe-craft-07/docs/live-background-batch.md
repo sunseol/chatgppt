@@ -10,22 +10,22 @@ Status: Partial, external evidence required
 
 DF-232 requires five live background artifacts generated from the five approved Layout IR screenshots under one shared deck context and one shared design system. The local contract now rejects a batch unless it has exactly five live background artifacts, all associated with the same `deckContextId` and `designSystemId`, and each image has matching versioned storage evidence from the image artifact store.
 
-The validator also requires each artifact to preserve its slide identity, use the matching layout screenshot as a composition reference, remain 16:9 at the expected 1600 by 900 canvas, include provider request metadata, contain PNG-signature binary output, carry a prompt that excludes exact title, body, metric, chart, or source text from the generated image, and match stored binary/provenance metadata with a real SHA-256 hash.
+The validator also requires each artifact to preserve its slide identity, use the matching layout screenshot as a composition reference, remain 16:9 at the expected 1600 by 900 canvas, include unique provider request metadata, contain PNG-signature binary output, carry a prompt that excludes exact title, body, metric, chart, or source text from the generated image, match stored binary/provenance metadata with a real SHA-256 hash, and avoid reusing stored artifact ids, paths, or hashes across slides.
 
 ## Local Evidence
 
 - `src/lib/slide-context-bundle.ts` now carries `designSystemId` from the approved design system into each slide context bundle.
 - `src/lib/slide-prompt-package.ts` includes `designSystemId` in the prompt package and the generated prompt text.
 - `src/lib/slide-generation-queue-types.ts` and `src/lib/slide-generation-queue.ts` keep queue context and worker input aligned on the shared design system.
-- `src/lib/live-background-batch.ts` validates the five-artifact batch and reports contract failures such as `mock_provider_output`, `missing_stored_background_artifact`, `stored_background_artifact_mismatch`, `deck_context_mismatch`, `design_system_mismatch`, `wrong_aspect_ratio`, `slide_id_mismatch`, `layout_reference_mismatch`, `invalid_image_binary`, `missing_provider_request_metadata`, and `missing_text_overlay_rule`.
+- `src/lib/live-background-batch.ts` validates the five-artifact batch and reports contract failures such as `mock_provider_output`, `missing_stored_background_artifact`, `stored_background_artifact_mismatch`, `deck_context_mismatch`, `design_system_mismatch`, `wrong_aspect_ratio`, `slide_id_mismatch`, `layout_reference_mismatch`, `invalid_image_binary`, `missing_provider_request_metadata`, `duplicate_provider_request_metadata`, `duplicate_stored_background_artifact`, and `missing_text_overlay_rule`.
 - `getRetryableBackgroundSlideNumbers` returns only failed `retryable` slide numbers from a partial queue result, allowing isolated retry instead of regenerating successful slides.
 
 ## Verification
 
-- `bun test src/lib/live-background-batch.test.ts src/lib/slide-context-bundle.test.ts src/lib/slide-prompt-package.test.ts src/lib/slide-generation-queue.test.ts`
+- `bun test src/lib/live-background-batch.test.ts src/lib/live-background-batch-uniqueness.test.ts src/lib/slide-context-bundle.test.ts src/lib/slide-prompt-package.test.ts src/lib/slide-generation-queue.test.ts`
 - `bun run typecheck`
 - `bun run lint`
 
 ## Remaining Live Work
 
-The current repository does not yet contain the required five live background artifacts from a real provider. DF-232 remains open until a production run stores the five real artifacts, their versioned binary paths and hashes, request metadata, matching slide ids, shared `deckContextId`, shared `designSystemId`, layout screenshot composition references, and retry evidence for any failed slide.
+The current repository does not yet contain the required five live background artifacts from a real provider. DF-232 remains open until a production run stores the five real artifacts, their unique versioned binary paths and hashes, unique request metadata, matching slide ids, shared `deckContextId`, shared `designSystemId`, layout screenshot composition references, and retry evidence for any failed slide.

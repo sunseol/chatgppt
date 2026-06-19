@@ -2,6 +2,7 @@ import type { StoredSlideImageArtifact } from "./image-artifact-store";
 import type { SlideGenerationQueueResult } from "./slide-generation-queue-types";
 import type { SlideImageArtifact } from "./slide-image-provider";
 import type { SlidePromptPackage } from "./slide-prompt-package";
+import { batchIntegrityIssues } from "./live-background-batch-integrity";
 
 export type LiveBackgroundBatchIssueCode =
   | "expected_five_artifacts"
@@ -13,6 +14,8 @@ export type LiveBackgroundBatchIssueCode =
   | "missing_provider_request_metadata"
   | "missing_stored_background_artifact"
   | "stored_background_artifact_mismatch"
+  | "duplicate_provider_request_metadata"
+  | "duplicate_stored_background_artifact"
   | "invalid_image_binary"
   | "layout_reference_mismatch"
   | "wrong_aspect_ratio"
@@ -45,7 +48,7 @@ export function validateLiveBackgroundBatch(
   batch: LiveBackgroundBatch,
 ): LiveBackgroundBatchValidation {
   const issues = [
-    ...batchSizeIssues(batch),
+    ...batchIntegrityIssues(batch),
     ...batch.artifacts.flatMap((artifact, index) => artifactIssues(artifact, batch, index)),
   ];
   return issues.length === 0 ? { kind: "ready" } : { kind: "blocked", issues };
@@ -58,17 +61,6 @@ export function getRetryableBackgroundSlideNumbers(
   return result.failures
     .filter((failure) => failure.retryable)
     .map((failure) => failure.slideNumber);
-}
-
-function batchSizeIssues(batch: LiveBackgroundBatch): readonly LiveBackgroundBatchIssue[] {
-  return batch.artifacts.length === 5
-    ? []
-    : [
-        {
-          code: "expected_five_artifacts",
-          message: "Live background generation requires exactly five artifacts.",
-        },
-      ];
 }
 
 function artifactIssues(
