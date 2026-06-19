@@ -1,8 +1,8 @@
+import type { FinalSlideComposition, FinalSlideOverlayBounds } from "@/lib/final-slide-compositor";
 import {
-  backgroundArtifactTargetsSlide,
-  type FinalSlideComposition,
-  type FinalSlideOverlayBounds,
-} from "@/lib/final-slide-compositor";
+  backgroundIssues,
+  storedBackgroundArtifactIdentityIssues,
+} from "./review-gallery-background-validation";
 import type { ReviewGalleryItem } from "./review-gallery-model";
 import { compositorSvgArtifactIssues } from "./review-gallery-compositor-svg";
 
@@ -16,6 +16,7 @@ export type ReviewGalleryLiveCompositionIssueCode =
   | "background_provider_not_live_image"
   | "missing_stored_background_artifact"
   | "invalid_stored_background_artifact_hash"
+  | "duplicate_stored_background_artifact"
   | "stored_background_artifact_slide_mismatch"
   | "compositor_svg_artifact_mismatch"
   | "invalid_compositor_preview"
@@ -53,6 +54,7 @@ export function validateReviewGalleryLiveCompositions(input: {
   const issues = [
     ...countIssues(input.items, expectedSlideCount),
     ...slideCoverageIssues(input.items, expectedSlideCount),
+    ...storedBackgroundArtifactIdentityIssues(input.items),
     ...input.items.flatMap((item) => liveCompositionIssues(item, detections)),
   ];
   return issues.length === 0 ? { kind: "ready" } : { kind: "blocked", issues };
@@ -138,62 +140,6 @@ function compositionIdentityIssues(
           message: "Compositor result must match the review slide number.",
         },
       ];
-}
-
-function backgroundIssues(
-  composition: FinalSlideComposition,
-): readonly ReviewGalleryLiveCompositionIssue[] {
-  if (composition.backgroundProviderId === "mock") {
-    return [
-      {
-        code: "mock_background_artifact",
-        slideNumber: composition.slideNumber,
-        message: "Live review must use a real image artifact background.",
-      },
-    ];
-  }
-  if (composition.backgroundProviderId !== "openaiImage") {
-    return [
-      {
-        code: "background_provider_not_live_image",
-        slideNumber: composition.slideNumber,
-        message: "Live review backgrounds must come from the locked image provider.",
-      },
-    ];
-  }
-  const artifact = composition.backgroundArtifact;
-  if (
-    artifact === undefined ||
-    !artifact.path.endsWith(".png") ||
-    !artifact.hash.startsWith("sha256:")
-  ) {
-    return [
-      {
-        code: "missing_stored_background_artifact",
-        slideNumber: composition.slideNumber,
-        message: "Live review must reference a stored real background image artifact.",
-      },
-    ];
-  }
-  if (!/^sha256:[a-f0-9]{64}$/.test(artifact.hash)) {
-    return [
-      {
-        code: "invalid_stored_background_artifact_hash",
-        slideNumber: composition.slideNumber,
-        message: "Stored background artifact hash must be a full SHA-256 digest.",
-      },
-    ];
-  }
-  if (!backgroundArtifactTargetsSlide(artifact, composition.slideNumber)) {
-    return [
-      {
-        code: "stored_background_artifact_slide_mismatch",
-        slideNumber: composition.slideNumber,
-        message: "Stored background artifact must target the compositor slide.",
-      },
-    ];
-  }
-  return [];
 }
 
 function previewIssues(
