@@ -1,5 +1,6 @@
 import type { DeckProject, ResearchPack, Stage } from "./deck-types";
 import { ResearchPackSchema } from "./research-pack-schema";
+import { redactSensitiveText } from "./redaction";
 
 const STAGES: readonly Stage[] = [
   "PROJECT_CREATED",
@@ -27,7 +28,7 @@ const ASPECT_RATIOS = ["16:9", "4:3"] as const;
 const LANGUAGES = ["ko", "en", "mixed"] as const;
 
 export function serializeProjectList(projects: readonly DeckProject[]): string {
-  return JSON.stringify(projects);
+  return redactSensitiveText(JSON.stringify(projects));
 }
 
 export function parseProjectList(raw: string | null): DeckProject[] {

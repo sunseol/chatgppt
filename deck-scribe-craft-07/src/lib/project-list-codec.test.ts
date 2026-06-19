@@ -26,6 +26,33 @@ describe("project list codec", () => {
     expect(parseProjectList(null)).toEqual([]);
   });
 
+  test("redacts raw live auth secrets before project DB serialization", () => {
+    // Given
+    const project = createDeckProject(
+      {
+        name: "Secret bearing prompt",
+        initialPrompt:
+          "OPENAI_API_KEY=sk-live-secret123 Authorization: Bearer codex.session.secret /Users/jake/.codex/auth.json",
+        slideCount: 5,
+        aspectRatio: "16:9",
+        language: "ko",
+      },
+      { createId: () => "p_secret_prompt", now: () => 200 },
+    );
+
+    // When
+    const serialized = serializeProjectList([project]);
+    const restored = parseProjectList(serialized);
+
+    // Then
+    expect(serialized.includes("sk-live-secret123")).toBe(false);
+    expect(serialized.includes("Bearer codex.session.secret")).toBe(false);
+    expect(serialized.includes("/Users/jake/.codex/auth.json")).toBe(false);
+    expect(serialized.includes("[redacted]")).toBe(true);
+    expect(restored[0]?.initialPrompt.includes("sk-live-secret123")).toBe(false);
+    expect(restored[0]?.initialPrompt.includes("[redacted]")).toBe(true);
+  });
+
   test("migrates persisted research packs to current live metadata fields", () => {
     const project = {
       ...createDeckProject(
