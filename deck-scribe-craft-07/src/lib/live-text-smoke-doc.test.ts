@@ -39,6 +39,8 @@ describe("live text smoke documentation", () => {
       "evaluateProjectThreadResumeEvidence",
       "resume_non_codex_turn",
       "resume_previous_turn_not_recovered",
+      "resume_reused_existing_turn",
+      "whitespace-padded turn id reuse",
       "missing coordinator thread id",
       "duplicate worker stage",
       "duplicate worker thread ids",

@@ -138,7 +138,9 @@ function resumeEvidenceIssues(
           ),
         ]
       : []),
-    ...(evidence.previousTurnId !== evidence.resumedTurnId
+    ...(evidence.previousTurnId.trim() === "" ||
+    evidence.resumedTurnId.trim() === "" ||
+    evidence.previousTurnId.trim() !== evidence.resumedTurnId.trim()
       ? []
       : [
           issue(

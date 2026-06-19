@@ -7,7 +7,7 @@ import {
   type LiveBenchmarkRun,
 } from "./live-benchmark-evidence";
 
-const PACKAGE_SHA = "7ae9d90d11bd72a4c17e7cc52bf184bbc36e99b3b3dc7cc2b4f6891f6fca28f6";
+const PACKAGE_SHA = "6890a91f9e2c1335e9954f2afa4f122d81540c691adedf585fc4f2e21643416a";
 
 describe("live benchmark failure domains", () => {
   test("blocks failed benchmark evidence with an unsupported failure domain", () => {
