@@ -37,6 +37,7 @@ export type LiveContextJobSnapshot = {
   readonly jobId: string;
   readonly providerId: string;
   readonly deckContextId: string;
+  readonly deckContextHash?: string;
   readonly status: ProviderJobStatus;
 };
 
@@ -90,12 +91,13 @@ export function validateProjectThreadManifest(
 
 export function findStaleLiveContextJobs(input: {
   readonly currentDeckContextId: string;
+  readonly currentDeckContextHash?: string;
   readonly jobs: readonly LiveContextJobSnapshot[];
 }): readonly string[] {
   return input.jobs
     .filter((job) => isLiveProvider(job.providerId))
     .filter((job) => isActive(job.status))
-    .filter((job) => job.deckContextId !== input.currentDeckContextId)
+    .filter((job) => isStaleContextJob(input, job))
     .map((job) => job.jobId);
 }
 
@@ -240,4 +242,16 @@ function isLiveProvider(providerId: string): boolean {
 
 function isActive(status: ProviderJobStatus): boolean {
   return status === "queued" || status === "running";
+}
+
+function isStaleContextJob(
+  current: { readonly currentDeckContextId: string; readonly currentDeckContextHash?: string },
+  job: LiveContextJobSnapshot,
+): boolean {
+  if (job.deckContextId !== current.currentDeckContextId) return true;
+  return (
+    current.currentDeckContextHash !== undefined &&
+    job.deckContextHash !== undefined &&
+    job.deckContextHash !== current.currentDeckContextHash
+  );
 }
