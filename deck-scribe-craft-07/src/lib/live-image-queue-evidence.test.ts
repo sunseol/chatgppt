@@ -35,6 +35,12 @@ describe("live image queue evidence", () => {
           jobId: "job_retry",
           recordedAt: 1_789_500_000,
         }),
+        createPromptUsageRecord({
+          promptId: "slide_generation",
+          artifactId: "bundle_cancel",
+          jobId: "job_cancel",
+          recordedAt: 1_789_500_001,
+        }),
       ],
       retryProvenance: [
         {
@@ -164,6 +170,40 @@ describe("live image queue evidence", () => {
 
     // Then
     expect(issueCodes(validation)).toEqual(["cancel_failure_without_cancelled_job"]);
+  });
+
+  test("blocks cancellation failures tied to a different prompt bundle", () => {
+    // Given
+    const result = readyQueueResult({
+      failures: [
+        {
+          jobId: "job_cancel",
+          bundleId: "bundle_other",
+          slideNumber: 2,
+          retryable: true,
+          attempts: 1,
+          failureKind: "cancelled",
+          retryDelaysMs: [],
+          errorMessage: "cancelled",
+          userMessage: "Slide 2 was cancelled.",
+        },
+      ],
+      jobs: [job({ id: "job_cancel", status: "cancelled", cancelRequested: true })],
+      promptUsages: [
+        createPromptUsageRecord({
+          promptId: "slide_generation",
+          artifactId: "bundle_cancel",
+          jobId: "job_cancel",
+          recordedAt: 1_789_500_000,
+        }),
+      ],
+    });
+
+    // When
+    const validation = evaluateLiveImageQueueEvidence(result);
+
+    // Then
+    expect(issueCodes(validation)).toEqual(["cancel_bundle_mismatch"]);
   });
 
   test("blocks retry provenance that is not tied to recorded job prompt usage", () => {
