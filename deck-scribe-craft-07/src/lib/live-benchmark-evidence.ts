@@ -1,3 +1,4 @@
+import { failureDomainIssues } from "./live-benchmark-failure-domain";
 import { outputBundleIssues } from "./live-benchmark-output-bundle";
 import { packageHashIssues } from "./live-benchmark-package-hash";
 import { hasNonSyntheticEvidencePath } from "./live-evidence-path";
@@ -73,6 +74,7 @@ export type LiveBenchmarkEvidenceIssueCode =
   | "duplicate_output_bundle_image_request"
   | "output_bundle_golden_path_evidence_missing"
   | "mock_score_contamination"
+  | "invalid_failure_domain"
   | "missing_failure_domain"
   | "passed_failure_domain_present"
   | "golden_path_not_completed"
@@ -187,37 +189,6 @@ function mockScoreIssues(runs: readonly LiveBenchmarkRun[]): readonly LiveBenchm
           contaminated,
         ),
       ];
-}
-
-function failureDomainIssues(
-  runs: readonly LiveBenchmarkRun[],
-): readonly LiveBenchmarkEvidenceIssue[] {
-  const unclassified = runs
-    .filter((run) => run.status !== "passed" && run.failureDomain === "none")
-    .map((run) => run.id);
-  const passedWithFailureDomain = runs
-    .filter((run) => run.status === "passed" && run.failureDomain !== "none")
-    .map((run) => run.id);
-  return [
-    ...(unclassified.length === 0
-      ? []
-      : [
-          issue(
-            "missing_failure_domain",
-            "Failed Live benchmarks require a failure domain.",
-            unclassified,
-          ),
-        ]),
-    ...(passedWithFailureDomain.length === 0
-      ? []
-      : [
-          issue(
-            "passed_failure_domain_present",
-            "Passed Live benchmarks must not retain a failure domain.",
-            passedWithFailureDomain,
-          ),
-        ]),
-  ];
 }
 
 function goldenPathIssues(

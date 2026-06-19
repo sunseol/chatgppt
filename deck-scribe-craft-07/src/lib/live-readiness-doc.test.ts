@@ -74,6 +74,7 @@ describe("live readiness documentation", () => {
     expect(benchmark.includes("missing_benchmark_package_hash")).toBe(true);
     expect(benchmark.includes("output_bundle_package_mismatch")).toBe(true);
     expect(benchmark.includes("duplicate_output_bundle")).toBe(true);
+    expect(benchmark.includes("invalid_failure_domain")).toBe(true);
     expect(benchmark.includes("passed_failure_domain_present")).toBe(true);
     expect(benchmark.includes("live_benchmark_shortfall")).toBe(true);
     expect(benchmark.includes("non-synthetic, non-local `.zip`")).toBe(true);

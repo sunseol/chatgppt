@@ -41,7 +41,7 @@ Release requirement: at least 4 of 5 live benchmarks must pass without counting 
 - passed benchmark runs must not reuse source artifact ids, live image artifact ids, or live image request ids from another passed benchmark run
 - at least four `live` runs whose Live Golden Path completed
 - no mock scores counted in Live pass totals
-- failure classification as provider, context, research, image, renderer, or editor for every failed or blocked benchmark
+- failure classification strictly limited to provider, context, research, image, renderer, or editor for every failed or blocked benchmark
 - a `docs/live-benchmark-report.md` report path
 
 Blocking issue codes:
@@ -63,10 +63,11 @@ Blocking issue codes:
 - `duplicate_output_bundle_image_request`
 - `output_bundle_golden_path_evidence_missing` - missing screenshots, sources, images, image requests, or non-synthetic, non-local Golden Path report evidence
 - `mock_score_contamination`
+- `invalid_failure_domain`
 - `missing_failure_domain`
 - `passed_failure_domain_present`
 - `golden_path_not_completed`
 - `live_benchmark_shortfall`
 - `missing_live_benchmark_report`
 
-Current local status: the validator is implemented and tested, including rejection of `mock`, `fixture`, `test`, `fake`, developer-local absolute, and `file://` output bundle paths and report paths, plus cross-run source/image/request evidence reuse, but no real provider output bundle 5 sets have been produced.
+Current local status: the validator is implemented and tested, including rejection of unsupported failure domains, `mock`, `fixture`, `test`, `fake`, developer-local absolute, and `file://` output bundle paths and report paths, plus cross-run source/image/request evidence reuse, but no real provider output bundle 5 sets have been produced.
