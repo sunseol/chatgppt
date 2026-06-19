@@ -10,6 +10,7 @@ import type {
   LiveTextSmokeIssueCode,
   LiveTextSmokeResumeEvidence,
 } from "./live-text-smoke-gate";
+import { textPathLineageIssues } from "./live-text-smoke-lineage";
 
 const REQUIRED_STAGES = [
   "questions",
@@ -28,6 +29,7 @@ export function collectLiveTextSmokeIssues(
 ): readonly LiveTextSmokeIssue[] {
   return [
     ...stageIssues(input.artifacts),
+    ...textPathLineageIssues(input.artifacts),
     ...input.artifacts.flatMap((artifact) => artifactIssues(artifact)),
     ...resumeIssues(input.resumeEvidence, lineage),
   ];

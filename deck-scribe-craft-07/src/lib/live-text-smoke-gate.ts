@@ -45,7 +45,8 @@ export type LiveTextSmokeIssueCode =
   | "resume_thread_mismatch"
   | "resume_non_codex_turn"
   | "resume_non_codex_session_auth"
-  | "resume_non_production_turn";
+  | "resume_non_production_turn"
+  | "disconnected_text_stage_lineage";
 
 export type LiveTextSmokeIssue = {
   readonly code: LiveTextSmokeIssueCode;

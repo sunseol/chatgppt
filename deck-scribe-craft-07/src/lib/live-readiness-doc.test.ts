@@ -118,6 +118,7 @@ describe("live readiness documentation", () => {
     expect(textSmoke.includes("Crash/Restart Evidence")).toBe(true);
     expect(textSmoke.includes("post-restart health turn")).toBe(true);
     expect(textSmoke.includes("evaluateLiveTextSmokeGate")).toBe(true);
+    expect(textSmoke.includes("disconnected_text_stage_lineage")).toBe(true);
     expect(textSmoke.includes("text_artifact_missing_turn_id")).toBe(true);
     expect(textSmoke.includes("missing_resume_next_turn")).toBe(true);
     expect(textSmoke.includes("resume_non_codex_turn")).toBe(true);

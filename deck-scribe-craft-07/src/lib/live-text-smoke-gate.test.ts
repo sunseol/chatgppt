@@ -120,6 +120,32 @@ describe("live text smoke gate", () => {
     expect(issueCodes.includes("resume_non_production_turn")).toBe(true);
   });
 
+  test("blocks disconnected live text path lineage", () => {
+    const result = evaluateLiveTextSmokeGate({
+      artifacts: REQUIRED_STAGES.map((stage) =>
+        liveArtifact(
+          stage,
+          stage === "brief" || stage === "layout_ir" ? { inputArtifactIds: [] } : {},
+        ),
+      ),
+      resumeEvidence: {
+        threadId: "thread_live_text",
+        previousTurnId: "turn_layout_ir",
+        nextTurnId: "turn_resume_after_layout",
+        completed: true,
+        providerKind: "codex",
+        authMode: "codex_session",
+        executionMode: "production",
+      },
+    });
+
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(
+      result.issues.map((issue) => issue.code).includes("disconnected_text_stage_lineage"),
+    ).toBe(true);
+  });
+
   test("reports non-session Codex artifact auth once", () => {
     const result = evaluateLiveTextSmokeGate({
       artifacts: REQUIRED_STAGES.map((stage) =>
@@ -152,6 +178,7 @@ type ProvenanceOverrides = {
   readonly fixture?: boolean;
   readonly turnId?: string;
   readonly threadId?: string;
+  readonly inputArtifactIds?: readonly string[];
 };
 
 function liveArtifact(
@@ -168,7 +195,7 @@ function liveArtifact(
       modelOrRuntime: "codex-app-server 0.141.0",
       promptVersion: `${stage}@v1`,
       durationMs: 2_400,
-      inputArtifactIds: [],
+      inputArtifactIds: overrides.inputArtifactIds ?? defaultInputArtifactIds(stage),
       fixture: overrides.fixture ?? false,
       ...(overrides.threadId === undefined ? {} : { threadId: overrides.threadId }),
       ...(overrides.turnId === undefined ? {} : { turnId: overrides.turnId }),
@@ -180,4 +207,19 @@ function liveArtifact(
         : {}),
     }),
   };
+}
+
+function defaultInputArtifactIds(stage: LiveTextProductionStage): readonly string[] {
+  switch (stage) {
+    case "questions":
+      return [];
+    case "brief":
+      return ["questions_artifact"];
+    case "deck_plan":
+      return ["brief_artifact"];
+    case "design_system":
+      return ["deck_plan_artifact"];
+    case "layout_ir":
+      return ["deck_plan_artifact", "design_system_artifact"];
+  }
 }
