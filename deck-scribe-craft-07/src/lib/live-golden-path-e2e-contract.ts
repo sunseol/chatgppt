@@ -67,6 +67,7 @@ export type LiveGoldenPathE2EIssueCode =
   | "validation_bundle_missing_recording"
   | "validation_bundle_missing_source"
   | "validation_bundle_missing_image_artifact"
+  | "validation_bundle_duplicate_reference"
   | "mock_lineage_contamination"
   | "fixture_lineage_contamination"
   | "duplicate_live_source"

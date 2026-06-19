@@ -37,6 +37,7 @@ export function validationBundleIssues(
   );
 
   return [
+    ...manifestDuplicateIssues(manifest),
     ...manifestExportIssues(manifest, bundle.finalExportArtifactId),
     ...manifestDigestIssues(manifest, expectedReportDigest),
     ...manifestScreenshotsIssues(manifest, bundle.screenshots),
@@ -62,6 +63,25 @@ export function liveImageArtifacts(
       !artifact.fixture &&
       Boolean(artifact.requestId?.trim()),
   );
+}
+
+function manifestDuplicateIssues(
+  manifest: LiveFinalValidationBundle,
+): readonly LiveGoldenPathE2EIssue[] {
+  const duplicates = [
+    ...duplicateValues(manifest.screenshotPaths).map((path) => `screenshot:${path}`),
+    ...duplicateValues(manifest.sourceArtifactIds).map((artifactId) => `source:${artifactId}`),
+    ...duplicateValues(manifest.imageArtifactIds).map((artifactId) => `image:${artifactId}`),
+  ];
+  return duplicates.length === 0
+    ? []
+    : [
+        liveGoldenPathIssue(
+          "validation_bundle_duplicate_reference",
+          "Final validation bundle must not contain duplicate artifact or screenshot references.",
+          duplicates,
+        ),
+      ];
 }
 
 function manifestExportIssues(
@@ -171,4 +191,17 @@ function isHttpUrl(value: string): boolean {
 
 function pathSet(paths: readonly string[]): ReadonlySet<string> {
   return new Set(paths.filter((path) => path.trim()));
+}
+
+function duplicateValues(values: readonly string[]): readonly string[] {
+  const seen = new Set<string>();
+  const duplicates = new Set<string>();
+  for (const value of values.map((item) => item.trim()).filter(Boolean)) {
+    if (seen.has(value)) {
+      duplicates.add(value);
+    } else {
+      seen.add(value);
+    }
+  }
+  return [...duplicates];
 }

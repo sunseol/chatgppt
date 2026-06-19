@@ -152,6 +152,23 @@ describe("live golden path E2E evidence", () => {
     ]);
   });
 
+  test("blocks duplicate references inside the final validation bundle manifest", () => {
+    const bundle = completeBundle();
+    const manifest = bundle.finalValidationBundle;
+    const result = evaluateLiveGoldenPathE2EBundle({
+      ...bundle,
+      finalValidationBundle: {
+        ...manifest,
+        screenshotPaths: [...manifest.screenshotPaths, manifest.screenshotPaths[0] ?? ""],
+        sourceArtifactIds: [...manifest.sourceArtifactIds, "src_sec"],
+        imageArtifactIds: [...manifest.imageArtifactIds, "live_image_1"],
+      },
+    });
+    expect(result.kind === "blocked" ? result.issues.map((issue) => issue.code) : []).toEqual([
+      "validation_bundle_duplicate_reference",
+    ]);
+  });
+
   test("blocks repeated live image artifact ids from satisfying the five-image requirement", () => {
     // Given
     const repeatedImages = Array.from({ length: 5 }, () => imageArtifact(1, "live_image_1"));
@@ -163,10 +180,9 @@ describe("live golden path E2E evidence", () => {
     // Then
     expect(result.kind).toBe("blocked");
     if (result.kind !== "blocked") return;
-    expect(result.issues.map((issue) => issue.code)).toEqual([
-      "duplicate_live_image_artifact",
-      "insufficient_live_image_artifacts",
-    ]);
+    expect(result.issues.map((issue) => issue.code).join("|")).toBe(
+      "validation_bundle_duplicate_reference|duplicate_live_image_artifact|insufficient_live_image_artifacts",
+    );
   });
 
   test("blocks repeated source evidence from satisfying the three-source requirement", () => {
@@ -184,10 +200,9 @@ describe("live golden path E2E evidence", () => {
     // Then
     expect(result.kind).toBe("blocked");
     if (result.kind !== "blocked") return;
-    expect(result.issues.map((issue) => issue.code)).toEqual([
-      "duplicate_live_source",
-      "insufficient_live_sources",
-    ]);
+    expect(result.issues.map((issue) => issue.code).join("|")).toBe(
+      "validation_bundle_duplicate_reference|duplicate_live_source|insufficient_live_sources",
+    );
   });
 });
 
