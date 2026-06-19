@@ -22,10 +22,10 @@ export function validationBundleIssues(
   bundle: LiveGoldenPathE2EBundle,
 ): readonly LiveGoldenPathE2EIssue[] {
   const manifest = bundle.finalValidationBundle;
-  if (!manifest.path.trim()) {
+  if (!validValidationBundlePath(manifest.path)) {
     return [
       liveGoldenPathIssue("missing_validation_bundle", "Final validation bundle is required.", [
-        "missing",
+        manifest.path || "missing",
       ]),
     ];
   }
@@ -192,6 +192,12 @@ function isHttpUrl(value: string): boolean {
 
 function pathSet(paths: readonly string[]): ReadonlySet<string> {
   return new Set(paths.filter((path) => path.trim()));
+}
+
+function validValidationBundlePath(value: string): boolean {
+  const normalized = value.toLowerCase();
+  if (!normalized.endsWith(".zip") && !normalized.endsWith(".json")) return false;
+  return !["mock", "fixture", "test", "fake"].some((marker) => normalized.includes(marker));
 }
 
 function duplicateValues(values: readonly string[]): readonly string[] {

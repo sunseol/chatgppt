@@ -15,6 +15,7 @@ describe("live golden path E2E documentation", () => {
     expect(goldenPathE2E.includes("validation_bundle_report_digest_mismatch")).toBe(true);
     expect(goldenPathE2E.includes("validation_bundle_missing_image_artifact")).toBe(true);
     expect(goldenPathE2E.includes("validation_bundle_duplicate_reference")).toBe(true);
+    expect(goldenPathE2E.includes("non-synthetic `.zip` or `.json` path")).toBe(true);
     expect(goldenPathE2E.includes("insufficient_live_sources")).toBe(true);
     expect(goldenPathE2E.includes("api_key")).toBe(true);
     expect(goldenPathE2E.includes("insufficient_live_image_artifacts")).toBe(true);

@@ -25,7 +25,7 @@ The Production Mode Live Golden Path E2E evidence bundle must prove that a new p
 
 - Signed `live_e2e_report.md`
 - Step-level screenshots and a recording
-- Final validation bundle whose manifest references the final export artifact id, signed report digest, every step screenshot, the recording, valid source artifact ids, and live image artifact ids without duplicate references
+- Final validation bundle at a non-synthetic `.zip` or `.json` path whose manifest references the final export artifact id, signed report digest, every step screenshot, the recording, valid source artifact ids, and live image artifact ids without duplicate references
 - Zero mock or fixture artifacts in Golden Path lineage
 - At least three distinct real source URLs with distinct source artifact ids
 - At least one primary or official source URL
@@ -42,7 +42,7 @@ The local gate returns these issue codes:
 - `report_digest_mismatch`: signed report digest does not match the report content.
 - `insufficient_step_evidence`: screenshots or recording evidence is incomplete.
 - `missing_step_screenshot`: at least one Golden Path step lacks its own screenshot.
-- `missing_validation_bundle`: final validation bundle manifest is absent.
+- `missing_validation_bundle`: final validation bundle manifest is absent or points at a synthetic mock/fixture/test/fake path.
 - `validation_bundle_export_mismatch`: final validation bundle does not reference the final export artifact id.
 - `validation_bundle_report_digest_mismatch`: final validation bundle does not include the signed report digest.
 - `validation_bundle_missing_screenshot`: final validation bundle does not include every step screenshot.
@@ -63,7 +63,7 @@ The local gate returns these issue codes:
 
 ## Local Evidence
 
-- `src/lib/live-golden-path-e2e.test.ts`, `src/lib/live-golden-path-image-request-uniqueness.test.ts`, and `src/lib/live-golden-path-image-auth-evidence.test.ts` verify a passing signed bundle, redacted summary formatting, digest matching, per-step screenshot requirements, final validation bundle manifest consistency, unauthenticated image rejection, duplicate validation bundle reference rejection, duplicate source/image artifact/request rejection, and incomplete/contaminated bundle blockers.
+- `src/lib/live-golden-path-e2e.test.ts`, `src/lib/live-golden-path-validation-bundle-path.test.ts`, `src/lib/live-golden-path-image-request-uniqueness.test.ts`, and `src/lib/live-golden-path-image-auth-evidence.test.ts` verify a passing signed bundle, redacted summary formatting, digest matching, per-step screenshot requirements, final validation bundle manifest consistency, synthetic validation bundle path rejection, unauthenticated image rejection, duplicate validation bundle reference rejection, duplicate source/image artifact/request rejection, and incomplete/contaminated bundle blockers.
 - `src/lib/live-release-gate.ts` still requires DF-241 to be `verified_live` before the Live Initial Version can release.
 - `docs/live-release-decision.md` remains blocked because no real authenticated Golden Path bundle has been produced.
 
