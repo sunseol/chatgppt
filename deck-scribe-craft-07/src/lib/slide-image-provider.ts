@@ -6,6 +6,7 @@ import {
 import { TARGET_IMAGE_MODEL } from "./image-provider-feasibility";
 import { encodeSolidPngDataUrl, type RgbaColor } from "./png-encoder";
 import type { ProviderUsageSummary } from "./provider-job-manager";
+import { assertSlideImageArtifactContract } from "./slide-image-provider-contract";
 import type { SlidePromptPackage } from "./slide-prompt-package";
 
 export type SlideImageAspectRatio = "16:9" | "4:3";
@@ -157,6 +158,7 @@ export async function generateSlideImage(input: {
       package: input.package,
       aspectRatio: input.aspectRatio,
     });
+    assertSlideImageArtifactContract(input, artifact);
     return {
       kind: "ready",
       artifact,

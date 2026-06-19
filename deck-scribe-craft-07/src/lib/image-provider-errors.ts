@@ -5,6 +5,7 @@ export type ImageProviderFailureKind =
   | "quota"
   | "rate_limit"
   | "content_policy"
+  | "provider_contract"
   | "server"
   | "unknown";
 

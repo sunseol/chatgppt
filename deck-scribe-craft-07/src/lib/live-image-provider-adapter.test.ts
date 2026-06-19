@@ -1,6 +1,10 @@
 import { describe, expect, test } from "bun:test";
 import { ImageProviderRequestError } from "./image-provider-errors";
-import { createOpenAIImageProvider, type OpenAIImageClientRequest } from "./slide-image-provider";
+import {
+  createOpenAIImageProvider,
+  type OpenAIImageClientRequest,
+  type SlideImageProvider,
+} from "./slide-image-provider";
 import { encodeSolidPngDataUrl } from "./png-encoder";
 import { generateAndStoreSlideImageArtifact } from "./live-image-provider-adapter";
 import type { ImageArtifactStoreWrite } from "./image-artifact-store";
@@ -113,6 +117,61 @@ describe("live image provider adapter", () => {
           "Slide 1 image generation failed: content policy blocked. Resolve the provider issue before retrying.",
       },
     });
+    expect(writes).toEqual([]);
+  });
+
+  test("rejects provider artifact lineage mismatches before writing bytes", async () => {
+    // Given
+    const writes: ImageArtifactStoreWrite[] = [];
+    const provider: SlideImageProvider = {
+      id: "openaiImage",
+      async generate(input) {
+        return {
+          providerId: "mock",
+          slideNumber: input.package.slideNumber,
+          aspectRatio: input.aspectRatio,
+          canvas: { width: 1600, height: 900 },
+          layoutReference: {
+            screenshot: input.package.layoutScreenshot,
+            mode: "composition-reference",
+          },
+          imageDataUrl: encodeSolidPngDataUrl({
+            width: 1,
+            height: 1,
+            color: { r: 20, g: 40, b: 60, a: 255 },
+          }),
+          prompt: {
+            id: input.package.promptId,
+            version: input.package.promptVersion,
+            hash: input.package.promptHash,
+          },
+          request: { model: "gpt-image-2", requestId: "img_req_wrong", latencyMs: 1 },
+          generatedAt: 1_789_820_002,
+        };
+      },
+    };
+
+    // When
+    const result = await generateAndStoreSlideImageArtifact({
+      provider,
+      store: {
+        write: async (entry) => {
+          writes.push(entry);
+        },
+      },
+      package: promptPackage(),
+      aspectRatio: "16:9",
+      projectId: "project_001",
+      version: 1,
+      createdAt: 1_789_820_002,
+    });
+
+    // Then
+    expect(result.kind).toBe("failed");
+    if (result.kind !== "failed") return;
+    expect(result.failure.errorKind).toBe("provider_contract");
+    expect(result.failure.retryable).toBe(false);
+    expect(result.failure.errorMessage.includes("provider id")).toBe(true);
     expect(writes).toEqual([]);
   });
 });

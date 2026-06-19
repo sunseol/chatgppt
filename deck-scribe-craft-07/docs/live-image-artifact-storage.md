@@ -22,6 +22,7 @@ Status: partial local contract
 - Rejects non-PNG image data, fake PNG data URLs without a PNG signature, and OpenAI image artifacts without `requestId`.
 - `src/lib/live-image-provider-adapter.ts` links provider generation to storage in one production-oriented call.
 - The adapter passes the full prompt package and layout reference to the provider, stores successful binary output, returns stored artifact/provenance metadata, and does not write artifacts when the provider returns a classified failure.
+- `src/lib/slide-image-provider-contract.ts` rejects `provider_contract` mismatches before storage when the returned artifact provider, slide number, aspect ratio, layout reference, or prompt lineage does not match the requested prompt package.
 
 ## Provider/error contract
 
@@ -29,7 +30,7 @@ Existing provider tests plus `src/lib/image-provider-errors.test.ts` cover the D
 
 - `src/lib/slide-image-provider.test.ts` verifies prompt/layout handoff, failure classification, provider response metadata preservation, and adapter-measured latency when a response omits `latencyMs`.
 - `src/lib/live-image-provider-adapter.test.ts` verifies the provider-to-storage path, versioned writes, request metadata preservation, provenance request id, and no-write behavior for `content_policy` failures.
-- `src/lib/image-provider-errors.ts` distinguishes `auth`, `quota`, `rate_limit`, `content_policy`, `server`, and `unknown`.
+- `src/lib/image-provider-errors.ts` distinguishes `auth`, `quota`, `rate_limit`, `content_policy`, `provider_contract`, `server`, and `unknown`.
 - Retry is allowed only for transient classes: `rate_limit`, `server`, and `unknown`.
 
 ## Verification
