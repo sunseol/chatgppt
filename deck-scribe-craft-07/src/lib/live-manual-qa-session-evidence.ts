@@ -1,4 +1,5 @@
 import type { LiveManualQaIssue } from "./live-manual-qa-evidence";
+import { hasNonSyntheticJsonEvidencePath } from "./live-evidence-path";
 
 export function sessionEvidenceIssues(sessionEvidencePath: string): readonly LiveManualQaIssue[] {
   return validSessionEvidencePath(sessionEvidencePath)
@@ -13,8 +14,5 @@ export function sessionEvidenceIssues(sessionEvidencePath: string): readonly Liv
 }
 
 function validSessionEvidencePath(value: string): boolean {
-  if (!value.endsWith(".json")) return false;
-  const normalized = value.toLowerCase();
-  if (normalized.startsWith("/") || /^[a-z]:[\\/]/.test(normalized)) return false;
-  return !["mock", "fixture", "test", "fake"].some((marker) => normalized.includes(marker));
+  return hasNonSyntheticJsonEvidencePath(value);
 }
