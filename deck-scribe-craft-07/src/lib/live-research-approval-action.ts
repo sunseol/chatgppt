@@ -1,5 +1,5 @@
-import { hashContent } from "./artifacts";
 import {
+  createLiveResearchApprovedHash,
   createLiveResearchDeckPlanInput,
   evaluateLiveResearchApprovalGate,
   type LiveResearchApprovalIssue,
@@ -40,7 +40,7 @@ export function createLiveResearchApprovalPatch(input: {
   });
   if (gate.kind === "blocked") return { kind: "blocked", issues: gate.issues };
 
-  const approvedHash = hashContent(JSON.stringify({ ...input.pack, approvedHash: undefined }));
+  const approvedHash = createLiveResearchApprovedHash(input.pack);
   const research = { ...input.pack, approvedHash };
   const deckPlanInput = createLiveResearchDeckPlanInput(research);
   if (deckPlanInput === undefined) {

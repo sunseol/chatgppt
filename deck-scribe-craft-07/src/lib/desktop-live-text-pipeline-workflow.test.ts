@@ -94,8 +94,9 @@ describe("desktop live text pipeline workflow", () => {
 
   test("passes the approved Research Pack hash into the Deck Plan turn", () => {
     // Given
+    const project = projectFixture();
     const job = deckPlanJob({
-      project: projectFixture(),
+      project,
       jobManager: createProviderJobManager(),
     });
 
@@ -103,7 +104,9 @@ describe("desktop live text pipeline workflow", () => {
     expect(job.inputArtifactIds).toEqual(["brief_live_1", "research_live_desktop"]);
     expect(job.turnRequest.prompt.includes("researchPackId: research_live_desktop")).toBe(true);
     expect(
-      job.turnRequest.prompt.includes("approvedResearchPackHash: sha256:research-live-desktop"),
+      job.turnRequest.prompt.includes(
+        `approvedResearchPackHash: ${project.research?.approvedHash}`,
+      ),
     ).toBe(true);
   });
 });

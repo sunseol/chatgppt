@@ -18,7 +18,8 @@ Status: partial local contract
 - Pending source-strengthening requests block approval with `pending_reinforcement_request`.
 - Complete evidence plus complete production Codex provenance returns `kind: "ready"`.
 - `ResearchPack.provenanceLineage` persists provider lineage through Research Pack parsing and approved Research Pack artifacts.
-- `createLiveResearchDeckPlanInput` forwards only `researchPackId` and `approvedResearchPackHash` to the downstream live deck-plan input, and returns no handoff for approved hashes whose persisted evidence/provenance no longer pass the live approval gate.
+- `createLiveResearchApprovedHash` hashes the current Research Pack content with `approvedHash` removed, so approval cannot be replayed after source, evidence, or provenance changes.
+- `createLiveResearchDeckPlanInput` forwards only `researchPackId` and `approvedResearchPackHash` to the downstream live deck-plan input, and returns no handoff for stale approved hashes or approved hashes whose persisted evidence/provenance no longer pass the live approval gate.
 - `src/lib/live-research-approval-action.ts` creates the production approval patch only after the live gate is ready, writes `ResearchPack.approvedHash`, returns the DF-214 deck-plan input containing `approvedResearchPackHash`, and creates an approved research artifact record at `projects/{projectId}/research/research.v{version}.json`.
 - `src/lib/desktop-live-text-pipeline-jobs.ts` includes the same `researchPackId` and `approvedResearchPackHash` in the live Deck Plan App Server prompt, so DF-214 receives the approved Research Pack hash as an actual turn input rather than only a local return value.
 
@@ -56,4 +57,4 @@ When the ready-state approval action runs, it records the approved research arti
 
 ## Remaining Live work
 
-DF-224 is not ready to close. The review UI and approval gate contracts exist locally, and production can now display a persisted Research Pack, source exclusion/reinforcement controls, approval blockers, saved source capture metadata, saved evidence references, saved provider provenance, and a ready-state approval action that writes `approvedResearchPackHash` plus an approved research artifact record for DF-214. A non-simulated packaged-app live research approval manual QA run is still required.
+DF-224 is not ready to close. The review UI and approval gate contracts exist locally, and production can now display a persisted Research Pack, source exclusion/reinforcement controls, approval blockers, saved source capture metadata, saved evidence references, saved provider provenance, and a ready-state approval action that writes a current-content `approvedResearchPackHash` plus an approved research artifact record for DF-214. A non-simulated packaged-app live research approval manual QA run is still required.

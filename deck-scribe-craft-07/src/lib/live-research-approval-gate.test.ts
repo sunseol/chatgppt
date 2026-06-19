@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import {
+  createLiveResearchApprovedHash,
   createLiveResearchDeckPlanInput,
   evaluateLiveResearchApprovalGate,
 } from "./live-research-approval-gate";
@@ -119,8 +120,33 @@ describe("live research approval gate", () => {
 
   test("passes only an approved Research Pack hash to the deck plan live input", () => {
     // Given
+    const approvablePack = researchPack({
+      liveEvidenceRefs: validEvidenceRefs(),
+      provenanceLineage: [liveResearchProvenance()],
+    });
+    const pack = {
+      ...approvablePack,
+      approvedHash: createLiveResearchApprovedHash(approvablePack),
+    };
+
+    // When
+    const deckPlanInput = createLiveResearchDeckPlanInput(pack);
+
+    // Then
+    expect(deckPlanInput).toEqual({
+      researchPackId: "research_live_review",
+      approvedResearchPackHash: pack.approvedHash,
+    });
+    expect(createLiveResearchDeckPlanInput(researchPack())).toBe(undefined);
+    expect(createLiveResearchDeckPlanInput(researchPack({ approvedHash: "sha256:unsafe" }))).toBe(
+      undefined,
+    );
+  });
+
+  test("blocks stale approved Research Pack hashes from deck plan handoff", () => {
+    // Given
     const pack = researchPack({
-      approvedHash: "sha256:approved_research",
+      approvedHash: "sha256:stale_research",
       liveEvidenceRefs: validEvidenceRefs(),
       provenanceLineage: [liveResearchProvenance()],
     });
@@ -129,14 +155,7 @@ describe("live research approval gate", () => {
     const deckPlanInput = createLiveResearchDeckPlanInput(pack);
 
     // Then
-    expect(deckPlanInput).toEqual({
-      researchPackId: "research_live_review",
-      approvedResearchPackHash: "sha256:approved_research",
-    });
-    expect(createLiveResearchDeckPlanInput(researchPack())).toBe(undefined);
-    expect(createLiveResearchDeckPlanInput(researchPack({ approvedHash: "sha256:unsafe" }))).toBe(
-      undefined,
-    );
+    expect(deckPlanInput).toBe(undefined);
   });
 });
 

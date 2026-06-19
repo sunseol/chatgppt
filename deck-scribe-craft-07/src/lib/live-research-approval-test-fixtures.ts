@@ -1,9 +1,10 @@
+import { createLiveResearchApprovedHash } from "./live-research-approval-gate";
 import type { ResearchPack } from "./research-types";
 
 export function liveApprovedResearchPackFixture(
   overrides: Partial<ResearchPack> = {},
 ): ResearchPack {
-  return {
+  const pack: ResearchPack = {
     id: "research_live_desktop",
     sources: [
       {
@@ -57,7 +58,6 @@ export function liveApprovedResearchPackFixture(
       },
     ],
     charts: [],
-    approvedHash: "sha256:research-live-desktop",
     factCheckReport: {
       summary: "Ready for planning.",
       generatedAt: 1_789_300_010,
@@ -93,4 +93,5 @@ export function liveApprovedResearchPackFixture(
     ],
     ...overrides,
   };
+  return { ...pack, approvedHash: createLiveResearchApprovedHash(pack) };
 }

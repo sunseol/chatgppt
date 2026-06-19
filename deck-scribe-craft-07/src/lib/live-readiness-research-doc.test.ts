@@ -80,6 +80,8 @@ describe("live readiness research documentation", () => {
     expect(researchApproval.includes("source_missing_live_capture")).toBe(true);
     expect(researchApproval.includes("source_capture_incomplete")).toBe(true);
     expect(researchApproval.includes("approvedResearchPackHash")).toBe(true);
+    expect(researchApproval.includes("current Research Pack content")).toBe(true);
+    expect(researchApproval.includes("stale approved hashes")).toBe(true);
     expect(researchApproval.includes("returns no handoff")).toBe(true);
     expect(researchApproval.includes("desktop-live-text-pipeline-jobs")).toBe(true);
     expect(researchApproval.includes("ProductionResearchReview")).toBe(true);

@@ -3,6 +3,7 @@ import {
   type LiveResearchEvidenceReference,
   validateLiveResearchEvidence,
 } from "./live-research-evidence";
+import { hashContent } from "./artifacts";
 import {
   evaluateApprovalProvenanceGate,
   type ProviderArtifactProvenance,
@@ -67,6 +68,7 @@ export function createLiveResearchDeckPlanInput(
   pack: ResearchPack,
 ): LiveResearchDeckPlanInput | undefined {
   if (!pack.approvedHash) return undefined;
+  if (pack.approvedHash !== createLiveResearchApprovedHash(pack)) return undefined;
   const gate = evaluateLiveResearchApprovalGate({
     pack,
     evidenceRefs: pack.liveEvidenceRefs ?? [],
@@ -77,6 +79,10 @@ export function createLiveResearchDeckPlanInput(
     researchPackId: pack.id,
     approvedResearchPackHash: pack.approvedHash,
   };
+}
+
+export function createLiveResearchApprovedHash(pack: ResearchPack): string {
+  return hashContent(JSON.stringify({ ...pack, approvedHash: undefined }));
 }
 
 function evidenceIssue(issue: LiveResearchEvidenceIssue): LiveResearchApprovalIssue {
