@@ -15,6 +15,7 @@ describe("live auth secret lifecycle documentation", () => {
     expect(authSecretLifecycle.includes("Logged in using ChatGPT")).toBe(true);
     expect(authSecretLifecycle.includes("LiveSecretStore")).toBe(true);
     expect(authSecretLifecycle.includes("LiveSecretReference")).toBe(true);
+    expect(authSecretLifecycle.includes("unsupported store kind")).toBe(true);
     expect(authSecretLifecycle.includes("URL-encoded key material")).toBe(true);
     expect(authSecretLifecycle.includes("serializeProjectList")).toBe(true);
     expect(authSecretLifecycle.includes("redactSensitiveText")).toBe(true);

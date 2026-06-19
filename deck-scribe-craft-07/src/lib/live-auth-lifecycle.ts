@@ -76,6 +76,13 @@ export class LiveSecretReferenceError extends Error {
   }
 }
 
+export class LiveSecretStoreKindError extends Error {
+  constructor() {
+    super("Secret store returned an unsupported store kind.");
+    this.name = "LiveSecretStoreKindError";
+  }
+}
+
 export async function connectImageApiKeySecret(input: {
   readonly apiKey: string;
   readonly store: LiveSecretStore;
@@ -91,6 +98,8 @@ export async function connectImageApiKeySecret(input: {
     secretValue: trimmed,
     createdAt: input.now(),
   });
+  if (!isExpectedStoreKind(secretReference.storeKind, input.store.kind))
+    throw new LiveSecretStoreKindError();
   if (secretReferenceContainsRawSecret(secretReference, trimmed))
     throw new LiveSecretReferenceError();
 
@@ -179,6 +188,10 @@ export function createLiveAuthLogoutLockState(input: {
 
 function isActiveJob(status: ProviderJobStatus): boolean {
   return status === "queued" || status === "running";
+}
+
+function isExpectedStoreKind(value: string, expected: LiveSecretStoreKind): boolean {
+  return (value === "os_keychain" || value === "equivalent_secret_store") && value === expected;
 }
 
 function secretReferenceContainsRawSecret(
