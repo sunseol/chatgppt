@@ -5,6 +5,7 @@ import {
   approvedSlideFixture,
   liveRegenerationRequestFixture,
   slideImageArtifactFixture,
+  slideSpecFixture,
 } from "./live-slide-regeneration-test-fixtures";
 
 describe("live full-slide regeneration artifact version", () => {
@@ -26,6 +27,7 @@ describe("live full-slide regeneration artifact version", () => {
       candidateBackground,
       candidateDeckContextId: "deckctx_001",
       candidateDesignSystemId: "design_001",
+      candidateSlideSpec: slideSpecFixture(),
       candidateVersion: 2,
     });
 
@@ -56,6 +58,7 @@ describe("live full-slide regeneration artifact version", () => {
       candidateBackground,
       candidateDeckContextId: "deckctx_001",
       candidateDesignSystemId: "design_001",
+      candidateSlideSpec: slideSpecFixture(),
       candidateVersion: 2,
     });
 
@@ -85,6 +88,7 @@ describe("live full-slide regeneration artifact version", () => {
       candidateBackground,
       candidateDeckContextId: "deckctx_001",
       candidateDesignSystemId: "design_001",
+      candidateSlideSpec: slideSpecFixture(),
       candidateVersion: 2,
     });
 
@@ -118,6 +122,7 @@ describe("live full-slide regeneration artifact version", () => {
       candidateBackground,
       candidateDeckContextId: "deckctx_001",
       candidateDesignSystemId: "design_001",
+      candidateSlideSpec: slideSpecFixture(),
       candidateVersion: 2,
     });
 
@@ -151,6 +156,7 @@ describe("live full-slide regeneration artifact version", () => {
       candidateBackground,
       candidateDeckContextId: "deckctx_001",
       candidateDesignSystemId: "design_001",
+      candidateSlideSpec: slideSpecFixture(),
       candidateVersion: 2,
     });
 
@@ -191,6 +197,7 @@ describe("live full-slide regeneration artifact version", () => {
       candidateBackground,
       candidateDeckContextId: "deckctx_001",
       candidateDesignSystemId: "design_001",
+      candidateSlideSpec: slideSpecFixture(),
       candidateVersion: 2,
     });
 
@@ -228,6 +235,7 @@ describe("live full-slide regeneration artifact version", () => {
       candidateBackground,
       candidateDeckContextId: "deckctx_001",
       candidateDesignSystemId: "design_001",
+      candidateSlideSpec: slideSpecFixture(),
       candidateVersion: 2,
     });
 
@@ -257,6 +265,7 @@ describe("live full-slide regeneration artifact version", () => {
       candidateBackground,
       candidateDeckContextId: "deckctx_001",
       candidateDesignSystemId: "design_001",
+      candidateSlideSpec: slideSpecFixture(),
       candidateVersion: 3,
     });
 

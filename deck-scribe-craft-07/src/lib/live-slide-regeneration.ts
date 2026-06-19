@@ -3,6 +3,7 @@ import type { GeneratedSlide, SlideSpec } from "./deck-types";
 import type { StoredSlideImageArtifact } from "./image-artifact-store";
 import { candidateIssues } from "./live-slide-regeneration-candidate";
 import { requestIssues } from "./live-slide-regeneration-request-validation";
+import { candidateSlideSpecIssues } from "./live-slide-regeneration-slide-spec";
 import type { SlideRevisionRequest } from "./slide-revision-model";
 
 export type LiveSlideRegenerationIssueCode =
@@ -125,9 +126,13 @@ export function createLiveSlideRegenerationCandidate(input: {
   readonly candidateBackground: StoredSlideImageArtifact;
   readonly candidateDeckContextId: string;
   readonly candidateDesignSystemId: string;
+  readonly candidateSlideSpec: SlideSpec;
   readonly candidateVersion: number;
 }): LiveSlideRegenerationCandidateResult {
-  const issues = candidateIssues(input);
+  const issues = [
+    ...candidateSlideSpecIssues(input.request, input.candidateSlideSpec),
+    ...candidateIssues(input),
+  ];
   if (issues.length > 0) {
     return {
       kind: "failed",

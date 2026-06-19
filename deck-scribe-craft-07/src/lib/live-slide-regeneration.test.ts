@@ -114,6 +114,7 @@ describe("live full-slide regeneration", () => {
       candidateBackground: stored.candidate,
       candidateDeckContextId: "deckctx_001",
       candidateDesignSystemId: "design_001",
+      candidateSlideSpec: slideSpecFixture(),
       candidateVersion: 2,
     });
 
@@ -159,6 +160,7 @@ describe("live full-slide regeneration", () => {
       candidateBackground: stored.candidate,
       candidateDeckContextId: "deckctx_999",
       candidateDesignSystemId: "design_001",
+      candidateSlideSpec: slideSpecFixture(),
       candidateVersion: 2,
     });
 
@@ -193,6 +195,7 @@ describe("live full-slide regeneration", () => {
       candidateBackground: stored.candidate,
       candidateDeckContextId: "deckctx_001",
       candidateDesignSystemId: "design_001",
+      candidateSlideSpec: slideSpecFixture(),
       candidateVersion: 2,
     });
 

@@ -1,4 +1,5 @@
 import type { GeneratedSlide, SlideSpec } from "./deck-types";
+import { hashContent } from "./artifacts";
 import type { LiveSlideRegenerationRequest } from "./live-slide-regeneration";
 import { encodeSolidPngDataUrl } from "./png-encoder";
 import { createSlideRevisionRequest, type SlideRevisionRequest } from "./slide-revision-model";
@@ -15,8 +16,10 @@ export function liveRegenerationRequestFixture(
   options: {
     readonly originalBackgroundArtifactId?: string;
     readonly originalBackgroundRequestId?: string;
+    readonly slideSpec?: SlideSpec;
   } = {},
 ): LiveSlideRegenerationRequest {
+  const slideSpec = options.slideSpec ?? slideSpecFixture();
   return {
     requestId: "rev_235",
     slideNumber: 3,
@@ -24,7 +27,7 @@ export function liveRegenerationRequestFixture(
     deckContextId: "deckctx_001",
     designSystemId: "design_001",
     slidePlanId: "plan_001",
-    slideSpecHash: "sha256:slide-spec",
+    slideSpecHash: hashContent(JSON.stringify(slideSpec)),
     editInstruction: "차트를 더 크게",
     mustKeep: ["title text"],
     mustChange: ["chart area size"],

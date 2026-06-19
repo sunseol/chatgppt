@@ -10,6 +10,8 @@ describe("live full-slide regeneration documentation", () => {
     expect(slideRegeneration.includes("DF-235")).toBe(true);
     expect(slideRegeneration.includes("deckContextId")).toBe(true);
     expect(slideRegeneration.includes("designSystemId")).toBe(true);
+    expect(slideRegeneration.includes("live-slide-regeneration-slide-spec.ts")).toBe(true);
+    expect(slideRegeneration.includes("slide_spec_mismatch")).toBe(true);
     expect(slideRegeneration.includes("missing_must_keep_targets")).toBe(true);
     expect(slideRegeneration.includes("missing_must_change_targets")).toBe(true);
     expect(slideRegeneration.includes("revision_targets_overlap")).toBe(true);
