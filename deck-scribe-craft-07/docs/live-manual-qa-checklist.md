@@ -42,7 +42,7 @@ Within 10 minutes, the tester must:
 - `sessionDurationMs` at or below 600000 and completed setup tasks `new_project`, `login_check`, `prompt_input`
 - `testerRole` set to `non_developer`
 - `sessionEvidencePath` pointing to a persisted non-synthetic `manual-qa` session JSON bundle for the observed QA session, not a generic notes JSON, developer-local absolute, or `file://` path
-- approval target checks for `research_pack`, `slide_generation`, and `export`, with every target understood
+- distinct approval target checks for `research_pack`, `slide_generation`, and `export`, with every target understood
 - at least one opened real HTTP(S) source URL that also appears in the final report sources, excluding placeholder or local domains
 - at least one regenerated slide id and one edited title slide id
 - opened export artifacts `png`, `project`, and `report`
@@ -50,13 +50,13 @@ Within 10 minutes, the tester must:
 - zero critical errors, zero mock indicators, and zero placeholder outputs
 - a severity issue list using P0/P1/P2, where every logged issue has a non-empty title and reproduction/observation notes
 
-Blocker codes: `tester_not_non_developer`, `missing_manual_qa_session_evidence`, `setup_over_time`, `missing_approval_target_check`, `approval_target_misunderstood`, `missing_real_source_open`, `invalid_real_source_url`, `placeholder_real_source_url`, `opened_source_not_in_report`, `missing_slide_regeneration`, `missing_title_edit`, `missing_export_open`, `invalid_manual_qa_count`, `critical_issue_present`, `mock_indicator_present`, `placeholder_output_present`, `invalid_manual_qa_issue_log`, `missing_severity_issue_list`.
+Blocker codes: `tester_not_non_developer`, `missing_manual_qa_session_evidence`, `setup_over_time`, `missing_approval_target_check`, `approval_target_misunderstood`, `duplicate_approval_target_check`, `missing_real_source_open`, `invalid_real_source_url`, `placeholder_real_source_url`, `opened_source_not_in_report`, `missing_slide_regeneration`, `missing_title_edit`, `missing_export_open`, `invalid_manual_qa_count`, `critical_issue_present`, `mock_indicator_present`, `placeholder_output_present`, `invalid_manual_qa_issue_log`, `missing_severity_issue_list`.
 
 ## Pass criteria
 
 - Project task completes within 10 minutes.
 - Tester is not a developer or implementation contributor, and the session has a persisted non-local evidence bundle.
-- Tester explains the research, slide generation, and export approval gate targets.
+- Tester explains the research, slide generation, and export approval gate targets with one distinct evidence event per target.
 - At least one non-placeholder real source from the final report is opened and understood.
 - One slide is regenerated and accepted or rejected.
 - One title edit survives export.

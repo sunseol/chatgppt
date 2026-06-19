@@ -1,4 +1,9 @@
 import { manualQaCountShapeIssues, safeManualQaCount } from "./live-manual-qa-counts";
+import {
+  MANUAL_QA_APPROVAL_TARGETS,
+  approvalIssues,
+  countDistinctApprovalTargetChecks,
+} from "./live-manual-qa-approval-targets";
 import { manualQaIssueLogIssues } from "./live-manual-qa-issue-log";
 import { realSourceOpenIssues } from "./live-manual-qa-source-evidence";
 import { sessionEvidenceIssues } from "./live-manual-qa-session-evidence";
@@ -7,7 +12,7 @@ export const MANUAL_QA_SETUP_TASKS = ["new_project", "login_check", "prompt_inpu
 
 export const MANUAL_QA_EXPORTS = ["png", "project", "report"] as const;
 
-export const MANUAL_QA_APPROVAL_TARGETS = ["research_pack", "slide_generation", "export"] as const;
+export { MANUAL_QA_APPROVAL_TARGETS };
 
 export const MANUAL_QA_TESTER_ROLES = ["non_developer", "developer"] as const;
 
@@ -55,6 +60,7 @@ export type LiveManualQaIssueCode =
   | "invalid_real_source_url"
   | "placeholder_real_source_url"
   | "opened_source_not_in_report"
+  | "duplicate_approval_target_check"
   | "missing_slide_regeneration"
   | "missing_title_edit"
   | "missing_export_open"
@@ -126,7 +132,7 @@ export function formatLiveManualQaEvidenceSummary(evidence: LiveManualQaEvidence
     `tester role: ${evidence.testerRole}`,
     `setup target: 10 minutes · actual: ${(evidence.sessionDurationMs / 60_000).toFixed(1)} minutes`,
     `setup tasks: ${evidence.setupTasks.join(", ") || "missing"}`,
-    `approval targets checked: ${evidence.approvalTargetChecks.length}`,
+    `approval targets checked: ${countDistinctApprovalTargetChecks(evidence.approvalTargetChecks)}`,
     `real sources opened: ${nonEmpty(evidence.openedRealSourceUrls).length}`,
     `report sources: ${nonEmpty(evidence.finalReportSourceUrls).length}`,
     `regenerated slides: ${nonEmpty(evidence.regeneratedSlideIds).join(", ") || "missing"}`,
@@ -165,34 +171,6 @@ function setupIssues(evidence: LiveManualQaEvidence): readonly LiveManualQaIssue
           [...missing, `${evidence.sessionDurationMs}ms`],
         ),
       ];
-}
-
-function approvalIssues(
-  checks: readonly ManualQaApprovalTargetCheck[],
-): readonly LiveManualQaIssue[] {
-  const present = new Set(nonEmpty(checks.map((check) => check.targetId)));
-  const missing = MANUAL_QA_APPROVAL_TARGETS.filter((target) => !present.has(target));
-  const failed = checks.filter((check) => !check.understood || check.targetId.trim().length === 0);
-  return [
-    ...(failed.length === 0
-      ? []
-      : [
-          issue(
-            "approval_target_misunderstood",
-            "Tester must understand every approval button target.",
-            failed.map((check) => check.targetId || "missing approval target"),
-          ),
-        ]),
-    ...(missing.length === 0
-      ? []
-      : [
-          issue(
-            "missing_approval_target_check",
-            "Manual QA must check every approval button target.",
-            missing,
-          ),
-        ]),
-  ];
 }
 
 function exportIssues(exports: readonly ManualQaExport[]): readonly LiveManualQaIssue[] {
