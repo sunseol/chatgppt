@@ -11,7 +11,7 @@ Scope: DF-212 Project Thread and Context lifecycle.
 - a project has one coordinator thread id and stage-specific worker thread ids
 - the manifest blocks a missing coordinator thread id, duplicate worker stages, blank worker thread ids, duplicate worker thread ids, and worker threads that reuse the coordinator thread id before recovery
 - every worker carries the same `deckContextId`, `deckContextHash`, approved artifact id bundle, and `lastCompletedTurnId` as the coordinator manifest
-- the manifest and workers block raw conversation source-of-truth fields such as `sourceOfTruth: "raw_conversation"` or persisted conversation transcripts; workers must resume from approved artifacts plus the retained turn id instead of long raw chat history
+- the manifest and workers block raw conversation source-of-truth fields such as `sourceOfTruth: "raw_conversation"` or persisted conversation transcripts, including nested worker resume/source metadata; workers must resume from approved artifacts plus the retained turn id instead of long raw chat history
 - restart recovery returns resumable worker threads only when the persisted manifest still matches the current frozen deck context and retained worker turn lineage
 - active live jobs are marked stale when upstream approval invalidates their deck context
 
@@ -28,6 +28,7 @@ Scope: DF-212 Project Thread and Context lifecycle.
 ## Verified Locally
 
 - `src/lib/project-thread-lifecycle.test.ts` verifies manifest creation, missing coordinator thread id rejection, duplicate worker stage rejection, worker context drift rejection, raw conversation source-of-truth rejection, restart recovery, changed-context blockers, last-turn recovery, and stale live-job detection.
+- `src/lib/project-thread-raw-source.test.ts` verifies nested worker resume/source metadata cannot persist raw conversation as a worker source of truth.
 - `src/lib/project-thread-worker-identity.test.ts` verifies worker thread ids must be nonblank, unique across worker stages, and distinct from the coordinator thread id.
 - `src/lib/project-thread-resume-evidence.test.ts` verifies the DF-212 resume evidence gate accepts a completed post-restart App Server turn and rejects stale context, incomplete turns, unknown threads, reused turns, non-restart evidence, and non-live resumed worker turns such as `resume_non_codex_turn`.
 - `src/lib/project-thread-resume-lineage.test.ts` verifies the gate rejects a claimed previous turn that does not match the recovered worker thread's last completed turn.
@@ -52,4 +53,4 @@ Observed second-process event methods included `thread/status/changed`, `thread/
 
 ## Remaining Live Evidence
 
-DF-212 is still not fully Verified Live. The library-level protocol recheck proves App Server can resume a recovered project worker thread after the App Server process is recreated, and the local evidence gate now rejects stale, fake, duplicate-stage, duplicate-worker-thread, coordinator-reused-worker-thread, raw-conversation-sourced, missing-coordinator, blank-worker-thread, or turn-lineage-mismatched resume evidence. The remaining gap is a packaged desktop restart/reopen run that persists the manifest through the app storage boundary and then invokes the resumed worker thread from the production UI.
+DF-212 is still not fully Verified Live. The library-level protocol recheck proves App Server can resume a recovered project worker thread after the App Server process is recreated, and the local evidence gate now rejects stale, fake, duplicate-stage, duplicate-worker-thread, coordinator-reused-worker-thread, raw-conversation-sourced including nested worker resume/source metadata, missing-coordinator, blank-worker-thread, or turn-lineage-mismatched resume evidence. The remaining gap is a packaged desktop restart/reopen run that persists the manifest through the app storage boundary and then invokes the resumed worker thread from the production UI.
