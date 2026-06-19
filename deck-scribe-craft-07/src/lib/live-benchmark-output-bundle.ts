@@ -38,7 +38,7 @@ export function outputBundleIssues(
     )
     .map((run) => run.id);
   const missingReports = runs
-    .filter((run) => !run.outputBundle.reportPath.trim())
+    .filter((run) => !validEvidenceReportPath(run.outputBundle.reportPath, ".md"))
     .map((run) => run.id);
   const missingExports = runs
     .filter((run) => run.status === "passed" && !run.outputBundle.exportArtifactId.trim())
@@ -164,7 +164,7 @@ function duplicatePassedExportArtifacts(runs: readonly LiveBenchmarkRun[]): read
 
 function hasGoldenPathEvidence(bundle: LiveBenchmarkOutputBundleManifest): boolean {
   return (
-    bundle.goldenPathReportPath.endsWith("live_e2e_report.md") &&
+    validEvidenceReportPath(bundle.goldenPathReportPath, "live_e2e_report.md") &&
     bundle.screenshotCount >= 10 &&
     bundle.sourceCount >= 3 &&
     bundle.imageArtifactCount >= 5 &&
@@ -185,6 +185,16 @@ function hasDistinctArtifactEvidence(
 function validOutputBundlePath(value: string): boolean {
   const normalized = value.toLowerCase().trim();
   if (!normalized.endsWith(".zip") && !normalized.endsWith(".json")) return false;
+  return isNonSyntheticPath(normalized);
+}
+
+function validEvidenceReportPath(value: string, expectedSuffix: string): boolean {
+  const normalized = value.toLowerCase().trim();
+  if (!normalized.endsWith(expectedSuffix)) return false;
+  return isNonSyntheticPath(normalized);
+}
+
+function isNonSyntheticPath(normalized: string): boolean {
   const segments = normalized.split(/[/\\._-]+/).filter(Boolean);
   return !["mock", "fixture", "fixtures", "test", "tests", "fake", "fakes"].some((marker) =>
     segments.includes(marker),
