@@ -218,8 +218,23 @@ function isCompletedGeneratedSlideForBundle(
 ): boolean {
   return (
     (slide.status === "ready" || slide.status === "approved") &&
-    slide.imageDescriptor.includes(`|${bundle.layoutPrototype.layoutScreenshot}|`)
+    completedDescriptorMatchesBundle(slide.imageDescriptor, bundle)
   );
+}
+
+function completedDescriptorMatchesBundle(descriptor: string, bundle: SlideContextBundle): boolean {
+  const [providerId, aspectRatio, layoutScreenshot, promptVersion, extra] = descriptor.split("|");
+  return (
+    extra === undefined &&
+    isLiveImageProviderId(providerId) &&
+    aspectRatio === "16:9" &&
+    layoutScreenshot === bundle.layoutPrototype.layoutScreenshot &&
+    promptVersion === "slide_generation@v1"
+  );
+}
+
+function isLiveImageProviderId(providerId: string | undefined): boolean {
+  return providerId === "openaiImage" || providerId === "codex";
 }
 
 function pendingBundlesForCompletedSlides(
