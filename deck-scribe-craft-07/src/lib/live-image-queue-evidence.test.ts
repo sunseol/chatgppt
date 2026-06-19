@@ -1,0 +1,194 @@
+import { describe, expect, test } from "bun:test";
+import { createPromptUsageRecord } from "./prompt-assets";
+import type { ProviderJob } from "./provider-job-manager";
+import {
+  evaluateLiveImageQueueEvidence,
+  type LiveImageQueueEvidenceIssueCode,
+} from "./live-image-queue-evidence";
+import type { SlideGenerationQueueResult } from "./slide-generation-queue-types";
+
+describe("live image queue evidence", () => {
+  test("accepts retry and cancellation evidence when provenance matches recorded jobs", () => {
+    // Given
+    const result = readyQueueResult({
+      jobs: [
+        job({ id: "job_retry", attempt: 2 }),
+        job({ id: "job_cancel", status: "cancelled", cancelRequested: true }),
+      ],
+      failures: [
+        {
+          jobId: "job_cancel",
+          bundleId: "bundle_cancel",
+          slideNumber: 2,
+          retryable: true,
+          attempts: 1,
+          failureKind: "cancelled",
+          retryDelaysMs: [],
+          errorMessage: "cancelled",
+          userMessage: "Slide 2 was cancelled.",
+        },
+      ],
+      promptUsages: [
+        createPromptUsageRecord({
+          promptId: "slide_generation",
+          artifactId: "bundle_retry",
+          jobId: "job_retry",
+          recordedAt: 1_789_500_000,
+        }),
+      ],
+      retryProvenance: [
+        {
+          jobId: "job_retry",
+          bundleId: "bundle_retry",
+          slideNumber: 1,
+          attempt: 1,
+          delayMs: 500,
+          failureKind: "rate_limit",
+          message: "rate limited",
+        },
+      ],
+    });
+
+    // When
+    const validation = evaluateLiveImageQueueEvidence(result);
+
+    // Then
+    expect(validation).toEqual({ kind: "ready" });
+  });
+
+  test("blocks retry evidence that does not match the final job attempt and bundle", () => {
+    // Given
+    const result = readyQueueResult({
+      jobs: [job({ id: "job_retry", attempt: 3 })],
+      promptUsages: [
+        createPromptUsageRecord({
+          promptId: "slide_generation",
+          artifactId: "bundle_live_001",
+          jobId: "job_retry",
+          recordedAt: 1_789_500_000,
+        }),
+      ],
+      retryProvenance: [
+        {
+          jobId: "job_retry",
+          bundleId: "bundle_other",
+          slideNumber: 1,
+          attempt: 1,
+          delayMs: 500,
+          failureKind: "rate_limit",
+          message: "rate limited",
+        },
+      ],
+    });
+
+    // When
+    const validation = evaluateLiveImageQueueEvidence(result);
+
+    // Then
+    expect(issueCodes(validation)).toEqual([
+      "retry_attempt_count_mismatch",
+      "retry_bundle_mismatch",
+    ]);
+  });
+
+  test("blocks cancellation failures without a cancelled provider job", () => {
+    // Given
+    const result = readyQueueResult({
+      failures: [
+        {
+          jobId: "job_cancel",
+          bundleId: "bundle_cancel",
+          slideNumber: 2,
+          retryable: true,
+          attempts: 1,
+          failureKind: "cancelled",
+          retryDelaysMs: [],
+          errorMessage: "cancelled",
+          userMessage: "Slide 2 was cancelled.",
+        },
+      ],
+      jobs: [job({ id: "job_cancel", status: "failed", cancelRequested: true })],
+      promptUsages: [
+        createPromptUsageRecord({
+          promptId: "slide_generation",
+          artifactId: "bundle_cancel",
+          jobId: "job_cancel",
+          recordedAt: 1_789_500_000,
+        }),
+      ],
+    });
+
+    // When
+    const validation = evaluateLiveImageQueueEvidence(result);
+
+    // Then
+    expect(issueCodes(validation)).toEqual(["cancel_failure_without_cancelled_job"]);
+  });
+
+  test("blocks retry provenance that is not tied to recorded job prompt usage", () => {
+    // Given
+    const result = readyQueueResult({
+      retryProvenance: [
+        {
+          jobId: "job_orphan_retry",
+          bundleId: "bundle_orphan",
+          slideNumber: 3,
+          attempt: 1,
+          delayMs: 500,
+          failureKind: "server",
+          message: "upstream 503",
+        },
+      ],
+    });
+
+    // When
+    const validation = evaluateLiveImageQueueEvidence(result);
+
+    // Then
+    expect(issueCodes(validation)).toEqual(["retry_job_not_found", "retry_prompt_usage_missing"]);
+  });
+});
+
+function issueCodes(
+  validation: ReturnType<typeof evaluateLiveImageQueueEvidence>,
+): readonly LiveImageQueueEvidenceIssueCode[] {
+  return validation.kind === "blocked" ? validation.issues.map((issue) => issue.code) : [];
+}
+
+function readyQueueResult(
+  overrides: Partial<Extract<SlideGenerationQueueResult, { readonly kind: "ready" }>>,
+): SlideGenerationQueueResult {
+  return {
+    kind: "ready",
+    status: "succeeded",
+    context: {
+      deckContextId: "deck_context_live",
+      deckContextHash: "sha256:context",
+      designSystemId: "design_live",
+      designTokenHash: "sha256:design",
+      layoutPrototypeId: "layout_live",
+      slideCount: 5,
+    },
+    slides: [],
+    failures: [],
+    jobs: [],
+    promptUsages: [],
+    retryProvenance: [],
+    progress: { completed: 5, failed: 0, total: 5, percent: 100 },
+    ...overrides,
+  };
+}
+
+function job(overrides: Partial<ProviderJob>): ProviderJob {
+  return {
+    id: "job_live",
+    providerId: "openaiImage",
+    capability: "imageGeneration",
+    description: "Generate slide",
+    status: "succeeded",
+    createdAt: 1_789_500_000,
+    attempt: 1,
+    cancelRequested: false,
+    ...overrides,
+  };
+}
