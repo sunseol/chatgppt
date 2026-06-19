@@ -19,6 +19,24 @@ export function candidateIssues(input: {
   const hasRequestEvidence = Boolean(candidateRequestId && candidateProvenanceRequestId);
   const requestEvidenceMatches = candidateRequestId === candidateProvenanceRequestId;
   return [
+    ...(input.originalSlide.number === input.request.slideNumber
+      ? []
+      : [
+          {
+            code: "original_slide_mismatch" as const,
+            slideNumber: input.request.slideNumber,
+            message: "Regeneration candidates must be built from the selected approved slide.",
+          },
+        ]),
+    ...(input.originalSlide.version === input.request.originalSlideVersion
+      ? []
+      : [
+          {
+            code: "original_slide_version_mismatch" as const,
+            slideNumber: input.request.slideNumber,
+            message: "Regeneration candidates must start from the approved original slide version.",
+          },
+        ]),
     ...(input.candidateDeckContextId === input.request.deckContextId
       ? []
       : [

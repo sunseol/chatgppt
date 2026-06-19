@@ -198,4 +198,34 @@ describe("live full-slide regeneration artifact version", () => {
       "regeneration_background_not_live",
     ]);
   });
+
+  test("blocks candidates built from a different approved slide or stale original version", async () => {
+    // Given
+    const store = createImageArtifactStore({ write: async () => undefined });
+    const candidateBackground = await storeSlideImageArtifact({
+      store,
+      projectId: "project_001",
+      artifact: slideImageArtifactFixture(),
+      version: 3,
+      createdAt: 1_789_900_016,
+    });
+
+    // When
+    const result = createLiveSlideRegenerationCandidate({
+      request: liveRegenerationRequestFixture(),
+      originalSlide: { ...approvedSlideFixture(), number: 4, version: 2 },
+      candidateBackground,
+      candidateDeckContextId: "deckctx_001",
+      candidateDesignSystemId: "design_001",
+      candidateVersion: 3,
+    });
+
+    // Then
+    expect(result.kind).toBe("failed");
+    if (result.kind !== "failed") return;
+    expect(result.failure.issues.map((issue) => issue.code)).toEqual([
+      "original_slide_mismatch",
+      "original_slide_version_mismatch",
+    ]);
+  });
 });

@@ -10,6 +10,8 @@ export type LiveSlideRegenerationIssueCode =
   | "missing_must_change_targets"
   | "revision_targets_overlap"
   | "slide_spec_mismatch"
+  | "original_slide_mismatch"
+  | "original_slide_version_mismatch"
   | "deck_context_mismatch"
   | "design_system_mismatch"
   | "missing_original_background_artifact"
