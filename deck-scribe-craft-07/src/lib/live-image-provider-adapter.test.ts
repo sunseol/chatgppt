@@ -121,6 +121,57 @@ describe("live image provider adapter", () => {
     expect(writes).toEqual([]);
   });
 
+  test("returns storage validation failures without writing artifact bytes", async () => {
+    // Given
+    const writes: ImageArtifactStoreWrite[] = [];
+    const provider: SlideImageProvider = {
+      id: "openaiImage",
+      async generate(input) {
+        return {
+          providerId: "openaiImage",
+          slideNumber: input.package.slideNumber,
+          aspectRatio: input.aspectRatio,
+          canvas: { width: 1600, height: 900 },
+          layoutReference: {
+            screenshot: input.package.layoutScreenshot,
+            mode: "composition-reference",
+          },
+          imageDataUrl: "data:image/png;base64,ZmFrZQ==",
+          prompt: {
+            id: input.package.promptId,
+            version: input.package.promptVersion,
+            hash: input.package.promptHash,
+          },
+          request: { model: "gpt-image-2", requestId: "img_req_invalid_png", latencyMs: 1 },
+          generatedAt: 1_789_820_004,
+        };
+      },
+    };
+
+    // When
+    const result = await generateAndStoreSlideImageArtifact({
+      provider,
+      store: {
+        write: async (entry) => {
+          writes.push(entry);
+        },
+      },
+      package: promptPackage(),
+      aspectRatio: "16:9",
+      projectId: "project_001",
+      version: 1,
+      createdAt: 1_789_820_004,
+    });
+
+    // Then
+    expect(result.kind).toBe("failed");
+    if (result.kind !== "failed") return;
+    expect(result.failure.errorKind).toBe("provider_contract");
+    expect(result.failure.retryable).toBe(false);
+    expect(result.failure.errorMessage.includes("valid PNG signature")).toBe(true);
+    expect(writes).toEqual([]);
+  });
+
   test("rejects provider artifact lineage mismatches before writing bytes", async () => {
     // Given
     const writes: ImageArtifactStoreWrite[] = [];

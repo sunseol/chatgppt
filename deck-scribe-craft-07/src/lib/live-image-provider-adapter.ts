@@ -1,4 +1,5 @@
 import {
+  ImageArtifactStoreError,
   storeSlideImageArtifact,
   type ImageArtifactStore,
   type StoredSlideImageArtifact,
@@ -48,22 +49,56 @@ export async function generateAndStoreSlideImageArtifact(input: {
     case "failed":
       return { kind: "failed", failure: result.failure };
     case "ready": {
-      const stored = await storeSlideImageArtifact({
-        store: input.store,
-        projectId: input.projectId,
-        artifact: result.artifact,
-        version: input.version,
-        createdAt: input.createdAt,
-      });
+      const stored = await storeProviderArtifactResult(input, result.artifact);
+      if (stored.kind === "failed") return { kind: "failed", failure: stored.failure };
       return {
         kind: "ready",
         artifact: result.artifact,
         slide: result.slide,
-        stored,
+        stored: stored.stored,
       };
     }
     default:
       return assertNever(result);
+  }
+}
+
+type StoreProviderArtifactResult =
+  | { readonly kind: "ready"; readonly stored: StoredSlideImageArtifact }
+  | { readonly kind: "failed"; readonly failure: SlideImageFailure };
+
+async function storeProviderArtifactResult(
+  input: {
+    readonly provider: SlideImageProvider;
+    readonly store: ImageArtifactStore;
+    readonly package: SlidePromptPackage;
+    readonly projectId: string;
+    readonly version: number;
+    readonly createdAt: number;
+  },
+  artifact: SlideImageArtifact,
+): Promise<StoreProviderArtifactResult> {
+  try {
+    const stored = await storeSlideImageArtifact({
+      store: input.store,
+      projectId: input.projectId,
+      artifact,
+      version: input.version,
+      createdAt: input.createdAt,
+    });
+    return { kind: "ready", stored };
+  } catch (error) {
+    if (error instanceof ImageArtifactStoreError) {
+      return {
+        kind: "failed",
+        failure: liveProviderContractFailure(
+          input.provider.id,
+          input.package.slideNumber,
+          error.message,
+        ),
+      };
+    }
+    throw error;
   }
 }
 
@@ -74,8 +109,8 @@ function assertNever(value: never): never {
 function liveProviderContractFailure(
   providerId: SlideImageProvider["id"],
   slideNumber: number,
+  message = "Mock image providers cannot run through live image storage.",
 ): SlideImageFailure {
-  const message = "Mock image providers cannot run through live image storage.";
   return {
     providerId,
     slideNumber,

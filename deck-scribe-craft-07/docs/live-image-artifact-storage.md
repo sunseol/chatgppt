@@ -24,7 +24,7 @@ Status: partial local contract
 - Produces and stores provider provenance for the stored binary artifact, including prompt version, prompt hash, layout reference, request id, model/runtime, duration, auth mode, and fixture flag.
 - Rejects non-PNG image data, fake PNG data URLs without a PNG signature, and OpenAI image artifacts with missing or blank `requestId`.
 - `src/lib/live-image-provider-adapter.ts` links provider generation to storage in one production-oriented call.
-- The adapter rejects mock providers before generation, passes the full prompt package and layout reference to live providers, stores successful binary output, returns stored artifact/provenance metadata, and does not write artifacts when the provider returns a classified failure.
+- The adapter rejects mock providers before generation, passes the full prompt package and layout reference to live providers, stores successful binary output, returns stored artifact/provenance metadata, and does not write artifacts when the provider returns a classified failure or when storage rejects invalid provider bytes/request metadata.
 - `src/lib/slide-image-provider-contract.ts` rejects `provider_contract` mismatches before storage when the returned artifact provider, slide number, aspect ratio, layout reference, or prompt lineage does not match the requested prompt package.
 
 ## Provider/error contract
@@ -32,7 +32,7 @@ Status: partial local contract
 Existing provider tests plus `src/lib/image-provider-errors.test.ts` cover the DF-231 adapter/error requirements:
 
 - `src/lib/slide-image-provider.test.ts` verifies prompt/layout handoff, failure classification, provider response metadata preservation, and adapter-measured latency when a response omits `latencyMs`.
-- `src/lib/live-image-provider-adapter.test.ts` verifies the provider-to-storage path, versioned binary/metadata/provenance writes, request metadata preservation, provenance request id, and no-write behavior for `content_policy` failures.
+- `src/lib/live-image-provider-adapter.test.ts` verifies the provider-to-storage path, versioned binary/metadata/provenance writes, request metadata preservation, provenance request id, no-write behavior for `content_policy` failures, and no-write `provider_contract` results for storage validation failures.
 - `src/lib/image-provider-errors.ts` distinguishes `auth`, `quota`, `rate_limit`, `content_policy`, `provider_contract`, `server`, and `unknown`.
 - Retry is allowed only for transient classes: `rate_limit`, `server`, and `unknown`.
 
@@ -40,7 +40,7 @@ Existing provider tests plus `src/lib/image-provider-errors.test.ts` cover the D
 
 - `bun test src/lib/image-artifact-store.test.ts src/lib/image-artifact-store-usage.test.ts src/lib/image-artifact-store-live-provider.test.ts` passes: 8 tests.
 - `bun test src/lib/image-provider-errors.test.ts` passes: 1 test.
-- `bun test src/lib/live-image-provider-adapter.test.ts src/lib/live-image-provider-adapter-live-provider.test.ts` passes: 4 tests.
+- `bun test src/lib/live-image-provider-adapter.test.ts src/lib/live-image-provider-adapter-live-provider.test.ts` passes: 5 tests.
 - `bun test src/lib/live-image-provider-adapter.test.ts src/lib/image-artifact-store.test.ts src/lib/image-provider-errors.test.ts src/lib/slide-image-provider.test.ts src/lib/image-path-decision.test.ts` passes: 24 tests.
 - `bun run typecheck` passes.
 - `bun run lint` passes with the existing six React Fast Refresh warnings only.
