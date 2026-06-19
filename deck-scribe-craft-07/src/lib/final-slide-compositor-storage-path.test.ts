@@ -40,6 +40,39 @@ describe("final slide compositor storage path", () => {
       "Stored background artifact must target slide 3 with versioned project image storage.",
     );
   });
+
+  test("rejects stored background refs whose artifact id version differs from the path", () => {
+    // Given
+    const input = {
+      background: liveBackground(),
+      layers: editableLayers(),
+      backgroundArtifact: {
+        artifactId: "project_001_image_slide_003_v1",
+        path: "projects/project_001/slides/images/slide_003.v2.png",
+        hash: LIVE_BACKGROUND_HASH,
+      },
+    };
+
+    // When
+    const result = (() => {
+      try {
+        composeFinalSlide(input);
+        return { kind: "resolved" as const };
+      } catch (error) {
+        if (!(error instanceof Error)) throw error;
+        return { kind: "rejected" as const, error };
+      }
+    })();
+
+    // Then
+    expect(result.kind).toBe("rejected");
+    if (result.kind !== "rejected") return;
+    expect(result.error instanceof Error).toBe(true);
+    if (!(result.error instanceof Error)) return;
+    expect(result.error.message).toBe(
+      "Stored background artifact must target slide 3 with versioned project image storage.",
+    );
+  });
 });
 
 function liveBackground(): SlideImageArtifact {

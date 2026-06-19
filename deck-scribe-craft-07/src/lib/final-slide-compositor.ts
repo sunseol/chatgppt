@@ -88,10 +88,16 @@ export function backgroundArtifactTargetsSlide(
   slideNumber: number,
 ): boolean {
   const token = `slide_${String(slideNumber).padStart(3, "0")}`;
-  const artifactIdPattern = new RegExp(`^[A-Za-z0-9_-]+_image_${token}_v[1-9]\\d*$`);
+  const artifactIdMatch = new RegExp(`^[A-Za-z0-9_-]+_image_${token}_v([1-9]\\d*)$`).exec(
+    artifact.artifactId,
+  );
+  const pathMatch = new RegExp(`(?:^|/)${token}\\.v([1-9]\\d*)\\.png$`).exec(artifact.path);
+  const artifactVersion = artifactIdMatch?.[1];
+  const pathVersion = pathMatch?.[1];
   return (
-    artifactIdPattern.test(artifact.artifactId) &&
-    artifact.path.includes(`${token}.`) &&
+    artifactVersion !== undefined &&
+    pathVersion !== undefined &&
+    artifactVersion === pathVersion &&
     isVersionedProjectImageArtifactPath(artifact.path)
   );
 }
