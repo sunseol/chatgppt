@@ -15,16 +15,10 @@ const LIVE_RECOVERED_JOB_STATES = [
   "failed",
   "cancelled",
   "interrupted",
-] as const satisfies readonly LiveRecoveredJobState[];
+] as const;
 
 export type LiveInterruptionScenarioId = (typeof LIVE_INTERRUPTION_SCENARIOS)[number];
-export type LiveRecoveredJobState =
-  | "queued"
-  | "running"
-  | "succeeded"
-  | "failed"
-  | "cancelled"
-  | "interrupted";
+export type LiveRecoveredJobState = (typeof LIVE_RECOVERED_JOB_STATES)[number];
 export type LiveRecoverySnapshotScope = "app_storage" | "protocol_probe" | "transient";
 
 export type LiveInterruptionScenarioEvidence = {
@@ -72,6 +66,7 @@ export type LiveInterruptionIssueCode =
   | "cancelled_job_completed_after_cancel"
   | "missing_interrupted_approval_gate_evidence"
   | "missing_interrupted_export_gate_evidence"
+  | "duplicate_interrupted_gate_evidence"
   | "interrupted_artifact_approvable"
   | "missing_interruption_report";
 

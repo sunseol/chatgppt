@@ -59,6 +59,15 @@ export function scenarioEvidenceDetailIssues(
           !isPersistedJsonEvidencePath(scenario.exportGateEvidencePath)),
     )
     .map((scenario) => scenario.id);
+  const duplicateInterruptedGateEvidence = scenarios
+    .filter(
+      (scenario) =>
+        scenario.id === "interrupted_artifact_gate" &&
+        isPersistedJsonEvidencePath(scenario.approvalGateEvidencePath) &&
+        isPersistedJsonEvidencePath(scenario.exportGateEvidencePath) &&
+        scenario.approvalGateEvidencePath?.trim() === scenario.exportGateEvidencePath?.trim(),
+    )
+    .map((scenario) => scenario.approvalGateEvidencePath?.trim() ?? "missing");
 
   return [
     ...(missingLiveJobs.length === 0
@@ -140,6 +149,15 @@ export function scenarioEvidenceDetailIssues(
             "missing_interrupted_export_gate_evidence",
             "Interrupted artifact scenario must exercise the export gate.",
             missingExportGateChecks,
+          ),
+        ]),
+    ...(duplicateInterruptedGateEvidence.length === 0
+      ? []
+      : [
+          issue(
+            "duplicate_interrupted_gate_evidence",
+            "Interrupted artifact approval and export gates require distinct evidence paths.",
+            duplicateInterruptedGateEvidence,
           ),
         ]),
   ];
