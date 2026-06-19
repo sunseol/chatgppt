@@ -73,6 +73,30 @@ describe("slide generation queue", () => {
     expect(result.progress.percent).toBe(100);
   });
 
+  test("normalizes invalid parallel limits to the default finite throttle", async () => {
+    const bundles = approvedBundles();
+    let active = 0;
+    let maxActive = 0;
+
+    const result = await runSlideGenerationQueue({
+      bundles,
+      manager: createProviderJobManager({ createId: sequentialIds("job_invalid_parallel") }),
+      maxParallel: Number.POSITIVE_INFINITY,
+      generateSlide: async (input) => {
+        active += 1;
+        maxActive = Math.max(maxActive, active);
+        await delay();
+        active -= 1;
+        return generatedSlide(input.bundle.slideSpec.slideNumber);
+      },
+    });
+
+    expect(result.kind).toBe("ready");
+    if (result.kind !== "ready") return;
+    expect(result.status).toBe("succeeded");
+    expect(maxActive).toBe(3);
+  });
+
   test("blocks queue execution when bundles do not share frozen context", async () => {
     const bundles = approvedBundles();
     const first = bundles[0];

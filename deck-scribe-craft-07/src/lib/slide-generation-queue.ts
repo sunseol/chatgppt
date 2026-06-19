@@ -16,6 +16,9 @@ import type {
   SlideGenerationRetryProvenance,
   SlideGenerationWorkerInput,
 } from "./slide-generation-queue-types";
+
+const DEFAULT_MAX_PARALLEL = 3;
+
 export type {
   RunSlideGenerationQueueInput,
   SlideGenerationFailure,
@@ -69,7 +72,7 @@ export async function runSlideGenerationQueue(
     }
   }
 
-  const workerCount = Math.min(Math.max(1, input.maxParallel ?? 3), tasks.length);
+  const workerCount = normalizeWorkerCount(input.maxParallel, tasks.length);
   await Promise.all(Array.from({ length: workerCount }, () => runWorker()));
 
   return {
@@ -183,6 +186,15 @@ function queueStatus(
 ): "succeeded" | "partial_failure" | "failed" {
   if (failureCount === 0) return "succeeded";
   return completedCount === 0 ? "failed" : "partial_failure";
+}
+
+function normalizeWorkerCount(maxParallel: number | undefined, taskCount: number): number {
+  if (taskCount === 0) return 0;
+  const requested =
+    maxParallel === undefined || !Number.isFinite(maxParallel)
+      ? DEFAULT_MAX_PARALLEL
+      : Math.floor(maxParallel);
+  return Math.min(Math.max(1, requested), taskCount);
 }
 
 function designTokenHash(bundle: SlideContextBundle): string {
