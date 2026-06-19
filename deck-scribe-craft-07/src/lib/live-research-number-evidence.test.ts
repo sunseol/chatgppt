@@ -29,6 +29,44 @@ describe("live research number evidence", () => {
     expect(report.fatalIssues.map((issue) => issue.code)).toEqual(["major_number_metadata"]);
     expect(report.fatalIssues[0]?.datasetId).toBe("dataset_001");
   });
+
+  test("rejects numeric evidence that points outside the claim lineage", () => {
+    // Given
+    const base = researchPack();
+    const pack = researchPack({
+      sources: [...base.sources, { ...base.sources[0], id: "src_002", title: "Unlinked source" }],
+      datasets: [
+        ...base.datasets,
+        { ...base.datasets[0], id: "dataset_002", sourceIds: ["src_002"] },
+      ],
+      claims: [
+        {
+          ...base.claims[0],
+          numericEvidence: [
+            {
+              ...base.claims[0].numericEvidence[0],
+              sourceId: "src_002",
+              datasetId: "dataset_002",
+            },
+          ],
+        },
+      ],
+    });
+
+    // When
+    const report = validateLiveResearchEvidence({ pack, evidenceRefs: evidenceRefs() });
+
+    // Then
+    expect(report.valid).toBe(false);
+    expect(report.fatalIssues.map((issue) => issue.code)).toEqual([
+      "unknown_reference",
+      "unknown_reference",
+    ]);
+    expect(report.fatalIssues.map((issue) => issue.sourceId).filter(Boolean)).toEqual(["src_002"]);
+    expect(report.fatalIssues.map((issue) => issue.datasetId).filter(Boolean)).toEqual([
+      "dataset_002",
+    ]);
+  });
 });
 
 function evidenceRefs(): readonly LiveResearchEvidenceReference[] {

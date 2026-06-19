@@ -63,6 +63,7 @@ export function validateLiveResearchEvidence(input: {
   for (const claim of input.pack.claims) {
     const evidenceRefs = refsByClaim.get(claim.id) ?? [];
     validateClaimOriginalEvidence(claim, evidenceRefs, sourceIds, datasetIds, issues);
+    validateClaimNumericEvidenceReferences(claim, sourceIds, datasetIds, issues);
     validateClaimNumberEvidence(claim, evidenceRefs, datasetsById, issues);
   }
 
@@ -150,6 +151,44 @@ function validateClaimOriginalEvidence(
           claimId: claim.id,
           datasetId: evidenceRef.datasetId,
           message: `Unknown evidence dataset: ${evidenceRef.datasetId}`,
+        }),
+      );
+    }
+  }
+}
+
+function validateClaimNumericEvidenceReferences(
+  claim: Claim,
+  sourceIds: ReadonlySet<string>,
+  datasetIds: ReadonlySet<string>,
+  issues: LiveResearchEvidenceIssue[],
+) {
+  for (const numericEvidence of claim.numericEvidence) {
+    if (
+      numericEvidence.sourceId &&
+      (!sourceIds.has(numericEvidence.sourceId) ||
+        !claim.sourceIds.includes(numericEvidence.sourceId))
+    ) {
+      issues.push(
+        issue({
+          code: "unknown_reference",
+          claimId: claim.id,
+          sourceId: numericEvidence.sourceId,
+          message: `Unknown or unlinked numeric evidence source: ${numericEvidence.sourceId}`,
+        }),
+      );
+    }
+    if (
+      numericEvidence.datasetId &&
+      (!datasetIds.has(numericEvidence.datasetId) ||
+        !claim.datasetIds.includes(numericEvidence.datasetId))
+    ) {
+      issues.push(
+        issue({
+          code: "unknown_reference",
+          claimId: claim.id,
+          datasetId: numericEvidence.datasetId,
+          message: `Unknown or unlinked numeric evidence dataset: ${numericEvidence.datasetId}`,
         }),
       );
     }

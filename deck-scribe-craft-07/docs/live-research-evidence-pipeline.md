@@ -17,6 +17,7 @@ Status: partial local contract
 - `validateLiveResearchEvidence` emits fatal issues for claim evidence that cannot be traced back to an original source artifact.
 - `missing_dataset_or_numeric_evidence` is fatal when a Research Pack has no real dataset and no numeric evidence item at all.
 - `major_number_metadata` also validates dataset-backed major numbers, so a claim cannot rely on a dataset whose unit, period, geography, or definition is missing.
+- `unknown_reference` is fatal when numeric evidence points to a source or dataset that is absent from the Research Pack or not linked by the claim lineage.
 - `getDeckPlanEligibleClaims` removes claims with fatal live evidence issues before they can be forwarded to deck planning.
 - `src/lib/live-research-evidence-builder.ts` creates quote-span or table evidence refs from `EvidenceExtractionResult` items only when the linked Research source has captured artifact metadata.
 - `src/lib/live-research-pack-builder.ts` builds a Research Pack from app-produced captured source metadata and evidence extraction results, then attaches `ResearchPack.liveEvidenceRefs` before the approval gate runs.
@@ -30,6 +31,7 @@ Status: partial local contract
 | At least one real dataset or numeric evidence exists.                          | `missing_dataset_or_numeric_evidence` is fatal when the whole Research Pack has no dataset and no numeric evidence, and `missing_number_dataset` is fatal when a major-number claim has no dataset-backed evidence. |
 | Source-less claims are not passed to Deck Plan.                                | `getDeckPlanEligibleClaims` excludes claims with fatal evidence issues.                                                                                                                                             |
 | Search-summary-only claims without original source content cannot be approved. | `summary_without_original` is fatal when a factual claim has no original artifact quote/table reference.                                                                                                            |
+| Numeric evidence must roundtrip through the claim's source/dataset lineage.    | `unknown_reference` is fatal when numeric evidence uses a source or dataset outside the claim's linked source and dataset ids.                                                                                       |
 
 ## Claim-to-source roundtrip
 
@@ -39,6 +41,7 @@ The local claim-to-source roundtrip is covered by `src/lib/live-research-evidenc
 - search summary without original artifact evidence fails with `summary_without_original`;
 - malformed major-number metadata fails with `major_number_metadata`;
 - dataset-backed major numbers with incomplete dataset metadata fail with `major_number_metadata`;
+- numeric evidence pointing outside the claim source/dataset lineage fails with `unknown_reference`;
 - missing dataset/numeric evidence fails with `missing_number_dataset`;
 - packs with no dataset and no numeric evidence fail with `missing_dataset_or_numeric_evidence`;
 - table references are accepted as an alternative to quote spans.
