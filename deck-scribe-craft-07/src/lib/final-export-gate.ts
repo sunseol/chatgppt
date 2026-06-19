@@ -1,10 +1,10 @@
 import { hashContent } from "./artifacts";
 import type { DeckProject, ProjectExportSummary } from "./deck-types";
 import {
-  validateLiveGenerationReportLineage,
-  type LiveGenerationReportLineageIssueCode,
-  type LiveSlideReportLineage,
-} from "./live-generation-report-lineage";
+  liveReportGateIssues,
+  type LiveReportGateIssueCode,
+} from "./final-export-live-report-gate";
+import type { LiveSlideReportLineage } from "./live-generation-report-lineage";
 import { type ExecutionMode, type ProviderArtifactProvenance } from "./provider-provenance";
 import { workflowErrorBlocksFinalApproval } from "./workflow-error-policy";
 
@@ -19,8 +19,7 @@ export type FinalExportGateIssueCode =
   | "fatal_workflow_error"
   | "mock_lineage_contamination"
   | "fixture_lineage_contamination"
-  | "missing_live_report_lineage"
-  | LiveGenerationReportLineageIssueCode;
+  | LiveReportGateIssueCode;
 
 export type FinalExportGateIssue = {
   readonly code: FinalExportGateIssueCode;
@@ -70,11 +69,12 @@ export function evaluateFinalExportGate(input: {
     ...exportPackageIssues(summary),
     ...reportIssues(reportMarkdown, summary),
     ...productionLineageIssues(input.executionMode, input.lineage ?? []),
-    ...liveReportLineageIssues(
-      input.executionMode,
-      input.project.slideCount,
-      input.liveReportLineage,
-    ),
+    ...liveReportGateIssues({
+      executionMode: input.executionMode,
+      expectedSlideCount: input.project.slideCount,
+      providerLineage: input.lineage ?? [],
+      liveReportLineage: input.liveReportLineage,
+    }),
   ];
   const warnings = developmentLineageWarnings(input.executionMode, input.lineage ?? []);
   if (issues.length > 0) return { kind: "blocked", issues };
@@ -94,33 +94,6 @@ export function evaluateFinalExportGate(input: {
     warnings,
     ...(warnings.length > 0 ? { developmentWatermark: "MOCK MODE" as const } : {}),
   };
-}
-
-function liveReportLineageIssues(
-  executionMode: ExecutionMode | undefined,
-  expectedSlideCount: number,
-  liveReportLineage: readonly LiveSlideReportLineage[] | undefined,
-): readonly FinalExportGateIssue[] {
-  if (executionMode !== "production") return [];
-  if (!liveReportLineage || liveReportLineage.length === 0) {
-    return [
-      {
-        code: "missing_live_report_lineage",
-        message: "Production export requires slide-level live generation report lineage.",
-      },
-    ];
-  }
-  const validation = validateLiveGenerationReportLineage({
-    executionMode,
-    expectedSlideCount,
-    slides: liveReportLineage,
-  });
-  if (validation.kind === "ready") return [];
-  return validation.issues.map((issue) => ({
-    code: issue.code,
-    message: issue.message,
-    ...(issue.slideNumber === undefined ? {} : { slideNumber: issue.slideNumber }),
-  }));
 }
 
 function productionLineageIssues(

@@ -73,6 +73,54 @@ describe("final export gate live report lineage", () => {
     expect(result.issues.map((issue) => issue.code)).toEqual(["duplicate_image_request"]);
   });
 
+  test("blocks production export when live report lineage references missing provider artifacts", () => {
+    const result = evaluateFinalExportGate({
+      project: projectFixture(),
+      exportPackage: exportSummaryFixture(),
+      reportMarkdown: reportFixture(),
+      executionMode: "production",
+      lineage: providerLineageFixture(),
+      liveReportLineage: [
+        {
+          ...liveReportLineageFixture(),
+          textArtifactId: "text_artifact_unlinked",
+          imageArtifactId: "project_001_image_slide_001_unlinked",
+        },
+      ],
+    });
+
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "missing_text_provider_lineage",
+      "missing_image_provider_lineage",
+    ]);
+  });
+
+  test("blocks production export when live report lineage disagrees with provider metadata", () => {
+    const result = evaluateFinalExportGate({
+      project: projectFixture(),
+      exportPackage: exportSummaryFixture(),
+      reportMarkdown: reportFixture(),
+      executionMode: "production",
+      lineage: providerLineageFixture(),
+      liveReportLineage: [
+        {
+          ...liveReportLineageFixture(),
+          textTurnId: "turn_text_unlinked",
+          imageRequestId: "img_req_unlinked",
+        },
+      ],
+    });
+
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "text_provider_lineage_mismatch",
+      "image_provider_lineage_mismatch",
+    ]);
+  });
+
   test("allows production final export when provider and slide report lineage are complete", () => {
     const result = evaluateFinalExportGate({
       project: projectFixture(),
