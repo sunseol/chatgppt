@@ -18,6 +18,8 @@ describe("live full-slide regeneration documentation", () => {
     expect(slideRegeneration.includes("invalid_regeneration_background_hash")).toBe(true);
     expect(slideRegeneration.includes("mock_background_artifact")).toBe(true);
     expect(slideRegeneration.includes("regeneration_request_provenance_mismatch")).toBe(true);
+    expect(slideRegeneration.includes("regeneration_background_not_live")).toBe(true);
+    expect(slideRegeneration.includes("production `openaiImage` with `api_key` auth")).toBe(true);
     expect(slideRegeneration.includes("preserved approved slide")).toBe(true);
   });
 });

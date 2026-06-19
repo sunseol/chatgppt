@@ -46,6 +46,18 @@ export function candidateIssues(input: {
           },
         ]
       : []),
+    ...(hasRequestEvidence &&
+    input.candidateBackground.metadata.providerId !== "mock" &&
+    !isLiveOpenAiBackground(input.candidateBackground)
+      ? [
+          {
+            code: "regeneration_background_not_live" as const,
+            slideNumber: input.request.slideNumber,
+            message:
+              "Regenerated background provenance must come from production OpenAI image API credentials.",
+          },
+        ]
+      : []),
     ...(hasRequestEvidence
       ? []
       : [
@@ -134,6 +146,17 @@ function backgroundVersionMatchesCandidate(
     candidateBackground.binary.artifactId.endsWith(`_v${candidateVersion}`) &&
     candidateBackground.binary.path.endsWith(`.v${candidateVersion}.png`) &&
     candidateBackground.metadata.path.endsWith(`.v${candidateVersion}.metadata.json`)
+  );
+}
+
+function isLiveOpenAiBackground(candidateBackground: StoredSlideImageArtifact): boolean {
+  const provenance = candidateBackground.provenance;
+  return (
+    candidateBackground.metadata.providerId === "openaiImage" &&
+    provenance.providerKind === "openaiImage" &&
+    provenance.executionMode === "production" &&
+    provenance.authMode === "api_key" &&
+    !provenance.fixture
   );
 }
 

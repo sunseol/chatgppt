@@ -161,4 +161,41 @@ describe("live full-slide regeneration artifact version", () => {
       "invalid_regeneration_background_hash",
     ]);
   });
+
+  test("blocks regenerated backgrounds without production OpenAI API provenance", async () => {
+    // Given
+    const store = createImageArtifactStore({ write: async () => undefined });
+    const storedBackground = await storeSlideImageArtifact({
+      store,
+      projectId: "project_001",
+      artifact: slideImageArtifactFixture({ requestId: "img_req_revised" }),
+      version: 2,
+      createdAt: 1_789_900_015,
+    });
+    const candidateBackground = {
+      ...storedBackground,
+      provenance: {
+        ...storedBackground.provenance,
+        executionMode: "development" as const,
+        authMode: "none" as const,
+      },
+    };
+
+    // When
+    const result = createLiveSlideRegenerationCandidate({
+      request: liveRegenerationRequestFixture(),
+      originalSlide: approvedSlideFixture(),
+      candidateBackground,
+      candidateDeckContextId: "deckctx_001",
+      candidateDesignSystemId: "design_001",
+      candidateVersion: 2,
+    });
+
+    // Then
+    expect(result.kind).toBe("failed");
+    if (result.kind !== "failed") return;
+    expect(result.failure.issues.map((issue) => issue.code)).toEqual([
+      "regeneration_background_not_live",
+    ]);
+  });
 });
