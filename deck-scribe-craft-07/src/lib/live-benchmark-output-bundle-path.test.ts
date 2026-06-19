@@ -6,7 +6,7 @@ import {
   type LiveBenchmarkRun,
 } from "./live-benchmark-evidence";
 
-const PACKAGE_SHA = "0344157312036ffb0c355c0f60543bf9a88ede0c21ae99dca32d8aa6c75f7f9e";
+const PACKAGE_SHA = "2204709ff25c811571357cfe9f5c6dbe99492fc0ef93c0a4505dc56d48e83fb6";
 
 describe("live benchmark output bundle path", () => {
   test("blocks synthetic output bundle paths", () => {

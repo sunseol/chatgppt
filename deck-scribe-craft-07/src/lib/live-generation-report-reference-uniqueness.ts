@@ -8,6 +8,7 @@ export function lineageReferenceIssues(
 ): readonly LiveGenerationReportLineageIssue[] {
   return [
     ...blankSourceTraceIssues(slides),
+    ...duplicateSourceTraceIssues(slides),
     ...duplicateSlideIssues(slides),
     ...duplicateImageRequestIssues(slides),
   ];
@@ -22,6 +23,18 @@ function blankSourceTraceIssues(
       code: "missing_source_trace" as const,
       slideNumber: slide.slideNumber,
       message: "Live report source ids cannot include blank entries.",
+    }));
+}
+
+function duplicateSourceTraceIssues(
+  slides: readonly LiveSlideReportLineage[],
+): readonly LiveGenerationReportLineageIssue[] {
+  return slides
+    .filter((slide) => duplicateValues(slide.sourceIds).length > 0)
+    .map((slide) => ({
+      code: "missing_source_trace" as const,
+      slideNumber: slide.slideNumber,
+      message: "Live report source ids cannot include duplicate entries.",
     }));
 }
 
