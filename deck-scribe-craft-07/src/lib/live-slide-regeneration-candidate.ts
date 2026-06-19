@@ -18,6 +18,10 @@ export function candidateIssues(input: {
   const originalRequestId = input.request.originalBackgroundRequestId.trim();
   const hasRequestEvidence = Boolean(candidateRequestId && candidateProvenanceRequestId);
   const requestEvidenceMatches = candidateRequestId === candidateProvenanceRequestId;
+  const versionMatchesCandidate = backgroundVersionMatchesCandidate(
+    input.candidateBackground,
+    input.candidateVersion,
+  );
   return [
     ...(input.originalSlide.number === input.request.slideNumber
       ? []
@@ -125,14 +129,29 @@ export function candidateIssues(input: {
           },
         ]),
     ...(input.candidateBackground.binary.artifactId ===
-      input.request.originalBackgroundArtifactId ||
-    backgroundVersionMatchesCandidate(input.candidateBackground, input.candidateVersion)
+      input.request.originalBackgroundArtifactId || versionMatchesCandidate
       ? []
       : [
           {
             code: "background_artifact_version_mismatch" as const,
             slideNumber: input.request.slideNumber,
             message: "Regenerated background artifact version must match the candidate slide.",
+          },
+        ]),
+    ...(input.candidateBackground.binary.artifactId ===
+      input.request.originalBackgroundArtifactId ||
+    !versionMatchesCandidate ||
+    backgroundStoragePathsMatchCandidate(
+      input.candidateBackground,
+      input.request.slideNumber,
+      input.candidateVersion,
+    )
+      ? []
+      : [
+          {
+            code: "background_artifact_storage_path_mismatch" as const,
+            slideNumber: input.request.slideNumber,
+            message: "Regenerated background storage paths must match the candidate slide.",
           },
         ]),
     ...(input.candidateBackground.metadata.slideNumber === input.request.slideNumber
@@ -165,6 +184,43 @@ function backgroundVersionMatchesCandidate(
     candidateBackground.binary.path.endsWith(`.v${candidateVersion}.png`) &&
     candidateBackground.metadata.path.endsWith(`.v${candidateVersion}.metadata.json`)
   );
+}
+
+function backgroundStoragePathsMatchCandidate(
+  candidateBackground: StoredSlideImageArtifact,
+  slideNumber: number,
+  candidateVersion: number,
+): boolean {
+  const identity = imageArtifactIdentity(candidateBackground.binary.artifactId);
+  if (identity === undefined) return false;
+  if (identity.slideNumber !== slideNumber || identity.version !== candidateVersion) return false;
+  const basePath = `projects/${identity.projectId}/slides/images/slide_${identity.slideToken}`;
+  return (
+    candidateBackground.binary.path === `${basePath}.v${candidateVersion}.png` &&
+    candidateBackground.metadata.path === `${basePath}.v${candidateVersion}.metadata.json`
+  );
+}
+
+function imageArtifactIdentity(artifactId: string):
+  | {
+      readonly projectId: string;
+      readonly slideToken: string;
+      readonly slideNumber: number;
+      readonly version: number;
+    }
+  | undefined {
+  const match = /^([A-Za-z0-9_-]+)_image_slide_(\d{3})_v(\d+)$/.exec(artifactId);
+  if (match === null) return undefined;
+  const [, projectId, slideToken, versionText] = match;
+  if (projectId === undefined || slideToken === undefined || versionText === undefined) {
+    return undefined;
+  }
+  return {
+    projectId,
+    slideToken,
+    slideNumber: Number.parseInt(slideToken, 10),
+    version: Number.parseInt(versionText, 10),
+  };
 }
 
 function isLiveOpenAiBackground(candidateBackground: StoredSlideImageArtifact): boolean {
