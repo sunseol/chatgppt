@@ -47,11 +47,16 @@ Signing state remains release-blocking: `codesign -dv --verbose=4` reports `Sign
 - `missing_production_package`
 - `missing_package_hash`
 - `missing_native_macos_bundle`
+- `missing_developer_id_signature`
+- `missing_notarization`
+- `missing_gatekeeper_acceptance`
 - `package_not_production_mode`
 - `package_content_contaminated`
 - `missing_clean_machine_step`
 - `missing_runtime_absence_remediation`
 - `missing_clean_machine_runbook`
+
+Native macOS release trust evidence must include a Developer ID team signature, notarization, stapling, and Gatekeeper acceptance. Ad-hoc signatures, missing TeamIdentifier values, unstapled notarization tickets, or rejected `spctl` assessments block DF-245.
 
 The clean-machine checklist must include install, Codex login, image credential setup, project launch, and first live interview.
 

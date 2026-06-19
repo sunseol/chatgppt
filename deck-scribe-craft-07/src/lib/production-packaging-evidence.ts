@@ -16,11 +16,22 @@ export type PackageContentScan = {
   readonly localPathHits: readonly string[];
 };
 
+export type NativeMacosSignature = "developer_id" | "adhoc" | "unsigned";
+
+export type NativeMacosReleaseTrust = {
+  readonly signature: NativeMacosSignature;
+  readonly teamIdentifier: string;
+  readonly notarized: boolean;
+  readonly stapled: boolean;
+  readonly gatekeeperAccepted: boolean;
+};
+
 export type ProductionPackagingEvidence = {
   readonly packagePath: string;
   readonly packageSha256: string;
   readonly nativeMacosBundlePath: string;
   readonly nativeMacosBundleSha256: string;
+  readonly nativeMacosReleaseTrust: NativeMacosReleaseTrust;
   readonly productionMode: boolean;
   readonly contentScan: PackageContentScan;
   readonly cleanMachineSteps: readonly CleanMachineStep[];
@@ -32,6 +43,9 @@ export type ProductionPackagingIssueCode =
   | "missing_production_package"
   | "missing_package_hash"
   | "missing_native_macos_bundle"
+  | "missing_developer_id_signature"
+  | "missing_notarization"
+  | "missing_gatekeeper_acceptance"
   | "package_not_production_mode"
   | "package_content_contaminated"
   | "missing_clean_machine_step"
@@ -53,6 +67,7 @@ export function evaluateProductionPackagingEvidence(
 ): ProductionPackagingEvidenceResult {
   const issues = [
     ...packageIssues(evidence),
+    ...macosReleaseTrustIssues(evidence.nativeMacosReleaseTrust),
     ...contentScanIssues(evidence.contentScan),
     ...cleanMachineStepIssues(evidence.cleanMachineSteps),
     ...runtimeRemediationIssues(evidence.runtimeAbsenceRemediationShown),
@@ -69,6 +84,7 @@ export function formatProductionPackagingEvidenceSummary(
     `Package: ${evidence.packagePath || "missing"}`,
     `Package hash: ${evidence.packageSha256 || "missing"}`,
     `Native macOS bundle: ${evidence.nativeMacosBundlePath || "missing"}`,
+    `macOS release trust: ${macosReleaseTrustLabel(evidence.nativeMacosReleaseTrust)}`,
     `Mode: ${evidence.productionMode ? "production" : "non-production"}`,
     `content scan: ${contentScanPassed(evidence.contentScan) ? "passed" : "blocked"}`,
     `clean-machine steps: ${evidence.cleanMachineSteps.length}/${CLEAN_MACHINE_STEPS.length}`,
@@ -108,6 +124,39 @@ function packageIssues(evidence: ProductionPackagingEvidence): readonly Producti
           issue("package_not_production_mode", "Package evidence must be production mode.", [
             evidence.packagePath || "missing",
           ]),
+        ]),
+  ];
+}
+
+function macosReleaseTrustIssues(
+  trust: NativeMacosReleaseTrust,
+): readonly ProductionPackagingIssue[] {
+  return [
+    ...(trust.signature === "developer_id" && trust.teamIdentifier.trim().length > 0
+      ? []
+      : [
+          issue(
+            "missing_developer_id_signature",
+            "Native macOS release must be signed with a Developer ID team identity.",
+            [trust.signature, trust.teamIdentifier || "missing_team_identifier"],
+          ),
+        ]),
+    ...(trust.notarized && trust.stapled
+      ? []
+      : [
+          issue("missing_notarization", "Native macOS release must be notarized and stapled.", [
+            trust.notarized ? "notarized" : "not_notarized",
+            trust.stapled ? "stapled" : "not_stapled",
+          ]),
+        ]),
+    ...(trust.gatekeeperAccepted
+      ? []
+      : [
+          issue(
+            "missing_gatekeeper_acceptance",
+            "Native macOS release must pass Gatekeeper assessment.",
+            ["spctl"],
+          ),
         ]),
   ];
 }
@@ -177,6 +226,16 @@ function contentScanPassed(scan: PackageContentScan): boolean {
     scan.testFileHits.length === 0 &&
     scan.localPathHits.length === 0
   );
+}
+
+function macosReleaseTrustLabel(trust: NativeMacosReleaseTrust): string {
+  return [
+    trust.signature,
+    trust.teamIdentifier.trim() || "missing-team",
+    trust.notarized ? "notarized" : "not-notarized",
+    trust.stapled ? "stapled" : "not-stapled",
+    trust.gatekeeperAccepted ? "gatekeeper-accepted" : "gatekeeper-blocked",
+  ].join(" | ");
 }
 
 function hasNativeMacosBundle(evidence: ProductionPackagingEvidence): boolean {

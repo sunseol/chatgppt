@@ -31,6 +31,11 @@ describe("production packaging evidence", () => {
     expect(
       summary.includes("Native macOS bundle: release-artifacts/DeckForge_0.1.0_aarch64.dmg"),
     ).toBe(true);
+    expect(
+      summary.includes(
+        "macOS release trust: developer_id | TEAMID1234 | notarized | stapled | gatekeeper-accepted",
+      ),
+    ).toBe(true);
     expect(summary.includes("content scan: passed")).toBe(true);
     expect(summary.includes("runtime absence remediation: present")).toBe(true);
   });
@@ -97,6 +102,31 @@ describe("production packaging evidence", () => {
       "/Users/jake/chatgppt/deck-scribe-craft-07/src/routes/__root.tsx",
     ]);
   });
+
+  test("blocks native macOS release trust evidence that is unsigned or unnotarized", () => {
+    // Given
+    const evidence = completeEvidence({
+      nativeMacosReleaseTrust: {
+        signature: "adhoc",
+        teamIdentifier: "",
+        notarized: false,
+        stapled: false,
+        gatekeeperAccepted: false,
+      },
+    });
+
+    // When
+    const result = evaluateProductionPackagingEvidence(evidence);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "missing_developer_id_signature",
+      "missing_notarization",
+      "missing_gatekeeper_acceptance",
+    ]);
+  });
 });
 
 function completeEvidence(
@@ -107,6 +137,13 @@ function completeEvidence(
     packageSha256: "3c15121b7fd11559b98c4ba751ccdac89a9990a669b7612e95b3cdfd94d0edf3",
     nativeMacosBundlePath: "release-artifacts/DeckForge_0.1.0_aarch64.dmg",
     nativeMacosBundleSha256: "ad8b11dee61a15c193fabfc3a7bf85110b116db65098bd2a845c2533a25dae5d",
+    nativeMacosReleaseTrust: {
+      signature: "developer_id",
+      teamIdentifier: "TEAMID1234",
+      notarized: true,
+      stapled: true,
+      gatekeeperAccepted: true,
+    },
     productionMode: true,
     contentScan: {
       mockResourceHits: [],
