@@ -40,6 +40,8 @@ describe("live text smoke documentation", () => {
       "resume_previous_turn_not_recovered",
       "missing coordinator thread id",
       "duplicate worker stage",
+      "duplicate worker thread ids",
+      "coordinator thread id",
       "019edc28-bf27-7380-b7d2-65405e6c6758",
       "packaged desktop restart/reopen run",
     ]) {

@@ -145,6 +145,7 @@ function manifestIssues(manifest: ProjectThreadManifest): readonly string[] {
       ? []
       : ["Project thread manifest is missing a coordinator thread id."]),
     ...duplicateWorkerStageIssues(manifest.workers),
+    ...duplicateWorkerThreadIdIssues(manifest.workers),
   ];
 }
 
@@ -162,11 +163,33 @@ function duplicateWorkerStageIssues(
   );
 }
 
+function duplicateWorkerThreadIdIssues(
+  workers: readonly ProjectWorkerThreadManifest[],
+): readonly string[] {
+  const seenThreadIds = new Set<string>();
+  const duplicateThreadIds = new Set<string>();
+  for (const worker of workers) {
+    const threadId = worker.threadId.trim();
+    if (!threadId) continue;
+    if (seenThreadIds.has(threadId)) duplicateThreadIds.add(threadId);
+    seenThreadIds.add(threadId);
+  }
+  return [...duplicateThreadIds].map(
+    (threadId) => `Project thread manifest has duplicate worker thread id ${threadId}.`,
+  );
+}
+
 function workerIssues(
   manifest: ProjectThreadManifest,
   worker: ProjectWorkerThreadManifest,
 ): readonly string[] {
+  const threadId = worker.threadId.trim();
+  const coordinatorThreadId = manifest.coordinatorThreadId.trim();
   return [
+    ...(threadId ? [] : [`Worker thread for ${worker.stage} is missing a thread id.`]),
+    ...(threadId && threadId === coordinatorThreadId
+      ? [`Worker thread ${threadId} reuses the coordinator thread id.`]
+      : []),
     ...(worker.lastCompletedTurnId.trim()
       ? []
       : [`Worker thread ${worker.threadId} is missing the last completed turn id.`]),
