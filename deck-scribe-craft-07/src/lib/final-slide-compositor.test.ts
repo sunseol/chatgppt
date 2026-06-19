@@ -16,6 +16,9 @@ import {
 import { buildSlidePromptPackage } from "./slide-prompt-package";
 import { buildMinimalSlideSourceMap } from "./slide-source-map";
 
+const LIVE_BACKGROUND_HASH =
+  "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+
 describe("final slide compositor", () => {
   test("composes locked generated background with editable overlays", async () => {
     const { project, bundle } = approvedFixture();
@@ -68,7 +71,7 @@ describe("final slide compositor", () => {
     expect(composition.backgroundArtifact).toEqual({
       artifactId: "project_001_image_slide_003_v1",
       path: "projects/project_001/slides/images/slide_003.v1.png",
-      hash: "sha256:live-background",
+      hash: LIVE_BACKGROUND_HASH,
     });
     expect(
       composition.svg.includes('data-background-artifact-id="project_001_image_slide_003_v1"'),
@@ -78,9 +81,9 @@ describe("final slide compositor", () => {
         'data-background-artifact-path="projects/project_001/slides/images/slide_003.v1.png"',
       ),
     ).toBe(true);
-    expect(composition.svg.includes('data-background-artifact-hash="sha256:live-background"')).toBe(
-      true,
-    );
+    expect(
+      composition.svg.includes(`data-background-artifact-hash="${LIVE_BACKGROUND_HASH}"`),
+    ).toBe(true);
   });
 
   test("rejects stored live background artifacts from a different slide", async () => {
@@ -91,7 +94,7 @@ describe("final slide compositor", () => {
       backgroundArtifact: {
         artifactId: "project_001_image_slide_004_v1",
         path: "projects/project_001/slides/images/slide_004.v1.png",
-        hash: "sha256:live-background",
+        hash: LIVE_BACKGROUND_HASH,
       },
     }).then(
       () => ({ kind: "resolved" as const }),
@@ -103,6 +106,28 @@ describe("final slide compositor", () => {
     expect(result.error instanceof Error).toBe(true);
     if (!(result.error instanceof Error)) return;
     expect(result.error.message).toBe("Stored background artifact must target slide 3.");
+  });
+
+  test("rejects stored live background artifacts without a full SHA-256 digest", async () => {
+    const { project, bundle } = approvedFixture();
+
+    const result = await compositionFixture(project, bundle, {
+      liveBackgroundArtifact: true,
+      backgroundArtifact: {
+        artifactId: "project_001_image_slide_003_v1",
+        path: "projects/project_001/slides/images/slide_003.v1.png",
+        hash: "sha256:live-background",
+      },
+    }).then(
+      () => ({ kind: "resolved" as const }),
+      (error: unknown) => ({ kind: "rejected" as const, error }),
+    );
+
+    expect(result.kind).toBe("rejected");
+    if (result.kind !== "rejected") return;
+    expect(result.error instanceof Error).toBe(true);
+    if (!(result.error instanceof Error)) return;
+    expect(result.error.message).toBe("Stored background artifact hash must be a SHA-256 digest.");
   });
 });
 
@@ -152,7 +177,7 @@ async function compositionFixture(
           backgroundArtifact: options.backgroundArtifact ?? {
             artifactId: "project_001_image_slide_003_v1",
             path: "projects/project_001/slides/images/slide_003.v1.png",
-            hash: "sha256:live-background",
+            hash: LIVE_BACKGROUND_HASH,
           },
         }
       : {}),

@@ -69,8 +69,15 @@ function assertBackgroundArtifactTargetsSlide(
   artifact: FinalSlideBackgroundArtifactRef,
   slideNumber: number,
 ): void {
+  if (!isSha256Digest(artifact.hash)) {
+    throw new Error("Stored background artifact hash must be a SHA-256 digest.");
+  }
   if (backgroundArtifactTargetsSlide(artifact, slideNumber)) return;
   throw new Error(`Stored background artifact must target slide ${slideNumber}.`);
+}
+
+function isSha256Digest(hash: string): boolean {
+  return /^sha256:[a-f0-9]{64}$/.test(hash);
 }
 
 export function backgroundArtifactTargetsSlide(
