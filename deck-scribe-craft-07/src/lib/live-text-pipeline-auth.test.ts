@@ -12,6 +12,60 @@ import {
 } from "./provider-provenance";
 
 describe("live text pipeline Codex session provenance", () => {
+  test("accepts the desktop text pipeline prompt versions", () => {
+    const input = completeInput();
+
+    const result = evaluateLiveTextPipelineCutover({
+      ...input,
+      deckPlan: {
+        ...input.deckPlan,
+        provenance: liveCodexProvenance("deck_plan_live_1", "turn_plan", "deck_plan_desktop@v1", [
+          "brief_live_1",
+          "research_live_1",
+        ]),
+      },
+      designSystem: {
+        ...input.designSystem,
+        provenance: liveCodexProvenance(
+          "design_system_live_1",
+          "turn_design",
+          "design_system_desktop@v1",
+          ["deck_plan_live_1"],
+        ),
+      },
+      layoutIr: {
+        ...input.layoutIr,
+        provenance: liveCodexProvenance("layout_ir_live_1", "turn_layout", "layout_ir_desktop@v1", [
+          "deck_plan_live_1",
+          "design_system_live_1",
+        ]),
+      },
+    });
+
+    expect(result.kind).toBe("ready");
+  });
+
+  test("blocks text pipeline artifacts generated with a stage-wrong prompt", () => {
+    const input = completeInput();
+
+    const result = evaluateLiveTextPipelineCutover({
+      ...input,
+      layoutIr: {
+        ...input.layoutIr,
+        provenance: liveCodexProvenance("layout_ir_live_1", "turn_layout", "deck_plan@v1", [
+          "deck_plan_live_1",
+          "design_system_live_1",
+        ]),
+      },
+    });
+
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(
+      result.issues.map((issue) => issue.code).includes("text_pipeline_prompt_version_mismatch"),
+    ).toBe(true);
+  });
+
   test("blocks text turns that do not use the authenticated Codex session", () => {
     const input = completeInput();
 

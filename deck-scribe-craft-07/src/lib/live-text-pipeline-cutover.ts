@@ -45,6 +45,7 @@ export type LiveTextPipelineIssueCode =
   | "shared_live_turn"
   | "missing_plan_input"
   | "missing_design_input"
+  | "text_pipeline_prompt_version_mismatch"
   | "invalid_repair_turn_evidence"
   | "schema_invalid"
   | "schema_repair_exhausted"

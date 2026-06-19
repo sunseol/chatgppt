@@ -26,6 +26,7 @@ function liveCodexProvenanceIssues(
   provenance: ProviderArtifactProvenance,
 ): readonly LiveTextPipelineIssue[] {
   const gate = evaluateApprovalProvenanceGate([provenance]);
+  const expectedPromptVersions = promptVersionsForStage(stage);
   const gateIssues =
     gate.kind === "blocked" ? gate.issues.map((issue) => providerIssue(stage, issue)) : [];
   return [
@@ -50,7 +51,23 @@ function liveCodexProvenanceIssues(
             message: "Text pipeline artifacts must come from production execution mode.",
           },
         ]),
+    ...(expectedPromptVersions.includes(provenance.promptVersion)
+      ? []
+      : [
+          {
+            code: "text_pipeline_prompt_version_mismatch" as const,
+            artifactId: provenance.artifactId,
+            stage,
+            message: `Text pipeline ${stage} must use ${expectedPromptVersions.join(" or ")}.`,
+          },
+        ]),
   ];
+}
+
+function promptVersionsForStage(stage: LiveTextPipelineStage): readonly string[] {
+  if (stage === "deck_plan") return ["deck_plan@v1", "deck_plan_desktop@v1"];
+  if (stage === "design_system") return ["design_system@v1", "design_system_desktop@v1"];
+  return ["layout_ir@v1", "layout_ir_desktop@v1"];
 }
 
 function turnIdentityIssues(input: LiveTextPipelineCutoverInput): readonly LiveTextPipelineIssue[] {
