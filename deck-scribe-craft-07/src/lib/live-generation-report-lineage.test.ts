@@ -97,6 +97,35 @@ describe("live generation report lineage", () => {
     ]);
   });
 
+  test("blocks blank source, turn, thread, and image request evidence", () => {
+    // Given
+    const [base] = completeLineage();
+    if (!base) throw new Error("Expected lineage fixture.");
+
+    // When
+    const validation = validateLiveGenerationReportLineage({
+      executionMode: "production",
+      slides: [
+        {
+          ...base,
+          sourceIds: [" "],
+          textTurnId: " ",
+          textThreadId: " ",
+          imageRequestId: " ",
+        },
+      ],
+    });
+
+    // Then
+    expect(validation.kind).toBe("blocked");
+    if (validation.kind !== "blocked") return;
+    expect(validation.issues.map((issue) => issue.code)).toEqual([
+      "missing_source_trace",
+      "missing_text_turn",
+      "missing_image_request",
+    ]);
+  });
+
   test("blocks image artifacts that point at a different slide", () => {
     // Given
     const [base] = completeLineage();

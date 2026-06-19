@@ -13,6 +13,8 @@ describe("live generation report lineage documentation", () => {
     expect(generationReportLineage.includes("DF-240")).toBe(true);
     expect(generationReportLineage.includes("text turn")).toBe(true);
     expect(generationReportLineage.includes("image request")).toBe(true);
+    expect(generationReportLineage.includes("nonblank source ids")).toBe(true);
+    expect(generationReportLineage.includes("blank evidence ids")).toBe(true);
     expect(generationReportLineage.includes("missing_live_report_lineage")).toBe(true);
     expect(generationReportLineage.includes("duplicate_slide_lineage")).toBe(true);
     expect(generationReportLineage.includes("missing_text_artifact")).toBe(true);

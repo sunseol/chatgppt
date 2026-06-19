@@ -12,9 +12,9 @@ Each production slide report must include:
 
 - one lineage entry for every project slide number
 - no duplicate slide lineage rows
-- source ids used by the slide
-- text turn id, text thread id, text artifact id, and text provider kind
-- image request id, image artifact id, and image provider kind
+- nonblank source ids used by the slide
+- nonblank text turn id, text thread id, text artifact id, and text provider kind
+- nonblank image request id, image artifact id, and image provider kind
 - text and image artifact ids that exist in provider provenance
 - text turn/thread ids and image request ids that match provider provenance
 - text artifacts from authenticated Codex session provenance and image artifacts from API key image-provider provenance
@@ -31,14 +31,14 @@ Each production slide report must include:
 
 `src/lib/live-generation-report-lineage.ts` blocks final report/export readiness when any of these conditions appear:
 
-- `missing_source_trace`: a slide has no source ids.
+- `missing_source_trace`: a slide has no nonblank source ids.
 - `missing_slide_lineage`: one or more project slide numbers have no report lineage entry.
 - `duplicate_slide_lineage`: a project slide number appears in more than one report lineage entry.
-- `missing_text_turn`: text lineage is missing a turn id or thread id.
+- `missing_text_turn`: text lineage is missing a nonblank turn id or thread id.
 - `missing_text_artifact`: text lineage is missing a text artifact id.
 - `missing_image_artifact`: image lineage is missing an image artifact id.
 - `image_artifact_slide_mismatch`: image artifact id does not match the reported slide number.
-- `missing_image_request`: image lineage is missing the provider request id.
+- `missing_image_request`: image lineage is missing the nonblank provider request id.
 - `duplicate_image_request`: an image provider request id is reused across slide lineage entries.
 - `missing_text_provider_lineage`: text artifact id is absent from provider provenance.
 - `missing_image_provider_lineage`: image artifact id is absent from provider provenance.
@@ -60,7 +60,7 @@ Each production slide report must include:
 
 ## Local Evidence
 
-- `src/lib/live-generation-report-lineage.test.ts` verifies the formatted report section, complete production lineage, blocked missing artifact ids, invalid export/compositor hashes, duplicate slide rows, reused image request ids, contaminated exported project content, and contaminated exports.
+- `src/lib/live-generation-report-lineage.test.ts` verifies the formatted report section, complete production lineage, blocked missing or blank evidence ids, invalid export/compositor hashes, duplicate slide rows, reused image request ids, contaminated exported project content, and contaminated exports.
 - `src/lib/final-export-gate-live-lineage.test.ts` and `src/lib/final-export-gate-live-lineage-auth.test.ts` verify that production export is blocked when slide-level live report lineage is missing, incomplete, omits project slides, reuses image request evidence, references provider artifacts that are absent from provider provenance, lacks authenticated text/image provider auth, or disagrees with provider turn/request metadata, and is allowed only when provider provenance plus slide report lineage are complete.
 - `src/lib/final-export-gate-live-lineage-report-section.test.ts` verifies that production export is blocked when verified sidecar lineage is absent from the report markdown.
 - `src/lib/generation-report-live-lineage.test.ts` verifies that `buildGenerationReport` appends the formatted `## Live Slide Lineage` section when live lineage is supplied.

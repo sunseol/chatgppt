@@ -86,7 +86,7 @@ function slideIssues(
   slide: LiveSlideReportLineage,
 ): readonly LiveGenerationReportLineageIssue[] {
   return [
-    ...(slide.sourceIds.length > 0
+    ...(slide.sourceIds.some((sourceId) => sourceId.trim())
       ? []
       : [
           {
@@ -95,7 +95,7 @@ function slideIssues(
             message: "Live report requires slide-level source ids.",
           },
         ]),
-    ...(slide.textTurnId && slide.textThreadId
+    ...(slide.textTurnId?.trim() && slide.textThreadId?.trim()
       ? []
       : [
           {
@@ -131,7 +131,7 @@ function slideIssues(
             message: "Live image artifact id must match the reported slide number.",
           },
         ]),
-    ...(slide.imageRequestId
+    ...(slide.imageRequestId?.trim()
       ? []
       : [
           {
