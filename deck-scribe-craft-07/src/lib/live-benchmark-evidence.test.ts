@@ -118,6 +118,7 @@ describe("live benchmark evidence", () => {
             sourceArtifactIds: ["source_1"],
             imageArtifactCount: 2,
             liveImageArtifactIds: ["image_1", "image_2"],
+            liveImageRequestIds: ["img_req_1", "img_req_2"],
           },
         },
         run("market_research", "passed"),
@@ -151,6 +152,7 @@ describe("live benchmark evidence", () => {
             ...run("korean_business", "passed").outputBundle,
             sourceArtifactIds: ["source_a", "source_a", "source_b"],
             liveImageArtifactIds: ["image_a", "image_a", "image_b", "image_c", "image_d"],
+            liveImageRequestIds: ["img_req_1", "img_req_2", "img_req_3", "img_req_4", "img_req_5"],
           },
         },
         run("market_research", "passed"),
@@ -267,6 +269,10 @@ function run(
       liveImageArtifactIds:
         status === "passed"
           ? [`${id}_image_1`, `${id}_image_2`, `${id}_image_3`, `${id}_image_4`, `${id}_image_5`]
+          : [],
+      liveImageRequestIds:
+        status === "passed"
+          ? Array.from({ length: 5 }, (_, index) => `${id}_img_req_${index + 1}`)
           : [],
     },
   };

@@ -104,7 +104,7 @@ export function outputBundleIssues(
       : [
           issue(
             "output_bundle_golden_path_evidence_missing",
-            "Passed Live benchmark bundles must include Golden Path report, screenshots, sources, and images.",
+            "Passed Live benchmark bundles must include Golden Path report, screenshots, sources, images, and image requests.",
             missingGoldenPathEvidence,
           ),
         ]),
@@ -134,7 +134,8 @@ function hasGoldenPathEvidence(bundle: LiveBenchmarkOutputBundleManifest): boole
     bundle.sourceCount >= 3 &&
     bundle.imageArtifactCount >= 5 &&
     hasDistinctArtifactEvidence(bundle.sourceArtifactIds, 3) &&
-    hasDistinctArtifactEvidence(bundle.liveImageArtifactIds, 5)
+    hasDistinctArtifactEvidence(bundle.liveImageArtifactIds, 5) &&
+    hasDistinctArtifactEvidence(bundle.liveImageRequestIds, 5)
   );
 }
 

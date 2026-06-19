@@ -65,6 +65,13 @@ function run(id: (typeof LIVE_BENCHMARK_IDS)[number], pathSuffix: string = id): 
         `${id}_image_4`,
         `${id}_image_5`,
       ],
+      liveImageRequestIds: [
+        `${id}_img_req_1`,
+        `${id}_img_req_2`,
+        `${id}_img_req_3`,
+        `${id}_img_req_4`,
+        `${id}_img_req_5`,
+      ],
     },
   };
 }

@@ -37,7 +37,7 @@ Release requirement: at least 4 of 5 live benchmarks must pass without counting 
 - the 64-character package archive SHA-256 for the release candidate under benchmark
 - output bundle 5 sets, one distinct bundle per benchmark
 - output bundle manifests matching their benchmark id, bundle path, and package archive SHA-256
-- passed benchmark bundle manifests with a scenario report, final export artifact id, `live_e2e_report.md`, at least 10 step screenshots, at least 3 distinct source artifact ids, and at least 5 distinct live image artifact ids
+- passed benchmark bundle manifests with a scenario report, final export artifact id, `live_e2e_report.md`, at least 10 step screenshots, at least 3 distinct source artifact ids, at least 5 distinct live image artifact ids, and at least 5 distinct live image request ids
 - at least four `live` runs whose Live Golden Path completed
 - no mock scores counted in Live pass totals
 - failure classification as provider, context, research, image, renderer, or editor for every failed or blocked benchmark

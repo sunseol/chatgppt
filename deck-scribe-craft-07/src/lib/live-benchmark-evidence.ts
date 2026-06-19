@@ -33,6 +33,7 @@ export type LiveBenchmarkOutputBundleManifest = {
   readonly sourceArtifactIds: readonly string[];
   readonly imageArtifactCount: number;
   readonly liveImageArtifactIds: readonly string[];
+  readonly liveImageRequestIds: readonly string[];
 };
 
 export type LiveBenchmarkRun = {
