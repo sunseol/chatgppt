@@ -69,6 +69,32 @@ describe("desktop app server bridge", () => {
     expect(result.error.code).toBe("spawn_failed");
   });
 
+  test("rejects smoke evidence without a completed protocol health turn", async () => {
+    // Given
+    const runtime: DeckforgeTauriRuntime = {
+      core: {
+        invoke: async () => ({
+          initOk: false,
+          accountType: null,
+          threadId: " ",
+          turnId: "",
+          turnCompleted: false,
+          protocolLineCount: 0,
+          stderrLogLineCount: 3,
+          eventMethods: ["turn/started"],
+          finalText: "",
+        }),
+      },
+    };
+
+    // When
+    const result = await runDesktopCodexAppServerSmoke(runtime);
+
+    // Then
+    if (result.kind !== "failed") throw new Error("Expected failed bridge smoke.");
+    expect(result.error.code).toBe("invalid_smoke_evidence");
+  });
+
   test("parses structured turn notifications returned by the Tauri command", async () => {
     // Given
     const outputSchema = {

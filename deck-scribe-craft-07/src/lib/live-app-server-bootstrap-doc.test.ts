@@ -20,6 +20,8 @@ describe("live App Server bootstrap documentation", () => {
     expect(textSmoke.includes("stderr contained 0 lines")).toBe(true);
     expect(textSmoke.includes("protocolLineCount")).toBe(true);
     expect(textSmoke.includes("stderrLogLineCount")).toBe(true);
+    expect(textSmoke.includes("invalid_smoke_evidence")).toBe(true);
+    expect(textSmoke.includes("completed protocol health turn")).toBe(true);
     expect(textSmoke.includes("same-pid restart evidence")).toBe(true);
     expect(textSmoke.includes("shutdown after stdin close took 4 ms")).toBe(true);
     expect(textSmoke.includes(STDIO_SHUTDOWN_DIGEST)).toBe(true);
@@ -28,6 +30,7 @@ describe("live App Server bootstrap documentation", () => {
     expect(progress.includes("The child exited with code `0`, signal `null`")).toBe(true);
     expect(progress.includes("protocolLineCount")).toBe(true);
     expect(progress.includes("stderrLogLineCount")).toBe(true);
+    expect(progress.includes("invalid_smoke_evidence")).toBe(true);
     expect(progress.includes("DF-210 local contract update")).toBe(true);
     expect(progress.includes(STDIO_SHUTDOWN_DIGEST)).toBe(true);
 
@@ -35,6 +38,7 @@ describe("live App Server bootstrap documentation", () => {
     expect(decision.includes("clean macOS account reproduction")).toBe(true);
     expect(decision.includes("protocolLineCount")).toBe(true);
     expect(decision.includes("stderrLogLineCount")).toBe(true);
+    expect(decision.includes("invalid_smoke_evidence")).toBe(true);
     expect(decision.includes("same-pid restarts")).toBe(true);
     expect(decision.includes(STDIO_SHUTDOWN_DIGEST)).toBe(true);
   });

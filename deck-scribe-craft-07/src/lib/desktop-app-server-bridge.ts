@@ -102,9 +102,20 @@ export async function runDesktopCodexAppServerSmoke(
 
   try {
     const value = await invoke("deckforge_codex_app_server_smoke");
+    const evidence = CodexAppServerSmokeEvidenceSchema.parse(value);
+    const issue = smokeEvidenceIssue(evidence);
+    if (issue) {
+      return {
+        kind: "failed",
+        error: {
+          code: "invalid_smoke_evidence",
+          message: issue,
+        },
+      };
+    }
     return {
       kind: "completed",
-      evidence: CodexAppServerSmokeEvidenceSchema.parse(value),
+      evidence,
     };
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -123,6 +134,21 @@ export async function runDesktopCodexAppServerSmoke(
     }
     throw error;
   }
+}
+
+function smokeEvidenceIssue(evidence: CodexAppServerSmokeEvidence): string | null {
+  if (!evidence.initOk) return "App Server smoke did not complete initialize.";
+  if (!evidence.accountType) return "App Server smoke did not report an authenticated account.";
+  if (!evidence.threadId.trim()) return "App Server smoke did not report a health thread id.";
+  if (!evidence.turnId.trim()) return "App Server smoke did not report a health turn id.";
+  if (!evidence.turnCompleted) return "App Server smoke health turn did not complete.";
+  if (evidence.protocolLineCount <= 0) {
+    return "App Server smoke did not capture stdout protocol frames.";
+  }
+  if (!evidence.eventMethods.includes("turn/completed")) {
+    return "App Server smoke did not observe a completed turn protocol event.";
+  }
+  return null;
 }
 
 export async function runDesktopCodexAppServerStructuredTurn(
