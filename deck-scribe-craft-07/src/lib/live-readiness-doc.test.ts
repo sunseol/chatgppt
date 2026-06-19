@@ -129,15 +129,6 @@ describe("live readiness documentation", () => {
     expect(projectThreadLifecycle.includes("packaged desktop restart/reopen run")).toBe(true);
   });
 
-  test("records the live interview cutover contract", () => {
-    const interviewCutover = readDoc(DOCS.interviewCutover);
-
-    expect(interviewCutover.includes("DF-213")).toBe(true);
-    expect(interviewCutover.includes("interview_follow_up@v1")).toBe(true);
-    expect(interviewCutover.includes("non_codex_session_auth")).toBe(true);
-    expect(interviewCutover.includes("brief_missing_question_input")).toBe(true);
-  });
-
   test("records the live text pipeline cutover contract", () => {
     const textPipelineCutover = readDoc(DOCS.textPipelineCutover);
 

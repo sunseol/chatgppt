@@ -4,6 +4,7 @@ import type { DesktopProductionCodexAppServerJobInput } from "./desktop-codex-ap
 import type { DeckforgeTauriRuntime } from "./desktop-app-server-bridge";
 import { InterviewBriefSchema } from "./interview-brief";
 import type { InterviewQuestionPlan } from "./interview-questions";
+import { liveInterviewAnswerArtifactId } from "./live-interview-cutover";
 import type { LiveInterviewAnswerMap } from "./live-interview-cutover";
 import type { StructuredCodexAccepted } from "./codex-structured-task-runner";
 import type { ProviderJobManager } from "./provider-job-manager";
@@ -187,7 +188,10 @@ export function interviewBriefJob(
     artifactId: interviewBriefArtifactId(input.project),
     parse: parseInterviewBrief,
     promptVersion: "interview_brief@v1",
-    inputArtifactIds: [input.questionPlan.provenance.artifactId],
+    inputArtifactIds: [
+      input.questionPlan.provenance.artifactId,
+      liveInterviewAnswerArtifactId(input.questionPlan.provenance.artifactId),
+    ],
     turnRequest: {
       prompt: interviewBriefPrompt(input),
       outputSchema: InterviewBriefOutputSchema,

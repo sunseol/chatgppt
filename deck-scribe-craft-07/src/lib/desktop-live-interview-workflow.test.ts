@@ -41,7 +41,10 @@ describe("desktop live interview workflow", () => {
     expect(calls).toEqual(["deckforge_codex_app_server_structured_turn"]);
     expect(result.questionArtifact.record.artifactType).toBe("interview_questions");
     expect(result.questionArtifact.record.turnId).toBe("turn_interview_questions_live_desktop");
-    expect(result.nextTurn.inputArtifactIds).toEqual(["p_desktop_interview_questions_live"]);
+    expect(result.nextTurn.inputArtifactIds).toEqual([
+      "p_desktop_interview_questions_live",
+      "p_desktop_interview_questions_live_answers",
+    ]);
   });
 
   test("runs a desktop structured brief turn after required interview answers are present", async () => {
@@ -97,6 +100,7 @@ describe("desktop live interview workflow", () => {
     ]);
     expect(result.provenanceLineage[1]?.inputArtifactIds).toEqual([
       "p_desktop_interview_questions_live",
+      "p_desktop_interview_questions_live_answers",
     ]);
   });
 

@@ -46,6 +46,7 @@ describe("live text artifact persistence", () => {
         completeBrief(),
         liveCodexProvenance("interview_brief_live_1", "turn_brief", "interview_brief@v1", [
           "interview_questions_live_1",
+          "interview_questions_live_1_answers",
         ]),
       ),
     });

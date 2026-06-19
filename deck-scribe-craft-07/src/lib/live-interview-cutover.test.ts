@@ -33,6 +33,7 @@ describe("live interview cutover", () => {
         artifact: completeBrief(),
         provenance: liveCodexProvenance("interview_brief_live_1", "turn_brief", [
           "interview_questions_live_1",
+          "interview_questions_live_1_answers",
         ]),
       },
     });
@@ -68,8 +69,50 @@ describe("live interview cutover", () => {
     expect(result.kind).toBe("follow_up_required");
     if (result.kind !== "follow_up_required") return;
     expect(result.requiredFields.includes("coreMessage")).toBe(true);
-    expect(result.nextTurn.inputArtifactIds).toEqual(["interview_questions_live_2"]);
+    expect(result.nextTurn.inputArtifactIds).toEqual([
+      "interview_questions_live_2",
+      "interview_questions_live_2_answers",
+    ]);
     expect(result.nextTurn.promptVersion).toBe("interview_follow_up@v1");
+  });
+
+  test("blocks brief turns that do not cite the user answer bundle", () => {
+    const plan = planInterviewQuestions({
+      initialPrompt: "한국어 제품 소개 덱을 5장으로 만들어줘.",
+      slideCount: 5,
+      aspectRatio: "16:9",
+      language: "ko",
+    });
+
+    const result = evaluateLiveInterviewCutover({
+      questionPlan: {
+        artifact: plan,
+        provenance: liveCodexProvenance("interview_questions_live_answers", "turn_questions"),
+      },
+      answers: {
+        goal: "제품 소개",
+        audience: "도입 검토자",
+        coreMessage: "제품 가치를 명확히 전달한다.",
+        desiredOutcome: "도입 검토",
+        mustInclude: "주요 기능과 도입 효과",
+        mustAvoid: "출처 없는 주장",
+        successCriteria: "이해 가능한 메시지",
+        tone: "명료한",
+      },
+      answerArtifactId: "interview_answers_live_1",
+      brief: {
+        artifact: completeBrief(),
+        provenance: liveCodexProvenance("interview_brief_live_answers", "turn_brief", [
+          "interview_questions_live_answers",
+        ]),
+      },
+    });
+
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code).includes("brief_missing_answer_input")).toBe(
+      true,
+    );
   });
 
   test("blocks mock or fixture provenance and exposes non-fixture recovery actions", () => {

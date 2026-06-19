@@ -11,8 +11,9 @@ Scope: DF-213 interview question and Interview Brief Live cutover contract.
 - question artifacts must come from Codex provider provenance in `production` execution mode using authenticated `codex_session` auth
 - Brief artifacts must come from a second authenticated Codex turn after user answers
 - Brief provenance must cite the question artifact id in `inputArtifactIds`; otherwise `brief_missing_question_input` blocks approval
+- Brief provenance must cite the user answer bundle id in `inputArtifactIds`; otherwise `brief_missing_answer_input` blocks approval
 - mock provider and fixture lineage are blocked through `mock_lineage_contamination` and `fixture_lineage_contamination`
-- missing required answers return `follow_up_required` and schedule an `interview_follow_up@v1` live turn
+- missing required answers return `follow_up_required` and schedule an `interview_follow_up@v1` live turn with both question and answer-bundle inputs
 - provider failure recovery has `fixtureFallbackAllowed: false` and exposes only `retry_live_turn` or `manual_input`
 - accepted structured App Server results can be converted into persisted live text artifact records plus an `INTERVIEW_APPROVAL_PENDING` project patch without using a fixture
 - `runLiveInterviewProductionWorkflow` runs production App Server question and Brief jobs before handing accepted outputs to the persistence gate
@@ -25,7 +26,7 @@ Scope: DF-213 interview question and Interview Brief Live cutover contract.
 ## Verified Locally
 
 - `src/lib/live-interview-cutover.test.ts` accepts separate live question/Brief turns with thread and turn provenance.
-- It blocks Brief acceptance when required fields are unanswered and returns a follow-up turn input bundle.
+- It blocks Brief acceptance when required fields are unanswered, returns a follow-up turn input bundle, and rejects Brief provenance that omits the user answer bundle.
 - It blocks mock/fixture provenance, non-session Codex auth via `non_codex_session_auth`, and verifies no fixture fallback is offered after provider failure.
 - `src/lib/live-text-artifact-persistence.test.ts` verifies accepted live question and Brief outputs preserve artifact ids, turn provenance, and non-fixture lineage when creating the project patch.
 - `src/lib/live-text-production-workflow.test.ts` verifies production App Server interview jobs produce accepted outputs before the live Brief project patch is created.
@@ -42,7 +43,7 @@ Using the current authenticated `codex app-server --stdio` binary through a temp
 - Resulting project stage: `INTERVIEW_APPROVAL_PENDING`.
 - Question artifact: `p_goal_live_interview_20260619_brief_questions_live`, thread `019edc17-adba-7101-8554-e4067aa84b62`, turn `019edc17-b011-74d2-ae54-49842b7abd9d`, hash `sha256:b97f92d0`, prompt version `interview_questions_desktop@v1`, duration 139,900 ms.
 - Brief artifact: `p_goal_live_interview_20260619_brief_brief_live`, thread `019edc19-ce10-7c32-acbd-a3ec406e7d7b`, turn `019edc19-d06e-7793-9fbc-80ec053bb9fa`, hash `sha256:4dabd196`, prompt version `interview_brief@v1`, duration 173,967 ms.
-- The Brief artifact cited `p_goal_live_interview_20260619_brief_questions_live` in `inputArtifactIds`, proving the required question-to-Brief lineage.
+- The Brief artifact cited `p_goal_live_interview_20260619_brief_questions_live` in `inputArtifactIds`, proving the required question-to-Brief lineage. Future packaged evidence must also cite the deterministic user answer bundle id now required by `brief_missing_answer_input`.
 
 ## Remaining Live Evidence
 

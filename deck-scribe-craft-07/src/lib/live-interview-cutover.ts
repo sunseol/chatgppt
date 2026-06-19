@@ -30,6 +30,7 @@ export type LiveInterviewIssueCode =
   | "non_production_interview_turn"
   | "missing_brief_artifact"
   | "brief_missing_question_input"
+  | "brief_missing_answer_input"
   | "brief_reused_question_turn";
 
 export type LiveInterviewIssue = {
@@ -69,6 +70,7 @@ export type LiveInterviewCutoverResult =
 export type LiveInterviewCutoverInput = {
   readonly questionPlan: LiveInterviewTurnArtifact<InterviewQuestionPlan>;
   readonly answers: LiveInterviewAnswerMap;
+  readonly answerArtifactId?: string;
   readonly brief?: LiveInterviewTurnArtifact<InterviewBrief>;
 };
 
@@ -78,7 +80,8 @@ export function evaluateLiveInterviewCutover(
   const questionIssues = liveCodexProvenanceIssues("questions", [input.questionPlan.provenance]);
   if (questionIssues.length > 0) return blocked("questions", questionIssues);
 
-  const followUp = buildFollowUpRequirement(input.questionPlan, input.answers);
+  const answerArtifactId = resolveAnswerArtifactId(input);
+  const followUp = buildFollowUpRequirement(input.questionPlan, input.answers, answerArtifactId);
   if (followUp !== undefined) return followUp;
 
   if (input.brief === undefined) {
@@ -92,7 +95,11 @@ export function evaluateLiveInterviewCutover(
   }
 
   const briefIssues = liveCodexProvenanceIssues("brief", [input.brief.provenance]);
-  const relationIssues = briefRelationIssues(input.questionPlan.provenance, input.brief.provenance);
+  const relationIssues = briefRelationIssues(
+    input.questionPlan.provenance,
+    input.brief.provenance,
+    answerArtifactId,
+  );
   const issues = [...briefIssues, ...relationIssues];
   if (issues.length > 0) return blocked("brief", issues);
 
@@ -117,9 +124,14 @@ export function createLiveInterviewProviderFailureRecovery(input: {
   };
 }
 
+export function liveInterviewAnswerArtifactId(questionArtifactId: string): string {
+  return `${questionArtifactId}_answers`;
+}
+
 function buildFollowUpRequirement(
   questionPlan: LiveInterviewTurnArtifact<InterviewQuestionPlan>,
   answers: LiveInterviewAnswerMap,
+  answerArtifactId: string,
 ): Extract<LiveInterviewCutoverResult, { readonly kind: "follow_up_required" }> | undefined {
   const missingQuestions = questionPlan.artifact.questions.filter(
     (question) => !answers[question.field]?.trim(),
@@ -137,7 +149,7 @@ function buildFollowUpRequirement(
     nextTurn: {
       capability: "interview",
       promptVersion: "interview_follow_up@v1",
-      inputArtifactIds: [questionPlan.provenance.artifactId],
+      inputArtifactIds: [questionPlan.provenance.artifactId, answerArtifactId],
       requiresLiveCodex: true,
     },
   };
@@ -179,6 +191,7 @@ function liveCodexProvenanceIssues(
 function briefRelationIssues(
   questionProvenance: ProviderArtifactProvenance,
   briefProvenance: ProviderArtifactProvenance,
+  answerArtifactId: string,
 ): readonly LiveInterviewIssue[] {
   return [
     ...(briefProvenance.inputArtifactIds.includes(questionProvenance.artifactId)
@@ -189,6 +202,16 @@ function briefRelationIssues(
             artifactId: briefProvenance.artifactId,
             stage: "brief" as const,
             message: "The brief turn must cite the live question artifact as an input.",
+          },
+        ]),
+    ...(briefProvenance.inputArtifactIds.includes(answerArtifactId)
+      ? []
+      : [
+          {
+            code: "brief_missing_answer_input" as const,
+            artifactId: briefProvenance.artifactId,
+            stage: "brief" as const,
+            message: "The brief turn must cite the user answer bundle as an input.",
           },
         ]),
     ...(briefProvenance.turnId !== questionProvenance.turnId
@@ -202,6 +225,13 @@ function briefRelationIssues(
           },
         ]),
   ];
+}
+
+function resolveAnswerArtifactId(input: LiveInterviewCutoverInput): string {
+  return (
+    input.answerArtifactId?.trim() ||
+    liveInterviewAnswerArtifactId(input.questionPlan.provenance.artifactId)
+  );
 }
 
 function blocked(

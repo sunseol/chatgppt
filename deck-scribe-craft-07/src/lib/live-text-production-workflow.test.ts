@@ -36,7 +36,7 @@ describe("live text production workflow", () => {
       briefJob: productionJob(
         "interview_brief_live_1",
         "interview_brief@v1",
-        ["interview_questions_live_1"],
+        ["interview_questions_live_1", "interview_questions_live_1_answers"],
         completeBrief(),
       ),
     });
