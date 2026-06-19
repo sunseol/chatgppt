@@ -137,10 +137,7 @@ function imageBillingDisclosureItem(usageSummary: ProviderUsageSummary): string 
   const disclosure = usageSummary.imageBillingDisclosure;
   if (disclosure === undefined) return "";
   if (!disclosure.userConfirmed) return "API key billing not confirmed";
-  if (
-    disclosure.apiKeyRequired &&
-    !hasNonSyntheticJsonEvidencePath(disclosure.confirmationEvidencePath)
-  ) {
+  if (!hasNonSyntheticJsonEvidencePath(disclosure.confirmationEvidencePath)) {
     return "API key billing not confirmed";
   }
   return redactSensitiveText(disclosure.label.trim());

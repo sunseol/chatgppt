@@ -194,10 +194,7 @@ function imageBillingIssues(stage: LiveUsageStageSummary): readonly LiveUsageSum
 }
 
 function billingConfirmationHasEvidence(disclosure: LiveImageBillingDisclosure): boolean {
-  return (
-    !disclosure.apiKeyRequired ||
-    hasNonSyntheticJsonEvidencePath(disclosure.confirmationEvidencePath)
-  );
+  return hasNonSyntheticJsonEvidencePath(disclosure.confirmationEvidencePath);
 }
 
 function isImageGenerationStage(stage: LiveUsageStageSummary): boolean {
