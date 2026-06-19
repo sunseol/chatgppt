@@ -114,6 +114,8 @@ export async function disconnectImageApiKeySecret(input: {
   readonly reference: LiveSecretReference;
   readonly store: LiveSecretStore;
 }): Promise<ImageApiKeyDisconnectedState> {
+  if (!isExpectedStoreKind(input.reference.storeKind, input.store.kind))
+    throw new LiveSecretStoreKindError();
   await input.store.deleteSecret(input.reference);
   return {
     credentialState: "missing",
