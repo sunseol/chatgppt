@@ -56,6 +56,7 @@ export type LiveGoldenPathE2EBundle = {
 
 export type LiveGoldenPathE2EIssueCode =
   | "missing_e2e_step"
+  | "e2e_step_order_mismatch"
   | "unsigned_live_e2e_report"
   | "report_digest_mismatch"
   | "insufficient_step_evidence"

@@ -36,13 +36,32 @@ function stepIssues(
 ): readonly LiveGoldenPathE2EIssue[] {
   const completed = new Set(completedSteps);
   const missing = LIVE_GOLDEN_PATH_E2E_STEPS.filter((step) => !completed.has(step));
-  return missing.length === 0
+  return [
+    ...(missing.length === 0
+      ? stepOrderIssues(completedSteps)
+      : [
+          liveGoldenPathIssue(
+            "missing_e2e_step",
+            "Live Golden Path must complete every required step.",
+            missing,
+          ),
+        ]),
+  ];
+}
+
+function stepOrderIssues(
+  completedSteps: readonly LiveGoldenPathE2EStep[],
+): readonly LiveGoldenPathE2EIssue[] {
+  const ordered =
+    completedSteps.length === LIVE_GOLDEN_PATH_E2E_STEPS.length &&
+    completedSteps.every((step, index) => step === LIVE_GOLDEN_PATH_E2E_STEPS[index]);
+  return ordered
     ? []
     : [
         liveGoldenPathIssue(
-          "missing_e2e_step",
-          "Live Golden Path must complete every required step.",
-          missing,
+          "e2e_step_order_mismatch",
+          "Live Golden Path steps must follow the required production sequence.",
+          completedSteps,
         ),
       ];
 }
