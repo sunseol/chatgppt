@@ -53,6 +53,7 @@ Signing state remains release-blocking: `codesign -dv --verbose=4` reports `Sign
 - `missing_gatekeeper_acceptance`
 - `package_not_production_mode`
 - `package_content_contaminated`
+- `duplicate_clean_machine_step`
 - `missing_clean_machine_step`
 - `missing_runtime_absence_remediation`
 - `missing_clean_machine_runbook`
@@ -61,7 +62,7 @@ Package archive and native macOS bundle paths must be persisted non-synthetic, n
 
 Native macOS release trust evidence must include a Developer ID team signature, a 10-character uppercase alphanumeric Apple TeamIdentifier, notarization, stapling, Gatekeeper acceptance, and a persisted non-synthetic, non-local `releaseTrustEvidencePath` JSON bundle whose path identifies a release-trust bundle containing the codesign, notarytool, stapler, and `spctl` assessment records. Ad-hoc signatures, missing TeamIdentifier values, placeholder values such as `not set`, missing, generically named, or developer-local release-trust evidence bundles, unstapled notarization tickets, or rejected `spctl` assessments block DF-245.
 
-The clean-machine checklist must include install, Codex login, image credential setup, project launch, and first live interview.
+The clean-machine checklist must include distinct evidence events for install, Codex login, image credential setup, project launch, and first live interview. Repeating one step cannot inflate the completed step count or replace a missing clean-machine action.
 
 ## Clean account validation
 

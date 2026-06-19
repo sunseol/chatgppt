@@ -1,14 +1,13 @@
 import { hasNonSyntheticEvidencePath, hasNonSyntheticJsonEvidencePath } from "./live-evidence-path";
+import {
+  CLEAN_MACHINE_STEPS,
+  cleanMachineStepIssues,
+  countDistinctCleanMachineSteps,
+  type CleanMachineStep,
+} from "./production-packaging-clean-machine";
 
-export const CLEAN_MACHINE_STEPS = [
-  "install_app",
-  "codex_login",
-  "image_credentials",
-  "project_launch",
-  "live_interview",
-] as const;
-
-export type CleanMachineStep = (typeof CLEAN_MACHINE_STEPS)[number];
+export { CLEAN_MACHINE_STEPS };
+export type { CleanMachineStep };
 
 export type PackageContentScan = {
   readonly mockResourceHits: readonly string[];
@@ -52,6 +51,7 @@ export type ProductionPackagingIssueCode =
   | "missing_gatekeeper_acceptance"
   | "package_not_production_mode"
   | "package_content_contaminated"
+  | "duplicate_clean_machine_step"
   | "missing_clean_machine_step"
   | "missing_runtime_absence_remediation"
   | "missing_clean_machine_runbook";
@@ -91,7 +91,7 @@ export function formatProductionPackagingEvidenceSummary(
     `macOS release trust: ${macosReleaseTrustLabel(evidence.nativeMacosReleaseTrust)}`,
     `Mode: ${evidence.productionMode ? "production" : "non-production"}`,
     `content scan: ${contentScanIssues(evidence.contentScan).length === 0 ? "passed" : "blocked"}`,
-    `clean-machine steps: ${evidence.cleanMachineSteps.length}/${CLEAN_MACHINE_STEPS.length}`,
+    `clean-machine steps: ${countDistinctCleanMachineSteps(evidence.cleanMachineSteps)}/${CLEAN_MACHINE_STEPS.length}`,
     `runtime absence remediation: ${evidence.runtimeAbsenceRemediationShown ? "present" : "missing"}`,
     `Runbook: ${evidence.runbookPath || "missing"}`,
   ].join("\n");
@@ -192,22 +192,6 @@ function contentScanIssues(scan: PackageContentScan): readonly ProductionPackagi
           "package_content_contaminated",
           "Package content scan must be free of mock, fixture, test, and secret hits.",
           refs,
-        ),
-      ];
-}
-
-function cleanMachineStepIssues(
-  steps: readonly CleanMachineStep[],
-): readonly ProductionPackagingIssue[] {
-  const present = new Set(steps);
-  const missing = CLEAN_MACHINE_STEPS.filter((step) => !present.has(step));
-  return missing.length === 0
-    ? []
-    : [
-        issue(
-          "missing_clean_machine_step",
-          "Clean-machine validation must cover install, auth, credentials, launch, and first live interview.",
-          missing,
         ),
       ];
 }
