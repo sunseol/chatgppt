@@ -53,9 +53,12 @@ function storedRequestMatches(
   artifact: SlideImageArtifact,
   stored: StoredSlideImageArtifact,
 ): boolean {
-  const requestId = artifact.request?.requestId;
-  if (!requestId) return true;
+  const request = artifact.request;
+  if (!request?.requestId) return true;
   return (
-    stored.metadata.request.requestId === requestId && stored.provenance.requestId === requestId
+    stored.metadata.request.requestId === request.requestId &&
+    stored.provenance.requestId === request.requestId &&
+    stored.metadata.request.model === request.model &&
+    stored.provenance.modelOrRuntime === request.model
   );
 }
