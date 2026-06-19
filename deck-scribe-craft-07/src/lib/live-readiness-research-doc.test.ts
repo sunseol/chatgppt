@@ -63,6 +63,7 @@ describe("live readiness research documentation", () => {
     expect(researchEvidence.includes("DF-223")).toBe(true);
     expect(researchEvidence.includes("claim-to-source roundtrip")).toBe(true);
     expect(researchEvidence.includes("summary_without_original")).toBe(true);
+    expect(researchEvidence.includes("missing_source_artifact")).toBe(true);
     expect(researchEvidence.includes("source_artifact_mismatch")).toBe(true);
     expect(researchEvidence.includes("missing_dataset_or_numeric_evidence")).toBe(true);
     expect(researchEvidence.includes("missing_number_dataset")).toBe(true);
@@ -71,6 +72,7 @@ describe("live readiness research documentation", () => {
     expect(researchEvidence.includes("Numeric evidence must roundtrip")).toBe(true);
     expect(researchEvidence.includes("dataset metadata")).toBe(true);
     expect(researchEvidence.includes("ResearchPack.liveEvidenceRefs")).toBe(true);
+    expect(researchEvidence.includes("capture.rawArchivePath")).toBe(true);
   });
 
   test("records the live research review and approval gate contract", () => {

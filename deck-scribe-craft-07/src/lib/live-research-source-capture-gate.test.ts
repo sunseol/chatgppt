@@ -37,7 +37,10 @@ describe("live research source capture approval gate", () => {
     // Then
     expect(gate.kind).toBe("blocked");
     if (gate.kind !== "blocked") return;
-    expect(gate.issues.map((issue) => issue.code)).toEqual(["source_capture_incomplete"]);
+    expect(gate.issues.map((issue) => issue.code)).toEqual([
+      "source_capture_incomplete",
+      "missing_source_artifact",
+    ]);
     expect(gate.issues[0]?.sourceId).toBe("src_001");
   });
 });

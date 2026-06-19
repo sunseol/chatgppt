@@ -197,6 +197,18 @@ function researchPack(overrides: Partial<ResearchPack> = {}): ResearchPack {
         sourceType: "government",
         usePolicy: "priority",
         url: "https://example.gov/report",
+        capture: {
+          originalUrl: "https://example.gov/report",
+          finalUrl: "https://example.gov/report",
+          fetchedAt: 1_789_400_000,
+          mimeType: "text/html",
+          statusCode: 200,
+          contentHash: "sha256:source-content",
+          rawArchivePath: "docs/live-source-capture-bundle/html_001/original.html",
+          textArchivePath: "docs/live-source-capture-bundle/html_001/extracted.txt",
+          extractedTextHash: "sha256:source-text",
+          version: 1,
+        },
       },
     ],
     claims: [

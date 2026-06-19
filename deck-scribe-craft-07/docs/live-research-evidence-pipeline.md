@@ -15,6 +15,7 @@ Status: partial local contract
 - `ResearchPack.liveEvidenceRefs` persists those references through schema parsing and approved Research Pack artifacts.
 - `ProductionWorkflowStage` forwards persisted `ResearchPack.liveEvidenceRefs` to `SourceReviewList`, so production review shows the saved quote/table evidence instead of recomputing from empty local state.
 - `validateLiveResearchEvidence` emits fatal issues for claim evidence that cannot be traced back to an original source artifact.
+- `missing_source_artifact` is fatal when a saved evidence ref has no source artifact path or the linked Research source lacks persisted `capture.rawArchivePath` metadata.
 - `source_artifact_mismatch` is fatal when a saved evidence ref points at a different artifact path than the source's captured `rawArchivePath`.
 - `missing_dataset_or_numeric_evidence` is fatal when a Research Pack has no real dataset and no numeric evidence item at all.
 - `major_number_metadata` also validates dataset-backed major numbers, so a claim cannot rely on a dataset whose unit, period, geography, or definition is missing.
@@ -28,13 +29,14 @@ Status: partial local contract
 
 | DF-223 acceptance criterion                                                    | Local contract evidence                                                                                                                                                                                             |
 | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Each claim has a source artifact and quote span or table reference.            | `LiveResearchEvidenceReference` requires `sourceArtifactPath` plus `kind: "quote_span"` with `quoteSpan`, or `kind: "table_reference"` with `tableRef`.                                                             |
+| Each claim has a source artifact and quote span or table reference.            | `LiveResearchEvidenceReference` requires `sourceArtifactPath` plus `kind: "quote_span"` with `quoteSpan`, or `kind: "table_reference"` with `tableRef`; the linked source must also preserve `capture.rawArchivePath`. |
 | Major numbers without unit, period, geography, or definition require review.   | `major_number_metadata` is fatal for incomplete numeric evidence and incomplete dataset metadata on dataset-backed major-number claims.                                                                             |
 | At least one real dataset or numeric evidence exists.                          | `missing_dataset_or_numeric_evidence` is fatal when the whole Research Pack has no dataset and no numeric evidence, and `missing_number_dataset` is fatal when a major-number claim has no dataset-backed evidence. |
 | Source-less claims are not passed to Deck Plan.                                | `getDeckPlanEligibleClaims` and `buildDeckPlanPrompt` exclude claims with fatal evidence issues.                                                                                                                    |
 | Search-summary-only claims without original source content cannot be approved. | `summary_without_original` is fatal when a factual claim has no original artifact quote/table reference.                                                                                                            |
 | Numeric evidence must roundtrip through the claim's source/dataset lineage.    | `unknown_reference` is fatal when persisted evidence targets an unknown claim, or numeric evidence uses a source or dataset outside the claim's linked source and dataset ids.                                      |
 | Saved evidence refs must point at the captured source artifact.                | `source_artifact_mismatch` is fatal when a persisted evidence ref path does not match `ResearchPack.sources[].capture.rawArchivePath`.                                                                              |
+| Saved evidence refs cannot invent source artifact paths.                       | `missing_source_artifact` is fatal when a persisted evidence ref names a source whose `ResearchPack.sources[].capture.rawArchivePath` is missing.                                                                   |
 
 ## Claim-to-source roundtrip
 
@@ -48,6 +50,7 @@ The local claim-to-source roundtrip is covered by `src/lib/live-research-evidenc
 - missing dataset/numeric evidence fails with `missing_number_dataset`;
 - packs with no dataset and no numeric evidence fail with `missing_dataset_or_numeric_evidence`;
 - table references are accepted as an alternative to quote spans.
+- evidence refs for sources without captured artifact metadata fail with `missing_source_artifact`.
 - captured source artifact path mismatches fail with `source_artifact_mismatch`.
 - direct Deck Plan prompt construction excludes live claims that lack original quote/table evidence refs.
 

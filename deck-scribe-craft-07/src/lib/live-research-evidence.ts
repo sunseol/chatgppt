@@ -2,6 +2,7 @@ import type { QuoteSpan, TableReference } from "./evidence-extractor";
 import { validateEvidenceRefClaimTargets } from "./live-research-evidence-ref-targets";
 import { validateClaimNumberEvidence } from "./live-research-number-evidence";
 import { validatePackDatasetOrNumericEvidence } from "./live-research-evidence-pack-requirements";
+import { validateClaimOriginalEvidence } from "./live-research-source-artifact-evidence";
 import type { Claim, ResearchPack } from "./research-types";
 
 export type LiveResearchEvidenceIssueCode =
@@ -96,83 +97,6 @@ export function getDeckPlanEligibleClaims(
   return pack.claims.filter((claim) => !blockedClaimIds.has(claim.id));
 }
 
-function validateClaimOriginalEvidence(
-  claim: Claim,
-  evidenceRefs: readonly LiveResearchEvidenceReference[],
-  sourceIds: ReadonlySet<string>,
-  sourceArtifactPathsById: ReadonlyMap<string, string | undefined>,
-  datasetIds: ReadonlySet<string>,
-  issues: LiveResearchEvidenceIssue[],
-) {
-  if (isFactualClaim(claim) && evidenceRefs.length === 0) {
-    issues.push(
-      issue({
-        code: "summary_without_original",
-        claimId: claim.id,
-        message: "Live claims require an original source artifact quote or table reference.",
-      }),
-    );
-  }
-
-  for (const evidenceRef of evidenceRefs) {
-    if (!sourceIds.has(evidenceRef.sourceId) || !claim.sourceIds.includes(evidenceRef.sourceId)) {
-      issues.push(
-        issue({
-          code: "unknown_reference",
-          claimId: claim.id,
-          sourceId: evidenceRef.sourceId,
-          message: `Unknown or unlinked evidence source: ${evidenceRef.sourceId}`,
-        }),
-      );
-    }
-    if (!evidenceRef.sourceArtifactPath.trim()) {
-      issues.push(
-        issue({
-          code: "missing_source_artifact",
-          claimId: claim.id,
-          sourceId: evidenceRef.sourceId,
-          message: "Live evidence must point to the captured original source artifact.",
-        }),
-      );
-    }
-    const capturedArtifactPath = sourceArtifactPathsById.get(evidenceRef.sourceId);
-    if (
-      capturedArtifactPath?.trim() &&
-      evidenceRef.sourceArtifactPath.trim() &&
-      evidenceRef.sourceArtifactPath !== capturedArtifactPath
-    ) {
-      issues.push(
-        issue({
-          code: "source_artifact_mismatch",
-          claimId: claim.id,
-          sourceId: evidenceRef.sourceId,
-          message: "Live evidence must reference the source's captured original artifact path.",
-        }),
-      );
-    }
-    if (!hasOriginalReference(evidenceRef)) {
-      issues.push(
-        issue({
-          code: "missing_quote_or_table",
-          claimId: claim.id,
-          sourceId: evidenceRef.sourceId,
-          message: "Live evidence must include a valid quote span or table reference.",
-        }),
-      );
-    }
-    if (evidenceRef.datasetId && !datasetIds.has(evidenceRef.datasetId)) {
-      issues.push(
-        issue({
-          code: "unknown_reference",
-          claimId: claim.id,
-          datasetId: evidenceRef.datasetId,
-          message: `Unknown evidence dataset: ${evidenceRef.datasetId}`,
-        }),
-      );
-    }
-  }
-}
-
 function validateClaimNumericEvidenceReferences(
   claim: Claim,
   sourceIds: ReadonlySet<string>,
@@ -209,25 +133,6 @@ function validateClaimNumericEvidenceReferences(
       );
     }
   }
-}
-
-function hasOriginalReference(evidenceRef: LiveResearchEvidenceReference): boolean {
-  if (evidenceRef.kind === "quote_span") {
-    return (
-      evidenceRef.quoteSpan.start >= 0 &&
-      evidenceRef.quoteSpan.end > evidenceRef.quoteSpan.start &&
-      evidenceRef.quoteSpan.text.trim().length > 0
-    );
-  }
-  return (
-    evidenceRef.tableRef.tableId.trim().length > 0 &&
-    evidenceRef.tableRef.rowKey.trim().length > 0 &&
-    evidenceRef.tableRef.columnKey.trim().length > 0
-  );
-}
-
-function isFactualClaim(claim: Claim): boolean {
-  return claim.status !== "assumption" && claim.confidence !== "assumption";
 }
 
 function groupEvidenceRefsByClaim(

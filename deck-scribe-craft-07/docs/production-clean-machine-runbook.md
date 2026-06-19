@@ -7,7 +7,7 @@ Scope: DF-245 internal production package and clean macOS account validation.
 ## Package inputs
 
 - Internal unsigned archive: `dist/deckforge-macos-dry-run.tgz`.
-- Internal archive SHA-256: `1724e22d62f8c011779ddaf5ae98297c1637dae48143dd884a40107630f9b0aa`.
+- Internal archive SHA-256: `f4e60c68ae200eb8f1687943812859a9555e9638f7c3713c2a4a57c2763b52e9`.
 - Unsigned Tauri DMG: `release-artifacts/DeckForge_0.1.0_aarch64.dmg`.
 - DMG SHA-256: `ad8b11dee61a15c193fabfc3a7bf85110b116db65098bd2a845c2533a25dae5d`.
 
@@ -32,7 +32,7 @@ Before sharing any production candidate, scan the extracted app and DMG staging 
 
 Any hit in production resources blocks release unless it is part of documentation that clearly labels the build as internal only.
 
-Latest local dry-run package scan on 2026-06-20 for PR branch `jacobex/live-issue-contracts` found no hits for mock provider ids, mock provider labels, mock stage function names, fixture paths, test files, bundled `auth.json` or `.codex` payload files, local absolute workspace paths, `.omx/`, `.playwright-mcp/`, long `Bearer` tokens, or OpenAI/Codex secret-like values in `dist/client`, `dist/server`, or `dist/deckforge-macos-dry-run/DeckForge.app`. The regenerated archive SHA-256 is `1724e22d62f8c011779ddaf5ae98297c1637dae48143dd884a40107630f9b0aa`; it contains 17 app files, 26 archive members, is 284,896 bytes compressed, and the extracted dry-run app bundle is 1,052 KiB.
+Latest local dry-run package scan on 2026-06-20 for PR branch `jacobex/live-issue-contracts` found no hits for mock provider ids, mock provider labels, mock stage function names, fixture paths, test files, bundled `auth.json` or `.codex` payload files, local absolute workspace paths, `.omx/`, `.playwright-mcp/`, long `Bearer` tokens, or OpenAI/Codex secret-like values in `dist/client`, `dist/server`, or `dist/deckforge-macos-dry-run/DeckForge.app`. The regenerated archive SHA-256 is `f4e60c68ae200eb8f1687943812859a9555e9638f7c3713c2a4a57c2763b52e9`; it contains 17 app files, 26 archive members, is 285,046 bytes compressed, and the extracted dry-run app bundle is 1,052 KiB.
 
 The broader scan does find expected guard-code literals and status copy: `mock_lineage_contamination`, `fixture_lineage_contamination`, `pending_reinforcement_request`, `summary_without_original`, `missing_provenance`, production messages that say mock stages are not run in production, and secret-redaction regex definitions such as `API_KEY_PATTERN`, `SECRET_ASSIGNMENT_PATTERN`, `.codex/auth.json`, and `Bearer` token redaction expressions. The `OPENAI_API_KEY` string appears only in redaction guard code, not as an assigned credential. Broad `sk-*` scans also match Tailwind/class-merge names such as `sk-image-linear-from-pos`. Those strings are release/research approval gate rejection reasons, redaction guards, sensitive-path guards, or CSS utility identifiers, not bundled mock resources or actual secrets.
 

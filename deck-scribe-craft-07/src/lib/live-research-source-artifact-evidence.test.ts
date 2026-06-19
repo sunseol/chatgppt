@@ -5,13 +5,24 @@ import {
 } from "./live-research-evidence";
 import type { ResearchPack } from "./research-types";
 
-describe("live research evidence reference targets", () => {
-  test("rejects persisted evidence refs for unknown claims", () => {
+describe("live research source artifact evidence", () => {
+  test("rejects evidence refs when the linked source lacks captured artifact metadata", () => {
     // Given
-    const pack = researchPack();
+    const pack = researchPackWithoutCapture();
     const evidenceRefs: LiveResearchEvidenceReference[] = [
-      quoteEvidenceRef("ev_001", "claim_001"),
-      quoteEvidenceRef("ev_stale_claim", "claim_removed"),
+      {
+        id: "ev_001",
+        claimId: "claim_001",
+        sourceId: "src_001",
+        sourceArtifactPath: "docs/live-source-capture-bundle/html_001/original.html",
+        kind: "quote_span",
+        quoteSpan: {
+          start: 10,
+          end: 18,
+          text: "67%",
+        },
+        datasetId: "dataset_001",
+      },
     ];
 
     // When
@@ -19,34 +30,13 @@ describe("live research evidence reference targets", () => {
 
     // Then
     expect(report.valid).toBe(false);
-    expect(report.fatalIssues).toEqual([
-      {
-        code: "unknown_reference",
-        severity: "fatal",
-        claimId: "claim_removed",
-        message: "Unknown evidence claim: claim_removed",
-      },
-    ]);
+    expect(report.fatalIssues.map((issue) => issue.code).includes("missing_source_artifact")).toBe(
+      true,
+    );
   });
 });
 
-function quoteEvidenceRef(id: string, claimId: string): LiveResearchEvidenceReference {
-  return {
-    id,
-    claimId,
-    sourceId: "src_001",
-    sourceArtifactPath: "docs/live-source-capture-bundle/html_001/original.html",
-    kind: "quote_span",
-    quoteSpan: {
-      start: 18,
-      end: 22,
-      text: "67%",
-    },
-    datasetId: "dataset_001",
-  };
-}
-
-function researchPack(): ResearchPack {
+function researchPackWithoutCapture(): ResearchPack {
   return {
     id: "research_live_pack",
     sources: [
@@ -59,7 +49,6 @@ function researchPack(): ResearchPack {
         sourceType: "government",
         usePolicy: "priority",
         url: "https://example.gov/report",
-        capture: sourceCapture(),
       },
     ],
     claims: [
@@ -102,26 +91,11 @@ function researchPack(): ResearchPack {
     ],
     charts: [],
     factCheckReport: {
-      summary: "Valid live research evidence fixture",
+      summary: "Invalid live research evidence fixture",
       generatedAt: 1_789_400_000,
       fatalIssueCount: 0,
       issues: [],
       uncertainItems: [],
     },
-  };
-}
-
-function sourceCapture() {
-  return {
-    originalUrl: "https://example.gov/report",
-    finalUrl: "https://example.gov/report",
-    fetchedAt: 1_789_400_000,
-    mimeType: "text/html",
-    statusCode: 200,
-    contentHash: "sha256:source-content",
-    rawArchivePath: "docs/live-source-capture-bundle/html_001/original.html",
-    textArchivePath: "docs/live-source-capture-bundle/html_001/extracted.txt",
-    extractedTextHash: "sha256:source-text",
-    version: 1,
   };
 }
