@@ -188,6 +188,7 @@ describe("live readiness documentation", () => {
     expect(backgroundBatch.includes("missing_stored_background_artifact")).toBe(true);
     expect(backgroundBatch.includes("stored_background_artifact_mismatch")).toBe(true);
     expect(backgroundBatch.includes("stored metadata/provenance request ids")).toBe(true);
+    expect(backgroundBatch.includes("by slide id rather than array order")).toBe(true);
     expect(backgroundBatch.includes("invalid_image_binary")).toBe(true);
     expect(backgroundBatch.includes("missing_provider_request_metadata")).toBe(true);
     expect(backgroundBatch.includes("retryable")).toBe(true);

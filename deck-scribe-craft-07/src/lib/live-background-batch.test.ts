@@ -112,6 +112,28 @@ describe("live background batch", () => {
     ]);
   });
 
+  test("accepts stored background artifacts matched by slide number instead of array order", () => {
+    // Given
+    const packages = slidePackages();
+    const artifacts = packages.map((pkg) => imageArtifact(pkg));
+    const storedArtifacts = [...artifacts.map((artifact) => storedArtifact(artifact))].reverse();
+
+    // When
+    const validation = validateLiveBackgroundBatch(
+      buildLiveBackgroundBatch({
+        batchId: "live_bg_batch_shuffled_storage",
+        deckContextId: "deck_context_001",
+        designSystemId: "design_001",
+        artifacts,
+        storedArtifacts,
+        promptPackages: packages,
+      }),
+    );
+
+    // Then
+    expect(validation).toEqual({ kind: "ready" });
+  });
+
   test("blocks extra prompt packages or stored artifacts beyond the five-slide bundle", () => {
     // Given
     const packages = slidePackages();

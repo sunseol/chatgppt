@@ -52,7 +52,9 @@ export function validateLiveBackgroundBatch(
 ): LiveBackgroundBatchValidation {
   const issues = [
     ...batchIntegrityIssues(batch),
-    ...batch.artifacts.flatMap((artifact, index) => artifactIssues(artifact, batch, index)),
+    ...batch.artifacts.flatMap((artifact, index) =>
+      artifactIssues(artifact, batch, storedArtifactForSlide(batch, artifact.slideNumber), index),
+    ),
   ];
   return issues.length === 0 ? { kind: "ready" } : { kind: "blocked", issues };
 }
@@ -69,6 +71,7 @@ export function getRetryableBackgroundSlideNumbers(
 function artifactIssues(
   artifact: SlideImageArtifact,
   batch: LiveBackgroundBatch,
+  storedArtifact: StoredSlideImageArtifact | undefined,
   index: number,
 ): readonly LiveBackgroundBatchIssue[] {
   const pkg = batch.promptPackages[index];
@@ -83,7 +86,7 @@ function artifactIssues(
   }
   return [
     ...providerIssues(artifact),
-    ...storedArtifactIssues(artifact, batch.storedArtifacts?.[index]),
+    ...storedArtifactIssues(artifact, storedArtifact),
     ...binaryIssues(artifact),
     ...requestMetadataIssues(artifact),
     ...aspectIssues(artifact),
@@ -92,6 +95,13 @@ function artifactIssues(
     ...contextIssues(pkg, batch),
     ...textOverlayIssues(pkg),
   ];
+}
+
+function storedArtifactForSlide(
+  batch: LiveBackgroundBatch,
+  slideNumber: number,
+): StoredSlideImageArtifact | undefined {
+  return batch.storedArtifacts?.find((stored) => stored.metadata.slideNumber === slideNumber);
 }
 
 function providerIssues(artifact: SlideImageArtifact): readonly LiveBackgroundBatchIssue[] {
