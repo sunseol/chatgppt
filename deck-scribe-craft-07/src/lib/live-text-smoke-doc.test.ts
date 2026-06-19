@@ -30,6 +30,8 @@ describe("live text smoke documentation", () => {
       "text_artifact_missing_turn_id",
       "missing_resume_next_turn",
       "resume_thread_mismatch",
+      "whitespace-padded resume next-turn reuse rejection",
+      "resume_reused_existing_turn",
       "resume_non_codex_turn",
       "Smoke result: partial",
     ]) {
