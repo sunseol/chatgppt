@@ -164,6 +164,10 @@ export function evaluateCodexAppServerHealthTurn(
 ): CodexAppServerHealthTurnStatus {
   switch (evidence.kind) {
     case "completed":
+      if (evidence.threadId.trim() === "" || evidence.turnId.trim() === "") {
+        return failedHealthTurn(evidence.transport, evidence.cliVersion);
+      }
+
       return {
         kind: "ready",
         transport: evidence.transport,
@@ -174,14 +178,7 @@ export function evaluateCodexAppServerHealthTurn(
         message: "Codex App Server authenticated health turn completed.",
       };
     case "failed":
-      return {
-        kind: "failed",
-        transport: evidence.transport,
-        cliVersion: evidence.cliVersion,
-        message: "Codex App Server authenticated health turn failed.",
-        remediation: "Retry the health turn and inspect App Server turn errors.",
-        retryable: true,
-      };
+      return failedHealthTurn(evidence.transport, evidence.cliVersion);
     default:
       return assertNever(evidence);
   }
@@ -217,6 +214,20 @@ export function evaluateCodexAppServerRestartSmoke(
     default:
       return assertNever(evidence);
   }
+}
+
+function failedHealthTurn(
+  transport: CodexAppServerTransport,
+  cliVersion: string,
+): CodexAppServerHealthTurnStatus {
+  return {
+    kind: "failed",
+    transport,
+    cliVersion,
+    message: "Codex App Server authenticated health turn failed.",
+    remediation: "Retry the health turn and inspect App Server turn errors.",
+    retryable: true,
+  };
 }
 
 function failedRestartSmoke(cliVersion: string): CodexAppServerRestartSmokeStatus {
