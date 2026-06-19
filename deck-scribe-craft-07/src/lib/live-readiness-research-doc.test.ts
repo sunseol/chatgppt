@@ -69,6 +69,7 @@ describe("live readiness research documentation", () => {
     expect(researchEvidence.includes("missing_number_dataset")).toBe(true);
     expect(researchEvidence.includes("unknown_reference")).toBe(true);
     expect(researchEvidence.includes("unknown claims")).toBe(true);
+    expect(researchEvidence.includes("evidence refs name datasets outside")).toBe(true);
     expect(researchEvidence.includes("Numeric evidence must roundtrip")).toBe(true);
     expect(researchEvidence.includes("dataset metadata")).toBe(true);
     expect(researchEvidence.includes("ResearchPack.liveEvidenceRefs")).toBe(true);

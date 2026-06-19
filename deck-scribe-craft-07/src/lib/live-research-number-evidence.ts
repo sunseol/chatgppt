@@ -12,7 +12,7 @@ export function validateClaimNumberEvidence(
 ) {
   if (!claim.hasNumber) return;
 
-  if (!hasDatasetReference(claim, evidenceRefs, datasetsById)) {
+  if (!hasDatasetReference(claim, datasetsById)) {
     issues.push(
       issue({
         code: "missing_number_dataset",
@@ -29,7 +29,7 @@ export function validateClaimNumberEvidence(
     }
   }
 
-  for (const dataset of referencedDatasets(claim, evidenceRefs, datasetsById)) {
+  for (const dataset of referencedDatasets(claim, datasetsById)) {
     if (!isCompleteDatasetMetadata(dataset)) {
       issues.push(numberMetadataIssue(claim.id, dataset.id));
     }
@@ -38,24 +38,16 @@ export function validateClaimNumberEvidence(
 
 function hasDatasetReference(
   claim: Claim,
-  evidenceRefs: readonly LiveResearchEvidenceReference[],
   datasetsById: ReadonlyMap<string, ResearchDataset>,
 ): boolean {
-  return referencedDatasets(claim, evidenceRefs, datasetsById).length > 0;
+  return referencedDatasets(claim, datasetsById).length > 0;
 }
 
 function referencedDatasets(
   claim: Claim,
-  evidenceRefs: readonly LiveResearchEvidenceReference[],
   datasetsById: ReadonlyMap<string, ResearchDataset>,
 ): readonly ResearchDataset[] {
-  const ids = new Set([
-    ...claim.datasetIds,
-    ...evidenceRefs
-      .map((evidenceRef) => evidenceRef.datasetId)
-      .filter((datasetId) => datasetId !== undefined),
-  ]);
-  return [...ids].flatMap((datasetId) => {
+  return claim.datasetIds.flatMap((datasetId) => {
     const dataset = datasetsById.get(datasetId);
     return dataset === undefined ? [] : [dataset];
   });

@@ -67,6 +67,45 @@ describe("live research number evidence", () => {
       "dataset_002",
     ]);
   });
+
+  test("rejects evidence ref datasets that point outside the claim lineage", () => {
+    // Given
+    const base = researchPack();
+    const pack = researchPack({
+      datasets: [
+        ...base.datasets,
+        { ...base.datasets[0], id: "dataset_002", title: "Unlinked dataset" },
+      ],
+      claims: [
+        {
+          ...base.claims[0],
+          datasetIds: [],
+          numericEvidence: [],
+        },
+      ],
+    });
+
+    // When
+    const report = validateLiveResearchEvidence({
+      pack,
+      evidenceRefs: [
+        {
+          ...evidenceRefs()[0],
+          datasetId: "dataset_002",
+        },
+      ],
+    });
+
+    // Then
+    expect(report.valid).toBe(false);
+    expect(report.fatalIssues.map((issue) => issue.code)).toEqual([
+      "unknown_reference",
+      "missing_number_dataset",
+    ]);
+    expect(report.fatalIssues.map((issue) => issue.datasetId).filter(Boolean)).toEqual([
+      "dataset_002",
+    ]);
+  });
 });
 
 function evidenceRefs(): readonly LiveResearchEvidenceReference[] {

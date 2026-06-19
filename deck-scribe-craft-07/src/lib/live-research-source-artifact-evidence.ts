@@ -45,6 +45,16 @@ export function validateClaimOriginalEvidence(
         }),
       );
     }
+    if (evidenceRef.datasetId && !claim.datasetIds.includes(evidenceRef.datasetId)) {
+      issues.push(
+        issue({
+          code: "unknown_reference",
+          claimId: claim.id,
+          datasetId: evidenceRef.datasetId,
+          message: `Unlinked evidence dataset: ${evidenceRef.datasetId}`,
+        }),
+      );
+    }
   }
 }
 
