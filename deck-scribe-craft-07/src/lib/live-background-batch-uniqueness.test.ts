@@ -24,7 +24,7 @@ describe("live background batch uniqueness", () => {
     ];
     const duplicateStoredArtifacts: readonly StoredSlideImageArtifact[] = [
       firstStored,
-      { ...storedArtifact(artifacts[1]), binary: firstStored.binary },
+      { ...storedArtifact(duplicateArtifacts[1]), binary: firstStored.binary },
       storedArtifact(artifacts[2]),
       storedArtifact(artifacts[3]),
       storedArtifact(artifacts[4]),

@@ -181,4 +181,42 @@ describe("live background batch", () => {
       "missing_provider_request_metadata",
     ]);
   });
+
+  test("blocks stored background evidence from a different provider request", () => {
+    // Given
+    const packages = slidePackages();
+    const artifacts = packages.map((pkg) => imageArtifact(pkg));
+    const firstStoredArtifact = storedArtifact(artifacts[0]);
+    const storedArtifacts = artifacts.map((artifact, index) =>
+      index === 0
+        ? {
+            ...firstStoredArtifact,
+            metadata: {
+              ...firstStoredArtifact.metadata,
+              request: { ...firstStoredArtifact.metadata.request, requestId: "img_req_other" },
+            },
+            provenance: { ...firstStoredArtifact.provenance, requestId: "img_req_other" },
+          }
+        : storedArtifact(artifact),
+    );
+
+    // When
+    const validation = validateLiveBackgroundBatch(
+      buildLiveBackgroundBatch({
+        batchId: "live_bg_batch_request_mismatch",
+        deckContextId: "deck_context_001",
+        designSystemId: "design_001",
+        artifacts,
+        storedArtifacts,
+        promptPackages: packages,
+      }),
+    );
+
+    // Then
+    expect(validation.kind).toBe("blocked");
+    if (validation.kind !== "blocked") return;
+    expect(validation.issues.map((issue) => issue.code)).toEqual([
+      "stored_background_artifact_mismatch",
+    ]);
+  });
 });
