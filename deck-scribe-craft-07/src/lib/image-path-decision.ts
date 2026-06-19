@@ -10,6 +10,10 @@ import { storedProviderProvenanceBlockers } from "./image-path-decision-provenan
 import type { ProviderArtifactProvenance } from "./provider-provenance";
 import type { SlideImageArtifact } from "./slide-image-provider";
 
+const PLACEHOLDER_DECISION_TEXTS = new Set(
+  "n/a|na|none|not set|tbd|to be determined|unknown".split("|"),
+);
+
 export {
   isVersionedProjectImageArtifactPath,
   isVersionedProjectImageProvenancePath,
@@ -229,7 +233,7 @@ function decisionMetadataBlockers(input: {
           },
         ]
       : []),
-    ...(input.billingOwner.trim()
+    ...(isMeaningfulDecisionText(input.billingOwner)
       ? []
       : [
           {
@@ -237,7 +241,7 @@ function decisionMetadataBlockers(input: {
             message: "The image path decision must record the billing owner.",
           },
         ]),
-    ...(input.requiredPermissions.some((permission) => permission.trim().length > 0)
+    ...(input.requiredPermissions.some(isMeaningfulDecisionText)
       ? []
       : [
           {
@@ -250,4 +254,9 @@ function decisionMetadataBlockers(input: {
 
 function hasPngSignatureDataUrl(dataUrl: string): boolean {
   return dataUrl.startsWith("data:image/png;base64,iVBORw0KGgo");
+}
+
+function isMeaningfulDecisionText(value: string): boolean {
+  const normalized = value.trim().toLowerCase();
+  return normalized.length > 0 && !PLACEHOLDER_DECISION_TEXTS.has(normalized);
 }
