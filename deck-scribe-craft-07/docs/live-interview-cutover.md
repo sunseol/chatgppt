@@ -8,8 +8,8 @@ Scope: DF-213 interview question and Interview Brief Live cutover contract.
 
 `src/lib/live-interview-cutover.ts` defines the local approval boundary for the interview stage before a Brief can feed Research:
 
-- question artifacts must come from Codex provider provenance in `production` execution mode
-- Brief artifacts must come from a second Codex turn after user answers
+- question artifacts must come from Codex provider provenance in `production` execution mode using authenticated `codex_session` auth
+- Brief artifacts must come from a second authenticated Codex turn after user answers
 - Brief provenance must cite the question artifact id in `inputArtifactIds`; otherwise `brief_missing_question_input` blocks approval
 - mock provider and fixture lineage are blocked through `mock_lineage_contamination` and `fixture_lineage_contamination`
 - missing required answers return `follow_up_required` and schedule an `interview_follow_up@v1` live turn
@@ -26,7 +26,7 @@ Scope: DF-213 interview question and Interview Brief Live cutover contract.
 
 - `src/lib/live-interview-cutover.test.ts` accepts separate live question/Brief turns with thread and turn provenance.
 - It blocks Brief acceptance when required fields are unanswered and returns a follow-up turn input bundle.
-- It blocks mock/fixture provenance and verifies no fixture fallback is offered after provider failure.
+- It blocks mock/fixture provenance, non-session Codex auth via `non_codex_session_auth`, and verifies no fixture fallback is offered after provider failure.
 - `src/lib/live-text-artifact-persistence.test.ts` verifies accepted live question and Brief outputs preserve artifact ids, turn provenance, and non-fixture lineage when creating the project patch.
 - `src/lib/live-text-production-workflow.test.ts` verifies production App Server interview jobs produce accepted outputs before the live Brief project patch is created.
 - `src/lib/production-text-workflow-gate.test.ts` and `src/components/deck/ProductionTextWorkflowPanel.integration.test.tsx` verify the production app surface exposes the live interview workflow stages and the `app_server_bridge_missing` blocker instead of leaving the step as passive copy.

@@ -120,6 +120,41 @@ describe("live interview cutover", () => {
     expect(result.recovery.actions).toEqual(["retry_live_turn", "manual_input"]);
   });
 
+  test("blocks Codex interview turns that do not use the authenticated session", () => {
+    const plan = planInterviewQuestions({
+      initialPrompt: "한국어 제품 소개 덱을 5장으로 만들어줘.",
+      slideCount: 5,
+      aspectRatio: "16:9",
+      language: "ko",
+    });
+
+    const result = evaluateLiveInterviewCutover({
+      questionPlan: {
+        artifact: plan,
+        provenance: liveCodexProvenance("interview_questions_no_session", "turn_questions", [], {
+          authMode: "none",
+        }),
+      },
+      answers: {
+        coreMessage: "제품 가치를 명확히 전달한다.",
+        desiredOutcome: "도입 검토",
+        mustAvoid: "출처 없는 주장",
+        successCriteria: "이해 가능한 메시지",
+        tone: "명료한",
+      },
+      brief: {
+        artifact: completeBrief(),
+        provenance: liveCodexProvenance("interview_brief_live_3", "turn_brief", [
+          "interview_questions_no_session",
+        ]),
+      },
+    });
+
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual(["non_codex_session_auth"]);
+  });
+
   test("provider failure recovery never offers a fixture fallback", () => {
     const recovery = createLiveInterviewProviderFailureRecovery({
       stage: "brief",
@@ -136,12 +171,13 @@ function liveCodexProvenance(
   artifactId: string,
   turnId: string,
   inputArtifactIds: readonly string[] = [],
+  overrides: Partial<Pick<ProviderArtifactProvenance, "authMode">> = {},
 ): ProviderArtifactProvenance {
   return createProviderArtifactProvenance({
     artifactId,
     executionMode: "production",
     providerKind: "codex",
-    authMode: "codex_session",
+    authMode: overrides.authMode ?? "codex_session",
     modelOrRuntime: "codex-cli 0.141.0",
     promptVersion: artifactId.includes("brief") ? "interview_brief@v1" : "interview_questions@v1",
     durationMs: 2400,
