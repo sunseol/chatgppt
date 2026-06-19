@@ -69,6 +69,11 @@ export type CodexAppServerHealthTurnEvidence =
       readonly failureReason: string;
     };
 
+type CompletedCodexAppServerHealthTurnEvidence = Extract<
+  CodexAppServerHealthTurnEvidence,
+  { readonly kind: "completed" }
+>;
+
 export type CodexAppServerHealthTurnStatus =
   | {
       readonly kind: "ready";
@@ -96,10 +101,8 @@ export type CodexAppServerRestartSmokeEvidence =
       readonly oldPid: number;
       readonly newPid: number;
       readonly crashProbeError: string;
-      readonly postRestartHealthTurn: Extract<
-        CodexAppServerHealthTurnEvidence,
-        { readonly kind: "completed" }
-      >;
+      readonly preRestartHealthTurn?: CompletedCodexAppServerHealthTurnEvidence;
+      readonly postRestartHealthTurn: CompletedCodexAppServerHealthTurnEvidence;
     }
   | {
       readonly kind: "restartFailed";
@@ -194,7 +197,8 @@ export function evaluateCodexAppServerRestartSmoke(
         evidence.crashProbeError.trim() === "" ||
         evidence.postRestartHealthTurn.cliVersion !== evidence.cliVersion ||
         evidence.postRestartHealthTurn.threadId.trim() === "" ||
-        evidence.postRestartHealthTurn.turnId.trim() === ""
+        evidence.postRestartHealthTurn.turnId.trim() === "" ||
+        isSameHealthTurn(evidence.preRestartHealthTurn, evidence.postRestartHealthTurn)
       ) {
         return failedRestartSmoke(evidence.cliVersion);
       }
@@ -214,6 +218,13 @@ export function evaluateCodexAppServerRestartSmoke(
     default:
       return assertNever(evidence);
   }
+}
+
+function isSameHealthTurn(
+  before: CompletedCodexAppServerHealthTurnEvidence | undefined,
+  after: CompletedCodexAppServerHealthTurnEvidence,
+): boolean {
+  return before?.threadId === after.threadId && before.turnId === after.turnId;
 }
 
 function failedHealthTurn(
