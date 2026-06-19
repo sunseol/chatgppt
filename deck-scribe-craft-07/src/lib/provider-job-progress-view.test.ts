@@ -87,6 +87,31 @@ describe("provider job progress view", () => {
     // Then
     expect(view.usageItems).toEqual(["images 5"]);
   });
+
+  test("does not render unconfirmed image billing disclosures as confirmed", () => {
+    // Given
+    const job: ProviderJob = {
+      ...runningJob(),
+      usageSummary: {
+        imageCount: 1,
+        imageBillingDisclosure: {
+          apiKeyRequired: true,
+          userConfirmed: false,
+          label: "API key billing confirmed",
+        },
+      },
+    };
+
+    // When
+    const view = createProviderJobProgressView({
+      stageLabel: "Live image generation",
+      job,
+      recovered: false,
+    });
+
+    // Then
+    expect(view.usageItems).toEqual(["images 1", "API key billing not confirmed"]);
+  });
 });
 
 function runningJob(): ProviderJob {

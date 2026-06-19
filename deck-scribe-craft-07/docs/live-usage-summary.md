@@ -60,10 +60,13 @@ The provider job progress panel now renders DF-244 usage context for any job tha
 - `estimatedCostUsd` only as `cost estimate $...`, never as exact `cost $...`
 - invalid provider payload amounts such as negative tokens, fractional token counts, or non-finite costs are omitted from the visible usage list instead of being rendered as real usage
 - image API key billing disclosure labels such as `API key billing confirmed`
+- unconfirmed API-key billing payloads render as `API key billing not confirmed` instead of reusing a provider-supplied confirmed-looking label
 
 `src/lib/provider-job-progress-view.test.ts` locks the app-progress view so invalid provider usage values such as `input -1`, fractional outputs, or `cost estimate $NaN` are not shown to the user.
 
 `src/components/deck/ProviderJobProgressPanel.integration.test.tsx` locks the rendered app surface for the live Codex usage probe shape: provider `codex`, duration `7158ms`, `retries 1`, `input 25006`, `output 141`, and `cost estimate $0.0400`. It also locks the image usage shape with `images 5`, `cost estimate $0.1800`, and `API key billing confirmed`.
+
+The same integration surface now blocks misleading confirmation copy when the image billing disclosure says `userConfirmed: false`.
 
 `src/lib/audit-log.ts` preserves the same image billing disclosure label in report usage lines while continuing to redact secret-like text from the displayed label.
 

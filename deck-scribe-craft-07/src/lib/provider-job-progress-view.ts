@@ -133,8 +133,12 @@ function costEstimateItem(cost: number | undefined): string {
 }
 
 function imageBillingDisclosureItem(usageSummary: ProviderUsageSummary): string {
-  const label = usageSummary.imageBillingDisclosure?.label.trim();
-  return label === undefined ? "" : label;
+  const disclosure = usageSummary.imageBillingDisclosure;
+  if (disclosure === undefined) return "";
+  if (disclosure.apiKeyRequired && !disclosure.userConfirmed) {
+    return "API key billing not confirmed";
+  }
+  return disclosure.label.trim();
 }
 
 function isNonEmpty(value: string): boolean {

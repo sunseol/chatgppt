@@ -17,6 +17,7 @@ describe("live usage summary documentation", () => {
     expect(usageSummary.includes("ProviderJobProgressPanel.integration.test.tsx")).toBe(true);
     expect(usageSummary.includes("cost estimate $0.0400")).toBe(true);
     expect(usageSummary.includes("API key billing confirmed")).toBe(true);
+    expect(usageSummary.includes("API key billing not confirmed")).toBe(true);
     expect(usageSummary.includes("incomplete_text_token_usage")).toBe(true);
     expect(usageSummary.includes("missing_image_usage_count")).toBe(true);
     expect(usageSummary.includes("manual QA against the packaged app surface")).toBe(true);
