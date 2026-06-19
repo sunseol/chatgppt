@@ -219,7 +219,7 @@ describe("live readiness documentation", () => {
     expect(compositorReview.includes("text_overlay_collision")).toBe(true);
     expect(compositorReview.includes("five compositor thumbnails")).toBe(true);
     expect(compositorReview.includes("presentation preview")).toBe(true);
-    expect(compositorReview.includes("live compositor screenshots")).toBe(true);
+    expect(compositorReview.includes("duplicate_compositor_slide")).toBe(true);
   });
 
   test("records the live interruption and recovery matrix contract", () => {

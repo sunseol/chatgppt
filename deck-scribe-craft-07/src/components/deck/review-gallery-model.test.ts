@@ -61,6 +61,33 @@ describe("review gallery live composition validation", () => {
       "stored_background_artifact_slide_mismatch",
     ]);
   });
+
+  test("blocks duplicate review items that hide a missing compositor slide", () => {
+    // Given
+    const items = buildReviewGalleryItems({
+      slides: [
+        { number: 1, version: 1, status: "ready", imageDescriptor: "slide 1" },
+        { number: 1, version: 1, status: "ready", imageDescriptor: "slide 1 duplicate" },
+      ],
+      specs: [slideSpec()],
+      selectedSlideNumber: 1,
+      compositions: [validComposition()],
+    });
+
+    // When
+    const validation = validateReviewGalleryLiveCompositions({
+      items,
+      expectedSlideCount: 2,
+    });
+
+    // Then
+    expect(validation.kind).toBe("blocked");
+    if (validation.kind !== "blocked") return;
+    expect(validation.issues.map((issue) => issue.code)).toEqual([
+      "duplicate_compositor_slide",
+      "missing_compositor_slide",
+    ]);
+  });
 });
 
 function compositionMissingSourceBounds(): FinalSlideComposition {
