@@ -15,6 +15,7 @@ describe("live auth secret lifecycle documentation", () => {
     expect(authSecretLifecycle.includes("Logged in using ChatGPT")).toBe(true);
     expect(authSecretLifecycle.includes("LiveSecretStore")).toBe(true);
     expect(authSecretLifecycle.includes("LiveSecretReference")).toBe(true);
+    expect(authSecretLifecycle.includes("disconnectImageApiKeySecret")).toBe(true);
     expect(authSecretLifecycle.includes("classifyLiveAuthFailure")).toBe(true);
     expect(authSecretLifecycle.includes("createLiveAuthLogoutLockState")).toBe(true);
     expect(

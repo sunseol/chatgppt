@@ -4,6 +4,7 @@ import {
   classifyLiveAuthFailure,
   connectImageApiKeySecret,
   createLiveAuthLogoutLockState,
+  disconnectImageApiKeySecret,
   type LiveSecretStore,
 } from "./live-auth-lifecycle";
 import { createProviderJobManager } from "./provider-job-manager";
@@ -71,6 +72,34 @@ describe("live auth and secret lifecycle", () => {
     expect(rejection?.message).toBe(
       "Secret store returned a reference containing raw secret material.",
     );
+  });
+
+  test("disconnects an image API key without returning a secret reference", async () => {
+    const deletedSecretIds: string[] = [];
+    const store: LiveSecretStore = {
+      kind: "os_keychain",
+      saveSecret: async () => {
+        throw new Error("saveSecret should not run during disconnect.");
+      },
+      deleteSecret: async (reference) => {
+        deletedSecretIds.push(reference.secretId);
+      },
+    };
+
+    const state = await disconnectImageApiKeySecret({
+      store,
+      reference: {
+        storeKind: "os_keychain",
+        service: "deckforge.openai.image",
+        account: "workspace@example.com",
+        secretId: "keychain://deckforge/openai-image",
+        createdAt: 1_000,
+      },
+    });
+
+    expect(deletedSecretIds).toEqual(["keychain://deckforge/openai-image"]);
+    expect(state.credentialState).toBe("missing");
+    expect(JSON.stringify(state).includes("keychain://deckforge/openai-image")).toBe(false);
   });
 
   test("classifies live auth failures without collapsing them into one unavailable state", () => {

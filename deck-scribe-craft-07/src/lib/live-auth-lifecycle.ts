@@ -30,6 +30,11 @@ export type ImageApiKeyConnectionState = {
   readonly publicLabel: string;
 };
 
+export type ImageApiKeyDisconnectedState = {
+  readonly credentialState: "missing";
+  readonly publicLabel: string;
+};
+
 export type LiveAuthFailureKind =
   | "login_expired"
   | "unauthorized"
@@ -93,6 +98,17 @@ export async function connectImageApiKeySecret(input: {
     credentialState: "stored",
     secretReference,
     publicLabel: `${secretReference.storeKind}: ${secretReference.account}`,
+  };
+}
+
+export async function disconnectImageApiKeySecret(input: {
+  readonly reference: LiveSecretReference;
+  readonly store: LiveSecretStore;
+}): Promise<ImageApiKeyDisconnectedState> {
+  await input.store.deleteSecret(input.reference);
+  return {
+    credentialState: "missing",
+    publicLabel: "OpenAI image API key is not configured.",
   };
 }
 
