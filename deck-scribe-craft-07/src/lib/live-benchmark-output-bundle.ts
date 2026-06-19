@@ -132,8 +132,18 @@ function hasGoldenPathEvidence(bundle: LiveBenchmarkOutputBundleManifest): boole
     bundle.goldenPathReportPath.endsWith("live_e2e_report.md") &&
     bundle.screenshotCount >= 10 &&
     bundle.sourceCount >= 3 &&
-    bundle.imageArtifactCount >= 5
+    bundle.imageArtifactCount >= 5 &&
+    hasDistinctArtifactEvidence(bundle.sourceArtifactIds, 3) &&
+    hasDistinctArtifactEvidence(bundle.liveImageArtifactIds, 5)
   );
+}
+
+function hasDistinctArtifactEvidence(
+  artifactIds: readonly string[],
+  minimumCount: number,
+): boolean {
+  const normalized = artifactIds.map((artifactId) => artifactId.trim()).filter(Boolean);
+  return normalized.length >= minimumCount && new Set(normalized).size >= minimumCount;
 }
 
 function issue(

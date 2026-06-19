@@ -115,7 +115,9 @@ describe("live benchmark evidence", () => {
             exportArtifactId: "",
             screenshotCount: 3,
             sourceCount: 1,
+            sourceArtifactIds: ["source_1"],
             imageArtifactCount: 2,
+            liveImageArtifactIds: ["image_1", "image_2"],
           },
         },
         run("market_research", "passed"),
@@ -135,6 +137,36 @@ describe("live benchmark evidence", () => {
       "output_bundle_benchmark_mismatch",
       "output_bundle_report_missing",
       "output_bundle_export_missing",
+      "output_bundle_golden_path_evidence_missing",
+    ]);
+  });
+
+  test("blocks passed benchmark bundles with duplicated source or image artifacts", () => {
+    // Given
+    const bundle = completeBundle({
+      runs: [
+        {
+          ...run("korean_business", "passed"),
+          outputBundle: {
+            ...run("korean_business", "passed").outputBundle,
+            sourceArtifactIds: ["source_a", "source_a", "source_b"],
+            liveImageArtifactIds: ["image_a", "image_a", "image_b", "image_c", "image_d"],
+          },
+        },
+        run("market_research", "passed"),
+        run("chart_report", "passed"),
+        run("image_intro", "passed"),
+        run("revision_regeneration", "failed", "editor"),
+      ],
+    });
+
+    // When
+    const result = evaluateLiveBenchmarkEvidence(bundle);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual([
       "output_bundle_golden_path_evidence_missing",
     ]);
   });
@@ -229,7 +261,13 @@ function run(
       exportArtifactId: status === "passed" ? `${id}_export` : "",
       screenshotCount: status === "passed" ? 10 : 0,
       sourceCount: status === "passed" ? 3 : 0,
+      sourceArtifactIds:
+        status === "passed" ? [`${id}_source_1`, `${id}_source_2`, `${id}_source_3`] : [],
       imageArtifactCount: status === "passed" ? 5 : 0,
+      liveImageArtifactIds:
+        status === "passed"
+          ? [`${id}_image_1`, `${id}_image_2`, `${id}_image_3`, `${id}_image_4`, `${id}_image_5`]
+          : [],
     },
   };
 }
