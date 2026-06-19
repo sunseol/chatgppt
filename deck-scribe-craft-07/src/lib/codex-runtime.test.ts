@@ -206,4 +206,56 @@ describe("Codex app-server bootstrap", () => {
       retryable: true,
     });
   });
+
+  test("blocks restart evidence that does not prove a new process and turn", () => {
+    const completedHealthTurn = {
+      kind: "completed" as const,
+      transport: "stdio" as const,
+      cliVersion: "0.141.0",
+      account: {
+        type: "chatgpt" as const,
+        requiresOpenaiAuth: true,
+      },
+      threadId: "019eda6a-81a9-7db0-91d7-ec73d6c78880",
+      turnId: "019eda6a-8419-7ab3-be96-ea93f517aa6f",
+      turnStatus: "completed" as const,
+    };
+
+    const invalidRestartEvidence = [
+      { oldPid: 97850, newPid: 97850 },
+      { oldPid: 97850, newPid: 5889, crashProbeError: " " },
+      {
+        oldPid: 97850,
+        newPid: 5889,
+        postRestartHealthTurn: { ...completedHealthTurn, turnId: "" },
+      },
+      {
+        oldPid: 97850,
+        newPid: 5889,
+        postRestartHealthTurn: { ...completedHealthTurn, cliVersion: "0.140.0" },
+      },
+    ];
+
+    const validRestartEvidence = {
+      kind: "restarted" as const,
+      cliVersion: "0.141.0",
+      appServerVersion: "0.141.0",
+      oldPid: 97850,
+      newPid: 5889,
+      crashProbeError: "failed to connect to app-server-control.sock: Connection refused",
+      postRestartHealthTurn: completedHealthTurn,
+    };
+
+    const results = invalidRestartEvidence.map((override) =>
+      evaluateCodexAppServerRestartSmoke({ ...validRestartEvidence, ...override }),
+    );
+
+    expect(results.every((result) => result.kind === "failed")).toBe(true);
+    expect(results.map((result) => result.message)).toEqual([
+      "Codex App Server crash restart smoke failed.",
+      "Codex App Server crash restart smoke failed.",
+      "Codex App Server crash restart smoke failed.",
+      "Codex App Server crash restart smoke failed.",
+    ]);
+  });
 });

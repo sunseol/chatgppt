@@ -192,6 +192,16 @@ export function evaluateCodexAppServerRestartSmoke(
 ): CodexAppServerRestartSmokeStatus {
   switch (evidence.kind) {
     case "restarted":
+      if (
+        evidence.oldPid === evidence.newPid ||
+        evidence.crashProbeError.trim() === "" ||
+        evidence.postRestartHealthTurn.cliVersion !== evidence.cliVersion ||
+        evidence.postRestartHealthTurn.threadId.trim() === "" ||
+        evidence.postRestartHealthTurn.turnId.trim() === ""
+      ) {
+        return failedRestartSmoke(evidence.cliVersion);
+      }
+
       return {
         kind: "ready",
         cliVersion: evidence.cliVersion,
@@ -203,16 +213,20 @@ export function evaluateCodexAppServerRestartSmoke(
         message: "Codex App Server restarted after crash and completed a health turn.",
       };
     case "restartFailed":
-      return {
-        kind: "failed",
-        cliVersion: evidence.cliVersion,
-        message: "Codex App Server crash restart smoke failed.",
-        remediation: "Restart the daemon and rerun an authenticated post-restart health turn.",
-        retryable: true,
-      };
+      return failedRestartSmoke(evidence.cliVersion);
     default:
       return assertNever(evidence);
   }
+}
+
+function failedRestartSmoke(cliVersion: string): CodexAppServerRestartSmokeStatus {
+  return {
+    kind: "failed",
+    cliVersion,
+    message: "Codex App Server crash restart smoke failed.",
+    remediation: "Restart the daemon and rerun an authenticated post-restart health turn.",
+    retryable: true,
+  };
 }
 
 function assertNever(value: never): never {
