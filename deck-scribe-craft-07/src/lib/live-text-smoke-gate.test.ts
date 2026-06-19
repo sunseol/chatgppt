@@ -193,7 +193,7 @@ function liveArtifact(
       providerKind: overrides.providerKind ?? "codex",
       authMode: overrides.authMode ?? "codex_session",
       modelOrRuntime: "codex-app-server 0.141.0",
-      promptVersion: `${stage}@v1`,
+      promptVersion: promptVersionForStage(stage),
       durationMs: 2_400,
       inputArtifactIds: overrides.inputArtifactIds ?? defaultInputArtifactIds(stage),
       fixture: overrides.fixture ?? false,
@@ -207,6 +207,21 @@ function liveArtifact(
         : {}),
     }),
   };
+}
+
+function promptVersionForStage(stage: LiveTextProductionStage): string {
+  switch (stage) {
+    case "questions":
+      return "interview_questions_desktop@v1";
+    case "brief":
+      return "interview_brief@v1";
+    case "deck_plan":
+      return "deck_plan_desktop@v1";
+    case "design_system":
+      return "design_system_desktop@v1";
+    case "layout_ir":
+      return "layout_ir_desktop@v1";
+  }
 }
 
 function defaultInputArtifactIds(stage: LiveTextProductionStage): readonly string[] {
