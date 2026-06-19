@@ -5,7 +5,7 @@ import {
   type LiveBenchmarkRun,
 } from "./live-benchmark-evidence";
 
-const PACKAGE_SHA = "2204709ff25c811571357cfe9f5c6dbe99492fc0ef93c0a4505dc56d48e83fb6";
+const PACKAGE_SHA = "daa4a7c0fcb0480d4a438edf8e51d39770371c86aa50c80b4fdedbec4064ea42";
 
 describe("live benchmark image request evidence", () => {
   test("blocks passed output bundles that reuse one live image request id", () => {

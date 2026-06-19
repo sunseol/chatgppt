@@ -73,6 +73,7 @@ function reportSignatureIssues(bundle: LiveGoldenPathE2EBundle): readonly LiveGo
     hasNonSyntheticEvidencePath(bundle.reportPath, [".md"]) &&
     signature.signer.trim() &&
     signature.signedAt.trim() &&
+    Number.isFinite(Date.parse(signature.signedAt.trim())) &&
     signature.digest.trim();
   return signed
     ? reportDigestIssues(bundle.reportContent, signature.digest)
