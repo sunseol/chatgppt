@@ -67,6 +67,22 @@ describe("live initial release gate", () => {
     ]);
   });
 
+  test("blocks lookalike release decision document paths", () => {
+    const result = evaluateLiveInitialReleaseGate({
+      ...readyInput(),
+      releaseDecision: {
+        documentPath: "release-evidence/live-release-decision.md",
+        decision: "approved",
+        decisionRecorded: true,
+        knownLimitsRecorded: true,
+      },
+    });
+
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.blockers.map((blocker) => blocker.code)).toEqual(["missing_release_decision"]);
+  });
+
   test("counts only distinct passed benchmarks without failure domains", () => {
     const result = evaluateLiveInitialReleaseGate({
       ...readyInput(),

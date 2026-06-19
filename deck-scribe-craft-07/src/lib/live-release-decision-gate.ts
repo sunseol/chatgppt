@@ -8,7 +8,7 @@ export function decisionBlockers(
   decision: LiveReleaseDecisionEvidence,
 ): readonly LiveReleaseBlocker[] {
   return [
-    ...(decision.documentPath.endsWith("live-release-decision.md") && decision.decisionRecorded
+    ...(decision.documentPath === "docs/live-release-decision.md" && decision.decisionRecorded
       ? []
       : [
           blocker(
