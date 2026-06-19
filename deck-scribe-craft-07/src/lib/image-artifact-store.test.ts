@@ -129,6 +129,56 @@ describe("image artifact store", () => {
     expect((await rejectionMessage(invalidData)).includes("valid PNG signature")).toBe(true);
     expect((await rejectionMessage(missingRequest)).includes("request id")).toBe(true);
   });
+
+  test("rejects incomplete request metadata before writing image artifacts", async () => {
+    // Given
+    const writes: ImageArtifactStoreWrite[] = [];
+    const store = createImageArtifactStore({
+      write: async (entry) => {
+        writes.push(entry);
+      },
+    });
+    const artifact = realImageArtifact();
+    if (!artifact.request) throw new Error("Expected request metadata fixture.");
+
+    // When
+    const missingModel = storeSlideImageArtifact({
+      store,
+      projectId: "project_001",
+      artifact: { ...artifact, request: { ...artifact.request, model: " " } },
+      version: 1,
+      createdAt: 1_789_800_005,
+    });
+    const invalidLatency = storeSlideImageArtifact({
+      store,
+      projectId: "project_001",
+      artifact: {
+        ...artifact,
+        request: { ...artifact.request, latencyMs: Number.NaN },
+      },
+      version: 1,
+      createdAt: 1_789_800_006,
+    });
+    const invalidUsage = storeSlideImageArtifact({
+      store,
+      projectId: "project_001",
+      artifact: {
+        ...artifact,
+        request: {
+          ...artifact.request,
+          usage: { imageCount: -1, estimatedCostUsd: Number.NaN },
+        },
+      },
+      version: 1,
+      createdAt: 1_789_800_007,
+    });
+
+    // Then
+    expect((await rejectionMessage(missingModel)).includes("request model")).toBe(true);
+    expect((await rejectionMessage(invalidLatency)).includes("latency")).toBe(true);
+    expect((await rejectionMessage(invalidUsage)).includes("usage")).toBe(true);
+    expect(writes.length).toBe(0);
+  });
 });
 
 async function rejectionMessage(promise: Promise<unknown>): Promise<string> {

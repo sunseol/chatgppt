@@ -172,6 +172,8 @@ describe("live readiness documentation", () => {
     expect(imageArtifactStorage.includes("live-image-provider-adapter")).toBe(true);
     expect(imageArtifactStorage.includes("content_policy")).toBe(true);
     expect(imageArtifactStorage.includes("requestId")).toBe(true);
+    expect(imageArtifactStorage.includes("invalid latency")).toBe(true);
+    expect(imageArtifactStorage.includes("non-finite usage")).toBe(true);
     expect(imageArtifactStorage.includes("rate_limit")).toBe(true);
   });
 

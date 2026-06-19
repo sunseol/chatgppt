@@ -122,10 +122,36 @@ function requireRequestMetadata(artifact: SlideImageArtifact): SlideImageRequest
   if (!artifact.request) {
     throw new ImageArtifactStoreError("Image artifact request metadata is required.");
   }
+  if (!artifact.request.model.trim()) {
+    throw new ImageArtifactStoreError("Image artifact request model is required.");
+  }
   if (artifact.providerId === "openaiImage" && !artifact.request.requestId) {
     throw new ImageArtifactStoreError("OpenAI image artifacts require a provider request id.");
   }
+  if (!validLatencyMs(artifact.request.latencyMs)) {
+    throw new ImageArtifactStoreError(
+      "Image artifact request latency must be a non-negative number.",
+    );
+  }
+  if (!validUsageSummary(artifact.request.usage)) {
+    throw new ImageArtifactStoreError("Image artifact request usage must be non-negative numbers.");
+  }
   return artifact.request;
+}
+
+function validLatencyMs(value: number | undefined): boolean {
+  return value !== undefined && Number.isFinite(value) && value >= 0;
+}
+
+function validUsageSummary(usage: SlideImageRequestMetadata["usage"]): boolean {
+  if (usage === undefined) return true;
+  return [usage.inputTokens, usage.outputTokens, usage.imageCount, usage.estimatedCostUsd].every(
+    validOptionalAmount,
+  );
+}
+
+function validOptionalAmount(value: number | undefined): boolean {
+  return value === undefined || (Number.isFinite(value) && value >= 0);
 }
 
 function pngBytesFromDataUrl(dataUrl: string): Uint8Array {
