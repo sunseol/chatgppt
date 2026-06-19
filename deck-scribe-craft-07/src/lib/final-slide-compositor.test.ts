@@ -4,6 +4,7 @@ import { buildBasicChartOverlays } from "./chart-overlay";
 import { createFrozenDeckContext } from "./deck-context";
 import { composeMvpEditableLayers } from "./editable-layer-composer";
 import { composeFinalSlide, countKoreanTextOverlays } from "./final-slide-compositor";
+import type { FinalSlideBackgroundArtifactRef } from "./final-slide-compositor";
 import { mockBrief, mockDesign, mockLayout, mockPlan, mockResearch } from "./mock-ai";
 import { encodeSolidPngDataUrl } from "./png-encoder";
 import { buildSlideContextBundles, type SlideContextBundle } from "./slide-context-bundle";
@@ -81,12 +82,37 @@ describe("final slide compositor", () => {
       true,
     );
   });
+
+  test("rejects stored live background artifacts from a different slide", async () => {
+    const { project, bundle } = approvedFixture();
+
+    const result = await compositionFixture(project, bundle, {
+      liveBackgroundArtifact: true,
+      backgroundArtifact: {
+        artifactId: "project_001_image_slide_004_v1",
+        path: "projects/project_001/slides/images/slide_004.v1.png",
+        hash: "sha256:live-background",
+      },
+    }).then(
+      () => ({ kind: "resolved" as const }),
+      (error: unknown) => ({ kind: "rejected" as const, error }),
+    );
+
+    expect(result.kind).toBe("rejected");
+    if (result.kind !== "rejected") return;
+    expect(result.error instanceof Error).toBe(true);
+    if (!(result.error instanceof Error)) return;
+    expect(result.error.message).toBe("Stored background artifact must target slide 3.");
+  });
 });
 
 async function compositionFixture(
   project: DeckProject,
   bundle: SlideContextBundle,
-  options: { readonly liveBackgroundArtifact?: boolean } = {},
+  options: {
+    readonly liveBackgroundArtifact?: boolean;
+    readonly backgroundArtifact?: FinalSlideBackgroundArtifactRef;
+  } = {},
 ) {
   const imageResult = await generateSlideImage({
     provider: options.liveBackgroundArtifact
@@ -123,7 +149,7 @@ async function compositionFixture(
     layers: composeMvpEditableLayers({ bundle, chartOverlays: overlays.overlays }),
     ...(options.liveBackgroundArtifact
       ? {
-          backgroundArtifact: {
+          backgroundArtifact: options.backgroundArtifact ?? {
             artifactId: "project_001_image_slide_003_v1",
             path: "projects/project_001/slides/images/slide_003.v1.png",
             hash: "sha256:live-background",

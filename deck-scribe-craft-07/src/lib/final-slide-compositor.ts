@@ -43,6 +43,9 @@ export function composeFinalSlide(input: {
   if (input.background.slideNumber !== input.layers.slideNumber) {
     throw new Error("Background artifact and editable layers must target the same slide.");
   }
+  if (input.backgroundArtifact !== undefined) {
+    assertBackgroundArtifactTargetsSlide(input.backgroundArtifact, input.background.slideNumber);
+  }
   return {
     slideNumber: input.background.slideNumber,
     exportBasis: "compositor",
@@ -60,6 +63,15 @@ export function composeFinalSlide(input: {
     svg: renderSvg(input.background, input.layers, input.backgroundArtifact),
     previewPngDataUrl: renderPreviewPng(input.background.canvas),
   };
+}
+
+function assertBackgroundArtifactTargetsSlide(
+  artifact: FinalSlideBackgroundArtifactRef,
+  slideNumber: number,
+): void {
+  const token = `slide_${String(slideNumber).padStart(3, "0")}`;
+  if (artifact.artifactId.includes(token) && artifact.path.includes(`${token}.`)) return;
+  throw new Error(`Stored background artifact must target slide ${slideNumber}.`);
 }
 
 export function countKoreanTextOverlays(composition: FinalSlideComposition): number {
