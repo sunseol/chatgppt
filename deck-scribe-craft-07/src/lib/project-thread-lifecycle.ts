@@ -56,6 +56,24 @@ export type ProjectThreadRecoveryResult =
     }
   | { readonly kind: "blocked"; readonly issues: readonly string[] };
 
+const RAW_CONVERSATION_FIELDS = [
+  "rawConversation",
+  "rawConversationText",
+  "rawConversationHistory",
+  "conversationTranscript",
+  "conversationHistory",
+  "threadTranscript",
+] as const;
+
+const RAW_SOURCE_VALUES = new Set([
+  "raw_conversation",
+  "rawConversation",
+  "conversation",
+  "conversation_history",
+  "long_running_thread",
+  "thread_history",
+]);
+
 export function createProjectThreadManifest(input: {
   readonly context: FrozenDeckContext;
   readonly coordinatorThreadId: string;
@@ -146,6 +164,7 @@ function manifestIssues(manifest: ProjectThreadManifest): readonly string[] {
       : ["Project thread manifest is missing a coordinator thread id."]),
     ...duplicateWorkerStageIssues(manifest.workers),
     ...duplicateWorkerThreadIdIssues(manifest.workers),
+    ...rawManifestSourceIssues(manifest),
   ];
 }
 
@@ -202,7 +221,36 @@ function workerIssues(
     ...(sameIds(worker.approvedArtifactIds, manifest.approvedArtifactIds)
       ? []
       : [`Worker thread ${worker.threadId} does not use the approved artifact bundle.`]),
+    ...rawWorkerSourceIssues(worker),
   ];
+}
+
+function rawManifestSourceIssues(manifest: ProjectThreadManifest): readonly string[] {
+  return hasRawConversationSource(manifest)
+    ? ["Project thread manifest cannot use raw conversation as source of truth."]
+    : [];
+}
+
+function rawWorkerSourceIssues(worker: ProjectWorkerThreadManifest): readonly string[] {
+  return hasRawConversationSource(worker)
+    ? [`Worker thread ${worker.threadId} cannot persist raw conversation source material.`]
+    : [];
+}
+
+function hasRawConversationSource(value: object): boolean {
+  const record = value as Record<string, unknown>;
+  return (
+    RAW_CONVERSATION_FIELDS.some((field) => hasMeaningfulValue(record[field])) ||
+    isRawConversationSource(record.sourceOfTruth)
+  );
+}
+
+function hasMeaningfulValue(value: unknown): boolean {
+  return value !== undefined && value !== null && String(value).trim() !== "";
+}
+
+function isRawConversationSource(value: unknown): boolean {
+  return typeof value === "string" && RAW_SOURCE_VALUES.has(value.trim());
 }
 
 function approvedIds(context: FrozenDeckContext): readonly string[] {

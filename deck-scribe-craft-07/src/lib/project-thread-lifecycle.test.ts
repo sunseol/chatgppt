@@ -75,6 +75,38 @@ describe("project thread lifecycle", () => {
     ]);
   });
 
+  test("rejects manifests that make raw conversation the worker source of truth", () => {
+    const manifest = createProjectThreadManifest({
+      context: contextFixture(),
+      coordinatorThreadId: "thread_coordinator_001",
+      workers: [
+        {
+          stage: "plan",
+          threadId: "thread_plan_001",
+          lastCompletedTurnId: "turn_plan_001",
+        },
+      ],
+    });
+    const contaminatedWorker = {
+      ...manifest.workers[0],
+      conversationTranscript: "long raw conversation used instead of approved artifacts",
+    };
+    const contaminatedManifest = {
+      ...manifest,
+      sourceOfTruth: "raw_conversation",
+      workers: [contaminatedWorker],
+    };
+
+    const validation = validateProjectThreadManifest(contaminatedManifest);
+
+    expect(validation.kind).toBe("blocked");
+    if (validation.kind !== "blocked") return;
+    expect(validation.issues).toEqual([
+      "Project thread manifest cannot use raw conversation as source of truth.",
+      "Worker thread thread_plan_001 cannot persist raw conversation source material.",
+    ]);
+  });
+
   test("rejects manifests without one concrete worker thread per stage", () => {
     const manifest = createProjectThreadManifest({
       context: contextFixture(),
