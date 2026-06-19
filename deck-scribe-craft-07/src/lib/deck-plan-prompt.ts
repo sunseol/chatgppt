@@ -1,4 +1,5 @@
 import type { Claim, InterviewBrief, ResearchPack } from "./deck-types";
+import { validateLiveResearchEvidence } from "./live-research-evidence";
 import { validateResearchPack } from "./research-validator";
 
 export interface BuildDeckPlanPromptInput {
@@ -35,8 +36,17 @@ function clampSlideCount(slideCount: number): number {
 
 function collectInvalidClaimIds(research: ResearchPack): ReadonlySet<string> {
   const report = validateResearchPack(research);
+  const liveReport =
+    research.liveEvidenceRefs === undefined
+      ? undefined
+      : validateLiveResearchEvidence({
+          pack: research,
+          evidenceRefs: research.liveEvidenceRefs,
+        });
   return new Set(
-    report.fatalIssues.map((issue) => issue.claimId).filter((claimId) => claimId !== undefined),
+    [...report.fatalIssues, ...(liveReport?.fatalIssues ?? [])]
+      .map((issue) => issue.claimId)
+      .filter((claimId) => claimId !== undefined),
   );
 }
 

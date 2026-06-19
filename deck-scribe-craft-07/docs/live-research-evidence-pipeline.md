@@ -20,6 +20,7 @@ Status: partial local contract
 - `major_number_metadata` also validates dataset-backed major numbers, so a claim cannot rely on a dataset whose unit, period, geography, or definition is missing.
 - `unknown_reference` is fatal when a persisted evidence ref targets a claim that is absent from the Research Pack, or when numeric evidence points to a source or dataset that is absent from the Research Pack or not linked by the claim lineage.
 - `getDeckPlanEligibleClaims` removes claims with fatal live evidence issues before they can be forwarded to deck planning.
+- `buildDeckPlanPrompt` also excludes claims with fatal live evidence issues whenever `ResearchPack.liveEvidenceRefs` is present, so a direct Deck Plan prompt build cannot admit source-summary/no-original claims into Usable Research Claims.
 - `src/lib/live-research-evidence-builder.ts` creates quote-span or table evidence refs from `EvidenceExtractionResult` items only when the linked Research source has captured artifact metadata.
 - `src/lib/live-research-pack-builder.ts` builds a Research Pack from app-produced captured source metadata and evidence extraction results, then attaches `ResearchPack.liveEvidenceRefs` before the approval gate runs.
 
@@ -30,7 +31,7 @@ Status: partial local contract
 | Each claim has a source artifact and quote span or table reference.            | `LiveResearchEvidenceReference` requires `sourceArtifactPath` plus `kind: "quote_span"` with `quoteSpan`, or `kind: "table_reference"` with `tableRef`.                                                             |
 | Major numbers without unit, period, geography, or definition require review.   | `major_number_metadata` is fatal for incomplete numeric evidence and incomplete dataset metadata on dataset-backed major-number claims.                                                                             |
 | At least one real dataset or numeric evidence exists.                          | `missing_dataset_or_numeric_evidence` is fatal when the whole Research Pack has no dataset and no numeric evidence, and `missing_number_dataset` is fatal when a major-number claim has no dataset-backed evidence. |
-| Source-less claims are not passed to Deck Plan.                                | `getDeckPlanEligibleClaims` excludes claims with fatal evidence issues.                                                                                                                                             |
+| Source-less claims are not passed to Deck Plan.                                | `getDeckPlanEligibleClaims` and `buildDeckPlanPrompt` exclude claims with fatal evidence issues.                                                                                                                    |
 | Search-summary-only claims without original source content cannot be approved. | `summary_without_original` is fatal when a factual claim has no original artifact quote/table reference.                                                                                                            |
 | Numeric evidence must roundtrip through the claim's source/dataset lineage.    | `unknown_reference` is fatal when persisted evidence targets an unknown claim, or numeric evidence uses a source or dataset outside the claim's linked source and dataset ids.                                      |
 | Saved evidence refs must point at the captured source artifact.                | `source_artifact_mismatch` is fatal when a persisted evidence ref path does not match `ResearchPack.sources[].capture.rawArchivePath`.                                                                              |
@@ -48,10 +49,11 @@ The local claim-to-source roundtrip is covered by `src/lib/live-research-evidenc
 - packs with no dataset and no numeric evidence fail with `missing_dataset_or_numeric_evidence`;
 - table references are accepted as an alternative to quote spans.
 - captured source artifact path mismatches fail with `source_artifact_mismatch`.
+- direct Deck Plan prompt construction excludes live claims that lack original quote/table evidence refs.
 
 ## Verification
 
-- `bun test src/lib/live-research-evidence.test.ts src/lib/live-research-evidence-ref-targets.test.ts src/lib/live-research-evidence-builder.test.ts src/lib/live-research-pack-builder.test.ts src/lib/research-pack.test.ts src/components/deck/ProductionWorkflowStage.integration.test.tsx` passes.
+- `bun test src/lib/deck-plan-prompt.test.ts src/lib/live-research-evidence.test.ts src/lib/live-research-evidence-ref-targets.test.ts src/lib/live-research-evidence-builder.test.ts src/lib/live-research-pack-builder.test.ts src/lib/research-pack.test.ts src/components/deck/ProductionWorkflowStage.integration.test.tsx` passes.
 - `bun run typecheck` passes.
 - `bun run lint` passes with the existing six React Fast Refresh warnings only.
 
