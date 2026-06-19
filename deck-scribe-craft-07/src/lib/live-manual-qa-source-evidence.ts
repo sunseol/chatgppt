@@ -7,10 +7,20 @@ const PLACEHOLDER_HOSTS: ReadonlySet<string> = new Set([
   "localhost",
 ]);
 
-export function realSourceOpenIssues(openedUrls: readonly string[]): readonly LiveManualQaIssue[] {
+export function realSourceOpenIssues(
+  openedUrls: readonly string[],
+  finalReportSourceUrls: readonly string[],
+): readonly LiveManualQaIssue[] {
   const present = openedUrls.filter((url) => url.trim().length > 0);
   const invalid = present.filter((url) => !isHttpUrl(url));
   const placeholder = present.filter((url) => isPlaceholderSourceUrl(url));
+  const reportSourceUrlSet = new Set(finalReportSourceUrls.flatMap((url) => normalizedUrl(url)));
+  const openedReportSources = present
+    .filter((url) => isHttpUrl(url) && !isPlaceholderSourceUrl(url))
+    .filter((url) => {
+      const [normalized] = normalizedUrl(url);
+      return normalized !== undefined && reportSourceUrlSet.has(normalized);
+    });
   return [
     ...(present.length > 0
       ? []
@@ -39,6 +49,18 @@ export function realSourceOpenIssues(openedUrls: readonly string[]): readonly Li
             placeholder,
           ),
         ]),
+    ...(present.length === 0 ||
+    invalid.length > 0 ||
+    placeholder.length > 0 ||
+    openedReportSources.length > 0
+      ? []
+      : [
+          issue(
+            "opened_source_not_in_report",
+            "Opened manual QA source must be present in the final report sources.",
+            present,
+          ),
+        ]),
   ];
 }
 
@@ -63,6 +85,19 @@ function isPlaceholderSourceUrl(value: string): boolean {
     );
   } catch {
     return false;
+  }
+}
+
+function normalizedUrl(value: string): readonly string[] {
+  try {
+    const url = new URL(value);
+    if (url.protocol !== "https:" && url.protocol !== "http:") return [];
+    url.hash = "";
+    url.hostname = url.hostname.toLowerCase();
+    url.pathname = url.pathname.replace(/\/+$/, "");
+    return [url.toString()];
+  } catch {
+    return [];
   }
 }
 

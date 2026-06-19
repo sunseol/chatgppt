@@ -30,6 +30,7 @@ export type LiveManualQaEvidence = {
   readonly setupTasks: readonly ManualQaSetupTask[];
   readonly approvalTargetChecks: readonly ManualQaApprovalTargetCheck[];
   readonly openedRealSourceUrls: readonly string[];
+  readonly finalReportSourceUrls: readonly string[];
   readonly regeneratedSlideIds: readonly string[];
   readonly editedTitleSlideIds: readonly string[];
   readonly openedExports: readonly ManualQaExport[];
@@ -48,6 +49,7 @@ export type LiveManualQaIssueCode =
   | "missing_real_source_open"
   | "invalid_real_source_url"
   | "placeholder_real_source_url"
+  | "opened_source_not_in_report"
   | "missing_slide_regeneration"
   | "missing_title_edit"
   | "missing_export_open"
@@ -75,7 +77,7 @@ export function evaluateLiveManualQaEvidence(
     ...testerIssues(evidence),
     ...setupIssues(evidence),
     ...approvalIssues(evidence.approvalTargetChecks),
-    ...realSourceOpenIssues(evidence.openedRealSourceUrls),
+    ...realSourceOpenIssues(evidence.openedRealSourceUrls, evidence.finalReportSourceUrls),
     ...presenceIssue(
       "missing_slide_regeneration",
       evidence.regeneratedSlideIds,
@@ -116,6 +118,7 @@ export function formatLiveManualQaEvidenceSummary(evidence: LiveManualQaEvidence
     `setup tasks: ${evidence.setupTasks.join(", ") || "missing"}`,
     `approval targets checked: ${evidence.approvalTargetChecks.length}`,
     `real sources opened: ${nonEmpty(evidence.openedRealSourceUrls).length}`,
+    `report sources: ${nonEmpty(evidence.finalReportSourceUrls).length}`,
     `regenerated slides: ${nonEmpty(evidence.regeneratedSlideIds).join(", ") || "missing"}`,
     `title edits: ${nonEmpty(evidence.editedTitleSlideIds).join(", ") || "missing"}`,
     `exports opened: ${evidence.openedExports.join(", ") || "missing"}`,

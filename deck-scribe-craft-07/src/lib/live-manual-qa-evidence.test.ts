@@ -144,6 +144,22 @@ describe("live manual QA evidence", () => {
     if (result.kind !== "blocked") return;
     expect(result.issues.map((issue) => issue.code)).toEqual(["placeholder_real_source_url"]);
   });
+
+  test("blocks opened source evidence that is absent from the final report sources", () => {
+    // Given
+    const evidence = completeEvidence({
+      openedRealSourceUrls: ["https://www.w3.org/TR/WCAG22/"],
+      finalReportSourceUrls: ["https://www.nasa.gov/"],
+    });
+
+    // When
+    const result = evaluateLiveManualQaEvidence(evidence);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual(["opened_source_not_in_report"]);
+  });
 });
 
 function completeEvidence(patch: Partial<LiveManualQaEvidence> = {}): LiveManualQaEvidence {
@@ -165,6 +181,7 @@ function completeEvidence(patch: Partial<LiveManualQaEvidence> = {}): LiveManual
     placeholderOutputCount: 0,
     severityIssueListPresent: true,
     issueLog: [],
+    finalReportSourceUrls: ["https://www.w3.org/TR/WCAG22/"],
     ...patch,
   };
 }
