@@ -14,8 +14,12 @@ describe("project thread lifecycle", () => {
       context: contextFixture(),
       coordinatorThreadId: "thread_coordinator_001",
       workers: [
-        { stage: "research", threadId: "thread_research_001" },
-        { stage: "plan", threadId: "thread_plan_001" },
+        {
+          stage: "research",
+          threadId: "thread_research_001",
+          lastCompletedTurnId: "turn_research_001",
+        },
+        { stage: "plan", threadId: "thread_plan_001", lastCompletedTurnId: "turn_plan_001" },
       ],
     });
 
@@ -40,12 +44,19 @@ describe("project thread lifecycle", () => {
       ...createProjectThreadManifest({
         context: contextFixture(),
         coordinatorThreadId: "thread_coordinator_001",
-        workers: [{ stage: "layout", threadId: "thread_layout_001" }],
+        workers: [
+          {
+            stage: "layout",
+            threadId: "thread_layout_001",
+            lastCompletedTurnId: "turn_layout_001",
+          },
+        ],
       }),
       workers: [
         {
           stage: "layout" as const,
           threadId: "thread_layout_001",
+          lastCompletedTurnId: "turn_layout_001",
           deckContextId: "deckctx_old",
           deckContextHash: "sha256:old-context",
           approvedArtifactIds: ["brief_001"],
@@ -70,8 +81,12 @@ describe("project thread lifecycle", () => {
       context,
       coordinatorThreadId: "thread_coordinator_001",
       workers: [
-        { stage: "research", threadId: "thread_research_001" },
-        { stage: "plan", threadId: "thread_plan_001" },
+        {
+          stage: "research",
+          threadId: "thread_research_001",
+          lastCompletedTurnId: "turn_research_001",
+        },
+        { stage: "plan", threadId: "thread_plan_001", lastCompletedTurnId: "turn_plan_001" },
       ],
     });
 
@@ -84,8 +99,18 @@ describe("project thread lifecycle", () => {
     if (recovery.kind !== "ready") return;
     expect(recovery.manifest.coordinatorThreadId).toBe("thread_coordinator_001");
     expect(recovery.resumableThreads).toEqual([
-      { stage: "research", threadId: "thread_research_001", deckContextId: "deckctx_001" },
-      { stage: "plan", threadId: "thread_plan_001", deckContextId: "deckctx_001" },
+      {
+        stage: "research",
+        threadId: "thread_research_001",
+        lastCompletedTurnId: "turn_research_001",
+        deckContextId: "deckctx_001",
+      },
+      {
+        stage: "plan",
+        threadId: "thread_plan_001",
+        lastCompletedTurnId: "turn_plan_001",
+        deckContextId: "deckctx_001",
+      },
     ]);
   });
 
@@ -93,7 +118,13 @@ describe("project thread lifecycle", () => {
     const manifest = createProjectThreadManifest({
       context: contextFixture(),
       coordinatorThreadId: "thread_coordinator_001",
-      workers: [{ stage: "layout", threadId: "thread_layout_001" }],
+      workers: [
+        {
+          stage: "layout",
+          threadId: "thread_layout_001",
+          lastCompletedTurnId: "turn_layout_001",
+        },
+      ],
     });
     const changedContext = {
       ...contextFixture(),

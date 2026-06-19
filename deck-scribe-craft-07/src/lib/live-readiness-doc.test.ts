@@ -125,6 +125,7 @@ describe("live readiness documentation", () => {
     expect(textSmoke.includes("Smoke result: partial")).toBe(true);
     expect(projectThreadLifecycle.includes("evaluateProjectThreadResumeEvidence")).toBe(true);
     expect(projectThreadLifecycle.includes("resume_non_codex_turn")).toBe(true);
+    expect(projectThreadLifecycle.includes("resume_previous_turn_not_recovered")).toBe(true);
     expect(projectThreadLifecycle.includes("019edc28-bf27-7380-b7d2-65405e6c6758")).toBe(true);
     expect(projectThreadLifecycle.includes("packaged desktop restart/reopen run")).toBe(true);
   });

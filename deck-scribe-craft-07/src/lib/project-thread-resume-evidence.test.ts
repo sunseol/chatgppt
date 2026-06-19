@@ -10,7 +10,7 @@ describe("project thread resume evidence", () => {
     const manifest = createProjectThreadManifest({
       context,
       coordinatorThreadId: "thread_coordinator_live",
-      workers: [{ stage: "plan", threadId: "thread_plan_live" }],
+      workers: [planWorker()],
     });
 
     // When
@@ -45,7 +45,7 @@ describe("project thread resume evidence", () => {
     const manifest = createProjectThreadManifest({
       context,
       coordinatorThreadId: "thread_coordinator_live",
-      workers: [{ stage: "plan", threadId: "thread_plan_live" }],
+      workers: [planWorker()],
     });
 
     // When
@@ -87,7 +87,7 @@ describe("project thread resume evidence", () => {
     const manifest = createProjectThreadManifest({
       context,
       coordinatorThreadId: "thread_coordinator_live",
-      workers: [{ stage: "plan", threadId: "thread_plan_live" }],
+      workers: [planWorker()],
     });
 
     // When
@@ -124,7 +124,7 @@ describe("project thread resume evidence", () => {
     const manifest = createProjectThreadManifest({
       context,
       coordinatorThreadId: "thread_coordinator_live",
-      workers: [{ stage: "plan", threadId: "thread_plan_live" }],
+      workers: [planWorker()],
     });
 
     // When
@@ -162,7 +162,7 @@ describe("project thread resume evidence", () => {
     const manifest = createProjectThreadManifest({
       context,
       coordinatorThreadId: "thread_coordinator_live",
-      workers: [{ stage: "plan", threadId: "thread_plan_live" }],
+      workers: [planWorker()],
     });
     const staleManifest = { ...manifest, deckContextHash: "sha256:stale" };
 
@@ -191,6 +191,14 @@ describe("project thread resume evidence", () => {
     expect(result.issues.map((issue) => issue.code)).toEqual(["restart_recovery_blocked"]);
   });
 });
+
+function planWorker() {
+  return {
+    stage: "plan" as const,
+    threadId: "thread_plan_live",
+    lastCompletedTurnId: "turn_plan_context",
+  };
+}
 
 function contextFixture(): FrozenDeckContext {
   return {

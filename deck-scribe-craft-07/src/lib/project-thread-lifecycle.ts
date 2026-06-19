@@ -10,6 +10,7 @@ export type ProjectWorkerThreadStage = Extract<
 export type ProjectWorkerThreadInput = {
   readonly stage: ProjectWorkerThreadStage;
   readonly threadId: string;
+  readonly lastCompletedTurnId: string;
 };
 
 export type ProjectWorkerThreadManifest = ProjectWorkerThreadInput & {
@@ -128,6 +129,7 @@ export function recoverProjectThreadManifest(input: {
     resumableThreads: manifest.workers.map((worker) => ({
       stage: worker.stage,
       threadId: worker.threadId,
+      lastCompletedTurnId: worker.lastCompletedTurnId,
       deckContextId: worker.deckContextId,
     })),
   };
@@ -138,6 +140,9 @@ function workerIssues(
   worker: ProjectWorkerThreadManifest,
 ): readonly string[] {
   return [
+    ...(worker.lastCompletedTurnId.trim()
+      ? []
+      : [`Worker thread ${worker.threadId} is missing the last completed turn id.`]),
     ...(worker.deckContextId === manifest.deckContextId
       ? []
       : [`Worker thread ${worker.threadId} does not use the coordinator deck context.`]),

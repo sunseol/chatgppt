@@ -29,6 +29,7 @@ export type ProjectThreadResumeEvidenceIssueCode =
   | "resume_turn_not_completed"
   | "missing_resume_previous_turn"
   | "missing_resume_next_turn"
+  | "resume_previous_turn_not_recovered"
   | "resume_reused_existing_turn"
   | "resume_not_after_restart"
   | "resume_non_codex_turn"
@@ -127,6 +128,16 @@ function resumeEvidenceIssues(
     ...(evidence.resumedTurnId.trim()
       ? []
       : [issue("missing_resume_next_turn", "Resume evidence must include the resumed turn id.")]),
+    ...(resumedThread !== undefined &&
+    evidence.previousTurnId.trim() &&
+    evidence.previousTurnId !== resumedThread.lastCompletedTurnId
+      ? [
+          issue(
+            "resume_previous_turn_not_recovered",
+            "Resume evidence must continue from the recovered worker's last completed turn.",
+          ),
+        ]
+      : []),
     ...(evidence.previousTurnId !== evidence.resumedTurnId
       ? []
       : [
