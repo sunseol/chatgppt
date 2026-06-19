@@ -26,6 +26,7 @@ export type LiveUsageSummaryIssueCode =
   | "invalid_duration"
   | "invalid_retry_count"
   | "invalid_cost_amount"
+  | "invalid_cost_label"
   | "unlabelled_estimated_cost"
   | "estimated_cost_marked_actual"
   | "missing_image_billing_confirmation";
@@ -149,6 +150,11 @@ function costAmountIssues(stage: LiveUsageStageSummary): readonly LiveUsageSumma
 
 function costLabelIssues(stage: LiveUsageStageSummary): readonly LiveUsageSummaryIssue[] {
   if (stage.usage?.estimatedCostUsd === undefined) return [];
+  if (!isLiveCostLabel(stage.costLabel)) {
+    return [
+      issue("invalid_cost_label", stage, "Cost labels must be one of actual, estimate, or hidden."),
+    ];
+  }
   return [
     ...(stage.costLabel === "hidden"
       ? [
@@ -216,9 +222,15 @@ function usageText(stage: LiveUsageStageSummary): string {
 
 function costText(stage: LiveUsageStageSummary): string {
   const cost = stage.usage?.estimatedCostUsd;
-  if (cost === undefined || stage.costLabel === "hidden") return "";
+  if (cost === undefined || !isLiveCostLabel(stage.costLabel) || stage.costLabel === "hidden") {
+    return "";
+  }
   const label = stage.costLabel === "actual" ? "cost" : "cost estimate";
   return `${label} $${cost.toFixed(4)}`;
+}
+
+function isLiveCostLabel(value: unknown): value is LiveCostLabel {
+  return value === "actual" || value === "estimate" || value === "hidden";
 }
 
 function billingText(stage: LiveUsageStageSummary): string {

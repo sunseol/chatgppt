@@ -23,13 +23,14 @@ Before image generation, the UI must make API key and billing usage visible and 
 - `invalid_duration`: stage duration is missing, negative, or not finite.
 - `invalid_retry_count`: retry count is missing, negative, or not an integer.
 - `invalid_cost_amount`: cost amounts are negative or not finite.
+- `invalid_cost_label`: cost label values outside `actual`, `estimate`, or `hidden` are rejected before display.
 - `unlabelled_estimated_cost`: cost is present but neither labelled exact nor labelled estimated.
 - `estimated_cost_marked_actual`: estimated provider cost is displayed as an exact charge.
 - `missing_image_billing_confirmation`: image generation lacks visible API key/billing confirmation or persisted confirmation evidence.
 
 ## Local Evidence
 
-- `src/lib/live-usage-summary.test.ts` verifies stage-level provider/duration/retry display, estimated cost formatting, usage recording, empty usage-object blockers, incomplete text/image usage blockers, invalid usage/cost amount blockers, estimated-cost-as-actual blockers, persisted API-key billing confirmation evidence blockers, developer-local billing evidence path blockers, and image billing confirmation blockers. `src/lib/live-usage-summary-redaction.test.ts` verifies that image billing labels are redacted before summary display.
+- `src/lib/live-usage-summary.test.ts` verifies stage-level provider/duration/retry display, estimated cost formatting, usage recording, empty usage-object blockers, incomplete text/image usage blockers, invalid usage/cost amount blockers, estimated-cost-as-actual blockers, persisted API-key billing confirmation evidence blockers, developer-local billing evidence path blockers, and image billing confirmation blockers. `src/lib/live-usage-summary-cost-label.test.ts` verifies that unsupported runtime cost labels cannot render provider costs as if they were valid estimates. `src/lib/live-usage-summary-redaction.test.ts` verifies that image billing labels are redacted before summary display.
 - `src/lib/live-app-server-usage-summary.ts` converts `thread/tokenUsage/updated` notifications from `codex app-server --stdio` into `LiveUsageStageSummary.usage`, and deliberately leaves `usage` empty when the provider supplied a malformed usage notification so `missing_provider_usage_summary` blocks the summary.
 - `src/lib/provider-job-progress-view.ts` and `src/components/deck/ProviderJobProgressPanel.tsx` expose app-surface provider id, execution duration, retry count, valid token/image usage, and finite estimated provider cost as `cost estimate` while still preserving job status, retry availability, recovered state, partial artifacts, redacted failure messages, and redacted image billing labels.
 - `src/lib/audit-log.ts` records provider usage summaries into report audit events and renders `estimatedCostUsd` as `cost estimate`, not as an exact charge.
@@ -58,7 +59,7 @@ The provider job progress panel now renders DF-244 usage context for any job tha
 - retry count as `retries N`
 - token/image usage items such as `input 25006`, `output 141`, or `images 1`
 - `estimatedCostUsd` only as `cost estimate $...`, never as exact `cost $...`
-- invalid provider payload amounts such as negative tokens, fractional token counts, or non-finite costs are omitted from the visible usage list instead of being rendered as real usage
+- invalid provider payload amounts such as negative tokens, fractional token counts, unsupported cost labels, or non-finite costs are omitted from the visible usage list instead of being rendered as real usage
 - image API key billing disclosure labels such as `API key billing confirmed` only when the payload includes a non-synthetic, non-local `confirmationEvidencePath` JSON record
 - secret-like text inside displayed image billing disclosure labels is redacted before the usage summary, progress panel, or audit report can show it
 - unconfirmed API-key billing payloads, or confirmed-looking payloads without persisted confirmation evidence, render as `API key billing not confirmed` instead of reusing a provider-supplied confirmed-looking label
@@ -73,4 +74,4 @@ The same integration surface now blocks misleading confirmation copy when the im
 
 ## Remaining Live Evidence
 
-The local contract, one live Codex text usage probe, app progress-panel usage display with invalid provider payload omission, incomplete text/image usage blockers, invalid usage/cost amount blockers, persisted API-key billing confirmation evidence blockers, developer-local billing evidence path blockers, and secret-redacted summary/progress/report image billing disclosure display are ready, but DF-244 still needs manual QA against the packaged app surface with real provider image billing/API-key disclosure payloads.
+The local contract, one live Codex text usage probe, app progress-panel usage display with invalid provider payload omission, incomplete text/image usage blockers, invalid usage/cost amount and cost-label blockers, persisted API-key billing confirmation evidence blockers, developer-local billing evidence path blockers, and secret-redacted summary/progress/report image billing disclosure display are ready, but DF-244 still needs manual QA against the packaged app surface with real provider image billing/API-key disclosure payloads.
