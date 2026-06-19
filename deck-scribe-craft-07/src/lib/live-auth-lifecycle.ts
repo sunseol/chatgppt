@@ -185,7 +185,9 @@ function secretReferenceContainsRawSecret(
   reference: LiveSecretReference,
   rawSecret: string,
 ): boolean {
+  const encodedSecret = encodeURIComponent(rawSecret);
+  const secretCandidates = [rawSecret, encodedSecret, encodedSecret.toLowerCase()];
   return [reference.service, reference.account, reference.secretId].some((field) =>
-    field.includes(rawSecret),
+    secretCandidates.some((candidate) => field.includes(candidate)),
   );
 }

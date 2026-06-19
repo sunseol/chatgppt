@@ -74,6 +74,43 @@ describe("live auth and secret lifecycle", () => {
     );
   });
 
+  test("rejects secret store references that echo URL-encoded image API keys", async () => {
+    // Given
+    const store: LiveSecretStore = {
+      kind: "os_keychain",
+      saveSecret: async (input) => ({
+        storeKind: "os_keychain",
+        service: input.service,
+        account: input.account,
+        secretId: `keychain://deckforge/${encodeURIComponent(input.secretValue)}`,
+        createdAt: input.createdAt,
+      }),
+      deleteSecret: async () => undefined,
+    };
+
+    // When
+    let rejection: Error | undefined;
+    try {
+      await connectImageApiKeySecret({
+        apiKey: "sk-live-secret/123+abc=",
+        store,
+        account: "workspace@example.com",
+        now: () => 1_000,
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        rejection = error;
+      } else {
+        throw error;
+      }
+    }
+
+    // Then
+    expect(rejection?.message).toBe(
+      "Secret store returned a reference containing raw secret material.",
+    );
+  });
+
   test("disconnects an image API key without returning a secret reference", async () => {
     const deletedSecretIds: string[] = [];
     const store: LiveSecretStore = {
