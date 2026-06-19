@@ -12,5 +12,7 @@ describe("live interview readiness documentation", () => {
     expect(text.includes("non_codex_session_auth")).toBe(true);
     expect(text.includes("brief_missing_question_input")).toBe(true);
     expect(text.includes("brief_missing_answer_input")).toBe(true);
+    expect(text.includes("interview_prompt_version_mismatch")).toBe(true);
+    expect(text.includes("interview_questions_desktop@v1")).toBe(true);
   });
 });

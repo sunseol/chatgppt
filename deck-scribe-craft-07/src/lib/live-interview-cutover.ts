@@ -15,13 +15,11 @@ export type LiveInterviewTurnArtifact<TArtifact> = {
 
 export type LiveInterviewStage = "questions" | "follow_up" | "brief";
 
-export type LiveInterviewRecoveryAction = "retry_live_turn" | "manual_input";
-
 export type LiveInterviewRecovery = {
   readonly stage: LiveInterviewStage;
   readonly message: string;
   readonly fixtureFallbackAllowed: false;
-  readonly actions: readonly LiveInterviewRecoveryAction[];
+  readonly actions: readonly ("retry_live_turn" | "manual_input")[];
 };
 
 export type LiveInterviewIssueCode =
@@ -31,7 +29,8 @@ export type LiveInterviewIssueCode =
   | "missing_brief_artifact"
   | "brief_missing_question_input"
   | "brief_missing_answer_input"
-  | "brief_reused_question_turn";
+  | "brief_reused_question_turn"
+  | "interview_prompt_version_mismatch";
 
 export type LiveInterviewIssue = {
   readonly code: LiveInterviewIssueCode;
@@ -160,6 +159,10 @@ function liveCodexProvenanceIssues(
   lineage: readonly ProviderArtifactProvenance[],
 ): readonly LiveInterviewIssue[] {
   const gate = evaluateApprovalProvenanceGate(lineage);
+  const expectedPromptVersions =
+    stage === "brief"
+      ? ["interview_brief@v1"]
+      : ["interview_questions@v1", "interview_questions_desktop@v1"];
   const gateIssues =
     gate.kind === "blocked" ? gate.issues.map((issue) => providerIssue(stage, issue)) : [];
   const modeIssues = lineage.flatMap((provenance) => [
@@ -181,6 +184,16 @@ function liveCodexProvenanceIssues(
             artifactId: provenance.artifactId,
             stage,
             message: "Interview questions and briefs must come from production execution mode.",
+          },
+        ]),
+    ...(expectedPromptVersions.includes(provenance.promptVersion)
+      ? []
+      : [
+          {
+            code: "interview_prompt_version_mismatch" as const,
+            artifactId: provenance.artifactId,
+            stage,
+            message: `Interview ${stage} must use ${expectedPromptVersions.join(" or ")}.`,
           },
         ]),
   ]);
