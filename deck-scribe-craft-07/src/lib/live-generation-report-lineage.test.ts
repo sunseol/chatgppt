@@ -119,6 +119,35 @@ describe("live generation report lineage", () => {
     if (validation.kind !== "blocked") return;
     expect(validation.issues.map((issue) => issue.code)).toEqual(["image_artifact_slide_mismatch"]);
   });
+
+  test("blocks duplicate slide rows and reused image request evidence", () => {
+    // Given
+    const [base] = completeLineage();
+    if (!base) throw new Error("Expected lineage fixture.");
+
+    // When
+    const validation = validateLiveGenerationReportLineage({
+      executionMode: "production",
+      expectedSlideCount: 2,
+      slides: [
+        base,
+        {
+          ...base,
+          imageArtifactId: "project_001_image_slide_001_v2",
+          imageRequestId: "img_req_002",
+        },
+        { ...base, slideNumber: 2, imageArtifactId: "project_001_image_slide_002_v1" },
+      ],
+    });
+
+    // Then
+    expect(validation.kind).toBe("blocked");
+    if (validation.kind !== "blocked") return;
+    expect(validation.issues.map((issue) => issue.code)).toEqual([
+      "duplicate_slide_lineage",
+      "duplicate_image_request",
+    ]);
+  });
 });
 
 function completeLineage(): readonly LiveSlideReportLineage[] {

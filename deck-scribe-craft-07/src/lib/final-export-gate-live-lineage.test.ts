@@ -51,6 +51,28 @@ describe("final export gate live report lineage", () => {
     expect(result.issues[0]?.slideNumber).toBe(2);
   });
 
+  test("blocks production export when live report lineage reuses image request evidence", () => {
+    const result = evaluateFinalExportGate({
+      project: projectFixture({ slideCount: 2 }),
+      exportPackage: exportSummaryFixture(),
+      reportMarkdown: reportFixture(),
+      executionMode: "production",
+      lineage: providerLineageFixture(),
+      liveReportLineage: [
+        liveReportLineageFixture(),
+        {
+          ...liveReportLineageFixture(),
+          slideNumber: 2,
+          imageArtifactId: "project_001_image_slide_002_v1",
+        },
+      ],
+    });
+
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual(["duplicate_image_request"]);
+  });
+
   test("allows production final export when provider and slide report lineage are complete", () => {
     const result = evaluateFinalExportGate({
       project: projectFixture(),

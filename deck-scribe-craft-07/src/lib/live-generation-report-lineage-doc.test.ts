@@ -14,8 +14,10 @@ describe("live generation report lineage documentation", () => {
     expect(generationReportLineage.includes("text turn")).toBe(true);
     expect(generationReportLineage.includes("image request")).toBe(true);
     expect(generationReportLineage.includes("missing_live_report_lineage")).toBe(true);
+    expect(generationReportLineage.includes("duplicate_slide_lineage")).toBe(true);
     expect(generationReportLineage.includes("missing_text_artifact")).toBe(true);
     expect(generationReportLineage.includes("missing_image_artifact")).toBe(true);
+    expect(generationReportLineage.includes("duplicate_image_request")).toBe(true);
     expect(generationReportLineage.includes("invalid_compositor_hash")).toBe(true);
     expect(generationReportLineage.includes("invalid_export_hash")).toBe(true);
     expect(generationReportLineage.includes("export_compositor_mismatch")).toBe(true);
