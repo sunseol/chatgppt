@@ -48,9 +48,9 @@ Within 10 minutes, the tester must:
 - opened export artifacts `png`, `project`, and `report`
 - non-negative integer counters for critical errors, mock indicators, and placeholder outputs
 - zero critical errors, zero mock indicators, and zero placeholder outputs
-- a severity issue list using P0/P1/P2
+- a severity issue list using P0/P1/P2, where every logged issue has a non-empty title and reproduction/observation notes
 
-Blocker codes: `tester_not_non_developer`, `missing_manual_qa_session_evidence`, `setup_over_time`, `missing_approval_target_check`, `approval_target_misunderstood`, `missing_real_source_open`, `invalid_real_source_url`, `placeholder_real_source_url`, `opened_source_not_in_report`, `missing_slide_regeneration`, `missing_title_edit`, `missing_export_open`, `invalid_manual_qa_count`, `critical_issue_present`, `mock_indicator_present`, `placeholder_output_present`, `missing_severity_issue_list`.
+Blocker codes: `tester_not_non_developer`, `missing_manual_qa_session_evidence`, `setup_over_time`, `missing_approval_target_check`, `approval_target_misunderstood`, `missing_real_source_open`, `invalid_real_source_url`, `placeholder_real_source_url`, `opened_source_not_in_report`, `missing_slide_regeneration`, `missing_title_edit`, `missing_export_open`, `invalid_manual_qa_count`, `critical_issue_present`, `mock_indicator_present`, `placeholder_output_present`, `invalid_manual_qa_issue_log`, `missing_severity_issue_list`.
 
 ## Pass criteria
 

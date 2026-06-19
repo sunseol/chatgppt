@@ -1,4 +1,5 @@
 import { manualQaCountShapeIssues, safeManualQaCount } from "./live-manual-qa-counts";
+import { manualQaIssueLogIssues } from "./live-manual-qa-issue-log";
 import { realSourceOpenIssues } from "./live-manual-qa-source-evidence";
 import { sessionEvidenceIssues } from "./live-manual-qa-session-evidence";
 
@@ -61,6 +62,7 @@ export type LiveManualQaIssueCode =
   | "critical_issue_present"
   | "mock_indicator_present"
   | "placeholder_output_present"
+  | "invalid_manual_qa_issue_log"
   | "missing_severity_issue_list";
 
 export type LiveManualQaIssue = {
@@ -111,6 +113,7 @@ export function evaluateLiveManualQaEvidence(
       safeManualQaCount(evidence.placeholderOutputCount),
       "Placeholder outputs must not appear in manual QA artifacts.",
     ),
+    ...manualQaIssueLogIssues(evidence.issueLog),
     ...severityListIssues(evidence),
   ];
   return issues.length === 0 ? { kind: "ready" } : { kind: "blocked", issues };

@@ -147,6 +147,27 @@ describe("live manual QA evidence", () => {
     ]);
   });
 
+  test("blocks severity issue entries without actionable notes", () => {
+    // Given
+    const evidence = completeEvidence({
+      issueLog: [
+        {
+          severity: "P2",
+          title: "",
+          description: "  ",
+        },
+      ],
+    });
+
+    // When
+    const result = evaluateLiveManualQaEvidence(evidence);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual(["invalid_manual_qa_issue_log"]);
+  });
+
   test("blocks manual QA evidence that skips approval targets", () => {
     // Given
     const evidence = completeEvidence({
