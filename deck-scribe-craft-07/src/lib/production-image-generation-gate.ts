@@ -1,8 +1,9 @@
+import { type ImagePathBlockerCode, type ImagePathDecisionRecord } from "./image-path-decision";
 import {
-  isVersionedProjectImageArtifactPath,
-  type ImagePathBlockerCode,
-  type ImagePathDecisionRecord,
-} from "./image-path-decision";
+  parseVersionedProjectImageArtifactPath,
+  parseVersionedProjectImageProvenancePath,
+  type VersionedProjectImageArtifactAddress,
+} from "./image-artifact-path";
 import type { SlideImageProviderId } from "./slide-image-provider";
 
 export type ImageGenerationExecutionMode = "development" | "production";
@@ -34,6 +35,7 @@ export type ProductionImageGenerationGate =
       readonly providerId: Exclude<SlideImageProviderId, "mock">;
       readonly decisionId: string;
       readonly binaryArtifactPath: string;
+      readonly provenanceArtifactPath: string;
       readonly requestId?: string;
     }
   | {
@@ -70,8 +72,9 @@ export function createProductionImageGenerationGate(input: {
   }
 
   const binaryArtifactPath = decision.binaryArtifactPath?.trim();
+  const provenanceArtifactPath = decision.provenanceArtifactPath?.trim();
   const requestId = decision.requestId?.trim();
-  const issues = decisionIssues(decision, binaryArtifactPath, requestId);
+  const issues = decisionIssues(decision, binaryArtifactPath, provenanceArtifactPath, requestId);
   if (issues.length > 0) {
     return {
       kind: "blocked",
@@ -94,6 +97,19 @@ export function createProductionImageGenerationGate(input: {
       ],
     };
   }
+  if (provenanceArtifactPath === undefined) {
+    return {
+      kind: "blocked",
+      executionMode: "production",
+      providerId: decision.providerId,
+      issues: [
+        {
+          code: "missing_provenance_artifact",
+          message: "Production image generation requires provider provenance evidence.",
+        },
+      ],
+    };
+  }
 
   return {
     kind: "ready",
@@ -101,6 +117,7 @@ export function createProductionImageGenerationGate(input: {
     providerId: decision.providerId,
     decisionId: decision.decisionId,
     binaryArtifactPath,
+    provenanceArtifactPath,
     ...(requestId === undefined ? {} : { requestId }),
   };
 }
@@ -108,8 +125,17 @@ export function createProductionImageGenerationGate(input: {
 function decisionIssues(
   decision: PersistedImagePathDecisionRecord,
   binaryArtifactPath: string | undefined,
+  provenanceArtifactPath: string | undefined,
   requestId: string | undefined,
 ): readonly ProductionImageGenerationIssue[] {
+  const binaryAddress =
+    binaryArtifactPath === undefined
+      ? undefined
+      : parseVersionedProjectImageArtifactPath(binaryArtifactPath);
+  const provenanceAddress =
+    provenanceArtifactPath === undefined
+      ? undefined
+      : parseVersionedProjectImageProvenancePath(provenanceArtifactPath);
   return [
     ...(decision.status === "locked"
       ? []
@@ -139,7 +165,7 @@ function decisionIssues(
           },
         ]
       : []),
-    ...(binaryArtifactPath && !isVersionedProjectImageArtifactPath(binaryArtifactPath)
+    ...(binaryArtifactPath && binaryAddress === undefined
       ? [
           {
             code: "invalid_binary_artifact_path" as const,
@@ -148,6 +174,23 @@ function decisionIssues(
           },
         ]
       : []),
+    ...(provenanceArtifactPath === undefined || provenanceArtifactPath.length === 0
+      ? [
+          {
+            code: "missing_provenance_artifact" as const,
+            message: "Production image generation requires provider provenance evidence.",
+          },
+        ]
+      : []),
+    ...(provenanceArtifactPath && provenanceAddress === undefined
+      ? [
+          {
+            code: "invalid_provenance_artifact_path" as const,
+            message: "Production image generation requires versioned provider provenance storage.",
+          },
+        ]
+      : []),
+    ...evidencePairIssues(binaryAddress, provenanceAddress),
     ...(decision.providerId === "openaiImage" && !requestId
       ? [
           {
@@ -156,5 +199,25 @@ function decisionIssues(
           },
         ]
       : []),
+  ];
+}
+
+function evidencePairIssues(
+  binaryAddress: VersionedProjectImageArtifactAddress | undefined,
+  provenanceAddress: VersionedProjectImageArtifactAddress | undefined,
+): readonly ProductionImageGenerationIssue[] {
+  if (binaryAddress === undefined || provenanceAddress === undefined) return [];
+  if (
+    binaryAddress.slideNumber === provenanceAddress.slideNumber &&
+    binaryAddress.version === provenanceAddress.version
+  ) {
+    return [];
+  }
+  return [
+    {
+      code: "provenance_artifact_path_mismatch",
+      message:
+        "Production image generation requires provenance evidence for the stored binary artifact.",
+    },
   ];
 }

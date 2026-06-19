@@ -25,6 +25,7 @@ describe("image path decision request model evidence", () => {
         request: { ...request, model: " " },
       },
       binaryArtifactPath: "projects/project_001/slides/images/slide_001.v1.png",
+      provenanceArtifactPath: "projects/project_001/slides/images/slide_001.v1.provenance.json",
       billingOwner: "openai_api_project",
       requiredPermissions: ["images.generate", "model:gpt-image-2"],
       organizationVerification: "verified",

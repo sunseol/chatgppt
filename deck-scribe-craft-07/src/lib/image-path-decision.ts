@@ -5,7 +5,13 @@ import type {
   ImageProviderSetup,
   OrganizationVerification,
 } from "./image-provider-feasibility";
+import { storedArtifactPathBlockers } from "./image-path-decision-artifact-paths";
 import type { SlideImageArtifact } from "./slide-image-provider";
+
+export {
+  isVersionedProjectImageArtifactPath,
+  isVersionedProjectImageProvenancePath,
+} from "./image-artifact-path";
 
 export type ImagePathDecisionStatus = "locked" | "blocked";
 
@@ -17,6 +23,9 @@ export type ImagePathBlockerCode =
   | "missing_binary_artifact"
   | "invalid_binary_artifact_path"
   | "binary_artifact_slide_mismatch"
+  | "missing_provenance_artifact"
+  | "invalid_provenance_artifact_path"
+  | "provenance_artifact_path_mismatch"
   | "invalid_image_binary"
   | "artifact_provider_mismatch"
   | "missing_request_model"
@@ -42,6 +51,7 @@ export type ImagePathDecisionRecord = {
   readonly excludedRoutes: ImageProviderFeasibilityDecision["excludedRoutes"];
   readonly blockers: readonly ImagePathBlocker[];
   readonly binaryArtifactPath?: string;
+  readonly provenanceArtifactPath?: string;
   readonly requestId?: string;
 };
 
@@ -54,6 +64,7 @@ export function createImagePathDecisionRecord(input: {
   readonly organizationVerification: OrganizationVerification;
   readonly successfulArtifact?: SlideImageArtifact;
   readonly binaryArtifactPath?: string;
+  readonly provenanceArtifactPath?: string;
 }): ImagePathDecisionRecord {
   const blockers = imagePathBlockers(input);
   const requestId = input.successfulArtifact?.request?.requestId;
@@ -73,6 +84,9 @@ export function createImagePathDecisionRecord(input: {
     ...(input.binaryArtifactPath === undefined
       ? {}
       : { binaryArtifactPath: input.binaryArtifactPath }),
+    ...(input.provenanceArtifactPath === undefined
+      ? {}
+      : { provenanceArtifactPath: input.provenanceArtifactPath }),
     ...(requestId === undefined ? {} : { requestId }),
   };
 }
@@ -90,6 +104,7 @@ function imagePathBlockers(input: {
   readonly feasibility: ImageProviderFeasibilityDecision;
   readonly successfulArtifact?: SlideImageArtifact;
   readonly binaryArtifactPath?: string;
+  readonly provenanceArtifactPath?: string;
 }): readonly ImagePathBlocker[] {
   return [
     ...setupBlockers(input.feasibility.setup),
@@ -112,6 +127,7 @@ function artifactBlockers(input: {
   readonly feasibility: ImageProviderFeasibilityDecision;
   readonly successfulArtifact?: SlideImageArtifact;
   readonly binaryArtifactPath?: string;
+  readonly provenanceArtifactPath?: string;
 }): readonly ImagePathBlocker[] {
   const artifact = input.successfulArtifact;
   if (!artifact) {
@@ -141,7 +157,11 @@ function artifactBlockers(input: {
             message: "The successful image artifact must contain PNG binary data.",
           },
         ]),
-    ...binaryArtifactPathBlockers(input.binaryArtifactPath, artifact.slideNumber),
+    ...storedArtifactPathBlockers(
+      input.binaryArtifactPath,
+      input.provenanceArtifactPath,
+      artifact.slideNumber,
+    ),
     ...(artifact.providerId === "openaiImage" && !artifact.request?.requestId
       ? [
           {
@@ -172,49 +192,6 @@ function requestModelBlockers(
       message: "The stored image artifact request model does not match the selected route.",
     },
   ];
-}
-
-function binaryArtifactPathBlockers(
-  binaryArtifactPath: string | undefined,
-  artifactSlideNumber: number,
-): readonly ImagePathBlocker[] {
-  if (!binaryArtifactPath?.trim()) {
-    return [
-      {
-        code: "missing_binary_artifact",
-        message: "The successful image artifact must be written to artifact storage.",
-      },
-    ];
-  }
-  const pathSlideNumber = versionedProjectImageSlideNumber(binaryArtifactPath);
-  if (pathSlideNumber === undefined) {
-    return [
-      {
-        code: "invalid_binary_artifact_path",
-        message:
-          "The successful image artifact path must point to versioned project image storage.",
-      },
-    ];
-  }
-  if (pathSlideNumber === artifactSlideNumber) return [];
-  return [
-    {
-      code: "binary_artifact_slide_mismatch",
-      message: "The stored binary artifact path must match the successful image slide number.",
-    },
-  ];
-}
-
-function versionedProjectImageSlideNumber(path: string): number | undefined {
-  const match = /^projects\/[A-Za-z0-9_-]+\/slides\/images\/slide_(\d{3})\.v\d+\.png$/.exec(path);
-  if (!match) return undefined;
-  const value = match[1];
-  if (value === undefined) return undefined;
-  return Number.parseInt(value, 10);
-}
-
-export function isVersionedProjectImageArtifactPath(path: string): boolean {
-  return versionedProjectImageSlideNumber(path) !== undefined;
 }
 
 function decisionMetadataBlockers(input: {

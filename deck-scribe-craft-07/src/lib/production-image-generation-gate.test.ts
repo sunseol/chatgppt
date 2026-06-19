@@ -83,6 +83,7 @@ describe("production image generation gate", () => {
       providerId: "openaiImage",
       decisionId: "image_path_df230",
       binaryArtifactPath: "projects/project_001/slides/images/slide_001.v1.png",
+      provenanceArtifactPath: "projects/project_001/slides/images/slide_001.v1.provenance.json",
       requestId: "img_req_001",
     });
   });
@@ -120,6 +121,29 @@ describe("production image generation gate", () => {
       ],
     });
   });
+
+  test("blocks persisted decisions whose provenance sidecar does not match the binary artifact", () => {
+    const gate = createProductionImageGenerationGate({
+      executionMode: "production",
+      imagePathDecision: {
+        ...lockedDecision(),
+        provenanceArtifactPath: "projects/project_001/slides/images/slide_001.v2.provenance.json",
+      },
+    });
+
+    expect(gate).toEqual({
+      kind: "blocked",
+      executionMode: "production",
+      providerId: "openaiImage",
+      issues: [
+        {
+          code: "provenance_artifact_path_mismatch",
+          message:
+            "Production image generation requires provenance evidence for the stored binary artifact.",
+        },
+      ],
+    });
+  });
 });
 
 function lockedDecision(): ImagePathDecisionRecord {
@@ -142,6 +166,7 @@ function lockedDecision(): ImagePathDecisionRecord {
     ],
     blockers: [],
     binaryArtifactPath: "projects/project_001/slides/images/slide_001.v1.png",
+    provenanceArtifactPath: "projects/project_001/slides/images/slide_001.v1.provenance.json",
     requestId: "img_req_001",
   };
 }
