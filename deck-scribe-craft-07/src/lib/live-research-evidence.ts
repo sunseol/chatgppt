@@ -1,5 +1,7 @@
 import type { QuoteSpan, TableReference } from "./evidence-extractor";
+import { validateEvidenceRefClaimTargets } from "./live-research-evidence-ref-targets";
 import { validateClaimNumberEvidence } from "./live-research-number-evidence";
+import { validatePackDatasetOrNumericEvidence } from "./live-research-evidence-pack-requirements";
 import type { Claim, ResearchPack } from "./research-types";
 
 export type LiveResearchEvidenceIssueCode =
@@ -54,6 +56,7 @@ export function validateLiveResearchEvidence(input: {
   readonly evidenceRefs: readonly LiveResearchEvidenceReference[];
 }): LiveResearchEvidenceReport {
   const issues: LiveResearchEvidenceIssue[] = [];
+  const claimIds = new Set(input.pack.claims.map((claim) => claim.id));
   const sourceIds = new Set(input.pack.sources.map((source) => source.id));
   const sourceArtifactPathsById = new Map(
     input.pack.sources.map((source) => [source.id, source.capture?.rawArchivePath] as const),
@@ -62,7 +65,8 @@ export function validateLiveResearchEvidence(input: {
   const datasetIds = new Set(datasetsById.keys());
   const refsByClaim = groupEvidenceRefsByClaim(input.evidenceRefs);
 
-  validatePackDatasetOrNumericEvidence(input.pack, issues);
+  issues.push(...validatePackDatasetOrNumericEvidence(input.pack));
+  issues.push(...validateEvidenceRefClaimTargets(input.evidenceRefs, claimIds));
 
   for (const claim of input.pack.claims) {
     const evidenceRefs = refsByClaim.get(claim.id) ?? [];
@@ -90,21 +94,6 @@ export function getDeckPlanEligibleClaims(
     report.fatalIssues.map((issue) => issue.claimId).filter((claimId) => claimId !== undefined),
   );
   return pack.claims.filter((claim) => !blockedClaimIds.has(claim.id));
-}
-
-function validatePackDatasetOrNumericEvidence(
-  pack: ResearchPack,
-  issues: LiveResearchEvidenceIssue[],
-) {
-  if (pack.datasets.length > 0 || pack.claims.some((claim) => claim.numericEvidence.length > 0)) {
-    return;
-  }
-  issues.push(
-    issue({
-      code: "missing_dataset_or_numeric_evidence",
-      message: "Live Research Pack requires at least one real dataset or numeric evidence item.",
-    }),
-  );
 }
 
 function validateClaimOriginalEvidence(
