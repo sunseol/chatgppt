@@ -62,9 +62,9 @@ The provider job progress panel now renders DF-244 usage context for any job tha
 - invalid provider payload amounts such as negative tokens, fractional token counts, unsupported cost labels, or non-finite costs are omitted from the visible usage list instead of being rendered as real usage
 - image API key billing disclosure labels such as `API key billing confirmed` only when the payload includes a non-synthetic, non-local `confirmationEvidencePath` JSON record
 - secret-like text inside displayed image billing disclosure labels is redacted before the usage summary, progress panel, or audit report can show it
-- unconfirmed API-key billing payloads, or confirmed-looking payloads without persisted confirmation evidence, render as `API key billing not confirmed` instead of reusing a provider-supplied confirmed-looking label
+- unconfirmed billing payloads, even when `apiKeyRequired: false`, or confirmed-looking payloads without persisted confirmation evidence, render as `API key billing not confirmed` instead of reusing a provider-supplied confirmed-looking label
 
-`src/lib/provider-job-progress-view.test.ts` locks the app-progress view so invalid provider usage values such as `input -1`, fractional outputs, or `cost estimate $NaN` are not shown to the user, and developer-local absolute image billing evidence paths render as `API key billing not confirmed`. `src/lib/provider-job-progress-view-redaction.test.ts` verifies the progress view redacts secret-like text from image billing labels.
+`src/lib/provider-job-progress-view.test.ts` locks the app-progress view so invalid provider usage values such as `input -1`, fractional outputs, or `cost estimate $NaN` are not shown to the user, unconfirmed billing payloads cannot display confirmed-looking labels, and developer-local absolute image billing evidence paths render as `API key billing not confirmed`. `src/lib/provider-job-progress-view-redaction.test.ts` verifies the progress view redacts secret-like text from image billing labels.
 
 `src/components/deck/ProviderJobProgressPanel.integration.test.tsx` locks the rendered app surface for the live Codex usage probe shape: provider `codex`, duration `7158ms`, `retries 1`, `input 25006`, `output 141`, and `cost estimate $0.0400`. It also locks the image usage shape with `images 5`, `cost estimate $0.1800`, and `API key billing confirmed`.
 

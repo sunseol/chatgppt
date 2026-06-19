@@ -136,10 +136,10 @@ function costEstimateItem(cost: number | undefined): string {
 function imageBillingDisclosureItem(usageSummary: ProviderUsageSummary): string {
   const disclosure = usageSummary.imageBillingDisclosure;
   if (disclosure === undefined) return "";
+  if (!disclosure.userConfirmed) return "API key billing not confirmed";
   if (
     disclosure.apiKeyRequired &&
-    (!disclosure.userConfirmed ||
-      !hasNonSyntheticJsonEvidencePath(disclosure.confirmationEvidencePath))
+    !hasNonSyntheticJsonEvidencePath(disclosure.confirmationEvidencePath)
   ) {
     return "API key billing not confirmed";
   }

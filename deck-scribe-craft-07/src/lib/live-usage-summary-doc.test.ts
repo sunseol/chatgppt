@@ -18,6 +18,7 @@ describe("live usage summary documentation", () => {
     expect(usageSummary.includes("cost estimate $0.0400")).toBe(true);
     expect(usageSummary.includes("API key billing confirmed")).toBe(true);
     expect(usageSummary.includes("API key billing not confirmed")).toBe(true);
+    expect(usageSummary.includes("even when `apiKeyRequired: false`")).toBe(true);
     expect(usageSummary.includes("confirmationEvidencePath")).toBe(true);
     expect(
       usageSummary.includes("secret-like text inside displayed image billing disclosure labels"),
