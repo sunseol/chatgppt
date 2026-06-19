@@ -23,6 +23,7 @@ Each production slide report must include:
 - prompt version
 - fixture flag
 - compositor PNG hash and exported PNG hash
+- exported project content and report markdown without raw secret-like text
 - exported project content without mock-mode or fixture markers
 
 `buildGenerationReport` appends the formatted `## Live Slide Lineage` section when supplied with verified live report lineage. The report renderer uses the labels `text turn`, `image request`, `prompt`, `fixture`, `compositor`, and `export` so reviewers can see the lineage without opening the project file.
@@ -53,10 +54,10 @@ Each production slide report must include:
 - `mock_lineage_contamination`: production lineage includes a mock text or image provider artifact, or exported project content retains mock-mode markers.
 - `fixture_lineage_contamination`: production lineage includes fixture content, or exported project content retains fixture paths/flags.
 - `export_compositor_mismatch`: exported PNG hash does not match the compositor result hash.
-- `secret_leak`: project export content contains secret-like text after redaction scan.
+- `secret_leak`: project export content or generation report markdown contains secret-like text after redaction scan.
 - `missing_live_report_lineage`: production export was requested without slide-level live report lineage.
 
-`src/lib/final-export-gate.ts` now requires slide-level live report lineage in production mode, requires that validated lineage to appear in the report markdown, and forwards live lineage validation failures, including `missing_slide_lineage`, `duplicate_slide_lineage`, `missing_text_artifact`, `missing_image_artifact`, `image_artifact_slide_mismatch`, `missing_image_request`, `duplicate_image_request`, `missing_text_provider_lineage`, `missing_image_provider_lineage`, `text_provider_auth_mismatch`, `image_provider_auth_mismatch`, `text_provider_lineage_mismatch`, `image_provider_lineage_mismatch`, `missing_live_report_lineage_section`, `invalid_compositor_hash`, `invalid_export_hash`, `mock_lineage_contamination`, `fixture_lineage_contamination`, `export_compositor_mismatch`, and `secret_leak`, into the final export gate issues.
+`src/lib/final-export-gate.ts` now requires slide-level live report lineage in production mode, requires that validated lineage to appear in the report markdown, blocks secret-like report markdown through `src/lib/final-export-report-gate.ts`, and forwards live lineage validation failures, including `missing_slide_lineage`, `duplicate_slide_lineage`, `missing_text_artifact`, `missing_image_artifact`, `image_artifact_slide_mismatch`, `missing_image_request`, `duplicate_image_request`, `missing_text_provider_lineage`, `missing_image_provider_lineage`, `text_provider_auth_mismatch`, `image_provider_auth_mismatch`, `text_provider_lineage_mismatch`, `image_provider_lineage_mismatch`, `missing_live_report_lineage_section`, `invalid_compositor_hash`, `invalid_export_hash`, `mock_lineage_contamination`, `fixture_lineage_contamination`, `export_compositor_mismatch`, and `secret_leak`, into the final export gate issues.
 
 ## Local Evidence
 
@@ -65,7 +66,7 @@ Each production slide report must include:
 - `src/lib/final-export-gate-live-lineage-report-section.test.ts` verifies that production export is blocked when verified sidecar lineage is absent from the report markdown.
 - `src/lib/generation-report-live-lineage.test.ts` verifies that `buildGenerationReport` appends the formatted `## Live Slide Lineage` section when live lineage is supplied.
 - `src/lib/generation-report.test.ts` verifies existing generation report provider provenance fields including turn id, request id, prompt version, and fixture flag.
-- `src/lib/final-export-gate.test.ts` verifies the existing final export gate still blocks incomplete or contaminated export summaries.
+- `src/lib/final-export-gate.test.ts` verifies the existing final export gate still blocks incomplete or contaminated export summaries and production generation reports that leak raw secrets.
 - `src/lib/project-export.test.ts` verifies project export uses approved layout PNGs and redacts project file content.
 
 ## Remaining Live Evidence

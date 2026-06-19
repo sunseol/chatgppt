@@ -4,10 +4,8 @@ import {
   liveReportGateIssues,
   type LiveReportGateIssueCode,
 } from "./final-export-live-report-gate";
-import {
-  formatLiveGenerationReportLineage,
-  type LiveSlideReportLineage,
-} from "./live-generation-report-lineage";
+import { finalExportReportIssues } from "./final-export-report-gate";
+import type { LiveSlideReportLineage } from "./live-generation-report-lineage";
 import { type ExecutionMode, type ProviderArtifactProvenance } from "./provider-provenance";
 import { workflowErrorBlocksFinalApproval } from "./workflow-error-policy";
 
@@ -77,15 +75,15 @@ export function evaluateFinalExportGate(input: {
     ...invalidatedIssues(input.project),
     ...workflowErrorIssues(input.project),
     ...exportPackageIssues(summary),
-    ...reportIssues(reportMarkdown, summary),
-    ...productionLineageIssues(input.executionMode, input.lineage ?? []),
-    ...liveReportIssues,
-    ...liveReportSectionIssues({
+    ...finalExportReportIssues({
       executionMode: input.executionMode,
       reportMarkdown,
+      summary,
       liveReportLineage: input.liveReportLineage,
       hasLiveReportIssues: liveReportIssues.length > 0,
     }),
+    ...productionLineageIssues(input.executionMode, input.lineage ?? []),
+    ...liveReportIssues,
   ];
   const warnings = developmentLineageWarnings(input.executionMode, input.lineage ?? []);
   if (issues.length > 0) return { kind: "blocked", issues };
@@ -219,43 +217,4 @@ function exportPackageIssues(
     issues.push({ code: "missing_project_file", message: "프로젝트 파일이 필요합니다." });
   }
   return issues;
-}
-
-function reportIssues(
-  reportMarkdown: string,
-  summary: ProjectExportSummary | undefined,
-): readonly FinalExportGateIssue[] {
-  const hasReport = reportMarkdown.startsWith("# Generation Report");
-  const hasPromptVersions = reportMarkdown.includes("## 9. 사용된 프롬프트 버전");
-  const hasExportReference = summary ? reportMarkdown.includes(summary.artifactId) : false;
-  if (hasReport && hasPromptVersions && hasExportReference) return [];
-  return [
-    {
-      code: "missing_generation_report",
-      message: "생성 보고서에 프롬프트 버전과 내보내기 정보가 필요합니다.",
-    },
-  ];
-}
-
-function liveReportSectionIssues(input: {
-  readonly executionMode: ExecutionMode | undefined;
-  readonly reportMarkdown: string;
-  readonly liveReportLineage: readonly LiveSlideReportLineage[] | undefined;
-  readonly hasLiveReportIssues: boolean;
-}): readonly FinalExportGateIssue[] {
-  if (
-    input.executionMode !== "production" ||
-    input.hasLiveReportIssues ||
-    !input.liveReportLineage?.length
-  ) {
-    return [];
-  }
-  const expectedSection = formatLiveGenerationReportLineage(input.liveReportLineage);
-  if (input.reportMarkdown.includes(expectedSection)) return [];
-  return [
-    {
-      code: "missing_live_report_lineage_section",
-      message: "생성 보고서에 검증된 Live Slide Lineage 섹션이 필요합니다.",
-    },
-  ];
 }

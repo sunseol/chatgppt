@@ -66,6 +66,22 @@ describe("final export gate", () => {
     }
   });
 
+  test("blocks production export when the generation report leaks raw secrets", () => {
+    const result = evaluateFinalExportGate({
+      project: projectFixture(),
+      exportPackage: exportSummaryFixture(),
+      reportMarkdown: `${reportFixture()}\nOPENAI_API_KEY=sk-live-secret123`,
+      executionMode: "production",
+    });
+
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "secret_leak",
+      "missing_live_report_lineage",
+    ]);
+  });
+
   test("blocks production export when lineage contains mock artifacts", () => {
     const result = evaluateFinalExportGate({
       project: projectFixture(),
