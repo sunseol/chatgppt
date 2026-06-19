@@ -14,5 +14,10 @@ export function sessionEvidenceIssues(sessionEvidencePath: string): readonly Liv
 }
 
 function validSessionEvidencePath(value: string): boolean {
-  return hasNonSyntheticJsonEvidencePath(value);
+  const normalized = value.toLowerCase();
+  return (
+    hasNonSyntheticJsonEvidencePath(value) &&
+    normalized.includes("manual-qa") &&
+    normalized.includes("session")
+  );
 }
