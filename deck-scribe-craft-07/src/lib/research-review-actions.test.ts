@@ -55,6 +55,45 @@ describe("research review actions", () => {
     expect(next.factCheckReport.uncertainItems.includes("출처 제외: src_001")).toBe(true);
   });
 
+  test("removes numeric evidence that references a removed dataset through a retained source", () => {
+    // Given
+    const pack = researchPack({
+      claims: [
+        {
+          ...researchPack().claims[0],
+          sourceIds: ["src_002"],
+          numericEvidence: [
+            {
+              id: "num_001",
+              value: "67",
+              unit: "%",
+              baseYear: 2025,
+              geography: "KR",
+              definition: "AI adoption",
+              sourceId: "src_002",
+              datasetId: "dataset_001",
+            },
+          ],
+        },
+      ],
+    });
+
+    // When
+    const next = excludeResearchSource({
+      pack,
+      sourceId: "src_001",
+      reason: "dataset source removed",
+      decidedAt: 1_789_500_020,
+    });
+
+    // Then
+    expect(next.datasets).toEqual([]);
+    expect(next.claims[0]?.sourceIds).toEqual(["src_002"]);
+    expect(next.claims[0]?.datasetIds).toEqual([]);
+    expect(next.claims[0]?.numericEvidence).toEqual([]);
+    expect(next.claims[0]?.hasNumber).toBe(false);
+  });
+
   test("tracks pending and resolved reinforcement requests", () => {
     // Given
     const pack = researchPack({ approvedHash: "sha256:stale_approval" });

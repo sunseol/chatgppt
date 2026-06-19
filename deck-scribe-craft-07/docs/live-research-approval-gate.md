@@ -36,7 +36,7 @@ Status: partial local contract
 
 Approval depends on complete `ResearchPack.sources[].capture`, so a source must carry HTTP(S) `originalUrl` and `finalUrl`, positive `fetchedAt`, successful status metadata, MIME metadata, archive paths, hashes, and version before it can be approved.
 
-`src/lib/research-review-actions.ts` records review decisions in `ResearchReviewState`: source exclusion removes dependent datasets, charts, numeric evidence, persisted live evidence refs, and stale approval hashes, while reinforcement requests are persisted as pending or resolved review records. The existing `ReinforcementRequest` surface remains available for source strengthening requests, and `ResearchStage` wires actual source-exclusion and reinforcement actions that reopen approval review.
+`src/lib/research-review-actions.ts` records review decisions in `ResearchReviewState`: source exclusion removes dependent datasets, charts, numeric evidence, persisted live evidence refs, and stale approval hashes. Numeric evidence is removed when either its source is excluded or its dataset was removed by the exclusion, so a retained source cannot keep a number alive through a deleted dataset. Reinforcement requests are persisted as pending or resolved review records. The existing `ReinforcementRequest` surface remains available for source strengthening requests, and `ResearchStage` wires actual source-exclusion and reinforcement actions that reopen approval review.
 
 `src/components/deck/ProductionResearchReview.tsx` now renders a persisted Research Pack on the production research step when one exists. It passes persisted `ResearchPack.liveEvidenceRefs` and `ResearchPack.provenanceLineage` into `evaluateLiveResearchApprovalGate` instead of empty gate inputs, shows `SourceReviewList` with actual URL, source type, `fetched_at`, quote/table evidence, claim confidence, preserved `ResearchPack.sources[].capture` metadata, and saved evidence references, exposes source exclusion controls and a production reinforcement request control, renders a `Live research approval gate` blocker summary, and enables `Live Research Pack 승인` only when evidence/provenance is ready.
 
@@ -47,7 +47,7 @@ When the ready-state approval action runs, it records the approved research arti
 - `bun test src/lib/live-research-approval-gate.test.ts src/lib/live-research-source-capture-gate.test.ts` passes: 7 tests.
 - `bun test src/lib/live-research-approval-action.test.ts` passes: 2 tests.
 - `bun test src/lib/desktop-live-text-pipeline-workflow.test.ts` passes and locks the Deck Plan turn handoff prompt containing `approvedResearchPackHash`.
-- `bun test src/lib/research-review-actions.test.ts` passes: 2 tests.
+- `bun test src/lib/research-review-actions.test.ts` passes: 3 tests.
 - `bun test src/lib/research-pack.test.ts` passes: 7 tests.
 - `bun test src/components/deck/ResearchStage.integration.test.tsx` passes: 5 tests.
 - `bun test src/components/deck/ProductionWorkflowStage.integration.test.tsx` passes and locks production review rendering for actual URL, source type, `fetched_at`, quote span, claim confidence, source exclusion, reinforcement, and ready-state approval.
@@ -57,4 +57,4 @@ When the ready-state approval action runs, it records the approved research arti
 
 ## Remaining Live work
 
-DF-224 is not ready to close. The review UI and approval gate contracts exist locally, and production can now display a persisted Research Pack, source exclusion/reinforcement controls, approval blockers, saved source capture metadata, saved evidence references, saved provider provenance, and a ready-state approval action that writes a current-content `approvedResearchPackHash` plus an approved research artifact record for DF-214. A non-simulated packaged-app live research approval manual QA run is still required.
+DF-224 is not ready to close. The review UI and approval gate contracts exist locally, and production can now display a persisted Research Pack, source exclusion/reinforcement controls, approval blockers, saved source capture metadata, saved evidence references, saved provider provenance, and a ready-state approval action that writes a current-content `approvedResearchPackHash` plus an approved research artifact record for DF-214. Source exclusion now also purges numeric evidence that survives only through a removed dataset, preventing stale numbers from appearing review-ready after the source decision. A non-simulated packaged-app live research approval manual QA run is still required.

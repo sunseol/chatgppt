@@ -144,7 +144,9 @@ function removeSourceFromClaim(input: {
   const sourceIds = input.claim.sourceIds.filter((id) => id !== input.sourceId);
   const datasetIds = input.claim.datasetIds.filter((id) => !input.removedDatasetIds.has(id));
   const numericEvidence = input.claim.numericEvidence.filter(
-    (evidence) => evidence.sourceId !== input.sourceId,
+    (evidence) =>
+      evidence.sourceId !== input.sourceId &&
+      (evidence.datasetId === undefined || !input.removedDatasetIds.has(evidence.datasetId)),
   );
   const unsupported = sourceIds.length === 0 && datasetIds.length === 0;
 
