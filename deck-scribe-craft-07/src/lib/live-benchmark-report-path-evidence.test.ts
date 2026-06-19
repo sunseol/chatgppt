@@ -5,7 +5,7 @@ import {
   type LiveBenchmarkRun,
 } from "./live-benchmark-evidence";
 
-const PACKAGE_SHA = "4b3281ceda42abb84c50567794d423b4bae10c394ed724598c0652a9e02c1639";
+const PACKAGE_SHA = "db6eef6ddd83e7bf28edee605fddf2cde22685d350b08836cb521f86c591ffc7";
 
 describe("live benchmark report path evidence", () => {
   test("blocks synthetic scenario and Golden Path report paths", () => {

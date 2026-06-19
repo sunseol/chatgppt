@@ -28,7 +28,7 @@ describe("live auth secret lifecycle documentation", () => {
     expect(authSecretLifecycle.includes("createLiveAuthLogoutLockState")).toBe(true);
     expect(
       authSecretLifecycle.includes(
-        "4b3281ceda42abb84c50567794d423b4bae10c394ed724598c0652a9e02c1639",
+        "db6eef6ddd83e7bf28edee605fddf2cde22685d350b08836cb521f86c591ffc7",
       ),
     ).toBe(true);
     expect(authSecretLifecycle.includes("OpenAI/Codex secret-like values: 0 hits")).toBe(true);

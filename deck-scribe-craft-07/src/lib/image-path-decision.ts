@@ -6,6 +6,8 @@ import type {
   OrganizationVerification,
 } from "./image-provider-feasibility";
 import { storedArtifactPathBlockers } from "./image-path-decision-artifact-paths";
+import { storedProviderProvenanceBlockers } from "./image-path-decision-provenance";
+import type { ProviderArtifactProvenance } from "./provider-provenance";
 import type { SlideImageArtifact } from "./slide-image-provider";
 
 export {
@@ -26,6 +28,13 @@ export type ImagePathBlockerCode =
   | "missing_provenance_artifact"
   | "invalid_provenance_artifact_path"
   | "provenance_artifact_path_mismatch"
+  | "missing_provenance_evidence"
+  | "provenance_execution_mode_mismatch"
+  | "provenance_provider_mismatch"
+  | "provenance_auth_mode_mismatch"
+  | "provenance_model_mismatch"
+  | "provenance_fixture_contamination"
+  | "provenance_request_id_mismatch"
   | "invalid_image_binary"
   | "artifact_provider_mismatch"
   | "missing_request_model"
@@ -65,6 +74,7 @@ export function createImagePathDecisionRecord(input: {
   readonly successfulArtifact?: SlideImageArtifact;
   readonly binaryArtifactPath?: string;
   readonly provenanceArtifactPath?: string;
+  readonly providerProvenance?: ProviderArtifactProvenance;
 }): ImagePathDecisionRecord {
   const blockers = imagePathBlockers(input);
   const requestId = input.successfulArtifact?.request?.requestId;
@@ -105,6 +115,7 @@ function imagePathBlockers(input: {
   readonly successfulArtifact?: SlideImageArtifact;
   readonly binaryArtifactPath?: string;
   readonly provenanceArtifactPath?: string;
+  readonly providerProvenance?: ProviderArtifactProvenance;
 }): readonly ImagePathBlocker[] {
   return [
     ...setupBlockers(input.feasibility.setup),
@@ -128,6 +139,7 @@ function artifactBlockers(input: {
   readonly successfulArtifact?: SlideImageArtifact;
   readonly binaryArtifactPath?: string;
   readonly provenanceArtifactPath?: string;
+  readonly providerProvenance?: ProviderArtifactProvenance;
 }): readonly ImagePathBlocker[] {
   const artifact = input.successfulArtifact;
   if (!artifact) {
@@ -162,7 +174,12 @@ function artifactBlockers(input: {
       input.provenanceArtifactPath,
       artifact.slideNumber,
     ),
-    ...(artifact.providerId === "openaiImage" && !artifact.request?.requestId
+    ...storedProviderProvenanceBlockers({
+      feasibility: input.feasibility,
+      successfulArtifact: artifact,
+      providerProvenance: input.providerProvenance,
+    }),
+    ...(artifact.providerId === "openaiImage" && !artifact.request?.requestId?.trim()
       ? [
           {
             code: "missing_request_id" as const,

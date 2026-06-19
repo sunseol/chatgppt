@@ -9,6 +9,7 @@ describe("image path decision documentation", () => {
 
     expect(text.includes("DF-230")).toBe(true);
     expect(text.includes("binary_artifact_slide_mismatch")).toBe(true);
+    expect(text.includes("provenance_auth_mode_mismatch")).toBe(true);
     expect(text.includes("same slide as the successful artifact")).toBe(true);
   });
 });

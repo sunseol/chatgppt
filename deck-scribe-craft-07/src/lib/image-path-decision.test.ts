@@ -3,9 +3,13 @@ import {
   createImagePathDecisionRecord,
   getProductionImageProviderChoices,
 } from "./image-path-decision";
+import {
+  IMAGE_DECISION_BINARY_ARTIFACT_PATH as BINARY_ARTIFACT_PATH,
+  IMAGE_DECISION_PROVENANCE_ARTIFACT_PATH as PROVENANCE_ARTIFACT_PATH,
+  imageDecisionProviderProvenance,
+  imageDecisionRealImageArtifact,
+} from "./image-path-decision-test-fixtures";
 import { decideImageProviderFeasibility } from "./image-provider-feasibility";
-import { encodeSolidPngDataUrl } from "./png-encoder";
-import type { SlideImageArtifact } from "./slide-image-provider";
 
 describe("image path decision record", () => {
   test("locks a production image path only after a real binary artifact is stored", () => {
@@ -21,9 +25,10 @@ describe("image path decision record", () => {
       decisionId: "image_path_df230",
       decidedAt: 1_789_700_000,
       feasibility,
-      successfulArtifact: realImageArtifact(),
+      successfulArtifact: imageDecisionRealImageArtifact(),
       binaryArtifactPath: BINARY_ARTIFACT_PATH,
       provenanceArtifactPath: PROVENANCE_ARTIFACT_PATH,
+      providerProvenance: imageDecisionProviderProvenance(),
       billingOwner: "openai_api_project",
       requiredPermissions: ["images.generate", "model:gpt-image-2"],
       organizationVerification: "verified",
@@ -105,9 +110,10 @@ describe("image path decision record", () => {
       decisionId: "image_path_mismatch",
       decidedAt: 1_789_700_003,
       feasibility,
-      successfulArtifact: { ...realImageArtifact(), providerId: "codex" },
+      successfulArtifact: { ...imageDecisionRealImageArtifact(), providerId: "codex" },
       binaryArtifactPath: BINARY_ARTIFACT_PATH,
       provenanceArtifactPath: PROVENANCE_ARTIFACT_PATH,
+      providerProvenance: imageDecisionProviderProvenance(),
       billingOwner: "openai_api_project",
       requiredPermissions: ["images.generate", "model:gpt-image-2"],
       organizationVerification: "verified",
@@ -133,11 +139,12 @@ describe("image path decision record", () => {
       decidedAt: 1_789_700_004,
       feasibility,
       successfulArtifact: {
-        ...realImageArtifact(),
+        ...imageDecisionRealImageArtifact(),
         imageDataUrl: "data:image/png;base64,ZmFrZQ==",
       },
       binaryArtifactPath: BINARY_ARTIFACT_PATH,
       provenanceArtifactPath: PROVENANCE_ARTIFACT_PATH,
+      providerProvenance: imageDecisionProviderProvenance(),
       billingOwner: "openai_api_project",
       requiredPermissions: ["images.generate", "model:gpt-image-2"],
       organizationVerification: "verified",
@@ -162,9 +169,10 @@ describe("image path decision record", () => {
       decisionId: "image_path_fixture_path",
       decidedAt: 1_789_700_008,
       feasibility,
-      successfulArtifact: realImageArtifact(),
+      successfulArtifact: imageDecisionRealImageArtifact(),
       binaryArtifactPath: "fixtures/mock-slide.png",
       provenanceArtifactPath: PROVENANCE_ARTIFACT_PATH,
+      providerProvenance: imageDecisionProviderProvenance(),
       billingOwner: "openai_api_project",
       requiredPermissions: ["images.generate", "model:gpt-image-2"],
       organizationVerification: "verified",
@@ -192,14 +200,15 @@ describe("image path decision record", () => {
       decidedAt: 1_789_700_006,
       feasibility,
       successfulArtifact: {
-        ...realImageArtifact(),
+        ...imageDecisionRealImageArtifact(),
         request: {
-          ...realImageArtifact().request,
+          ...imageDecisionRealImageArtifact().request,
           model: "gpt-image-old",
         },
       },
       binaryArtifactPath: BINARY_ARTIFACT_PATH,
       provenanceArtifactPath: PROVENANCE_ARTIFACT_PATH,
+      providerProvenance: imageDecisionProviderProvenance(),
       billingOwner: "openai_api_project",
       requiredPermissions: ["images.generate", "model:gpt-image-2"],
       organizationVerification: "verified",
@@ -224,9 +233,10 @@ describe("image path decision record", () => {
       decisionId: "image_path_missing_metadata",
       decidedAt: 1_789_700_005,
       feasibility,
-      successfulArtifact: realImageArtifact(),
+      successfulArtifact: imageDecisionRealImageArtifact(),
       binaryArtifactPath: BINARY_ARTIFACT_PATH,
       provenanceArtifactPath: PROVENANCE_ARTIFACT_PATH,
+      providerProvenance: imageDecisionProviderProvenance(),
       billingOwner: " ",
       requiredPermissions: [],
       organizationVerification: "verified",
@@ -254,9 +264,10 @@ describe("image path decision record", () => {
       decisionId: "image_path_org_drift",
       decidedAt: 1_789_700_007,
       feasibility,
-      successfulArtifact: realImageArtifact(),
+      successfulArtifact: imageDecisionRealImageArtifact(),
       binaryArtifactPath: BINARY_ARTIFACT_PATH,
       provenanceArtifactPath: PROVENANCE_ARTIFACT_PATH,
+      providerProvenance: imageDecisionProviderProvenance(),
       billingOwner: "openai_api_project",
       requiredPermissions: ["images.generate", "model:gpt-image-2"],
       organizationVerification: "unknown",
@@ -270,37 +281,3 @@ describe("image path decision record", () => {
     expect(getProductionImageProviderChoices(record)).toEqual([]);
   });
 });
-
-const BINARY_ARTIFACT_PATH = "projects/project_001/slides/images/slide_001.v1.png";
-const PROVENANCE_ARTIFACT_PATH = "projects/project_001/slides/images/slide_001.v1.provenance.json";
-
-function realImageArtifact(): SlideImageArtifact {
-  return {
-    providerId: "openaiImage",
-    slideNumber: 1,
-    aspectRatio: "16:9",
-    canvas: { width: 1600, height: 900 },
-    layoutReference: {
-      screenshot: "slide_001_layout.png",
-      mode: "composition-reference",
-    },
-    imageDataUrl: encodeSolidPngDataUrl({
-      width: 1,
-      height: 1,
-      color: { r: 20, g: 40, b: 60, a: 255 },
-    }),
-    prompt: {
-      id: "slide_generation",
-      version: "v1",
-      hash: "sha256:prompt",
-    },
-    request: {
-      model: "gpt-image-2",
-      requestId: "img_req_001",
-      size: "1600x900",
-      quality: "high",
-      latencyMs: 2_400,
-    },
-    generatedAt: 1_789_700_000,
-  };
-}
