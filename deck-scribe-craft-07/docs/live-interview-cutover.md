@@ -1,6 +1,6 @@
 # Live Interview Cutover
 
-Date: 2026-06-19
+Date: 2026-06-20
 
 Scope: DF-213 interview question and Interview Brief Live cutover contract.
 
@@ -11,6 +11,7 @@ Scope: DF-213 interview question and Interview Brief Live cutover contract.
 - question artifacts must come from Codex provider provenance in `production` execution mode using authenticated `codex_session` auth
 - Brief artifacts must come from a second authenticated Codex turn after user answers
 - Brief artifacts must persist under a different artifact id than the question artifact; otherwise `brief_reused_question_artifact` blocks approval
+- question/Brief artifact ids and turn ids are compared after trimming boundary whitespace, so padding cannot disguise reused question evidence; padded reuse blocks with `brief_reused_question_turn` and `brief_reused_question_artifact`
 - question artifacts must use `interview_questions@v1` or `interview_questions_desktop@v1`, and Brief artifacts must use `interview_brief@v1`; otherwise `interview_prompt_version_mismatch` blocks approval
 - question provenance must cite the project or initial prompt input artifact id supplied as `questionInputArtifactId`; otherwise `question_missing_project_input` blocks approval
 - Brief provenance must cite the question artifact id in `inputArtifactIds`; otherwise `brief_missing_question_input` blocks approval
@@ -29,7 +30,7 @@ Scope: DF-213 interview question and Interview Brief Live cutover contract.
 ## Verified Locally
 
 - `src/lib/live-interview-cutover.test.ts` accepts separate live question/Brief turns with thread and turn provenance.
-- `src/lib/live-interview-artifact-identity.test.ts` rejects Brief artifacts that reuse the question artifact id with `brief_reused_question_artifact`.
+- `src/lib/live-interview-artifact-identity.test.ts` rejects Brief artifacts that reuse the question artifact id with `brief_reused_question_artifact`, including whitespace-padded reuse of both question artifact and turn ids.
 - It blocks Brief acceptance when required fields are unanswered, returns a follow-up turn input bundle, and rejects Brief provenance that omits the user answer bundle.
 - `src/lib/live-interview-question-input.test.ts` blocks question turns that omit the project/initial prompt artifact from `inputArtifactIds`.
 - `src/lib/live-interview-cutover-prompt-version.test.ts` rejects Codex artifacts produced with non-interview prompt versions while allowing the desktop interview question prompt version.
@@ -60,6 +61,6 @@ DF-213 is not Verified Live yet. The app now exposes the production interview wo
 - user answer bundle
 - live follow-up turn evidence when required fields are missing
 - live Interview Brief artifact bundle from the packaged app surface
-- thread id, turn id, prompt version, runtime, duration, and input artifact ids for each artifact
+- normalized-distinct thread id, turn id, prompt version, runtime, duration, and input artifact ids for each artifact
 
 Until that evidence exists, DF-213 remains `Partial, external evidence required`.
