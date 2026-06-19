@@ -46,6 +46,7 @@ export async function runDesktopLiveInterviewProductionWorkflow(
     projectId: input.project.id,
     createdAt: input.createdAt,
     ...(input.version === undefined ? {} : { version: input.version }),
+    questionInputArtifactId: input.project.id,
     questionPlan: questionPlan.accepted,
     answers: input.answers,
   });
@@ -61,6 +62,7 @@ export async function runDesktopLiveInterviewProductionWorkflow(
     projectId: input.project.id,
     createdAt: input.createdAt,
     ...(input.version === undefined ? {} : { version: input.version }),
+    questionInputArtifactId: input.project.id,
     questionPlan: questionPlan.accepted,
     answers: input.answers,
     brief: brief.accepted,

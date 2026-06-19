@@ -33,6 +33,7 @@ export type LiveInterviewPersistenceInput = {
   readonly projectId: string;
   readonly createdAt: number;
   readonly version?: number;
+  readonly questionInputArtifactId: string;
   readonly questionPlan: StructuredCodexAccepted<InterviewQuestionPlan>;
   readonly answers: LiveInterviewAnswerMap;
   readonly brief?: StructuredCodexAccepted<InterviewBrief>;
@@ -119,6 +120,7 @@ export function createLiveInterviewPersistence(
   const questionTurn = interviewTurnArtifact(input.questionPlan);
   const briefTurn = optionalInterviewTurnArtifact(input.brief);
   const cutover = evaluateLiveInterviewCutover({
+    questionInputArtifactId: input.questionInputArtifactId,
     questionPlan: questionTurn,
     answers: input.answers,
     ...(briefTurn === undefined ? {} : { brief: briefTurn }),

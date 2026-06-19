@@ -23,13 +23,14 @@ describe("live text artifact persistence", () => {
     const result = createLiveInterviewPersistence({
       projectId: "p_live_text",
       createdAt: 1_710_000_000_000,
+      questionInputArtifactId: "p_live_text",
       questionPlan: accepted(
         questionPlan,
         liveCodexProvenance(
           "interview_questions_live_1",
           "turn_questions",
           "interview_questions@v1",
-          [],
+          ["p_live_text"],
         ),
       ),
       answers: {

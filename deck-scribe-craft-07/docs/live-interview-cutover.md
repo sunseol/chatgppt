@@ -11,6 +11,7 @@ Scope: DF-213 interview question and Interview Brief Live cutover contract.
 - question artifacts must come from Codex provider provenance in `production` execution mode using authenticated `codex_session` auth
 - Brief artifacts must come from a second authenticated Codex turn after user answers
 - question artifacts must use `interview_questions@v1` or `interview_questions_desktop@v1`, and Brief artifacts must use `interview_brief@v1`; otherwise `interview_prompt_version_mismatch` blocks approval
+- question provenance must cite the project or initial prompt input artifact id supplied as `questionInputArtifactId`; otherwise `question_missing_project_input` blocks approval
 - Brief provenance must cite the question artifact id in `inputArtifactIds`; otherwise `brief_missing_question_input` blocks approval
 - Brief provenance must cite the user answer bundle id in `inputArtifactIds`; otherwise `brief_missing_answer_input` blocks approval
 - mock provider and fixture lineage are blocked through `mock_lineage_contamination` and `fixture_lineage_contamination`
@@ -20,7 +21,7 @@ Scope: DF-213 interview question and Interview Brief Live cutover contract.
 - `runLiveInterviewProductionWorkflow` runs production App Server question and Brief jobs before handing accepted outputs to the persistence gate
 - `ProductionWorkflowStage` now renders a production interview App Server workflow panel for the `interview` step, listing the required `questions` and `brief` turns and blocking launch when the desktop App Server bridge is missing
 - `deckforge_codex_app_server_smoke`, `deckforge_codex_app_server_structured_turn`, `src/lib/desktop-app-server-bridge.ts`, and `src/lib/desktop-codex-app-server-production-job.ts` now provide the desktop commands/adapters needed to detect the App Server bridge, smoke-test it, and feed structured-turn notifications into the production Job Manager path
-- `src/lib/desktop-live-interview-workflow.ts` and `src/lib/desktop-live-interview-jobs.ts` now build desktop interview question and Brief prompts, parse the structured `InterviewQuestionPlan` / `InterviewBrief` outputs, run the live `questions` turn through the Tauri bridge adapter, return a persisted question artifact when user follow-up is still required, and continue to a second live `brief` turn once required answers are present.
+- `src/lib/desktop-live-interview-workflow.ts` and `src/lib/desktop-live-interview-jobs.ts` now build desktop interview question and Brief prompts, parse the structured `InterviewQuestionPlan` / `InterviewBrief` outputs, run the live `questions` turn through the Tauri bridge adapter, bind the question turn to the project id as `questionInputArtifactId`, return a persisted question artifact when user follow-up is still required, and continue to a second live `brief` turn once required answers are present.
 - `src/lib/live-interview-answer-map.ts` converts an existing project draft Brief plus initial prompt into the answer map consumed by the desktop live interview launcher.
 - `src/components/deck/ProductionTextWorkflowLauncher.tsx` now wires the ready production interview button to the desktop interview launcher, passes draft-Brief answers when present, stores the question artifact record when follow-up is still required, and can apply the ready Brief patch when both live turns complete.
 
@@ -28,6 +29,7 @@ Scope: DF-213 interview question and Interview Brief Live cutover contract.
 
 - `src/lib/live-interview-cutover.test.ts` accepts separate live question/Brief turns with thread and turn provenance.
 - It blocks Brief acceptance when required fields are unanswered, returns a follow-up turn input bundle, and rejects Brief provenance that omits the user answer bundle.
+- `src/lib/live-interview-question-input.test.ts` blocks question turns that omit the project/initial prompt artifact from `inputArtifactIds`.
 - `src/lib/live-interview-cutover-prompt-version.test.ts` rejects Codex artifacts produced with non-interview prompt versions while allowing the desktop interview question prompt version.
 - It blocks mock/fixture provenance, non-session Codex auth via `non_codex_session_auth`, and verifies no fixture fallback is offered after provider failure.
 - `src/lib/live-text-artifact-persistence.test.ts` verifies accepted live question and Brief outputs preserve artifact ids, turn provenance, and non-fixture lineage when creating the project patch.
@@ -52,6 +54,7 @@ Using the current authenticated `codex app-server --stdio` binary through a temp
 DF-213 is not Verified Live yet. The app now exposes the production interview workflow gate, has desktop App Server smoke plus structured-turn commands, the library-level desktop workflow has completed live `questions` and `brief` turns with persisted provenance, and the ready interview button can invoke that launcher. It still needs the production interview workflow to record the same path from the packaged app surface and store:
 
 - live question artifact bundle
+- question artifact input ids that cite the project or initial prompt input artifact
 - user answer bundle
 - live follow-up turn evidence when required fields are missing
 - live Interview Brief artifact bundle from the packaged app surface

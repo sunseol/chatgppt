@@ -14,6 +14,7 @@ describe("live interview cutover prompt versions", () => {
     });
 
     const result = evaluateLiveInterviewCutover({
+      questionInputArtifactId: "project_001",
       questionPlan: {
         artifact: plan,
         provenance: liveCodexProvenance(
@@ -47,6 +48,7 @@ describe("live interview cutover prompt versions", () => {
     });
 
     const result = evaluateLiveInterviewCutover({
+      questionInputArtifactId: "project_001",
       questionPlan: {
         artifact: plan,
         provenance: liveCodexProvenance(
@@ -86,6 +88,7 @@ describe("live interview cutover prompt versions", () => {
     });
 
     const result = evaluateLiveInterviewCutover({
+      questionInputArtifactId: "project_001",
       questionPlan: {
         artifact: plan,
         provenance: liveCodexProvenance(

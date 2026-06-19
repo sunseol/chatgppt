@@ -21,6 +21,7 @@ describe("live interview cutover", () => {
     });
 
     const result = evaluateLiveInterviewCutover({
+      questionInputArtifactId: "project_live_interview",
       questionPlan: {
         artifact: plan,
         provenance: liveCodexProvenance("interview_questions_live_1", "turn_questions"),
@@ -57,6 +58,7 @@ describe("live interview cutover", () => {
     });
 
     const result = evaluateLiveInterviewCutover({
+      questionInputArtifactId: "project_live_interview",
       questionPlan: {
         artifact: plan,
         provenance: liveCodexProvenance("interview_questions_live_2", "turn_questions_2"),
@@ -85,6 +87,7 @@ describe("live interview cutover", () => {
     });
 
     const result = evaluateLiveInterviewCutover({
+      questionInputArtifactId: "project_live_interview",
       questionPlan: {
         artifact: plan,
         provenance: liveCodexProvenance("interview_questions_live_answers", "turn_questions"),
@@ -125,6 +128,7 @@ describe("live interview cutover", () => {
     });
 
     const result = evaluateLiveInterviewCutover({
+      questionInputArtifactId: "project_live_interview",
       questionPlan: {
         artifact: plan,
         provenance: createProviderArtifactProvenance({
@@ -172,11 +176,15 @@ describe("live interview cutover", () => {
     });
 
     const result = evaluateLiveInterviewCutover({
+      questionInputArtifactId: "project_live_interview",
       questionPlan: {
         artifact: plan,
-        provenance: liveCodexProvenance("interview_questions_no_session", "turn_questions", [], {
-          authMode: "none",
-        }),
+        provenance: liveCodexProvenance(
+          "interview_questions_no_session",
+          "turn_questions",
+          ["project_live_interview"],
+          { authMode: "none" },
+        ),
       },
       answers: {
         coreMessage: "제품 가치를 명확히 전달한다.",
@@ -213,7 +221,7 @@ describe("live interview cutover", () => {
 function liveCodexProvenance(
   artifactId: string,
   turnId: string,
-  inputArtifactIds: readonly string[] = [],
+  inputArtifactIds: readonly string[] = ["project_live_interview"],
   overrides: Partial<Pick<ProviderArtifactProvenance, "authMode">> = {},
 ): ProviderArtifactProvenance {
   return createProviderArtifactProvenance({

@@ -56,6 +56,7 @@ export type LiveInterviewProductionWorkflowInput = {
   readonly createdAt: number;
   readonly version?: number;
   readonly jobManager: ProviderJobManager;
+  readonly questionInputArtifactId: string;
   readonly questionPlanJob: LiveTextProductionJobSpec<InterviewQuestionPlan>;
   readonly answers: LiveInterviewAnswerMap;
   readonly briefJob?: LiveTextProductionJobSpec<InterviewBrief>;
@@ -84,6 +85,7 @@ export async function runLiveInterviewProductionWorkflow(
     projectId: input.projectId,
     createdAt: input.createdAt,
     ...(input.version === undefined ? {} : { version: input.version }),
+    questionInputArtifactId: input.questionInputArtifactId,
     questionPlan: questionPlan.accepted,
     answers: input.answers,
     ...(brief === undefined ? {} : { brief: brief.accepted }),

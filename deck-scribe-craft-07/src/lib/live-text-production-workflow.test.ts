@@ -24,10 +24,11 @@ describe("live text production workflow", () => {
       projectId: "p_live_interview_workflow",
       createdAt: 1_710_000_000_000,
       jobManager: manager,
+      questionInputArtifactId: "p_live_interview_workflow",
       questionPlanJob: productionJob(
         "interview_questions_live_1",
         "interview_questions@v1",
-        [],
+        ["p_live_interview_workflow"],
         questionPlan,
       ),
       answers: {
