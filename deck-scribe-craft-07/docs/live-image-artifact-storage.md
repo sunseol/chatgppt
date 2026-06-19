@@ -16,6 +16,7 @@ Status: partial local contract
 - Stores provider provenance at `projects/<projectId>/slides/images/slide_<n>.v<version>.provenance.json`.
 - Requires `projectId` to be a safe storage segment before writing the binary or metadata files, so path traversal values cannot create false project-local artifacts.
 - Requires slide number and artifact version to be positive integers before writing, so `slide_000`, fractional, or non-positive versioned-looking paths cannot count as stored provider output.
+- Rejects mock image artifacts before writing, so development preview output cannot be persisted as Live provider bytes.
 - Records a real 64-character SHA-256 digest for the stored binary.
 - Preserves request metadata when available: `requestId`, model, size, quality, latency, and usage.
 - Rejects blank request models, missing/invalid latency, fractional or negative usage counts, and negative or non-finite usage/cost values before writing image bytes or metadata.
@@ -23,7 +24,7 @@ Status: partial local contract
 - Produces and stores provider provenance for the stored binary artifact, including prompt version, prompt hash, layout reference, request id, model/runtime, duration, auth mode, and fixture flag.
 - Rejects non-PNG image data, fake PNG data URLs without a PNG signature, and OpenAI image artifacts with missing or blank `requestId`.
 - `src/lib/live-image-provider-adapter.ts` links provider generation to storage in one production-oriented call.
-- The adapter passes the full prompt package and layout reference to the provider, stores successful binary output, returns stored artifact/provenance metadata, and does not write artifacts when the provider returns a classified failure.
+- The adapter rejects mock providers before generation, passes the full prompt package and layout reference to live providers, stores successful binary output, returns stored artifact/provenance metadata, and does not write artifacts when the provider returns a classified failure.
 - `src/lib/slide-image-provider-contract.ts` rejects `provider_contract` mismatches before storage when the returned artifact provider, slide number, aspect ratio, layout reference, or prompt lineage does not match the requested prompt package.
 
 ## Provider/error contract
@@ -37,9 +38,9 @@ Existing provider tests plus `src/lib/image-provider-errors.test.ts` cover the D
 
 ## Verification
 
-- `bun test src/lib/image-artifact-store.test.ts src/lib/image-artifact-store-usage.test.ts` passes: 7 tests.
+- `bun test src/lib/image-artifact-store.test.ts src/lib/image-artifact-store-usage.test.ts src/lib/image-artifact-store-live-provider.test.ts` passes: 8 tests.
 - `bun test src/lib/image-provider-errors.test.ts` passes: 1 test.
-- `bun test src/lib/live-image-provider-adapter.test.ts` passes: 3 tests.
+- `bun test src/lib/live-image-provider-adapter.test.ts src/lib/live-image-provider-adapter-live-provider.test.ts` passes: 4 tests.
 - `bun test src/lib/live-image-provider-adapter.test.ts src/lib/image-artifact-store.test.ts src/lib/image-provider-errors.test.ts src/lib/slide-image-provider.test.ts src/lib/image-path-decision.test.ts` passes: 24 tests.
 - `bun run typecheck` passes.
 - `bun run lint` passes with the existing six React Fast Refresh warnings only.

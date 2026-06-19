@@ -31,6 +31,13 @@ export async function generateAndStoreSlideImageArtifact(input: {
   readonly version: number;
   readonly createdAt: number;
 }): Promise<StoredLiveSlideImageResult> {
+  if (input.provider.id === "mock") {
+    return {
+      kind: "failed",
+      failure: liveProviderContractFailure(input.provider.id, input.package.slideNumber),
+    };
+  }
+
   const result = await generateSlideImage({
     provider: input.provider,
     package: input.package,
@@ -62,4 +69,19 @@ export async function generateAndStoreSlideImageArtifact(input: {
 
 function assertNever(value: never): never {
   throw new Error(`Unhandled live image provider adapter result: ${String(value)}`);
+}
+
+function liveProviderContractFailure(
+  providerId: SlideImageProvider["id"],
+  slideNumber: number,
+): SlideImageFailure {
+  const message = "Mock image providers cannot run through live image storage.";
+  return {
+    providerId,
+    slideNumber,
+    errorKind: "provider_contract",
+    retryable: false,
+    errorMessage: message,
+    userMessage: `Slide ${slideNumber} image generation failed: ${message} Resolve the provider issue before retrying.`,
+  };
 }

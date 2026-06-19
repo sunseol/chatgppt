@@ -249,17 +249,24 @@ async function storedBackgrounds(
     version: 1,
     createdAt: 1_789_900_001,
   });
-  const candidate = options.reuseOriginalAsCandidate
+  const candidateStored = options.reuseOriginalAsCandidate
     ? original
     : await storeSlideImageArtifact({
         store,
         projectId: "project_001",
         artifact: slideImageArtifactFixture({
-          providerId: options.candidateProviderId ?? "openaiImage",
           requestId: "img_req_revised",
         }),
         version: 2,
         createdAt: 1_789_900_002,
       });
+  const candidate =
+    options.candidateProviderId === undefined || options.candidateProviderId === "openaiImage"
+      ? candidateStored
+      : {
+          ...candidateStored,
+          metadata: { ...candidateStored.metadata, providerId: options.candidateProviderId },
+          provenance: { ...candidateStored.provenance, providerKind: options.candidateProviderId },
+        };
   return { original, candidate, originalRequestId };
 }

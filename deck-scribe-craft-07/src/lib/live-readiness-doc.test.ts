@@ -157,6 +157,7 @@ describe("live readiness documentation", () => {
     expect(imageArtifactStorage.includes("valid PNG signature")).toBe(true);
     expect(imageArtifactStorage.includes("safe storage segment")).toBe(true);
     expect(imageArtifactStorage.includes("positive integers")).toBe(true);
+    expect(imageArtifactStorage.includes("mock image artifacts")).toBe(true);
     expect(imageArtifactStorage.includes("64-character SHA-256")).toBe(true);
     expect(imageArtifactStorage.includes("live-image-provider-adapter")).toBe(true);
     expect(imageArtifactStorage.includes("content_policy")).toBe(true);

@@ -1,4 +1,5 @@
 import type { ProviderArtifactProvenanceInput } from "./provider-provenance";
+import { assertLiveImageProviderArtifact } from "./image-artifact-store-live-provider";
 import type { SlideImageArtifact, SlideImageRequestMetadata } from "./slide-image-provider";
 
 export type ImageArtifactStoreWrite = {
@@ -51,6 +52,7 @@ export async function storeSlideImageArtifact(input: {
   readonly version: number;
   readonly createdAt: number;
 }): Promise<StoredSlideImageArtifact> {
+  assertLiveImageProviderArtifact(input.artifact);
   assertSafeStorageAddress(input);
   const imageBytes = pngBytesFromDataUrl(input.artifact.imageDataUrl);
   const request = requireRequestMetadata(input.artifact);
