@@ -112,6 +112,7 @@ export type LiveReleaseBlockerCode =
   | "live_benchmark_shortfall"
   | "golden_path_lineage_missing"
   | "golden_path_contaminated"
+  | "invalid_critical_defect_count"
   | "critical_defects_open"
   | "p1_release_blocker"
   | "missing_release_decision"
@@ -228,6 +229,13 @@ function lineageBlockers(
 }
 
 function defectBlockers(criticalDefectCount: number): readonly LiveReleaseBlocker[] {
+  if (!Number.isInteger(criticalDefectCount) || criticalDefectCount < 0) {
+    return [
+      blocker("invalid_critical_defect_count", "Critical defect count must be a valid integer.", [
+        String(criticalDefectCount),
+      ]),
+    ];
+  }
   return criticalDefectCount === 0
     ? []
     : [

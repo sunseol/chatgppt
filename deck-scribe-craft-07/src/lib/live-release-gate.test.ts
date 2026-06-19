@@ -133,6 +133,21 @@ describe("live initial release gate", () => {
     if (result.kind !== "blocked") return;
     expect(result.blockers.map((blocker) => blocker.code)).toEqual(["golden_path_lineage_missing"]);
   });
+
+  test("blocks invalid critical defect counters", () => {
+    // Given
+    const result = evaluateLiveInitialReleaseGate({
+      ...readyInput(),
+      criticalDefectCount: -1,
+    });
+
+    // When / Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.blockers.map((blocker) => blocker.code)).toEqual([
+      "invalid_critical_defect_count",
+    ]);
+  });
 });
 
 function readyInput(): LiveReleaseGateInput {
