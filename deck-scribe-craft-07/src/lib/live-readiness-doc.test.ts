@@ -196,7 +196,7 @@ describe("live readiness documentation", () => {
   test("records the live compositor review contract", () => {
     const compositorReview = readDoc(DOCS.compositorReview);
 
-    for (const needle of "DF-234|mock_background_artifact|background_provider_not_live_image|missing_stored_background_artifact|invalid_stored_background_artifact_hash|stored_background_artifact_slide_mismatch|missing_editable_overlay|invalid_compositor_preview|text_overlay_collision|five compositor thumbnails|presentation preview|duplicate_compositor_slide".split(
+    for (const needle of "DF-234|mock_background_artifact|background_provider_not_live_image|missing_stored_background_artifact|invalid_stored_background_artifact_hash|stored_background_artifact_slide_mismatch|compositor_svg_artifact_mismatch|missing_editable_overlay|invalid_compositor_preview|text_overlay_collision|five compositor thumbnails|presentation preview|duplicate_compositor_slide".split(
       "|",
     )) {
       expect(compositorReview.includes(needle)).toBe(true);

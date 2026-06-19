@@ -4,6 +4,7 @@ import {
   type FinalSlideOverlayBounds,
 } from "@/lib/final-slide-compositor";
 import type { ReviewGalleryItem } from "./review-gallery-model";
+import { compositorSvgArtifactIssues } from "./review-gallery-compositor-svg";
 
 export type ReviewGalleryLiveCompositionIssueCode =
   | "expected_five_compositions"
@@ -16,6 +17,7 @@ export type ReviewGalleryLiveCompositionIssueCode =
   | "missing_stored_background_artifact"
   | "invalid_stored_background_artifact_hash"
   | "stored_background_artifact_slide_mismatch"
+  | "compositor_svg_artifact_mismatch"
   | "invalid_compositor_preview"
   | "missing_editable_overlay"
   | "text_overlay_collision";
@@ -116,6 +118,7 @@ function liveCompositionIssues(
   return [
     ...compositionIdentityIssues(item, composition),
     ...backgroundIssues(composition),
+    ...compositorSvgArtifactIssues(composition),
     ...previewIssues(composition),
     ...overlayIssues(composition),
     ...collisionIssues(composition, detections),

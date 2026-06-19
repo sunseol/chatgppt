@@ -62,6 +62,29 @@ describe("review gallery live composition validation", () => {
     ]);
   });
 
+  test("blocks compositor SVG that omits the stored background artifact identity", () => {
+    // Given
+    const items = buildReviewGalleryItems({
+      slides: [{ number: 1, version: 1, status: "ready", imageDescriptor: "slide 1" }],
+      specs: [slideSpec()],
+      selectedSlideNumber: 1,
+      compositions: [{ ...validComposition(), svg: '<svg data-final-slide="1"></svg>' }],
+    });
+
+    // When
+    const validation = validateReviewGalleryLiveCompositions({
+      items,
+      expectedSlideCount: 1,
+    });
+
+    // Then
+    expect(validation.kind).toBe("blocked");
+    if (validation.kind !== "blocked") return;
+    expect(validation.issues.map((issue) => issue.code)).toEqual([
+      "compositor_svg_artifact_mismatch",
+    ]);
+  });
+
   test("blocks non-image live providers as compositor backgrounds", () => {
     // Given
     const items = buildReviewGalleryItems({
@@ -150,7 +173,13 @@ function validComposition(): FinalSlideComposition {
       { id: "chart_1", role: "chart", bounds: { x: 720, y: 180, w: 620, h: 360 } },
       { id: "source_1", role: "source", bounds: { x: 100, y: 820, w: 760, h: 40 } },
     ],
-    svg: '<svg data-final-slide="1"></svg>',
+    svg: [
+      '<svg data-final-slide="1"',
+      'data-background-artifact-id="project_image_slide_001_v1"',
+      'data-background-artifact-path="projects/project/slides/images/slide_001.v1.png"',
+      'data-background-artifact-hash="sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa">',
+      "</svg>",
+    ].join(" "),
     previewPngDataUrl: encodeSolidPngDataUrl({
       width: 1,
       height: 1,

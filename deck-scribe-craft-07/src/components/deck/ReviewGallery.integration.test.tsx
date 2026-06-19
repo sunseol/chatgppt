@@ -12,6 +12,8 @@ import {
   validateReviewGalleryLiveCompositions,
 } from "./review-gallery-model";
 
+type BackgroundArtifactRef = NonNullable<FinalSlideComposition["backgroundArtifact"]>;
+
 describe("slide review gallery", () => {
   test("renders required review controls and failed QA state", () => {
     const items = buildReviewGalleryItems({
@@ -210,6 +212,18 @@ function compositionsFixture(
 ): readonly FinalSlideComposition[] {
   return Array.from({ length: slideCount }, (_, index) => {
     const slideNumber = index + 1;
+    const slideToken = String(slideNumber).padStart(3, "0");
+    const backgroundArtifact =
+      options.missingStoredArtifactSlideNumber === slideNumber
+        ? undefined
+        : {
+            artifactId: `project_image_slide_${slideToken}_v1`,
+            path: `projects/project/slides/images/slide_${slideToken}.v1.png`,
+            hash:
+              options.malformedStoredArtifactSlideNumber === slideNumber
+                ? `sha256:slide-${slideNumber}`
+                : `sha256:${String(slideNumber).repeat(64).slice(0, 64)}`,
+          };
     return {
       slideNumber,
       exportBasis: "compositor",
@@ -230,19 +244,11 @@ function compositionsFixture(
           bounds: { x: 100, y: 820, w: 760, h: 40 },
         },
       ],
-      ...(options.missingStoredArtifactSlideNumber === slideNumber
-        ? {}
-        : {
-            backgroundArtifact: {
-              artifactId: `project_image_slide_${String(slideNumber).padStart(3, "0")}_v1`,
-              path: `projects/project/slides/images/slide_${String(slideNumber).padStart(3, "0")}.v1.png`,
-              hash:
-                options.malformedStoredArtifactSlideNumber === slideNumber
-                  ? `sha256:slide-${slideNumber}`
-                  : `sha256:${String(slideNumber).repeat(64).slice(0, 64)}`,
-            },
-          }),
-      svg: `<svg data-final-slide="${slideNumber}"></svg>`,
+      ...(backgroundArtifact === undefined ? {} : { backgroundArtifact }),
+      svg:
+        backgroundArtifact === undefined
+          ? `<svg data-final-slide="${slideNumber}"></svg>`
+          : svgWithBackgroundArtifact(slideNumber, backgroundArtifact),
       previewPngDataUrl:
         options.fakePreviewSlideNumber === slideNumber
           ? "data:image/png;base64,ZmFrZQ=="
@@ -253,4 +259,14 @@ function compositionsFixture(
             }),
     };
   });
+}
+
+function svgWithBackgroundArtifact(slideNumber: number, artifact: BackgroundArtifactRef): string {
+  return [
+    `<svg data-final-slide="${slideNumber}"`,
+    `data-background-artifact-id="${artifact.artifactId}"`,
+    `data-background-artifact-path="${artifact.path}"`,
+    `data-background-artifact-hash="${artifact.hash}">`,
+    "</svg>",
+  ].join(" ");
 }
