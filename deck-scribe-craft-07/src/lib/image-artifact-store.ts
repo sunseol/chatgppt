@@ -158,7 +158,9 @@ function requireRequestMetadata(artifact: SlideImageArtifact): SlideImageRequest
     );
   }
   if (!validUsageSummary(artifact.request.usage)) {
-    throw new ImageArtifactStoreError("Image artifact request usage must be non-negative numbers.");
+    throw new ImageArtifactStoreError(
+      "Image artifact request usage counts must be non-negative integers.",
+    );
   }
   return artifact.request;
 }
@@ -169,12 +171,17 @@ function validLatencyMs(value: number | undefined): boolean {
 
 function validUsageSummary(usage: SlideImageRequestMetadata["usage"]): boolean {
   if (usage === undefined) return true;
-  return [usage.inputTokens, usage.outputTokens, usage.imageCount, usage.estimatedCostUsd].every(
-    validOptionalAmount,
+  return (
+    [usage.inputTokens, usage.outputTokens, usage.imageCount].every(validOptionalCount) &&
+    validOptionalCost(usage.estimatedCostUsd)
   );
 }
 
-function validOptionalAmount(value: number | undefined): boolean {
+function validOptionalCount(value: number | undefined): boolean {
+  return value === undefined || (Number.isInteger(value) && value >= 0);
+}
+
+function validOptionalCost(value: number | undefined): boolean {
   return value === undefined || (Number.isFinite(value) && value >= 0);
 }
 
