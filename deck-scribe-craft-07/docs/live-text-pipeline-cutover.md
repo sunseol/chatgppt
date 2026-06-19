@@ -27,7 +27,7 @@ Scope: DF-214 Deck Plan, Design System, and Layout IR Live cutover contract.
 - `ProductionWorkflowStage` now renders a production Plan/Design/Layout App Server workflow panel for the `plan`, `design`, and `layout` steps, listing the required `deck_plan`, `design_system`, and `layout_ir` turns, blocking missing approved Brief/Research prerequisites, and blocking launch when the desktop App Server bridge is missing.
 - `deckforge_codex_app_server_smoke`, `deckforge_codex_app_server_structured_turn`, `src/lib/desktop-app-server-bridge.ts`, and `src/lib/desktop-codex-app-server-production-job.ts` now provide the desktop commands/adapters needed to detect the App Server bridge, smoke-test it, and feed structured-turn notifications into the production Job Manager path.
 - `src/lib/desktop-live-text-pipeline-workflow.ts` and `src/lib/desktop-live-text-pipeline-jobs.ts` now build the desktop Plan/Design/Layout prompts, parse desktop structured-turn outputs through the same schema gates, run all three turns through the Tauri bridge adapter, and hand accepted outputs to the live text persistence gate.
-- `src/components/deck/ProductionTextWorkflowLauncher.tsx` wires the ready production text-pipeline button to that desktop launcher and stores the ready `plan`, `design`, and `layout` project patch when all three live turns are accepted.
+- `src/components/deck/ProductionTextWorkflowLauncher.tsx` wires the ready production text-pipeline button to that desktop launcher and stores the ready `plan`, `design`, and `layout` project patch plus the `deck_plan`, `design_system`, and `layout_ir` live artifact records when all three live turns are accepted.
 
 ## Verified Locally
 
@@ -42,6 +42,7 @@ Scope: DF-214 Deck Plan, Design System, and Layout IR Live cutover contract.
 - `src/lib/production-text-workflow-gate.test.ts` and `src/components/deck/ProductionTextWorkflowPanel.integration.test.tsx` verify the production app surface exposes the text-pipeline workflow stages, upstream prerequisite blockers, bridge blocker, and ready patch targets when prerequisites plus bridge availability are present.
 - `src/lib/desktop-app-server-bridge.test.ts`, `src/lib/desktop-codex-app-server-production-job.test.ts`, and `cargo test --manifest-path src-tauri/Cargo.toml codex_app_server` verify the desktop bridge smoke adapter, structured-turn adapter, production notification adapter, and Rust protocol command pieces.
 - `src/lib/desktop-live-text-pipeline-workflow.test.ts` verifies the app-level desktop launcher invokes three structured turns before persisting a ready Plan/Design/Layout bundle and blocks before invoking turns when the approved Brief/Research prerequisites are missing.
+- `src/lib/desktop-live-text-pipeline-artifact-patch.test.ts` verifies the ready UI patch preserves existing live artifact records and appends the accepted Plan, Design System, and Layout IR artifact records.
 
 ## Remaining Live Evidence
 

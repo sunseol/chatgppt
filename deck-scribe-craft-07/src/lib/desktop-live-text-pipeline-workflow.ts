@@ -9,6 +9,8 @@ import type { DeckforgeTauriRuntime } from "./desktop-app-server-bridge";
 import { buildLayoutIrPrompt } from "./layout-ir-prompt";
 import { createLiveTextPipelinePersistence } from "./live-text-artifact-persistence";
 import type { LiveTextPipelinePersistenceResult } from "./live-text-artifact-persistence";
+import type { LiveTextArtifactRecord } from "./live-text-artifact-record";
+import type { LiveTextPipelineReadyPatch } from "./live-text-pipeline-persistence-types";
 import type { LiveTextProductionJobFailure } from "./live-text-production-workflow";
 import {
   createProductionTextWorkflowGate,
@@ -34,6 +36,10 @@ export type DesktopLiveTextPipelineWorkflowResult =
   | LiveTextPipelinePersistenceResult
   | LiveTextProductionJobFailure
   | DesktopLiveTextPipelineLaunchBlocked;
+
+export type LiveTextPipelineReadyArtifactPatch = LiveTextPipelineReadyPatch & {
+  readonly liveTextArtifacts: readonly LiveTextArtifactRecord[];
+};
 
 export async function runDesktopLiveTextPipelineProductionWorkflow(
   input: DesktopLiveTextPipelineWorkflowInput,
@@ -97,6 +103,17 @@ export async function runDesktopLiveTextPipelineProductionWorkflow(
     })),
     repairAttempts: [],
   });
+}
+
+export function createLiveTextPipelineReadyArtifactPatch(
+  project: DeckProject,
+  patch: LiveTextPipelineReadyPatch,
+  records: readonly LiveTextArtifactRecord[],
+): LiveTextPipelineReadyArtifactPatch {
+  return {
+    ...patch,
+    liveTextArtifacts: [...(project.liveTextArtifacts ?? []), ...records],
+  };
 }
 
 type DesktopStageResult<TValue> =

@@ -10,7 +10,10 @@ import {
   createLiveInterviewReadyArtifactPatch,
   runDesktopLiveInterviewProductionWorkflow,
 } from "@/lib/desktop-live-interview-workflow";
-import { runDesktopLiveTextPipelineProductionWorkflow } from "@/lib/desktop-live-text-pipeline-workflow";
+import {
+  createLiveTextPipelineReadyArtifactPatch,
+  runDesktopLiveTextPipelineProductionWorkflow,
+} from "@/lib/desktop-live-text-pipeline-workflow";
 import { createLiveInterviewAnswerMap } from "@/lib/live-interview-answer-map";
 import { createProviderJobManager } from "@/lib/provider-job-manager";
 import type { ProductionTextWorkflowBridgeStatus } from "@/lib/production-text-workflow-gate";
@@ -122,7 +125,14 @@ async function runTextPipeline(
     });
     switch (result.kind) {
       case "ready":
-        updateProject(project.id, result.patch);
+        updateProject(
+          project.id,
+          createLiveTextPipelineReadyArtifactPatch(
+            project,
+            result.patch,
+            result.artifacts.map((artifact) => artifact.record),
+          ),
+        );
         setRunStatus({ kind: "succeeded", message: "Live text pipeline artifacts are ready." });
         return;
       case "repair_required":
