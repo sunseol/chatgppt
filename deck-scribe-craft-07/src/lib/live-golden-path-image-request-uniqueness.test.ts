@@ -23,6 +23,22 @@ describe("live golden path image request uniqueness", () => {
       "duplicate_live_image_request",
     ]);
   });
+
+  test("blocks blank image artifact ids from satisfying the five-image requirement", () => {
+    // Given
+    const imageArtifacts = [" ", "\t", "  ", "\n", "\r"].map((artifactId, index) =>
+      liveImageArtifact(artifactId, `img_req_${index + 1}`),
+    );
+    const bundle = completeBundle({ imageArtifacts });
+
+    // When
+    const result = evaluateLiveGoldenPathE2EBundle(bundle);
+
+    // Then
+    expect(result.kind === "blocked" ? result.issues.map((issue) => issue.code) : []).toEqual([
+      "insufficient_live_image_artifacts",
+    ]);
+  });
 });
 
 function completeBundle(

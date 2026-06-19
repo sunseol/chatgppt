@@ -59,6 +59,8 @@ export function liveImageArtifacts(
   return imageArtifacts.filter(
     (artifact) =>
       artifact.executionMode === "production" &&
+      artifact.artifactId.trim() === artifact.artifactId &&
+      artifact.artifactId.length > 0 &&
       artifact.providerKind === "openaiImage" &&
       artifact.authMode === "api_key" &&
       !artifact.fixture &&

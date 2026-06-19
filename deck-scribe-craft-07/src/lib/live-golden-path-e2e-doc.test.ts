@@ -18,6 +18,8 @@ describe("live golden path E2E documentation", () => {
     expect(goldenPathE2E.includes("non-synthetic `.zip` or `.json` path")).toBe(true);
     expect(goldenPathE2E.includes("insufficient_live_sources")).toBe(true);
     expect(goldenPathE2E.includes("api_key")).toBe(true);
+    expect(goldenPathE2E.includes("nonblank live image artifact ids")).toBe(true);
+    expect(goldenPathE2E.includes("blank image artifact id rejection")).toBe(true);
     expect(goldenPathE2E.includes("insufficient_live_image_artifacts")).toBe(true);
     expect(goldenPathE2E.includes("missing_restart_reopen_evidence")).toBe(true);
   });
