@@ -1,4 +1,4 @@
-import { hasNonSyntheticJsonEvidencePath } from "./live-evidence-path";
+import { hasNonSyntheticEvidencePath, hasNonSyntheticJsonEvidencePath } from "./live-evidence-path";
 
 export const CLEAN_MACHINE_STEPS = [
   "install_app",
@@ -99,12 +99,14 @@ export function formatProductionPackagingEvidenceSummary(
 
 function packageIssues(evidence: ProductionPackagingEvidence): readonly ProductionPackagingIssue[] {
   return [
-    ...(evidence.packagePath.trim()
+    ...(hasNonSyntheticEvidencePath(evidence.packagePath, [".tgz", ".zip"])
       ? []
       : [
-          issue("missing_production_package", "Production mode package artifact is required.", [
-            "dist/",
-          ]),
+          issue(
+            "missing_production_package",
+            "Production mode package artifact must cite a persisted non-local archive path.",
+            [evidence.packagePath || "missing"],
+          ),
         ]),
     ...(isSha256(evidence.packageSha256)
       ? []
@@ -223,7 +225,8 @@ function runtimeRemediationIssues(shown: boolean): readonly ProductionPackagingI
 }
 
 function runbookIssues(runbookPath: string): readonly ProductionPackagingIssue[] {
-  return runbookPath.endsWith("production-clean-machine-runbook.md")
+  return hasNonSyntheticEvidencePath(runbookPath, [".md"]) &&
+    runbookPath.endsWith("production-clean-machine-runbook.md")
     ? []
     : [
         issue("missing_clean_machine_runbook", "Clean-machine installation runbook is required.", [
@@ -244,8 +247,7 @@ function macosReleaseTrustLabel(trust: NativeMacosReleaseTrust): string {
 
 function hasNativeMacosBundle(evidence: ProductionPackagingEvidence): boolean {
   return (
-    (evidence.nativeMacosBundlePath.endsWith(".dmg") ||
-      evidence.nativeMacosBundlePath.endsWith(".app")) &&
+    hasNonSyntheticEvidencePath(evidence.nativeMacosBundlePath, [".dmg", ".app"]) &&
     isSha256(evidence.nativeMacosBundleSha256)
   );
 }

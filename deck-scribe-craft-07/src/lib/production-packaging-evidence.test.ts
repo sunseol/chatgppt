@@ -103,6 +103,27 @@ describe("production packaging evidence", () => {
     ]);
   });
 
+  test("blocks package artifact, native bundle, and runbook file URL evidence paths", () => {
+    // Given
+    const evidence = completeEvidence({
+      packagePath: "file:///Users/jake/chatgppt/dist/deckforge-macos-dry-run.tgz",
+      nativeMacosBundlePath: "file:///Users/jake/chatgppt/release-artifacts/DeckForge.dmg",
+      runbookPath: "file:///Users/jake/chatgppt/docs/production-clean-machine-runbook.md",
+    });
+
+    // When
+    const result = evaluateProductionPackagingEvidence(evidence);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "missing_production_package",
+      "missing_native_macos_bundle",
+      "missing_clean_machine_runbook",
+    ]);
+  });
+
   test("blocks native macOS release trust evidence that is unsigned or unnotarized", () => {
     // Given
     const evidence = completeEvidence({

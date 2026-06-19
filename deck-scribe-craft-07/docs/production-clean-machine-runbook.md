@@ -57,6 +57,8 @@ Signing state remains release-blocking: `codesign -dv --verbose=4` reports `Sign
 - `missing_runtime_absence_remediation`
 - `missing_clean_machine_runbook`
 
+Package archive, native macOS bundle, and runbook paths must be persisted non-synthetic, non-local evidence paths; `file://`, absolute developer-local, mock, fixture, test, or fake paths do not count as DF-245 package evidence.
+
 Native macOS release trust evidence must include a Developer ID team signature, a 10-character uppercase alphanumeric Apple TeamIdentifier, notarization, stapling, Gatekeeper acceptance, and a persisted non-synthetic, non-local `releaseTrustEvidencePath` JSON bundle containing the codesign, notarytool, stapler, and `spctl` assessment records. Ad-hoc signatures, missing TeamIdentifier values, placeholder values such as `not set`, missing or developer-local release-trust evidence bundles, unstapled notarization tickets, or rejected `spctl` assessments block DF-245.
 
 The clean-machine checklist must include install, Codex login, image credential setup, project launch, and first live interview.
