@@ -5,6 +5,7 @@ import type {
   LiveBenchmarkOutputBundleManifest,
   LiveBenchmarkRun,
 } from "./live-benchmark-evidence";
+import { duplicatePassedArtifactRefs } from "./live-benchmark-output-artifact-duplicates";
 import { hasNonSyntheticEvidencePath } from "./live-evidence-path";
 
 export function outputBundleIssues(
@@ -45,6 +46,18 @@ export function outputBundleIssues(
     .filter((run) => run.status === "passed" && !run.outputBundle.exportArtifactId.trim())
     .map((run) => run.id);
   const duplicateExportArtifacts = duplicatePassedExportArtifacts(runs);
+  const duplicateSourceArtifacts = duplicatePassedArtifactRefs(
+    runs,
+    (run) => run.outputBundle.sourceArtifactIds,
+  );
+  const duplicateImageArtifacts = duplicatePassedArtifactRefs(
+    runs,
+    (run) => run.outputBundle.liveImageArtifactIds,
+  );
+  const duplicateImageRequests = duplicatePassedArtifactRefs(
+    runs,
+    (run) => run.outputBundle.liveImageRequestIds,
+  );
   const missingGoldenPathEvidence = runs
     .filter((run) => run.status === "passed" && !hasGoldenPathEvidence(run.outputBundle))
     .map((run) => run.id);
@@ -116,6 +129,33 @@ export function outputBundleIssues(
             "duplicate_output_bundle_artifact",
             "Passed Live benchmark bundles must reference distinct final export artifacts.",
             duplicateExportArtifacts,
+          ),
+        ]),
+    ...(duplicateSourceArtifacts.length === 0
+      ? []
+      : [
+          issue(
+            "duplicate_output_bundle_source_artifact",
+            "Passed Live benchmark bundles must not reuse source artifact evidence.",
+            duplicateSourceArtifacts,
+          ),
+        ]),
+    ...(duplicateImageArtifacts.length === 0
+      ? []
+      : [
+          issue(
+            "duplicate_output_bundle_image_artifact",
+            "Passed Live benchmark bundles must not reuse live image artifacts.",
+            duplicateImageArtifacts,
+          ),
+        ]),
+    ...(duplicateImageRequests.length === 0
+      ? []
+      : [
+          issue(
+            "duplicate_output_bundle_image_request",
+            "Passed Live benchmark bundles must not reuse live image requests.",
+            duplicateImageRequests,
           ),
         ]),
     ...(missingGoldenPathEvidence.length === 0
