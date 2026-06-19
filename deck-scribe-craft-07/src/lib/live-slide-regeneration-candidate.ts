@@ -14,7 +14,10 @@ export function candidateIssues(input: {
   readonly candidateVersion: number;
 }): readonly LiveSlideRegenerationIssue[] {
   const candidateRequestId = input.candidateBackground.metadata.request.requestId?.trim();
+  const candidateProvenanceRequestId = input.candidateBackground.provenance.requestId?.trim();
   const originalRequestId = input.request.originalBackgroundRequestId.trim();
+  const hasRequestEvidence = Boolean(candidateRequestId && candidateProvenanceRequestId);
+  const requestEvidenceMatches = candidateRequestId === candidateProvenanceRequestId;
   return [
     ...(input.candidateDeckContextId === input.request.deckContextId
       ? []
@@ -43,7 +46,7 @@ export function candidateIssues(input: {
           },
         ]
       : []),
-    ...(candidateRequestId
+    ...(hasRequestEvidence
       ? []
       : [
           {
@@ -52,7 +55,17 @@ export function candidateIssues(input: {
             message: "Regenerated background must preserve a provider request id.",
           },
         ]),
-    ...(candidateRequestId &&
+    ...(hasRequestEvidence && !requestEvidenceMatches
+      ? [
+          {
+            code: "regeneration_request_provenance_mismatch" as const,
+            slideNumber: input.request.slideNumber,
+            message: "Regenerated background request metadata must match stored provenance.",
+          },
+        ]
+      : []),
+    ...(hasRequestEvidence &&
+    requestEvidenceMatches &&
     candidateRequestId === originalRequestId &&
     input.candidateBackground.binary.artifactId !== input.request.originalBackgroundArtifactId
       ? [

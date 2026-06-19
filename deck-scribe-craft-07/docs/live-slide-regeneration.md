@@ -8,16 +8,17 @@ Status: Partial, external evidence required
 
 ## Contract Summary
 
-DF-235 requires selected-slide regeneration to create a full new slide background from the approved original context instead of local inpainting. The local contract now preserves the selected slide spec, `deckContextId`, and `designSystemId`, requires non-empty and non-overlapping `must_keep` and `must_change`, stores the regenerated background as a newer versioned image artifact with provider request id evidence that differs from the original request, and keeps the already approved slide unchanged until the user approves the candidate.
+DF-235 requires selected-slide regeneration to create a full new slide background from the approved original context instead of local inpainting. The local contract now preserves the selected slide spec, `deckContextId`, and `designSystemId`, requires non-empty and non-overlapping `must_keep` and `must_change`, stores the regenerated background as a newer versioned image artifact with matching metadata/provenance provider request id evidence that differs from the original request, and keeps the already approved slide unchanged until the user approves the candidate.
 
 ## Local Evidence
 
 - `src/lib/live-slide-regeneration.ts` builds a live regeneration request from the existing revision request while preserving `deckContextId`, `designSystemId`, slide plan id, slide spec hash, `mustKeep`, `mustChange`, the original background artifact id, and the original provider request id.
 - `src/lib/live-slide-regeneration-request-validation.ts` rejects unsafe requests with `missing_must_keep_targets`, `missing_must_change_targets`, `revision_targets_overlap`, `missing_original_background_artifact`, and `missing_original_background_request`.
 - `src/lib/live-slide-regeneration-candidate.ts` owns candidate validation so the regeneration contract can keep the candidate artifact rules focused and reviewable.
-- The candidate gate rejects invalid output with issue codes including `deck_context_mismatch`, `design_system_mismatch`, `slide_id_mismatch`, `stale_candidate_version`, `background_artifact_not_new`, `background_artifact_version_mismatch`, `missing_regeneration_request_id`, `regeneration_request_id_not_new`, and `mock_background_artifact`.
+- The candidate gate rejects invalid output with issue codes including `deck_context_mismatch`, `design_system_mismatch`, `slide_id_mismatch`, `stale_candidate_version`, `background_artifact_not_new`, `background_artifact_version_mismatch`, `missing_regeneration_request_id`, `regeneration_request_provenance_mismatch`, `regeneration_request_id_not_new`, and `mock_background_artifact`.
 - `background_artifact_version_mismatch` blocks a candidate when the stored binary id/path/metadata path version does not match the candidate slide version.
 - `missing_regeneration_request_id` blocks a candidate when the regenerated stored background lacks provider request id evidence.
+- `regeneration_request_provenance_mismatch` blocks a candidate when stored request metadata and provider provenance disagree.
 - `regeneration_request_id_not_new` blocks a new regenerated artifact when its provider request id matches the approved original background request id.
 - A ready candidate points at the new versioned background artifact id, keeps the original background artifact id plus `mustKeep`/`mustChange` provenance, and remains `ready` until explicitly approved.
 - Failed candidates return the preserved approved slide so the previous accepted version remains available for review and export.

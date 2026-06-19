@@ -20,6 +20,7 @@ export type LiveSlideRegenerationIssueCode =
   | "slide_id_mismatch"
   | "stale_candidate_version"
   | "missing_regeneration_request_id"
+  | "regeneration_request_provenance_mismatch"
   | "regeneration_request_id_not_new";
 
 export interface LiveSlideRegenerationIssue {
