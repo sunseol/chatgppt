@@ -36,7 +36,9 @@ export type LiveInterruptionScenarioEvidence = {
   readonly approvableArtifactIds: readonly string[];
   readonly exportableArtifactIds: readonly string[];
   readonly approvalGateChecked: boolean;
+  readonly approvalGateEvidencePath?: string;
   readonly exportGateChecked: boolean;
+  readonly exportGateEvidencePath?: string;
 };
 
 export type LiveInterruptionMatrixEvidence = {

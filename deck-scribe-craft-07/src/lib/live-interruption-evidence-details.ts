@@ -43,12 +43,18 @@ export function scenarioEvidenceDetailIssues(
     .map((scenario) => scenario.cancelSignalJobId ?? "missing");
   const missingApprovalGateChecks = scenarios
     .filter(
-      (scenario) => scenario.id === "interrupted_artifact_gate" && !scenario.approvalGateChecked,
+      (scenario) =>
+        scenario.id === "interrupted_artifact_gate" &&
+        (!scenario.approvalGateChecked ||
+          !isPersistedJsonEvidencePath(scenario.approvalGateEvidencePath)),
     )
     .map((scenario) => scenario.id);
   const missingExportGateChecks = scenarios
     .filter(
-      (scenario) => scenario.id === "interrupted_artifact_gate" && !scenario.exportGateChecked,
+      (scenario) =>
+        scenario.id === "interrupted_artifact_gate" &&
+        (!scenario.exportGateChecked ||
+          !isPersistedJsonEvidencePath(scenario.exportGateEvidencePath)),
     )
     .map((scenario) => scenario.id);
 

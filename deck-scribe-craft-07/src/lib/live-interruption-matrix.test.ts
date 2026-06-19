@@ -218,6 +218,28 @@ describe("live interruption matrix", () => {
       "missing_interrupted_export_gate_evidence",
     ]);
   });
+
+  test("blocks interrupted artifact gate checks without persisted evidence paths", () => {
+    const matrix = completeMatrix({
+      scenarios: LIVE_INTERRUPTION_SCENARIOS.map((id) =>
+        id === "interrupted_artifact_gate"
+          ? scenario(id, {
+              approvalGateEvidencePath: "",
+              exportGateEvidencePath: "",
+            })
+          : scenario(id),
+      ),
+    });
+
+    const result = evaluateLiveInterruptionMatrix(matrix);
+
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "missing_interrupted_approval_gate_evidence",
+      "missing_interrupted_export_gate_evidence",
+    ]);
+  });
 });
 
 function completeMatrix(
@@ -252,7 +274,9 @@ function scenario(
     approvableArtifactIds: [],
     exportableArtifactIds: [],
     approvalGateChecked: true,
+    approvalGateEvidencePath: "recovery/interrupted-approval-gate.json",
     exportGateChecked: true,
+    exportGateEvidencePath: "recovery/interrupted-export-gate.json",
     ...patch,
   };
 }
