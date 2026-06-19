@@ -23,6 +23,9 @@ describe("live text smoke gate", () => {
         previousTurnId: "turn_layout_ir",
         nextTurnId: "turn_resume_after_layout",
         completed: true,
+        providerKind: "codex",
+        authMode: "codex_session",
+        executionMode: "production",
       },
     });
 
@@ -58,6 +61,9 @@ describe("live text smoke gate", () => {
         previousTurnId: "turn_layout_ir",
         nextTurnId: "turn_resume_after_layout",
         completed: true,
+        providerKind: "codex",
+        authMode: "codex_session",
+        executionMode: "production",
       },
     });
 
@@ -78,6 +84,9 @@ describe("live text smoke gate", () => {
         previousTurnId: "turn_missing_from_lineage",
         nextTurnId: "",
         completed: false,
+        providerKind: "codex",
+        authMode: "codex_session",
+        executionMode: "production",
       },
     });
 
@@ -87,6 +96,28 @@ describe("live text smoke gate", () => {
     expect(issueCodes.includes("resume_turn_not_completed")).toBe(true);
     expect(issueCodes.includes("missing_resume_next_turn")).toBe(true);
     expect(issueCodes.includes("resume_previous_turn_not_in_lineage")).toBe(true);
+  });
+
+  test("requires the post-resume next turn to be live Codex production", () => {
+    const result = evaluateLiveTextSmokeGate({
+      artifacts: REQUIRED_STAGES.map((stage) => liveArtifact(stage)),
+      resumeEvidence: {
+        threadId: "thread_live_text",
+        previousTurnId: "turn_layout_ir",
+        nextTurnId: "turn_resume_after_layout",
+        completed: true,
+        providerKind: "mock",
+        authMode: "none",
+        executionMode: "development",
+      },
+    });
+
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    const issueCodes = result.issues.map((issue) => issue.code);
+    expect(issueCodes.includes("resume_non_codex_turn")).toBe(true);
+    expect(issueCodes.includes("resume_non_codex_session_auth")).toBe(true);
+    expect(issueCodes.includes("resume_non_production_turn")).toBe(true);
   });
 });
 

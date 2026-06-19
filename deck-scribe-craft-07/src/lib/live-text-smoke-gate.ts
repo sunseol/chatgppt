@@ -23,6 +23,9 @@ export type LiveTextSmokeResumeEvidence = {
   readonly previousTurnId: string;
   readonly nextTurnId: string;
   readonly completed: boolean;
+  readonly providerKind: ProviderArtifactProvenance["providerKind"];
+  readonly authMode: ProviderArtifactProvenance["authMode"];
+  readonly executionMode: ProviderArtifactProvenance["executionMode"];
 };
 
 export type LiveTextSmokeIssueCode =
@@ -39,7 +42,10 @@ export type LiveTextSmokeIssueCode =
   | "missing_resume_next_turn"
   | "resume_previous_turn_not_in_lineage"
   | "resume_reused_existing_turn"
-  | "resume_thread_mismatch";
+  | "resume_thread_mismatch"
+  | "resume_non_codex_turn"
+  | "resume_non_codex_session_auth"
+  | "resume_non_production_turn";
 
 export type LiveTextSmokeIssue = {
   readonly code: LiveTextSmokeIssueCode;
