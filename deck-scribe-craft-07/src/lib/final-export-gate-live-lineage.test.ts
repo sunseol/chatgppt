@@ -1,7 +1,10 @@
 import { describe, expect, test } from "bun:test";
 import type { DeckProject, ProjectExportSummary } from "./deck-types";
 import { evaluateFinalExportGate } from "./final-export-gate";
-import type { LiveSlideReportLineage } from "./live-generation-report-lineage";
+import {
+  formatLiveGenerationReportLineage,
+  type LiveSlideReportLineage,
+} from "./live-generation-report-lineage";
 import { createProviderArtifactProvenance } from "./provider-provenance";
 
 describe("final export gate live report lineage", () => {
@@ -122,13 +125,14 @@ describe("final export gate live report lineage", () => {
   });
 
   test("allows production final export when provider and slide report lineage are complete", () => {
+    const liveReportLineage = [liveReportLineageFixture()];
     const result = evaluateFinalExportGate({
       project: projectFixture(),
       exportPackage: exportSummaryFixture(),
-      reportMarkdown: reportFixture(),
+      reportMarkdown: reportFixture(formatLiveGenerationReportLineage(liveReportLineage)),
       executionMode: "production",
       lineage: providerLineageFixture(),
-      liveReportLineage: [liveReportLineageFixture()],
+      liveReportLineage,
     });
 
     expect(result.kind).toBe("ready");
@@ -165,7 +169,7 @@ function exportSummaryFixture(): ProjectExportSummary {
   };
 }
 
-function reportFixture(): string {
+function reportFixture(liveLineageSection?: string): string {
   return [
     "# Generation Report — Gate Fixture",
     "",
@@ -173,6 +177,7 @@ function reportFixture(): string {
     "",
     "## 10. Export 패키지",
     "- Export: project_001_export_v1 · sha256:export",
+    ...(liveLineageSection ? ["", liveLineageSection] : []),
   ].join("\n");
 }
 

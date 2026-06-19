@@ -4,7 +4,10 @@ import {
   liveReportGateIssues,
   type LiveReportGateIssueCode,
 } from "./final-export-live-report-gate";
-import type { LiveSlideReportLineage } from "./live-generation-report-lineage";
+import {
+  formatLiveGenerationReportLineage,
+  type LiveSlideReportLineage,
+} from "./live-generation-report-lineage";
 import { type ExecutionMode, type ProviderArtifactProvenance } from "./provider-provenance";
 import { workflowErrorBlocksFinalApproval } from "./workflow-error-policy";
 
@@ -19,6 +22,7 @@ export type FinalExportGateIssueCode =
   | "fatal_workflow_error"
   | "mock_lineage_contamination"
   | "fixture_lineage_contamination"
+  | "missing_live_report_lineage_section"
   | LiveReportGateIssueCode;
 
 export type FinalExportGateIssue = {
@@ -63,17 +67,24 @@ export function evaluateFinalExportGate(input: {
 }): FinalExportGateResult {
   const summary = input.exportPackage ?? input.project.exportPackage;
   const reportMarkdown = input.reportMarkdown ?? "";
+  const liveReportIssues = liveReportGateIssues({
+    executionMode: input.executionMode,
+    expectedSlideCount: input.project.slideCount,
+    providerLineage: input.lineage ?? [],
+    liveReportLineage: input.liveReportLineage,
+  });
   const issues = [
     ...invalidatedIssues(input.project),
     ...workflowErrorIssues(input.project),
     ...exportPackageIssues(summary),
     ...reportIssues(reportMarkdown, summary),
     ...productionLineageIssues(input.executionMode, input.lineage ?? []),
-    ...liveReportGateIssues({
+    ...liveReportIssues,
+    ...liveReportSectionIssues({
       executionMode: input.executionMode,
-      expectedSlideCount: input.project.slideCount,
-      providerLineage: input.lineage ?? [],
+      reportMarkdown,
       liveReportLineage: input.liveReportLineage,
+      hasLiveReportIssues: liveReportIssues.length > 0,
     }),
   ];
   const warnings = developmentLineageWarnings(input.executionMode, input.lineage ?? []);
@@ -222,6 +233,29 @@ function reportIssues(
     {
       code: "missing_generation_report",
       message: "생성 보고서에 프롬프트 버전과 내보내기 정보가 필요합니다.",
+    },
+  ];
+}
+
+function liveReportSectionIssues(input: {
+  readonly executionMode: ExecutionMode | undefined;
+  readonly reportMarkdown: string;
+  readonly liveReportLineage: readonly LiveSlideReportLineage[] | undefined;
+  readonly hasLiveReportIssues: boolean;
+}): readonly FinalExportGateIssue[] {
+  if (
+    input.executionMode !== "production" ||
+    input.hasLiveReportIssues ||
+    !input.liveReportLineage?.length
+  ) {
+    return [];
+  }
+  const expectedSection = formatLiveGenerationReportLineage(input.liveReportLineage);
+  if (input.reportMarkdown.includes(expectedSection)) return [];
+  return [
+    {
+      code: "missing_live_report_lineage_section",
+      message: "생성 보고서에 검증된 Live Slide Lineage 섹션이 필요합니다.",
     },
   ];
 }

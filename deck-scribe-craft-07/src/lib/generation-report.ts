@@ -1,4 +1,8 @@
 import type { DeckProject } from "./deck-types";
+import {
+  formatLiveGenerationReportLineage,
+  type LiveSlideReportLineage,
+} from "./live-generation-report-lineage";
 import type { ProviderArtifactProvenance } from "./provider-provenance";
 import type { PromptUsageRecord } from "./prompt-assets";
 import type { AuditLogEvent } from "./audit-log";
@@ -18,6 +22,7 @@ export function buildGenerationReport(
   }),
   auditEvents: readonly AuditLogEvent[] = [],
   providerLineage: readonly ProviderArtifactProvenance[] = [],
+  liveReportLineage: readonly LiveSlideReportLineage[] = [],
 ): string {
   const out: string[] = [];
   const sourceMap =
@@ -44,6 +49,7 @@ export function buildGenerationReport(
   appendExport(project, out);
   appendAuditLog(auditEvents, out);
   appendProviderProvenance(providerLineage, out);
+  appendLiveSlideLineage(liveReportLineage, out);
   return out.join("\n");
 }
 
@@ -235,6 +241,12 @@ function appendProviderProvenance(lineage: readonly ProviderArtifactProvenance[]
     if (identity.length > 0) out.push(`  - ${identity.join(" · ")}`);
     out.push(`  - inputs ${joinOrNone(item.inputArtifactIds)}`);
   });
+}
+
+function appendLiveSlideLineage(lineage: readonly LiveSlideReportLineage[], out: string[]) {
+  if (lineage.length === 0) return;
+  out.push("");
+  out.push(formatLiveGenerationReportLineage(lineage));
 }
 
 function providerIdentity(item: ProviderArtifactProvenance): readonly string[] {
