@@ -42,6 +42,10 @@ export function createLiveResearchApprovalPatch(input: {
 
   const approvedHash = hashContent(JSON.stringify({ ...input.pack, approvedHash: undefined }));
   const research = { ...input.pack, approvedHash };
+  const deckPlanInput = createLiveResearchDeckPlanInput(research);
+  if (deckPlanInput === undefined) {
+    throw new Error("Approved live research pack must produce a deck-plan handoff input.");
+  }
   const approvalArtifact = createApprovedResearchPackArtifact({
     projectId: input.projectId,
     pack: research,
@@ -52,10 +56,7 @@ export function createLiveResearchApprovalPatch(input: {
     kind: "ready",
     approvedHash,
     approvalArtifact,
-    deckPlanInput: createLiveResearchDeckPlanInput(research) ?? {
-      researchPackId: research.id,
-      approvedResearchPackHash: approvedHash,
-    },
+    deckPlanInput,
     patch: {
       research,
       stage: "PLANNING",

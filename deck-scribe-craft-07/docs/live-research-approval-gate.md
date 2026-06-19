@@ -18,7 +18,7 @@ Status: partial local contract
 - Pending source-strengthening requests block approval with `pending_reinforcement_request`.
 - Complete evidence plus complete production Codex provenance returns `kind: "ready"`.
 - `ResearchPack.provenanceLineage` persists provider lineage through Research Pack parsing and approved Research Pack artifacts.
-- `createLiveResearchDeckPlanInput` forwards only `researchPackId` and `approvedResearchPackHash` to the downstream live deck-plan input.
+- `createLiveResearchDeckPlanInput` forwards only `researchPackId` and `approvedResearchPackHash` to the downstream live deck-plan input, and returns no handoff for approved hashes whose persisted evidence/provenance no longer pass the live approval gate.
 - `src/lib/live-research-approval-action.ts` creates the production approval patch only after the live gate is ready, writes `ResearchPack.approvedHash`, returns the DF-214 deck-plan input containing `approvedResearchPackHash`, and creates an approved research artifact record at `projects/{projectId}/research/research.v{version}.json`.
 - `src/lib/desktop-live-text-pipeline-jobs.ts` includes the same `researchPackId` and `approvedResearchPackHash` in the live Deck Plan App Server prompt, so DF-214 receives the approved Research Pack hash as an actual turn input rather than only a local return value.
 

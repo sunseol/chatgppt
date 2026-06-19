@@ -119,7 +119,11 @@ describe("live research approval gate", () => {
 
   test("passes only an approved Research Pack hash to the deck plan live input", () => {
     // Given
-    const pack = researchPack({ approvedHash: "sha256:approved_research" });
+    const pack = researchPack({
+      approvedHash: "sha256:approved_research",
+      liveEvidenceRefs: validEvidenceRefs(),
+      provenanceLineage: [liveResearchProvenance()],
+    });
 
     // When
     const deckPlanInput = createLiveResearchDeckPlanInput(pack);
@@ -130,6 +134,9 @@ describe("live research approval gate", () => {
       approvedResearchPackHash: "sha256:approved_research",
     });
     expect(createLiveResearchDeckPlanInput(researchPack())).toBe(undefined);
+    expect(createLiveResearchDeckPlanInput(researchPack({ approvedHash: "sha256:unsafe" }))).toBe(
+      undefined,
+    );
   });
 });
 

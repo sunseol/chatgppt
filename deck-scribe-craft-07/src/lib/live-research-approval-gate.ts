@@ -67,6 +67,12 @@ export function createLiveResearchDeckPlanInput(
   pack: ResearchPack,
 ): LiveResearchDeckPlanInput | undefined {
   if (!pack.approvedHash) return undefined;
+  const gate = evaluateLiveResearchApprovalGate({
+    pack,
+    evidenceRefs: pack.liveEvidenceRefs ?? [],
+    provenanceLineage: pack.provenanceLineage ?? [],
+  });
+  if (gate.kind === "blocked") return undefined;
   return {
     researchPackId: pack.id,
     approvedResearchPackHash: pack.approvedHash,

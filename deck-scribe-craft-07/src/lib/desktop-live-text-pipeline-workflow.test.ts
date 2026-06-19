@@ -5,8 +5,9 @@ import {
 } from "./desktop-live-text-pipeline-workflow";
 import { deckPlanJob, designSystemJob, layoutIrJob } from "./desktop-live-text-pipeline-jobs";
 import { completeBrief, pipelineFixtures } from "./live-text-artifact-persistence.fixtures";
+import { liveApprovedResearchPackFixture } from "./live-research-approval-test-fixtures";
 import { createProviderJobManager } from "./provider-job-manager";
-import type { DeckProject, ResearchPack } from "./deck-types";
+import type { DeckProject } from "./deck-types";
 import type { DeckforgeTauriRuntime } from "./desktop-app-server-bridge";
 
 describe("desktop live text pipeline workflow", () => {
@@ -160,28 +161,10 @@ function projectFixture(patch: Partial<DeckProject> = {}): DeckProject {
     createdAt: 1_789_300_000,
     updatedAt: 1_789_300_000,
     brief: { ...completeBrief(), approvedHash: "sha256:brief-live-desktop" },
-    research: researchFixture(),
+    research: liveApprovedResearchPackFixture(),
     invalidated: {},
     approvalLog: [],
     ...patch,
-  };
-}
-
-function researchFixture(): ResearchPack {
-  return {
-    id: "research_live_desktop",
-    sources: [],
-    claims: [],
-    datasets: [],
-    charts: [],
-    approvedHash: "sha256:research-live-desktop",
-    factCheckReport: {
-      summary: "Ready for planning.",
-      generatedAt: 1_789_300_010,
-      fatalIssueCount: 0,
-      issues: [],
-      uncertainItems: [],
-    },
   };
 }
 
