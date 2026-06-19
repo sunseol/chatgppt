@@ -274,7 +274,10 @@ function generatedSlide(slideNumber: number): GeneratedSlide {
     number: slideNumber,
     version: 1,
     status: "ready",
-    imageDescriptor: `generated slide ${slideNumber}`,
+    imageDescriptor: `openaiImage|16:9|slide_${String(slideNumber).padStart(
+      2,
+      "0",
+    )}_layout.png|slide_generation@v1`,
   };
 }
 

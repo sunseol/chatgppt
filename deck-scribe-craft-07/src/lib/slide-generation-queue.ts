@@ -205,14 +205,21 @@ function completedSlidesForBundles(
   bundles: readonly SlideContextBundle[],
   completedSlides: readonly GeneratedSlide[],
 ): readonly GeneratedSlide[] {
-  const bundleSlideNumbers = new Set(bundles.map((bundle) => bundle.slideSpec.slideNumber));
-  return completedSlides.filter(
-    (slide) => bundleSlideNumbers.has(slide.number) && isCompletedGeneratedSlide(slide),
-  );
+  const completedBySlide = new Map(completedSlides.map((slide) => [slide.number, slide]));
+  return bundles.flatMap((bundle) => {
+    const slide = completedBySlide.get(bundle.slideSpec.slideNumber);
+    return slide && isCompletedGeneratedSlideForBundle(slide, bundle) ? [slide] : [];
+  });
 }
 
-function isCompletedGeneratedSlide(slide: GeneratedSlide): boolean {
-  return slide.status === "ready" || slide.status === "approved";
+function isCompletedGeneratedSlideForBundle(
+  slide: GeneratedSlide,
+  bundle: SlideContextBundle,
+): boolean {
+  return (
+    (slide.status === "ready" || slide.status === "approved") &&
+    slide.imageDescriptor.includes(`|${bundle.layoutPrototype.layoutScreenshot}|`)
+  );
 }
 
 function pendingBundlesForCompletedSlides(
