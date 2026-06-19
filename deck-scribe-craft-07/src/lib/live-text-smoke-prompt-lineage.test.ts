@@ -76,9 +76,9 @@ function promptVersionFor(stage: LiveTextProductionStage): string {
 function defaultInputArtifactIds(stage: LiveTextProductionStage): readonly string[] {
   switch (stage) {
     case "questions":
-      return [];
+      return ["project_initial_prompt"];
     case "brief":
-      return ["questions_artifact"];
+      return ["questions_artifact", "questions_artifact_answers"];
     case "deck_plan":
       return ["brief_artifact"];
     case "design_system":

@@ -47,6 +47,8 @@ export type LiveTextSmokeIssueCode =
   | "resume_non_codex_session_auth"
   | "resume_non_production_turn"
   | "disconnected_text_stage_lineage"
+  | "text_smoke_missing_initial_prompt_input"
+  | "text_smoke_missing_answer_input"
   | "text_smoke_prompt_version_mismatch";
 
 export type LiveTextSmokeIssue = {

@@ -16,9 +16,52 @@ const LINEAGE_REQUIREMENTS = [
 export function textPathLineageIssues(
   artifacts: readonly LiveTextSmokeArtifact[],
 ): readonly LiveTextSmokeIssue[] {
-  return LINEAGE_REQUIREMENTS.flatMap((requirement) =>
-    lineageIssueForRequirement(artifacts, requirement),
-  );
+  return [
+    ...initialPromptInputIssues(artifacts),
+    ...answerInputIssues(artifacts),
+    ...LINEAGE_REQUIREMENTS.flatMap((requirement) =>
+      lineageIssueForRequirement(artifacts, requirement),
+    ),
+  ];
+}
+
+function initialPromptInputIssues(
+  artifacts: readonly LiveTextSmokeArtifact[],
+): readonly LiveTextSmokeIssue[] {
+  const artifact = artifactForStage(artifacts, "questions");
+  if (artifact === undefined || artifact.provenance.inputArtifactIds.some(hasText)) return [];
+
+  return [
+    {
+      code: "text_smoke_missing_initial_prompt_input",
+      stage: "questions",
+      artifactId: artifact.provenance.artifactId,
+      message: "Live text smoke questions artifact must cite the project or initial prompt input.",
+    },
+  ];
+}
+
+function answerInputIssues(
+  artifacts: readonly LiveTextSmokeArtifact[],
+): readonly LiveTextSmokeIssue[] {
+  const questionArtifact = artifactForStage(artifacts, "questions");
+  const briefArtifact = artifactForStage(artifacts, "brief");
+  if (questionArtifact === undefined || briefArtifact === undefined) return [];
+
+  const questionArtifactId = questionArtifact.provenance.artifactId;
+  const hasAnswerInput = briefArtifact.provenance.inputArtifactIds
+    .map((inputId) => inputId.trim())
+    .some((inputId) => inputId.length > 0 && inputId !== questionArtifactId);
+  if (hasAnswerInput) return [];
+
+  return [
+    {
+      code: "text_smoke_missing_answer_input",
+      stage: "brief",
+      artifactId: briefArtifact.provenance.artifactId,
+      message: "Live text smoke Brief artifact must cite the user answer bundle input.",
+    },
+  ];
 }
 
 function lineageIssueForRequirement(
@@ -55,4 +98,8 @@ function artifactForStage(
   stage: LiveTextProductionStage,
 ): LiveTextSmokeArtifact | undefined {
   return artifacts.find((artifact) => artifact.stage === stage);
+}
+
+function hasText(value: string): boolean {
+  return value.trim().length > 0;
 }
