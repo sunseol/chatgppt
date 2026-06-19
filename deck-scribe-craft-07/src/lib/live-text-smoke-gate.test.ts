@@ -119,6 +119,30 @@ describe("live text smoke gate", () => {
     expect(issueCodes.includes("resume_non_codex_session_auth")).toBe(true);
     expect(issueCodes.includes("resume_non_production_turn")).toBe(true);
   });
+
+  test("reports non-session Codex artifact auth once", () => {
+    const result = evaluateLiveTextSmokeGate({
+      artifacts: REQUIRED_STAGES.map((stage) =>
+        liveArtifact(stage, stage === "deck_plan" ? { authMode: "none" } : {}),
+      ),
+      resumeEvidence: {
+        threadId: "thread_live_text",
+        previousTurnId: "turn_layout_ir",
+        nextTurnId: "turn_resume_after_layout",
+        completed: true,
+        providerKind: "codex",
+        authMode: "codex_session",
+        executionMode: "production",
+      },
+    });
+
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    const authIssueCount = result.issues.filter(
+      (issue) => issue.code === "non_codex_session_auth",
+    ).length;
+    expect(authIssueCount).toBe(1);
+  });
 });
 
 type ProvenanceOverrides = {
