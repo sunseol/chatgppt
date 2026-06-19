@@ -24,6 +24,7 @@ export type NativeMacosReleaseTrust = {
   readonly notarized: boolean;
   readonly stapled: boolean;
   readonly gatekeeperAccepted: boolean;
+  readonly releaseTrustEvidencePath?: string;
 };
 
 export type ProductionPackagingEvidence = {
@@ -44,6 +45,7 @@ export type ProductionPackagingIssueCode =
   | "missing_package_hash"
   | "missing_native_macos_bundle"
   | "missing_developer_id_signature"
+  | "missing_release_trust_evidence"
   | "missing_notarization"
   | "missing_gatekeeper_acceptance"
   | "package_not_production_mode"
@@ -86,7 +88,7 @@ export function formatProductionPackagingEvidenceSummary(
     `Native macOS bundle: ${evidence.nativeMacosBundlePath || "missing"}`,
     `macOS release trust: ${macosReleaseTrustLabel(evidence.nativeMacosReleaseTrust)}`,
     `Mode: ${evidence.productionMode ? "production" : "non-production"}`,
-    `content scan: ${contentScanPassed(evidence.contentScan) ? "passed" : "blocked"}`,
+    `content scan: ${contentScanIssues(evidence.contentScan).length === 0 ? "passed" : "blocked"}`,
     `clean-machine steps: ${evidence.cleanMachineSteps.length}/${CLEAN_MACHINE_STEPS.length}`,
     `runtime absence remediation: ${evidence.runtimeAbsenceRemediationShown ? "present" : "missing"}`,
     `Runbook: ${evidence.runbookPath || "missing"}`,
@@ -159,6 +161,15 @@ function macosReleaseTrustIssues(
             ["spctl"],
           ),
         ]),
+    ...(validReleaseTrustEvidencePath(trust.releaseTrustEvidencePath)
+      ? []
+      : [
+          issue(
+            "missing_release_trust_evidence",
+            "Native macOS release trust must cite persisted codesign, notarization, stapling, and Gatekeeper evidence.",
+            [trust.releaseTrustEvidencePath || "missing"],
+          ),
+        ]),
   ];
 }
 
@@ -219,16 +230,6 @@ function runbookIssues(runbookPath: string): readonly ProductionPackagingIssue[]
       ];
 }
 
-function contentScanPassed(scan: PackageContentScan): boolean {
-  return (
-    scan.mockResourceHits.length === 0 &&
-    scan.fixtureHits.length === 0 &&
-    scan.secretHits.length === 0 &&
-    scan.testFileHits.length === 0 &&
-    scan.localPathHits.length === 0
-  );
-}
-
 function macosReleaseTrustLabel(trust: NativeMacosReleaseTrust): string {
   return [
     trust.signature,
@@ -247,12 +248,14 @@ function hasNativeMacosBundle(evidence: ProductionPackagingEvidence): boolean {
   );
 }
 
-function isSha256(value: string): boolean {
-  return /^[a-f0-9]{64}$/.test(value);
-}
+const isSha256 = (value: string): boolean => /^[a-f0-9]{64}$/.test(value);
 
-function isDeveloperTeamIdentifier(value: string): boolean {
-  return /^[A-Z0-9]{10}$/.test(value);
+const isDeveloperTeamIdentifier = (value: string): boolean => /^[A-Z0-9]{10}$/.test(value);
+
+function validReleaseTrustEvidencePath(value: string | undefined): boolean {
+  if (value === undefined || !value.endsWith(".json")) return false;
+  const normalized = value.toLowerCase();
+  return !["mock", "fixture", "test", "fake"].some((marker) => normalized.includes(marker));
 }
 
 function issue(

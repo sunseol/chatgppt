@@ -83,9 +83,11 @@ describe("live readiness documentation", () => {
     expect(runbook.includes("DF-245")).toBe(true);
     expect(runbook.includes("missing_package_hash")).toBe(true);
     expect(runbook.includes("missing_native_macos_bundle")).toBe(true);
+    expect(runbook.includes("missing_release_trust_evidence")).toBe(true);
     expect(runbook.includes("package_content_contaminated")).toBe(true);
     expect(runbook.includes("missing_clean_machine_step")).toBe(true);
     expect(runbook.includes("10-character uppercase alphanumeric Apple TeamIdentifier")).toBe(true);
+    expect(runbook.includes("releaseTrustEvidencePath")).toBe(true);
     expect(runbook.includes("not set")).toBe(true);
     expect(manualQa.includes("DF-246")).toBe(true);
     expect(manualQa.includes("10 minutes")).toBe(true);

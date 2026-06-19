@@ -112,6 +112,7 @@ describe("production packaging evidence", () => {
         notarized: false,
         stapled: false,
         gatekeeperAccepted: false,
+        releaseTrustEvidencePath: "release-evidence/macos-release-trust.json",
       },
     });
 
@@ -137,6 +138,7 @@ describe("production packaging evidence", () => {
         notarized: true,
         stapled: true,
         gatekeeperAccepted: true,
+        releaseTrustEvidencePath: "release-evidence/macos-release-trust.json",
       },
     });
 
@@ -148,6 +150,28 @@ describe("production packaging evidence", () => {
     if (result.kind !== "blocked") return;
     expect(result.issues.map((issue) => issue.code)).toEqual(["missing_developer_id_signature"]);
     expect(result.issues[0]?.refs).toEqual(["developer_id", "not set"]);
+  });
+
+  test("blocks release trust claims without persisted assessment evidence", () => {
+    // Given
+    const evidence = completeEvidence({
+      nativeMacosReleaseTrust: {
+        signature: "developer_id",
+        teamIdentifier: "TEAMID1234",
+        notarized: true,
+        stapled: true,
+        gatekeeperAccepted: true,
+        releaseTrustEvidencePath: "test-fixtures/release-trust.json",
+      },
+    });
+
+    // When
+    const result = evaluateProductionPackagingEvidence(evidence);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual(["missing_release_trust_evidence"]);
   });
 });
 
@@ -165,6 +189,7 @@ function completeEvidence(
       notarized: true,
       stapled: true,
       gatekeeperAccepted: true,
+      releaseTrustEvidencePath: "release-evidence/macos-release-trust.json",
     },
     productionMode: true,
     contentScan: {
