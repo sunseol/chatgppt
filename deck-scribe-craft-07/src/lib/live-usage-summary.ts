@@ -1,6 +1,7 @@
 import type { ProviderImageBillingDisclosure, ProviderUsageSummary } from "./provider-job-manager";
 import type { ProviderKind } from "./provider-types";
 import { hasNonSyntheticJsonEvidencePath } from "./live-evidence-path";
+import { redactSensitiveText } from "./redaction";
 
 export type LiveCostLabel = "actual" | "estimate" | "hidden";
 
@@ -222,7 +223,9 @@ function costText(stage: LiveUsageStageSummary): string {
 
 function billingText(stage: LiveUsageStageSummary): string {
   const label = imageBillingDisclosure(stage)?.label;
-  return label === undefined || label.trim().length === 0 ? "" : ` · ${label}`;
+  return label === undefined || label.trim().length === 0
+    ? ""
+    : ` · ${redactSensitiveText(label.trim())}`;
 }
 
 function imageBillingDisclosure(

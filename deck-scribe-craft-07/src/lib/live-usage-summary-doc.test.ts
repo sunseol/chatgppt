@@ -19,6 +19,11 @@ describe("live usage summary documentation", () => {
     expect(usageSummary.includes("API key billing confirmed")).toBe(true);
     expect(usageSummary.includes("API key billing not confirmed")).toBe(true);
     expect(usageSummary.includes("confirmationEvidencePath")).toBe(true);
+    expect(
+      usageSummary.includes("secret-like text inside displayed image billing disclosure labels"),
+    ).toBe(true);
+    expect(usageSummary.includes("live-usage-summary-redaction.test.ts")).toBe(true);
+    expect(usageSummary.includes("provider-job-progress-view-redaction.test.ts")).toBe(true);
     expect(usageSummary.includes("developer-local")).toBe(true);
     expect(usageSummary.includes("incomplete_text_token_usage")).toBe(true);
     expect(usageSummary.includes("missing_image_usage_count")).toBe(true);

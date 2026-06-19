@@ -143,7 +143,7 @@ function imageBillingDisclosureItem(usageSummary: ProviderUsageSummary): string 
   ) {
     return "API key billing not confirmed";
   }
-  return disclosure.label.trim();
+  return redactSensitiveText(disclosure.label.trim());
 }
 
 function isNonEmpty(value: string): boolean {
