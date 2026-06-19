@@ -77,6 +77,8 @@ describe("production workflow stage", () => {
 
     // Then
     expect(markup.includes("Live evidence and provenance are ready for approval.")).toBe(true);
+    expect(markup.includes("government")).toBe(true);
+    expect(markup.includes("high")).toBe(true);
     expect(markup.includes("quote 0-3")).toBe(true);
     expect(markup.includes("67%")).toBe(true);
     expect(markup.includes("Live Research Pack 승인")).toBe(true);
