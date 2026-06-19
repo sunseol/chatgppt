@@ -140,7 +140,13 @@ function resumeIssues(
   }
 
   const turnIds = new Set(lineage.map((item) => item.turnId).filter(isPresentString));
-  const threadIds = new Set(lineage.map((item) => item.threadId).filter(isPresentString));
+  const threadIdByTurnId = new Map(
+    lineage.flatMap((item) =>
+      isPresentString(item.turnId) && isPresentString(item.threadId)
+        ? [[item.turnId, item.threadId] as const]
+        : [],
+    ),
+  );
 
   return [
     ...resumeLiveCodexIssues(evidence),
@@ -176,7 +182,7 @@ function resumeIssues(
           },
         ]
       : []),
-    ...(threadIds.has(evidence.threadId)
+    ...(threadIdByTurnId.get(evidence.previousTurnId) === evidence.threadId
       ? []
       : [
           {

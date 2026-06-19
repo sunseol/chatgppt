@@ -98,6 +98,27 @@ describe("live text smoke gate", () => {
     expect(issueCodes.includes("resume_previous_turn_not_in_lineage")).toBe(true);
   });
 
+  test("requires resume thread to match the previous text artifact turn", () => {
+    const result = evaluateLiveTextSmokeGate({
+      artifacts: REQUIRED_STAGES.map((stage) =>
+        liveArtifact(stage, { threadId: `thread_${stage}` }),
+      ),
+      resumeEvidence: {
+        threadId: "thread_questions",
+        previousTurnId: "turn_layout_ir",
+        nextTurnId: "turn_resume_after_layout",
+        completed: true,
+        providerKind: "codex",
+        authMode: "codex_session",
+        executionMode: "production",
+      },
+    });
+
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code).includes("resume_thread_mismatch")).toBe(true);
+  });
+
   test("requires the post-resume next turn to be live Codex production", () => {
     const result = evaluateLiveTextSmokeGate({
       artifacts: REQUIRED_STAGES.map((stage) => liveArtifact(stage)),

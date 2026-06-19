@@ -28,6 +28,7 @@ describe("live text smoke documentation", () => {
       "layout_ir_desktop@v1",
       "text_artifact_missing_turn_id",
       "missing_resume_next_turn",
+      "resume_thread_mismatch",
       "resume_non_codex_turn",
       "Smoke result: partial",
     ]) {
