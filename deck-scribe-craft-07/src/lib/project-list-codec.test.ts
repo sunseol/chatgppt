@@ -53,6 +53,28 @@ describe("project list codec", () => {
     expect(restored[0]?.initialPrompt.includes("[redacted]")).toBe(true);
   });
 
+  test("redacts quoted Codex session material before project DB serialization", () => {
+    const project = createDeckProject(
+      {
+        name: "Quoted session prompt",
+        initialPrompt:
+          'Run live mode with CODEX_SESSION="codex.session.secret" and {"token":"abc123def456"}',
+        slideCount: 5,
+        aspectRatio: "16:9",
+        language: "ko",
+      },
+      { createId: () => "p_quoted_secret_prompt", now: () => 201 },
+    );
+
+    const serialized = serializeProjectList([project]);
+    const restored = parseProjectList(serialized);
+
+    expect(serialized.includes("codex.session.secret")).toBe(false);
+    expect(serialized.includes('"token":"abc123def456"')).toBe(false);
+    expect(serialized.includes('CODEX_SESSION=\\"[redacted]\\"')).toBe(true);
+    expect(restored[0]?.initialPrompt.includes("codex.session.secret")).toBe(false);
+  });
+
   test("migrates persisted research packs to current live metadata fields", () => {
     const project = {
       ...createDeckProject(

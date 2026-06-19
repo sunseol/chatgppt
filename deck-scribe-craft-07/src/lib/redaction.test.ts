@@ -18,6 +18,17 @@ describe("redaction", () => {
     expect(redacted).toBe("token=[redacted] password=[redacted] api_key=[redacted]");
   });
 
+  test("redacts quoted secret assignments and serialized secret fields", () => {
+    const text =
+      'CODEX_SESSION="codex.session.secret" {"token":"abc123def456","password":"hunter2"}';
+
+    const redacted = redactSensitiveText(text);
+
+    expect(redacted).toBe(
+      'CODEX_SESSION="[redacted]" {"token":"[redacted]","password":"[redacted]"}',
+    );
+  });
+
   test("redacts Codex auth file paths", () => {
     const text =
       "Codex auth path /Users/jake/.codex/auth.json and ~/.codex/auth.json must stay private.";
