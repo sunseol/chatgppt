@@ -10,6 +10,10 @@ import {
   duplicateOutputBundleReports,
   duplicatePassedExportArtifacts,
 } from "./live-benchmark-output-bundle-duplicates";
+import {
+  duplicateScreenshotEvidenceIssues,
+  hasDistinctScreenshotEvidence,
+} from "./live-benchmark-screenshot-evidence";
 import { hasNonSyntheticEvidencePath } from "./live-evidence-path";
 
 export function outputBundleIssues(
@@ -150,6 +154,7 @@ export function outputBundleIssues(
             duplicateExportArtifacts,
           ),
         ]),
+    ...duplicateScreenshotEvidenceIssues(runs),
     ...(duplicateSourceArtifacts.length === 0
       ? []
       : [
@@ -202,6 +207,7 @@ function hasGoldenPathEvidence(bundle: LiveBenchmarkOutputBundleManifest): boole
   return (
     validEvidenceReportPath(bundle.goldenPathReportPath, "live_e2e_report.md") &&
     bundle.screenshotCount >= 10 &&
+    hasDistinctScreenshotEvidence(bundle.screenshotPaths ?? [], 10) &&
     bundle.sourceCount >= 3 &&
     bundle.imageArtifactCount >= 5 &&
     hasDistinctArtifactEvidence(bundle.sourceArtifactIds, 3) &&

@@ -5,7 +5,7 @@ import {
   type LiveBenchmarkRun,
 } from "./live-benchmark-evidence";
 
-const PACKAGE_SHA = "daa4a7c0fcb0480d4a438edf8e51d39770371c86aa50c80b4fdedbec4064ea42";
+const PACKAGE_SHA = "83032811d035f19bc7ac6d1837f137d535e011334197e6b18ae8f9477e342df7";
 
 describe("live benchmark image request evidence", () => {
   test("blocks passed output bundles that reuse one live image request id", () => {
@@ -63,6 +63,7 @@ function runWithImageRequestIds(
       goldenPathReportPath: `golden-path/${id}/live_e2e_report.md`,
       exportArtifactId: `${id}_export`,
       screenshotCount: 10,
+      screenshotPaths: screenshotPaths(id),
       sourceCount: 3,
       sourceArtifactIds: [`${id}_source_1`, `${id}_source_2`, `${id}_source_3`],
       imageArtifactCount: 5,
@@ -89,6 +90,7 @@ function failedRun(id: LiveBenchmarkRun["id"]): LiveBenchmarkRun {
       ...runWithImageRequestIds(id, []).outputBundle,
       exportArtifactId: "",
       screenshotCount: 0,
+      screenshotPaths: [],
       sourceCount: 0,
       sourceArtifactIds: [],
       imageArtifactCount: 0,
@@ -96,6 +98,10 @@ function failedRun(id: LiveBenchmarkRun["id"]): LiveBenchmarkRun {
       liveImageRequestIds: [],
     },
   };
+}
+
+function screenshotPaths(id: string): readonly string[] {
+  return Array.from({ length: 10 }, (_, index) => `screenshots/${id}/step_${index + 1}.png`);
 }
 
 function repeatedImageRequestIds(): readonly string[] {

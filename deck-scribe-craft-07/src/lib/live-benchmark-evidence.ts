@@ -31,6 +31,7 @@ export type LiveBenchmarkOutputBundleManifest = {
   readonly goldenPathReportPath: string;
   readonly exportArtifactId: string;
   readonly screenshotCount: number;
+  readonly screenshotPaths?: readonly string[];
   readonly sourceCount: number;
   readonly sourceArtifactIds: readonly string[];
   readonly imageArtifactCount: number;
@@ -70,6 +71,7 @@ export type LiveBenchmarkEvidenceIssueCode =
   | "output_bundle_report_missing"
   | "output_bundle_export_missing"
   | "duplicate_output_bundle_artifact"
+  | "duplicate_output_bundle_screenshot"
   | "duplicate_output_bundle_source_artifact"
   | "duplicate_output_bundle_image_artifact"
   | "duplicate_output_bundle_image_request"
