@@ -4,6 +4,7 @@ import type { SlideImageArtifact } from "./slide-image-provider";
 import type { SlidePromptPackage } from "./slide-prompt-package";
 import { batchIntegrityIssues } from "./live-background-batch-integrity";
 import { storedArtifactIssues } from "./live-background-batch-storage";
+import { textOverlayIssues } from "./live-background-batch-text-overlay";
 
 export type LiveBackgroundBatchIssueCode =
   | "expected_five_artifacts"
@@ -242,16 +243,4 @@ function contextIssues(
           },
         ]),
   ];
-}
-
-function textOverlayIssues(pkg: SlidePromptPackage): readonly LiveBackgroundBatchIssue[] {
-  return pkg.prompt.includes("Do not render exact title")
-    ? []
-    : [
-        {
-          code: "missing_text_overlay_rule",
-          slideNumber: pkg.slideNumber,
-          message: "Prompt package must include the exact text overlay exclusion rule.",
-        },
-      ];
 }

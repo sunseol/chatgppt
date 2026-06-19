@@ -8,7 +8,7 @@ import {
   type LiveBenchmarkRun,
 } from "./live-benchmark-evidence";
 
-const PACKAGE_SHA = "d956db601b85914868022c155f2fc7fe481c44ab9c7a23450b822149aaf7fb19";
+const PACKAGE_SHA = "f6fd422b89b0ecb52dc87aedc6d1101eefcff84797641e66105031ffe7268e08";
 
 describe("live benchmark evidence", () => {
   test("passes five Live benchmark scenarios when four complete the Golden Path", () => {

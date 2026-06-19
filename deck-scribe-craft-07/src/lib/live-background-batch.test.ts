@@ -78,6 +78,7 @@ describe("live background batch", () => {
       "mock_provider_output",
       "wrong_aspect_ratio",
       "deck_context_mismatch",
+      "missing_text_overlay_rule",
       "missing_prompt_package",
       "layout_reference_mismatch",
       "missing_text_overlay_rule",
