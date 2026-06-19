@@ -29,6 +29,17 @@ describe("redaction", () => {
     );
   });
 
+  test("redacts access and refresh token field variants", () => {
+    const text =
+      'access_token="codex.access.secret" refreshToken=codex.refresh.secret {"accessToken":"abc123def456","refresh_token":"def456ghi789"}';
+
+    const redacted = redactSensitiveText(text);
+
+    expect(redacted).toBe(
+      'access_token="[redacted]" refreshToken=[redacted] {"accessToken":"[redacted]","refresh_token":"[redacted]"}',
+    );
+  });
+
   test("redacts Codex auth file paths", () => {
     const text =
       "Codex auth path /Users/jake/.codex/auth.json and ~/.codex/auth.json must stay private.";
