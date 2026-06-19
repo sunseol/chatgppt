@@ -15,6 +15,7 @@ describe("live full-slide regeneration documentation", () => {
     expect(slideRegeneration.includes("revision_targets_overlap")).toBe(true);
     expect(slideRegeneration.includes("background_artifact_not_new")).toBe(true);
     expect(slideRegeneration.includes("background_artifact_version_mismatch")).toBe(true);
+    expect(slideRegeneration.includes("invalid_regeneration_background_hash")).toBe(true);
     expect(slideRegeneration.includes("mock_background_artifact")).toBe(true);
     expect(slideRegeneration.includes("regeneration_request_provenance_mismatch")).toBe(true);
     expect(slideRegeneration.includes("preserved approved slide")).toBe(true);

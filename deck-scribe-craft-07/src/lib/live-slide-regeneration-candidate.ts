@@ -85,6 +85,15 @@ export function candidateIssues(input: {
             message: "Regenerated background must be stored as a new artifact version.",
           },
         ]),
+    ...(isSha256Digest(input.candidateBackground.binary.hash)
+      ? []
+      : [
+          {
+            code: "invalid_regeneration_background_hash" as const,
+            slideNumber: input.request.slideNumber,
+            message: "Regenerated background hash must be a full SHA-256 digest.",
+          },
+        ]),
     ...(input.candidateBackground.binary.artifactId ===
       input.request.originalBackgroundArtifactId ||
     backgroundVersionMatchesCandidate(input.candidateBackground, input.candidateVersion)
@@ -126,4 +135,8 @@ function backgroundVersionMatchesCandidate(
     candidateBackground.binary.path.endsWith(`.v${candidateVersion}.png`) &&
     candidateBackground.metadata.path.endsWith(`.v${candidateVersion}.metadata.json`)
   );
+}
+
+function isSha256Digest(value: string): boolean {
+  return /^sha256:[a-f0-9]{64}$/.test(value);
 }

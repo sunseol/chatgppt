@@ -17,6 +17,7 @@ export type LiveSlideRegenerationIssueCode =
   | "mock_background_artifact"
   | "background_artifact_not_new"
   | "background_artifact_version_mismatch"
+  | "invalid_regeneration_background_hash"
   | "slide_id_mismatch"
   | "stale_candidate_version"
   | "missing_regeneration_request_id"
