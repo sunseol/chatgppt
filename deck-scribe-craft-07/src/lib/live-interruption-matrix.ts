@@ -47,6 +47,7 @@ export type LiveInterruptionMatrixEvidence = {
 export type LiveInterruptionIssueCode =
   | "missing_interruption_scenario"
   | "missing_live_job_evidence"
+  | "duplicate_interruption_live_job"
   | "missing_recovery_snapshot"
   | "missing_app_cancel_snapshot"
   | "missing_cancel_signal_evidence"

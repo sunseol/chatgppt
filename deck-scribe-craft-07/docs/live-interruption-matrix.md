@@ -8,7 +8,7 @@ Ticket: DF-243
 
 The Live interruption matrix validates that provider interruptions do not corrupt project state or allow partial artifacts into approval/export.
 
-Every scenario must carry a non-synthetic live job id plus a persisted recovery snapshot path. Job ids or snapshots marked as `mock`, `fixture`, `test`, or `fake` are not accepted as Live interruption evidence. The cancellation scenario must record both an app-storage recovery snapshot and a persisted cancel signal JSON path that targets the same live job id; a `cancellationRecorded` boolean alone is not enough Live evidence. The interrupted artifact gate scenario must explicitly exercise both approval and export gates, even when no interrupted artifact becomes approvable or exportable.
+Every scenario must carry a distinct non-synthetic live job id plus a persisted recovery snapshot path. Job ids or snapshots marked as `mock`, `fixture`, `test`, or `fake` are not accepted as Live interruption evidence. Reusing one live job id across multiple required scenarios is blocked because it can hide a missing text, fetch, image, cancellation, or approval/export run. The cancellation scenario must record both an app-storage recovery snapshot and a persisted cancel signal JSON path that targets the same live job id; a `cancellationRecorded` boolean alone is not enough Live evidence. The interrupted artifact gate scenario must explicitly exercise both approval and export gates, even when no interrupted artifact becomes approvable or exportable.
 
 Required scenarios:
 
@@ -24,6 +24,7 @@ Required scenarios:
 
 - `missing_interruption_scenario`: a required matrix scenario is absent.
 - `missing_live_job_evidence`: a scenario lacks a non-synthetic live job id.
+- `duplicate_interruption_live_job`: multiple required scenarios reuse one live job id.
 - `missing_recovery_snapshot`: a scenario lacks a persisted, non-synthetic recovery snapshot.
 - `missing_app_cancel_snapshot`: cancellation evidence lacks an app-storage recovery snapshot.
 - `missing_cancel_signal_evidence`: cancellation evidence lacks a persisted, non-synthetic cancel signal JSON path.
@@ -40,7 +41,7 @@ Required scenarios:
 
 ## Local Evidence
 
-- `src/lib/live-interruption-matrix.test.ts` verifies safe recovery, summary formatting, live job/snapshot/app-storage cancel snapshot/cancel signal path and job-id matching requirements, fixture/test/fake interruption evidence rejection, unsafe restart/resume/cancel/approval/export blockers, and cancellation attempts that still complete artifacts after cancellation.
+- `src/lib/live-interruption-matrix.test.ts` verifies safe recovery, summary formatting, distinct live job/snapshot/app-storage cancel snapshot/cancel signal path and job-id matching requirements, fixture/test/fake interruption evidence rejection, unsafe restart/resume/cancel/approval/export blockers, and cancellation attempts that still complete artifacts after cancellation.
 - `src/lib/provider-job-recovery.ts` preserves job snapshots for restart recovery.
 - `src/lib/slide-generation-queue-live-controls.test.ts` already covers retry, partial image resume, and cancellation behavior at the queue level.
 

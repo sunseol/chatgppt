@@ -177,6 +177,24 @@ describe("live interruption matrix", () => {
     ]);
   });
 
+  test("blocks interruption scenarios that reuse one live job id", () => {
+    const matrix = completeMatrix({
+      scenarios: LIVE_INTERRUPTION_SCENARIOS.map((id) =>
+        scenario(id, {
+          liveJobId: "live_job_reused_across_scenarios",
+          ...(id === "cancel_job" ? { cancelSignalJobId: "live_job_reused_across_scenarios" } : {}),
+        }),
+      ),
+    });
+
+    const result = evaluateLiveInterruptionMatrix(matrix);
+
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual(["duplicate_interruption_live_job"]);
+    expect(result.issues[0]?.refs).toEqual(["live_job_reused_across_scenarios"]);
+  });
+
   test("blocks interrupted artifact gate evidence that did not exercise approval and export gates", () => {
     const matrix = completeMatrix({
       scenarios: LIVE_INTERRUPTION_SCENARIOS.map((id) =>

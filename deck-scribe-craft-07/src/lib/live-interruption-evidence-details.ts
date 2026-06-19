@@ -12,6 +12,7 @@ export function scenarioEvidenceDetailIssues(
       (scenario) => !scenario.liveJobId.trim() || hasSyntheticEvidenceMarker(scenario.liveJobId),
     )
     .map((scenario) => scenario.id);
+  const duplicateLiveJobs = duplicateLiveJobIds(scenarios);
   const missingSnapshots = scenarios
     .filter((scenario) => !isPersistedJsonEvidencePath(scenario.recoverySnapshotPath))
     .map((scenario) => scenario.id);
@@ -59,6 +60,15 @@ export function scenarioEvidenceDetailIssues(
             "missing_live_job_evidence",
             "Each interruption scenario requires a non-mock live job id.",
             missingLiveJobs,
+          ),
+        ]),
+    ...(duplicateLiveJobs.length === 0
+      ? []
+      : [
+          issue(
+            "duplicate_interruption_live_job",
+            "Each interruption scenario requires distinct live job evidence.",
+            duplicateLiveJobs,
           ),
         ]),
     ...(missingSnapshots.length === 0
@@ -116,6 +126,26 @@ export function scenarioEvidenceDetailIssues(
           ),
         ]),
   ];
+}
+
+function duplicateLiveJobIds(
+  scenarios: readonly LiveInterruptionScenarioEvidence[],
+): readonly string[] {
+  return duplicateValues(
+    scenarios
+      .map((scenario) => scenario.liveJobId.trim())
+      .filter((liveJobId) => liveJobId.length > 0 && !hasSyntheticEvidenceMarker(liveJobId)),
+  );
+}
+
+function duplicateValues(values: readonly string[]): readonly string[] {
+  const seen = new Set<string>();
+  const duplicates = new Set<string>();
+  for (const value of values) {
+    if (seen.has(value)) duplicates.add(value);
+    seen.add(value);
+  }
+  return Array.from(duplicates);
 }
 
 function isPersistedJsonEvidencePath(value: string | undefined): boolean {
