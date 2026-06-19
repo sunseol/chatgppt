@@ -5,6 +5,8 @@ export function batchIntegrityIssues(
 ): readonly LiveBackgroundBatchIssue[] {
   return [
     ...batchSizeIssues(batch),
+    ...promptPackageCountIssues(batch),
+    ...storedArtifactCountIssues(batch),
     ...duplicateProviderRequestIssues(batch),
     ...duplicateStoredArtifactIssues(batch),
   ];
@@ -17,6 +19,31 @@ function batchSizeIssues(batch: LiveBackgroundBatch): readonly LiveBackgroundBat
         {
           code: "expected_five_artifacts",
           message: "Live background generation requires exactly five artifacts.",
+        },
+      ];
+}
+
+function promptPackageCountIssues(batch: LiveBackgroundBatch): readonly LiveBackgroundBatchIssue[] {
+  return batch.promptPackages.length === 5
+    ? []
+    : [
+        {
+          code: "prompt_package_count_mismatch",
+          message: "Live background generation requires exactly five prompt packages.",
+        },
+      ];
+}
+
+function storedArtifactCountIssues(
+  batch: LiveBackgroundBatch,
+): readonly LiveBackgroundBatchIssue[] {
+  if (batch.storedArtifacts === undefined) return [];
+  return batch.storedArtifacts.length === 5
+    ? []
+    : [
+        {
+          code: "stored_artifact_count_mismatch",
+          message: "Live background generation requires exactly five stored image artifacts.",
         },
       ];
 }

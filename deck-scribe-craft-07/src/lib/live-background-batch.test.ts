@@ -112,6 +112,32 @@ describe("live background batch", () => {
     ]);
   });
 
+  test("blocks extra prompt packages or stored artifacts beyond the five-slide bundle", () => {
+    // Given
+    const packages = slidePackages();
+    const artifacts = packages.map((pkg) => imageArtifact(pkg));
+    const storedArtifacts = artifacts.map((artifact) => storedArtifact(artifact));
+
+    // When
+    const validation = validateLiveBackgroundBatch(
+      buildLiveBackgroundBatch({
+        batchId: "live_bg_batch_extra_evidence",
+        deckContextId: "deck_context_001",
+        designSystemId: "design_001",
+        artifacts,
+        storedArtifacts: [...storedArtifacts, storedArtifacts[0]],
+        promptPackages: [...packages, packages[0]],
+      }),
+    );
+
+    // Then
+    expect(validation.kind).toBe("blocked");
+    if (validation.kind !== "blocked") return;
+    const issueCodes = validation.issues.map((issue) => issue.code);
+    expect(issueCodes.includes("prompt_package_count_mismatch")).toBe(true);
+    expect(issueCodes.includes("stored_artifact_count_mismatch")).toBe(true);
+  });
+
   test("reports only failed slide numbers as retryable", () => {
     // Given
     const retryable = getRetryableBackgroundSlideNumbers({

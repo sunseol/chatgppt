@@ -184,7 +184,7 @@ describe("live readiness documentation", () => {
     expect(backgroundBatch.includes("DF-232")).toBe(true);
     expect(backgroundBatch.includes("five live background artifacts")).toBe(true);
     expect(backgroundBatch.includes("designSystemId")).toBe(true);
-    expect(backgroundBatch.includes("mock_provider_output")).toBe(true);
+    expect(backgroundBatch.includes("prompt_package_count_mismatch")).toBe(true);
     expect(backgroundBatch.includes("missing_stored_background_artifact")).toBe(true);
     expect(backgroundBatch.includes("stored_background_artifact_mismatch")).toBe(true);
     expect(backgroundBatch.includes("stored metadata/provenance request ids")).toBe(true);

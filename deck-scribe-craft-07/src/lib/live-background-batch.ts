@@ -7,6 +7,8 @@ import { storedArtifactIssues } from "./live-background-batch-storage";
 
 export type LiveBackgroundBatchIssueCode =
   | "expected_five_artifacts"
+  | "prompt_package_count_mismatch"
+  | "stored_artifact_count_mismatch"
   | "missing_prompt_package"
   | "mock_provider_output"
   | "deck_context_mismatch"
