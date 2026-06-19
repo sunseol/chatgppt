@@ -120,6 +120,19 @@ describe("live initial release gate", () => {
     if (result.kind !== "blocked") return;
     expect(result.blockers.map((blocker) => blocker.code)).toEqual(["live_benchmark_shortfall"]);
   });
+
+  test("blocks release without Golden Path lineage evidence", () => {
+    // Given
+    const result = evaluateLiveInitialReleaseGate({
+      ...readyInput(),
+      goldenPathLineage: [],
+    });
+
+    // When / Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.blockers.map((blocker) => blocker.code)).toEqual(["golden_path_lineage_missing"]);
+  });
 });
 
 function readyInput(): LiveReleaseGateInput {

@@ -110,6 +110,7 @@ export type LiveReleaseBlockerCode =
   | "production_mock_enabled"
   | "production_package_contaminated"
   | "live_benchmark_shortfall"
+  | "golden_path_lineage_missing"
   | "golden_path_contaminated"
   | "critical_defects_open"
   | "p1_release_blocker"
@@ -206,6 +207,13 @@ function productionPackageBlockers(
 function lineageBlockers(
   lineage: readonly ProviderArtifactProvenance[],
 ): readonly LiveReleaseBlocker[] {
+  if (lineage.length === 0) {
+    return [
+      blocker("golden_path_lineage_missing", "Golden Path lineage evidence is required.", [
+        "DF-241",
+      ]),
+    ];
+  }
   const contamination = collectLineageContamination(lineage);
   const refs = [...contamination.mockArtifactIds, ...contamination.fixtureArtifactIds];
   return refs.length === 0

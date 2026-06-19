@@ -110,6 +110,7 @@ describe("live readiness documentation", () => {
     expect(decision.includes("docs/live-release-decision.md")).toBe(true);
     expect(decision.includes("canonical release decision path")).toBe(true);
     expect(decision.includes("DF-247")).toBe(true);
+    expect(decision.includes("Golden Path lineage is missing")).toBe(true);
     expect(decision.includes("missing_known_limits")).toBe(true);
     expect(decision.includes("release_decision_blocked")).toBe(true);
     expect(decision.includes("Verified Live")).toBe(true);
