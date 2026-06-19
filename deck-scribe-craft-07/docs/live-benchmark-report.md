@@ -35,7 +35,7 @@ Release requirement: at least 4 of 5 live benchmarks must pass without counting 
 
 - exactly the five required scenarios listed above
 - the 64-character package archive SHA-256 for the release candidate under benchmark
-- output bundle 5 sets, one distinct bundle per benchmark
+- output bundle 5 sets, one distinct non-synthetic `.zip` or `.json` bundle per benchmark
 - output bundle manifests matching their benchmark id, bundle path, and package archive SHA-256
 - passed benchmark bundle manifests with a scenario report, distinct final export artifact id, `live_e2e_report.md`, at least 10 step screenshots, at least 3 distinct source artifact ids, at least 5 distinct live image artifact ids, and at least 5 distinct live image request ids
 - at least four `live` runs whose Live Golden Path completed
@@ -49,7 +49,7 @@ Blocking issue codes:
 - `duplicate_benchmark_scenario`
 - `missing_benchmark_package_hash`
 - `invalid_benchmark_package_hash`
-- `missing_output_bundle`
+- `missing_output_bundle` - missing or synthetic output bundle path
 - `missing_output_bundle_manifest`
 - `duplicate_output_bundle`
 - `output_bundle_benchmark_mismatch`
@@ -65,4 +65,4 @@ Blocking issue codes:
 - `live_benchmark_shortfall`
 - `missing_live_benchmark_report`
 
-Current local status: the validator is implemented and tested, but no real provider output bundle 5 sets have been produced.
+Current local status: the validator is implemented and tested, including rejection of `mock`, `fixture`, `test`, or `fake` output bundle paths, but no real provider output bundle 5 sets have been produced.

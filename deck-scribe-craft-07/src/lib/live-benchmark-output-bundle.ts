@@ -10,14 +10,22 @@ export function outputBundleIssues(
   runs: readonly LiveBenchmarkRun[],
   packageArchiveSha256: string,
 ): readonly LiveBenchmarkEvidenceIssue[] {
-  const missing = runs.filter((run) => !run.outputBundlePath.trim()).map((run) => run.id);
-  const missingManifests = runs.filter((run) => !run.outputBundle.path.trim()).map((run) => run.id);
+  const missing = runs
+    .filter((run) => !validOutputBundlePath(run.outputBundlePath))
+    .map((run) => run.id);
+  const missingManifests = runs
+    .filter(
+      (run) =>
+        validOutputBundlePath(run.outputBundlePath) &&
+        !validOutputBundlePath(run.outputBundle.path),
+    )
+    .map((run) => run.id);
   const duplicates = duplicateOutputBundleRefs(runs);
   const mismatched = runs
     .filter(
       (run) =>
-        (run.outputBundlePath.trim() &&
-          run.outputBundle.path.trim() &&
+        (validOutputBundlePath(run.outputBundlePath) &&
+          validOutputBundlePath(run.outputBundle.path) &&
           run.outputBundle.path !== run.outputBundlePath) ||
         run.outputBundle.benchmarkId !== run.id,
     )
@@ -126,7 +134,7 @@ function duplicateOutputBundleRefs(runs: readonly LiveBenchmarkRun[]): readonly 
   const duplicates: string[] = [];
   for (const run of runs) {
     const path = run.outputBundlePath.trim();
-    if (!path) continue;
+    if (!validOutputBundlePath(path)) continue;
     const firstRunId = seen.get(path);
     if (firstRunId === undefined) {
       seen.set(path, run.id);
@@ -172,6 +180,15 @@ function hasDistinctArtifactEvidence(
 ): boolean {
   const normalized = artifactIds.map((artifactId) => artifactId.trim()).filter(Boolean);
   return normalized.length >= minimumCount && new Set(normalized).size >= minimumCount;
+}
+
+function validOutputBundlePath(value: string): boolean {
+  const normalized = value.toLowerCase().trim();
+  if (!normalized.endsWith(".zip") && !normalized.endsWith(".json")) return false;
+  const segments = normalized.split(/[/\\._-]+/).filter(Boolean);
+  return !["mock", "fixture", "fixtures", "test", "tests", "fake", "fakes"].some((marker) =>
+    segments.includes(marker),
+  );
 }
 
 function issue(

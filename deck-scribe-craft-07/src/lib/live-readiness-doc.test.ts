@@ -78,7 +78,7 @@ describe("live readiness documentation", () => {
     expect(benchmark.includes("duplicate_output_bundle")).toBe(true);
     expect(benchmark.includes("passed_failure_domain_present")).toBe(true);
     expect(benchmark.includes("live_benchmark_shortfall")).toBe(true);
-    expect(benchmark.includes("output bundle 5 sets")).toBe(true);
+    expect(benchmark.includes("one distinct non-synthetic `.zip` or `.json` bundle")).toBe(true);
     expect(runbook.includes("runtime absence remediation")).toBe(true);
     expect(runbook.includes("DF-245")).toBe(true);
     expect(runbook.includes("missing_package_hash")).toBe(true);
