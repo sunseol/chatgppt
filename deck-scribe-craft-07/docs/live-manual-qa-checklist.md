@@ -41,7 +41,7 @@ Within 10 minutes, the tester must:
 
 - `sessionDurationMs` at or below 600000 and completed setup tasks `new_project`, `login_check`, `prompt_input`
 - `testerRole` set to `non_developer`
-- `sessionEvidencePath` pointing to a persisted non-synthetic JSON bundle for the observed QA session
+- `sessionEvidencePath` pointing to a persisted non-synthetic JSON bundle for the observed QA session, not a developer-local absolute path
 - approval target checks for `research_pack`, `slide_generation`, and `export`, with every target understood
 - at least one opened real HTTP(S) source URL that also appears in the final report sources, excluding placeholder or local domains
 - at least one regenerated slide id and one edited title slide id
@@ -55,7 +55,7 @@ Blocker codes: `tester_not_non_developer`, `missing_manual_qa_session_evidence`,
 ## Pass criteria
 
 - Project task completes within 10 minutes.
-- Tester is not a developer or implementation contributor, and the session has a persisted evidence bundle.
+- Tester is not a developer or implementation contributor, and the session has a persisted non-local evidence bundle.
 - Tester explains the research, slide generation, and export approval gate targets.
 - At least one non-placeholder real source from the final report is opened and understood.
 - One slide is regenerated and accepted or rejected.

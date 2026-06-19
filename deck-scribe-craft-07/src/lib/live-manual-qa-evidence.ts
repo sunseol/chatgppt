@@ -1,5 +1,6 @@
 import { manualQaCountShapeIssues, safeManualQaCount } from "./live-manual-qa-counts";
 import { realSourceOpenIssues } from "./live-manual-qa-source-evidence";
+import { sessionEvidenceIssues } from "./live-manual-qa-session-evidence";
 
 export const MANUAL_QA_SETUP_TASKS = ["new_project", "login_check", "prompt_input"] as const;
 
@@ -147,18 +148,6 @@ function testerIssues(evidence: LiveManualQaEvidence): readonly LiveManualQaIssu
       ];
 }
 
-function sessionEvidenceIssues(sessionEvidencePath: string): readonly LiveManualQaIssue[] {
-  return validEvidencePath(sessionEvidencePath)
-    ? []
-    : [
-        issue(
-          "missing_manual_qa_session_evidence",
-          "Manual QA must cite a persisted non-synthetic session evidence bundle.",
-          [sessionEvidencePath || "missing"],
-        ),
-      ];
-}
-
 function setupIssues(evidence: LiveManualQaEvidence): readonly LiveManualQaIssue[] {
   const present = new Set(evidence.setupTasks);
   const missing = MANUAL_QA_SETUP_TASKS.filter((task) => !present.has(task));
@@ -260,12 +249,6 @@ function severityCounts(
 
 function nonEmpty(values: readonly string[]): readonly string[] {
   return values.filter((value) => value.trim().length > 0);
-}
-
-function validEvidencePath(value: string): boolean {
-  if (!value.endsWith(".json")) return false;
-  const normalized = value.toLowerCase();
-  return !["mock", "fixture", "test", "fake"].some((marker) => normalized.includes(marker));
 }
 
 function issue(
