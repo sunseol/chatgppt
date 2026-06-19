@@ -1,4 +1,5 @@
 import { hashContent } from "./artifacts";
+import { hasNonSyntheticEvidencePath } from "./live-evidence-path";
 import { liveImageArtifacts, validationBundleIssues } from "./live-golden-path-e2e-evidence";
 import { sourceIssues } from "./live-golden-path-source-evidence";
 import {
@@ -50,6 +51,7 @@ function reportSignatureIssues(bundle: LiveGoldenPathE2EBundle): readonly LiveGo
   const signature = bundle.reportSignature;
   const signed =
     basename(bundle.reportPath) === "live_e2e_report.md" &&
+    hasNonSyntheticEvidencePath(bundle.reportPath, [".md"]) &&
     signature.signer.trim() &&
     signature.signedAt.trim() &&
     signature.digest.trim();
@@ -82,13 +84,17 @@ function stepEvidenceIssues(
   screenshots: readonly string[],
   recordingPath: string,
 ): readonly LiveGoldenPathE2EIssue[] {
-  const screenshotCountReady = screenshots.filter((path) => path.trim()).length;
+  const validScreenshots = screenshots.filter((path) =>
+    hasNonSyntheticEvidencePath(path, [".png", ".jpg", ".jpeg", ".webp"]),
+  );
+  const screenshotCountReady = validScreenshots.length;
+  const recordingReady = hasNonSyntheticEvidencePath(recordingPath, [".mp4", ".mov", ".webm"]);
   const missingSteps =
     screenshotCountReady >= LIVE_GOLDEN_PATH_E2E_STEPS.length
-      ? missingStepScreenshots(screenshots)
+      ? missingStepScreenshots(validScreenshots)
       : [];
   return [
-    ...(screenshotCountReady >= LIVE_GOLDEN_PATH_E2E_STEPS.length && recordingPath.trim()
+    ...(screenshotCountReady >= LIVE_GOLDEN_PATH_E2E_STEPS.length && recordingReady
       ? []
       : [
           liveGoldenPathIssue(

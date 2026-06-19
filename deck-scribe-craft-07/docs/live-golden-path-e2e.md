@@ -23,9 +23,9 @@ The Production Mode Live Golden Path E2E evidence bundle must prove that a new p
 
 ## Required Evidence
 
-- Signed `live_e2e_report.md`
-- Step-level screenshots and a recording
-- Final validation bundle at a non-synthetic `.zip` or `.json` path whose manifest references the final export artifact id, signed report digest, every step screenshot, the recording, valid source artifact ids, and nonblank live image artifact ids without duplicate references
+- Signed non-synthetic, non-local `live_e2e_report.md`
+- Step-level screenshots and a recording at non-synthetic, non-local evidence paths
+- Final validation bundle at a non-synthetic, non-local `.zip` or `.json` path whose manifest references the final export artifact id, signed report digest, every step screenshot, the recording, valid source artifact ids, and nonblank live image artifact ids without duplicate references
 - Zero mock or fixture artifacts in Golden Path lineage
 - At least three distinct real source URLs with distinct source artifact ids
 - At least one primary or official source URL
@@ -38,11 +38,11 @@ The Production Mode Live Golden Path E2E evidence bundle must prove that a new p
 The local gate returns these issue codes:
 
 - `missing_e2e_step`: one or more Golden Path steps are absent.
-- `unsigned_live_e2e_report`: the signed `live_e2e_report.md` evidence is absent or incomplete.
+- `unsigned_live_e2e_report`: the signed `live_e2e_report.md` evidence is absent, incomplete, synthetic, or developer-local.
 - `report_digest_mismatch`: signed report digest does not match the report content.
-- `insufficient_step_evidence`: screenshots or recording evidence is incomplete.
+- `insufficient_step_evidence`: screenshots or recording evidence is incomplete, synthetic, or developer-local.
 - `missing_step_screenshot`: at least one Golden Path step lacks its own screenshot.
-- `missing_validation_bundle`: final validation bundle manifest is absent or points at a synthetic mock/fixture/test/fake path.
+- `missing_validation_bundle`: final validation bundle manifest is absent or points at a synthetic mock/fixture/test/fake or developer-local path.
 - `validation_bundle_export_mismatch`: final validation bundle does not reference the final export artifact id.
 - `validation_bundle_report_digest_mismatch`: final validation bundle does not include the signed report digest.
 - `validation_bundle_missing_screenshot`: final validation bundle does not include every step screenshot.
@@ -63,7 +63,7 @@ The local gate returns these issue codes:
 
 ## Local Evidence
 
-- `src/lib/live-golden-path-e2e.test.ts`, `src/lib/live-golden-path-validation-bundle-path.test.ts`, `src/lib/live-golden-path-image-request-uniqueness.test.ts`, and `src/lib/live-golden-path-image-auth-evidence.test.ts` verify a passing signed bundle, redacted summary formatting, digest matching, per-step screenshot requirements, final validation bundle manifest consistency, synthetic validation bundle path rejection, unauthenticated image rejection, duplicate validation bundle reference rejection, blank image artifact id rejection, duplicate source/image artifact/request rejection, and incomplete/contaminated bundle blockers.
+- `src/lib/live-golden-path-e2e.test.ts`, `src/lib/live-golden-path-local-path-evidence.test.ts`, `src/lib/live-golden-path-validation-bundle-path.test.ts`, `src/lib/live-golden-path-image-request-uniqueness.test.ts`, and `src/lib/live-golden-path-image-auth-evidence.test.ts` verify a passing signed bundle, redacted summary formatting, digest matching, per-step screenshot requirements, final validation bundle manifest consistency, synthetic and developer-local evidence path rejection, unauthenticated image rejection, duplicate validation bundle reference rejection, blank image artifact id rejection, duplicate source/image artifact/request rejection, and incomplete/contaminated bundle blockers.
 - `src/lib/live-release-gate.ts` still requires DF-241 to be `verified_live` before the Live Initial Version can release.
 - `docs/live-release-decision.md` remains blocked because no real authenticated Golden Path bundle has been produced.
 

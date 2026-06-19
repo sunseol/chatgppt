@@ -1,4 +1,5 @@
 import { hashContent } from "./artifacts";
+import { hasNonSyntheticEvidencePath } from "./live-evidence-path";
 import {
   liveGoldenPathIssue,
   type LiveFinalValidationBundle,
@@ -197,9 +198,7 @@ function pathSet(paths: readonly string[]): ReadonlySet<string> {
 }
 
 function validValidationBundlePath(value: string): boolean {
-  const normalized = value.toLowerCase();
-  if (!normalized.endsWith(".zip") && !normalized.endsWith(".json")) return false;
-  return !["mock", "fixture", "test", "fake"].some((marker) => normalized.includes(marker));
+  return hasNonSyntheticEvidencePath(value, [".zip", ".json"]);
 }
 
 function duplicateValues(values: readonly string[]): readonly string[] {
