@@ -18,6 +18,7 @@ export type ImagePathBlockerCode =
   | "invalid_binary_artifact_path"
   | "invalid_image_binary"
   | "artifact_provider_mismatch"
+  | "missing_request_model"
   | "artifact_model_mismatch"
   | "missing_request_id";
 
@@ -130,15 +131,7 @@ function artifactBlockers(input: {
             message: "The stored image artifact does not match the selected provider route.",
           },
         ]),
-    ...(artifact.request?.model === undefined ||
-    artifact.request.model === input.feasibility.targetModel
-      ? []
-      : [
-          {
-            code: "artifact_model_mismatch" as const,
-            message: "The stored image artifact request model does not match the selected route.",
-          },
-        ]),
+    ...requestModelBlockers(artifact.request?.model, input.feasibility.targetModel),
     ...(hasPngSignatureDataUrl(artifact.imageDataUrl)
       ? []
       : [
@@ -156,6 +149,27 @@ function artifactBlockers(input: {
           },
         ]
       : []),
+  ];
+}
+
+function requestModelBlockers(
+  requestModel: string | undefined,
+  targetModel: string,
+): readonly ImagePathBlocker[] {
+  if (!requestModel?.trim()) {
+    return [
+      {
+        code: "missing_request_model",
+        message: "The stored image artifact must record the provider request model.",
+      },
+    ];
+  }
+  if (requestModel === targetModel) return [];
+  return [
+    {
+      code: "artifact_model_mismatch",
+      message: "The stored image artifact request model does not match the selected route.",
+    },
   ];
 }
 

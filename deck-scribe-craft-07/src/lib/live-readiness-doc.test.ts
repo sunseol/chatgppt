@@ -153,6 +153,7 @@ describe("live readiness documentation", () => {
     expect(imagePathDecision.includes("DF-230")).toBe(true);
     expect(imagePathDecision.includes("missing_real_image_artifact")).toBe(true);
     expect(imagePathDecision.includes("invalid_image_binary")).toBe(true);
+    expect(imagePathDecision.includes("missing_request_model")).toBe(true);
     expect(imagePathDecision.includes("missing_billing_owner")).toBe(true);
     expect(imagePathDecision.includes("missing_required_permissions")).toBe(true);
     expect(imagePathDecision.includes("stale feasibility evidence")).toBe(true);
