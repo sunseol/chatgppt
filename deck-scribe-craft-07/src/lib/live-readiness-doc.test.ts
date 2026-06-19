@@ -92,12 +92,14 @@ describe("live readiness documentation", () => {
     expect(manualQa.includes("DF-246")).toBe(true);
     expect(manualQa.includes("10 minutes")).toBe(true);
     expect(manualQa.includes("tester_not_non_developer")).toBe(true);
+    expect(manualQa.includes("missing_manual_qa_session_evidence")).toBe(true);
     expect(manualQa.includes("invalid_real_source_url")).toBe(true);
     expect(manualQa.includes("invalid_manual_qa_count")).toBe(true);
     expect(manualQa.includes("setup_over_time")).toBe(true);
     expect(manualQa.includes("critical_issue_present")).toBe(true);
     expect(manualQa.includes("placeholder_output_present")).toBe(true);
     expect(manualQa.includes("severity issue list")).toBe(true);
+    expect(manualQa.includes("sessionEvidencePath")).toBe(true);
     expect(decision.includes("Release decision: Blocked")).toBe(true);
     expect(decision.includes("docs/live-release-decision.md")).toBe(true);
     expect(decision.includes("DF-247")).toBe(true);

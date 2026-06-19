@@ -27,6 +27,7 @@ export type ManualQaIssueLogEntry = {
 
 export type LiveManualQaEvidence = {
   readonly testerRole: ManualQaTesterRole;
+  readonly sessionEvidencePath: string;
   readonly sessionDurationMs: number;
   readonly setupTasks: readonly ManualQaSetupTask[];
   readonly approvalTargetChecks: readonly ManualQaApprovalTargetCheck[];
@@ -44,6 +45,7 @@ export type LiveManualQaEvidence = {
 
 export type LiveManualQaIssueCode =
   | "tester_not_non_developer"
+  | "missing_manual_qa_session_evidence"
   | "setup_over_time"
   | "missing_approval_target_check"
   | "approval_target_misunderstood"
@@ -77,6 +79,7 @@ export function evaluateLiveManualQaEvidence(
 ): LiveManualQaEvidenceResult {
   const issues = [
     ...testerIssues(evidence),
+    ...sessionEvidenceIssues(evidence.sessionEvidencePath),
     ...setupIssues(evidence),
     ...approvalIssues(evidence.approvalTargetChecks),
     ...realSourceOpenIssues(evidence.openedRealSourceUrls, evidence.finalReportSourceUrls),
@@ -117,7 +120,7 @@ export function formatLiveManualQaEvidenceSummary(evidence: LiveManualQaEvidence
   return [
     "# DF-246 Live Manual QA",
     `tester role: ${evidence.testerRole}`,
-    `setup target: 10 minutes · actual: ${minutes(evidence.sessionDurationMs)} minutes`,
+    `setup target: 10 minutes · actual: ${(evidence.sessionDurationMs / 60_000).toFixed(1)} minutes`,
     `setup tasks: ${evidence.setupTasks.join(", ") || "missing"}`,
     `approval targets checked: ${evidence.approvalTargetChecks.length}`,
     `real sources opened: ${nonEmpty(evidence.openedRealSourceUrls).length}`,
@@ -140,6 +143,18 @@ function testerIssues(evidence: LiveManualQaEvidence): readonly LiveManualQaIssu
           "tester_not_non_developer",
           "Manual QA must be performed by a non-developer tester.",
           [evidence.testerRole],
+        ),
+      ];
+}
+
+function sessionEvidenceIssues(sessionEvidencePath: string): readonly LiveManualQaIssue[] {
+  return validEvidencePath(sessionEvidencePath)
+    ? []
+    : [
+        issue(
+          "missing_manual_qa_session_evidence",
+          "Manual QA must cite a persisted non-synthetic session evidence bundle.",
+          [sessionEvidencePath || "missing"],
         ),
       ];
 }
@@ -247,8 +262,10 @@ function nonEmpty(values: readonly string[]): readonly string[] {
   return values.filter((value) => value.trim().length > 0);
 }
 
-function minutes(ms: number): string {
-  return (ms / 60_000).toFixed(1);
+function validEvidencePath(value: string): boolean {
+  if (!value.endsWith(".json")) return false;
+  const normalized = value.toLowerCase();
+  return !["mock", "fixture", "test", "fake"].some((marker) => normalized.includes(marker));
 }
 
 function issue(

@@ -102,6 +102,24 @@ describe("live manual QA evidence", () => {
     );
   });
 
+  test("blocks manual QA records without persisted session evidence", () => {
+    // Given
+    const evidence = {
+      ...completeEvidence(),
+      sessionEvidencePath: "test-fixtures/manual-qa-session.json",
+    };
+
+    // When
+    const result = evaluateLiveManualQaEvidence(evidence);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "missing_manual_qa_session_evidence",
+    ]);
+  });
+
   test("blocks invalid manual QA counts without letting them cancel P0 issues", () => {
     // Given
     const evidence = completeEvidence({
@@ -192,6 +210,7 @@ describe("live manual QA evidence", () => {
 function completeEvidence(patch: Partial<LiveManualQaEvidence> = {}): LiveManualQaEvidence {
   return {
     testerRole: "non_developer",
+    sessionEvidencePath: "manual-qa/session-20260619.json",
     sessionDurationMs: 540_000,
     setupTasks: MANUAL_QA_SETUP_TASKS,
     approvalTargetChecks: [
