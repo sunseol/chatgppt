@@ -80,7 +80,10 @@ export function createProjectThreadManifest(input: {
 export function validateProjectThreadManifest(
   manifest: ProjectThreadManifest,
 ): ProjectThreadManifestValidation {
-  const issues = manifest.workers.flatMap((worker) => workerIssues(manifest, worker));
+  const issues = [
+    ...manifestIssues(manifest),
+    ...manifest.workers.flatMap((worker) => workerIssues(manifest, worker)),
+  ];
   return issues.length === 0 ? { kind: "ready" } : { kind: "blocked", issues };
 }
 
@@ -108,6 +111,7 @@ export function recoverProjectThreadManifest(input: {
     approvedArtifactIds: expectedArtifactIds,
   };
   const issues = [
+    ...manifestIssues(manifest),
     ...(manifest.projectId === input.context.projectId
       ? []
       : ["Recovered coordinator thread belongs to a different project."]),
@@ -133,6 +137,29 @@ export function recoverProjectThreadManifest(input: {
       deckContextId: worker.deckContextId,
     })),
   };
+}
+
+function manifestIssues(manifest: ProjectThreadManifest): readonly string[] {
+  return [
+    ...(manifest.coordinatorThreadId.trim()
+      ? []
+      : ["Project thread manifest is missing a coordinator thread id."]),
+    ...duplicateWorkerStageIssues(manifest.workers),
+  ];
+}
+
+function duplicateWorkerStageIssues(
+  workers: readonly ProjectWorkerThreadManifest[],
+): readonly string[] {
+  const seenStages = new Set<ProjectWorkerThreadStage>();
+  const duplicateStages = new Set<ProjectWorkerThreadStage>();
+  for (const worker of workers) {
+    if (seenStages.has(worker.stage)) duplicateStages.add(worker.stage);
+    seenStages.add(worker.stage);
+  }
+  return [...duplicateStages].map(
+    (stage) => `Project thread manifest has duplicate ${stage} worker threads.`,
+  );
 }
 
 function workerIssues(

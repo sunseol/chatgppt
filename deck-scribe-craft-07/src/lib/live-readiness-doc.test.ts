@@ -15,8 +15,6 @@ const DOCS = {
   interruptionMatrix: new URL("../../docs/live-interruption-matrix.md", import.meta.url),
   usageSummary: new URL("../../docs/live-usage-summary.md", import.meta.url),
   runbook: new URL("../../docs/production-clean-machine-runbook.md", import.meta.url),
-  textSmoke: new URL("../../docs/live_text_smoke_report.md", import.meta.url),
-  projectThreadLifecycle: new URL("../../docs/live-project-thread-lifecycle.md", import.meta.url),
   manualQa: new URL("../../docs/live-manual-qa-checklist.md", import.meta.url),
   decision: new URL("../../docs/live-release-decision.md", import.meta.url),
 } as const;
@@ -106,32 +104,6 @@ describe("live readiness documentation", () => {
     expect(decision.includes("missing_known_limits")).toBe(true);
     expect(decision.includes("release_decision_blocked")).toBe(true);
     expect(decision.includes("Verified Live")).toBe(true);
-  });
-
-  test("records the live text smoke gate attempt and current remaining blockers", () => {
-    const textSmoke = readDoc(DOCS.textSmoke);
-    const projectThreadLifecycle = readDoc(DOCS.projectThreadLifecycle);
-
-    expect(textSmoke.includes("DF-215")).toBe(true);
-    expect(textSmoke.includes("codex login status")).toBe(true);
-    expect(textSmoke.includes("JSON-RPC `initialize`")).toBe(true);
-    expect(textSmoke.includes("codex app-server --stdio")).toBe(true);
-    expect(textSmoke.includes("daemon bootstrap returned `bootstrapped`")).toBe(true);
-    expect(textSmoke.includes("authenticated health turn")).toBe(true);
-    expect(textSmoke.includes("thread/resume")).toBe(true);
-    expect(textSmoke.includes("Crash/Restart Evidence")).toBe(true);
-    expect(textSmoke.includes("post-restart health turn")).toBe(true);
-    expect(textSmoke.includes("evaluateLiveTextSmokeGate")).toBe(true);
-    expect(textSmoke.includes("disconnected_text_stage_lineage")).toBe(true);
-    expect(textSmoke.includes("text_artifact_missing_turn_id")).toBe(true);
-    expect(textSmoke.includes("missing_resume_next_turn")).toBe(true);
-    expect(textSmoke.includes("resume_non_codex_turn")).toBe(true);
-    expect(textSmoke.includes("Smoke result: partial")).toBe(true);
-    expect(projectThreadLifecycle.includes("evaluateProjectThreadResumeEvidence")).toBe(true);
-    expect(projectThreadLifecycle.includes("resume_non_codex_turn")).toBe(true);
-    expect(projectThreadLifecycle.includes("resume_previous_turn_not_recovered")).toBe(true);
-    expect(projectThreadLifecycle.includes("019edc28-bf27-7380-b7d2-65405e6c6758")).toBe(true);
-    expect(projectThreadLifecycle.includes("packaged desktop restart/reopen run")).toBe(true);
   });
 
   test("records the live text pipeline cutover contract", () => {

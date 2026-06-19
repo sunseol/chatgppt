@@ -75,6 +75,34 @@ describe("project thread lifecycle", () => {
     ]);
   });
 
+  test("rejects manifests without one concrete worker thread per stage", () => {
+    const manifest = createProjectThreadManifest({
+      context: contextFixture(),
+      coordinatorThreadId: " ",
+      workers: [
+        {
+          stage: "research",
+          threadId: "thread_research_001",
+          lastCompletedTurnId: "turn_research_001",
+        },
+        {
+          stage: "research",
+          threadId: "thread_research_002",
+          lastCompletedTurnId: "turn_research_002",
+        },
+      ],
+    });
+
+    const validation = validateProjectThreadManifest(manifest);
+
+    expect(validation.kind).toBe("blocked");
+    if (validation.kind !== "blocked") return;
+    expect(validation.issues).toEqual([
+      "Project thread manifest is missing a coordinator thread id.",
+      "Project thread manifest has duplicate research worker threads.",
+    ]);
+  });
+
   test("recovers persisted coordinator and worker threads after restart", () => {
     const context = contextFixture();
     const manifest = createProjectThreadManifest({

@@ -9,6 +9,7 @@ Scope: DF-212 Project Thread and Context lifecycle.
 `src/lib/project-thread-lifecycle.ts` keeps project thread recovery bound to the approved deck context:
 
 - a project has one coordinator thread id and stage-specific worker thread ids
+- the manifest blocks a missing coordinator thread id and duplicate worker threads for the same stage before recovery
 - every worker carries the same `deckContextId`, `deckContextHash`, approved artifact id bundle, and `lastCompletedTurnId` as the coordinator manifest
 - restart recovery returns resumable worker threads only when the persisted manifest still matches the current frozen deck context and retained worker turn lineage
 - active live jobs are marked stale when upstream approval invalidates their deck context
@@ -25,7 +26,7 @@ Scope: DF-212 Project Thread and Context lifecycle.
 
 ## Verified Locally
 
-- `src/lib/project-thread-lifecycle.test.ts` verifies manifest creation, worker context drift rejection, restart recovery, changed-context blockers, last-turn recovery, and stale live-job detection.
+- `src/lib/project-thread-lifecycle.test.ts` verifies manifest creation, missing coordinator thread id rejection, duplicate worker stage rejection, worker context drift rejection, restart recovery, changed-context blockers, last-turn recovery, and stale live-job detection.
 - `src/lib/project-thread-resume-evidence.test.ts` verifies the DF-212 resume evidence gate accepts a completed post-restart App Server turn and rejects stale context, incomplete turns, unknown threads, reused turns, non-restart evidence, and non-live resumed worker turns such as `resume_non_codex_turn`.
 - `src/lib/project-thread-resume-lineage.test.ts` verifies the gate rejects a claimed previous turn that does not match the recovered worker thread's last completed turn.
 
@@ -49,4 +50,4 @@ Observed second-process event methods included `thread/status/changed`, `thread/
 
 ## Remaining Live Evidence
 
-DF-212 is still not fully Verified Live. The library-level protocol recheck proves App Server can resume a recovered project worker thread after the App Server process is recreated, and the local evidence gate now rejects stale, fake, or turn-lineage-mismatched resume evidence. The remaining gap is a packaged desktop restart/reopen run that persists the manifest through the app storage boundary and then invokes the resumed worker thread from the production UI.
+DF-212 is still not fully Verified Live. The library-level protocol recheck proves App Server can resume a recovered project worker thread after the App Server process is recreated, and the local evidence gate now rejects stale, fake, duplicate-stage, missing-coordinator, or turn-lineage-mismatched resume evidence. The remaining gap is a packaged desktop restart/reopen run that persists the manifest through the app storage boundary and then invokes the resumed worker thread from the production UI.
