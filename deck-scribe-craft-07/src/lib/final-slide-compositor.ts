@@ -69,9 +69,16 @@ function assertBackgroundArtifactTargetsSlide(
   artifact: FinalSlideBackgroundArtifactRef,
   slideNumber: number,
 ): void {
-  const token = `slide_${String(slideNumber).padStart(3, "0")}`;
-  if (artifact.artifactId.includes(token) && artifact.path.includes(`${token}.`)) return;
+  if (backgroundArtifactTargetsSlide(artifact, slideNumber)) return;
   throw new Error(`Stored background artifact must target slide ${slideNumber}.`);
+}
+
+export function backgroundArtifactTargetsSlide(
+  artifact: FinalSlideBackgroundArtifactRef,
+  slideNumber: number,
+): boolean {
+  const token = `slide_${String(slideNumber).padStart(3, "0")}`;
+  return artifact.artifactId.includes(token) && artifact.path.includes(`${token}.`);
 }
 
 export function countKoreanTextOverlays(composition: FinalSlideComposition): number {

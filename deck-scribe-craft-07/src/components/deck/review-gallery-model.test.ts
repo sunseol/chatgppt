@@ -38,9 +38,51 @@ describe("review gallery live composition validation", () => {
     expect(validation.issues.map((issue) => issue.code)).toEqual(["missing_editable_overlay"]);
     expect(validation.issues[0]?.message).toBe("Missing editable source overlay.");
   });
+
+  test("blocks stored background artifacts from another slide", () => {
+    // Given
+    const items = buildReviewGalleryItems({
+      slides: [{ number: 1, version: 1, status: "ready", imageDescriptor: "slide 1" }],
+      specs: [slideSpec()],
+      selectedSlideNumber: 1,
+      compositions: [compositionWithCrossSlideBackground()],
+    });
+
+    // When
+    const validation = validateReviewGalleryLiveCompositions({
+      items,
+      expectedSlideCount: 1,
+    });
+
+    // Then
+    expect(validation.kind).toBe("blocked");
+    if (validation.kind !== "blocked") return;
+    expect(validation.issues.map((issue) => issue.code)).toEqual([
+      "stored_background_artifact_slide_mismatch",
+    ]);
+  });
 });
 
 function compositionMissingSourceBounds(): FinalSlideComposition {
+  const composition = validComposition();
+  return {
+    ...composition,
+    overlayBounds: composition.overlayBounds.filter((overlay) => overlay.role !== "source"),
+  };
+}
+
+function compositionWithCrossSlideBackground(): FinalSlideComposition {
+  return {
+    ...validComposition(),
+    backgroundArtifact: {
+      artifactId: "project_image_slide_002_v1",
+      path: "projects/project/slides/images/slide_002.v1.png",
+      hash: "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    },
+  };
+}
+
+function validComposition(): FinalSlideComposition {
   return {
     slideNumber: 1,
     exportBasis: "compositor",
@@ -56,6 +98,7 @@ function compositionMissingSourceBounds(): FinalSlideComposition {
       { id: "title_1", role: "title", bounds: { x: 100, y: 100, w: 500, h: 90 } },
       { id: "body_1", role: "body", bounds: { x: 100, y: 220, w: 520, h: 180 } },
       { id: "chart_1", role: "chart", bounds: { x: 720, y: 180, w: 620, h: 360 } },
+      { id: "source_1", role: "source", bounds: { x: 100, y: 820, w: 760, h: 40 } },
     ],
     svg: '<svg data-final-slide="1"></svg>',
     previewPngDataUrl: encodeSolidPngDataUrl({
@@ -63,5 +106,17 @@ function compositionMissingSourceBounds(): FinalSlideComposition {
       height: 1,
       color: { r: 245, g: 246, b: 248, a: 255 },
     }),
+  };
+}
+
+function slideSpec() {
+  return {
+    number: 1,
+    title: "시장",
+    role: "Market",
+    coreMessage: "시장이 크다",
+    visualType: "chart",
+    evidence: ["claim_001"],
+    editableElements: ["title", "body", "chart", "source"],
   };
 }

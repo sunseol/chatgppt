@@ -1,5 +1,9 @@
 import type { GeneratedSlide, SlideSpec } from "@/lib/deck-types";
-import type { FinalSlideComposition, FinalSlideOverlayBounds } from "@/lib/final-slide-compositor";
+import {
+  backgroundArtifactTargetsSlide,
+  type FinalSlideComposition,
+  type FinalSlideOverlayBounds,
+} from "@/lib/final-slide-compositor";
 
 export type SlideQaStatus = "passed" | "failed" | "not_run";
 
@@ -28,6 +32,7 @@ export type ReviewGalleryLiveCompositionIssueCode =
   | "mock_background_artifact"
   | "missing_stored_background_artifact"
   | "invalid_stored_background_artifact_hash"
+  | "stored_background_artifact_slide_mismatch"
   | "invalid_compositor_preview"
   | "missing_editable_overlay"
   | "text_overlay_collision";
@@ -188,6 +193,15 @@ function backgroundIssues(
         code: "invalid_stored_background_artifact_hash",
         slideNumber: composition.slideNumber,
         message: "Stored background artifact hash must be a full SHA-256 digest.",
+      },
+    ];
+  }
+  if (!backgroundArtifactTargetsSlide(artifact, composition.slideNumber)) {
+    return [
+      {
+        code: "stored_background_artifact_slide_mismatch",
+        slideNumber: composition.slideNumber,
+        message: "Stored background artifact must target the compositor slide.",
       },
     ];
   }
