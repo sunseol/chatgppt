@@ -26,6 +26,7 @@ describe("live text smoke documentation", () => {
       "text_smoke_prompt_version_mismatch",
       "interview_questions_desktop@v1",
       "layout_ir_desktop@v1",
+      "whitespace-padded text artifact/turn reuse rejection",
       "text_artifact_missing_turn_id",
       "missing_resume_next_turn",
       "resume_thread_mismatch",

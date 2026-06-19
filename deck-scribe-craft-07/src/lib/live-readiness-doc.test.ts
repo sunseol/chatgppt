@@ -124,6 +124,8 @@ describe("live readiness documentation", () => {
     expect(textPipelineCutover.includes("LayoutIRSchema")).toBe(true);
     expect(textPipelineCutover.includes("invalid_repair_turn_evidence")).toBe(true);
     expect(textPipelineCutover.includes("schema_repair_exhausted")).toBe(true);
+    expect(textPipelineCutover.includes("shared_live_turn")).toBe(true);
+    expect(textPipelineCutover.includes("shared_live_artifact")).toBe(true);
     expect(textPipelineCutover.includes("text_pipeline_prompt_version_mismatch")).toBe(true);
     expect(textPipelineCutover.includes("deck_plan_desktop@v1")).toBe(true);
     expect(textPipelineCutover.includes("layout_ir_desktop@v1")).toBe(true);

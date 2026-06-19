@@ -77,7 +77,9 @@ function turnIdentityIssues(input: LiveTextPipelineCutoverInput): readonly LiveT
     input.designSystem.provenance.turnId,
     input.layoutIr.provenance.turnId,
   ];
-  const completeTurns = turns.filter((turnId): turnId is string => turnId !== undefined);
+  const completeTurns = turns
+    .map((turnId) => normalizedIdentity(turnId))
+    .filter((turnId): turnId is string => turnId !== undefined);
   return new Set(completeTurns).size === completeTurns.length
     ? []
     : [
@@ -95,7 +97,7 @@ function artifactIdentityIssues(
     input.deckPlan.provenance.artifactId,
     input.designSystem.provenance.artifactId,
     input.layoutIr.provenance.artifactId,
-  ];
+  ].map((artifactId) => artifactId.trim());
   return new Set(artifactIds).size === artifactIds.length
     ? []
     : [
@@ -110,7 +112,8 @@ function artifactIdentityIssues(
 function lineageIssues(input: LiveTextPipelineCutoverInput): readonly LiveTextPipelineIssue[] {
   return [
     ...deckPlanInputIssues(input),
-    ...(input.designSystem.provenance.inputArtifactIds.includes(
+    ...(hasInputArtifact(
+      input.designSystem.provenance.inputArtifactIds,
       input.deckPlan.provenance.artifactId,
     )
       ? []
@@ -122,8 +125,14 @@ function lineageIssues(input: LiveTextPipelineCutoverInput): readonly LiveTextPi
             message: "Design System turn must cite the live Deck Plan artifact as input.",
           },
         ]),
-    ...(input.layoutIr.provenance.inputArtifactIds.includes(input.deckPlan.provenance.artifactId) &&
-    input.layoutIr.provenance.inputArtifactIds.includes(input.designSystem.provenance.artifactId)
+    ...(hasInputArtifact(
+      input.layoutIr.provenance.inputArtifactIds,
+      input.deckPlan.provenance.artifactId,
+    ) &&
+    hasInputArtifact(
+      input.layoutIr.provenance.inputArtifactIds,
+      input.designSystem.provenance.artifactId,
+    )
       ? []
       : [
           {
@@ -142,7 +151,7 @@ function deckPlanInputIssues(
 ): readonly LiveTextPipelineIssue[] {
   const inputs = input.deckPlan.provenance.inputArtifactIds;
   return [
-    ...(inputs.includes(input.approvedBriefArtifactId)
+    ...(hasInputArtifact(inputs, input.approvedBriefArtifactId)
       ? []
       : [
           {
@@ -152,7 +161,7 @@ function deckPlanInputIssues(
             message: "Deck Plan turn must cite the approved Brief artifact as input.",
           },
         ]),
-    ...(inputs.includes(input.approvedResearchPackArtifactId)
+    ...(hasInputArtifact(inputs, input.approvedResearchPackArtifactId)
       ? []
       : [
           {
@@ -163,6 +172,20 @@ function deckPlanInputIssues(
           },
         ]),
   ];
+}
+
+function hasInputArtifact(
+  inputArtifactIds: readonly string[],
+  expectedArtifactId: string,
+): boolean {
+  return inputArtifactIds.some(
+    (inputArtifactId) => inputArtifactId.trim() === expectedArtifactId.trim(),
+  );
+}
+
+function normalizedIdentity(value: string | undefined): string | undefined {
+  const trimmed = value?.trim();
+  return trimmed === "" ? undefined : trimmed;
 }
 
 function providerIssue(
