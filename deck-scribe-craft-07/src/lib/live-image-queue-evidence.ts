@@ -14,6 +14,7 @@ export type LiveImageQueueEvidenceIssueCode =
   | "cancel_failure_without_cancelled_job"
   | "cancel_prompt_usage_missing"
   | "cancel_bundle_mismatch"
+  | "cancel_attempt_count_mismatch"
   | "cancel_failure_without_cancel_signal";
 
 export type LiveImageQueueEvidenceIssue = {
@@ -168,6 +169,7 @@ function cancellationIssues(
       }
       const promptUsage = promptUsages.find((usage) => usage.jobId === failure.jobId);
       const promptIssue = cancelPromptIssue(failure, promptUsage);
+      const attemptIssue = cancelAttemptIssue(failure, job);
       const signalIssue = job.cancelRequested
         ? []
         : [
@@ -178,7 +180,7 @@ function cancellationIssues(
               message: "Cancelled provider jobs must preserve the user cancel signal.",
             },
           ];
-      return [...promptIssue, ...signalIssue];
+      return [...promptIssue, ...attemptIssue, ...signalIssue];
     });
 }
 
@@ -205,6 +207,22 @@ function cancelPromptIssue(
           slideNumber: failure.slideNumber,
           message:
             "Cancellation evidence must reference the same bundle as the slide prompt usage.",
+        },
+      ];
+}
+
+function cancelAttemptIssue(
+  failure: ReadyQueueResult["failures"][number],
+  job: ProviderJob,
+): readonly LiveImageQueueEvidenceIssue[] {
+  return failure.attempts === job.attempt
+    ? []
+    : [
+        {
+          code: "cancel_attempt_count_mismatch" as const,
+          jobId: failure.jobId,
+          slideNumber: failure.slideNumber,
+          message: "Cancellation failure attempts must match the cancelled provider job attempt.",
         },
       ];
 }
