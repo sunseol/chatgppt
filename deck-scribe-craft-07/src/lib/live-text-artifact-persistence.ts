@@ -39,9 +39,10 @@ export type LiveInterviewPersistenceInput = {
   readonly brief?: StructuredCodexAccepted<InterviewBrief>;
 };
 
-export type LiveInterviewReadyPatch = Readonly<
-  Pick<DeckProject, "stage"> & { readonly brief: InterviewBrief }
->;
+export type LiveInterviewReadyPatch = {
+  readonly stage: "INTERVIEW_APPROVAL_PENDING";
+  readonly brief: InterviewBrief;
+};
 
 export type LiveInterviewPersistenceResult =
   | {

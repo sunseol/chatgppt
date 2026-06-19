@@ -8,6 +8,7 @@ import { interviewBriefJob, interviewQuestionPlanJob } from "./desktop-live-inte
 import {
   createLiveInterviewPersistence,
   type LiveInterviewPersistenceResult,
+  type LiveInterviewReadyPatch,
 } from "./live-text-artifact-persistence";
 import type { LiveInterviewAnswerMap } from "./live-interview-cutover";
 import type { LiveTextArtifactRecord } from "./live-text-artifact-record";
@@ -26,6 +27,10 @@ export type DesktopLiveInterviewWorkflowInput = {
 
 export type LiveInterviewQuestionArtifactPatch = {
   readonly stage: "INTERVIEWING";
+  readonly liveTextArtifacts: readonly LiveTextArtifactRecord[];
+};
+
+export type LiveInterviewReadyArtifactPatch = LiveInterviewReadyPatch & {
   readonly liveTextArtifacts: readonly LiveTextArtifactRecord[];
 };
 
@@ -73,9 +78,25 @@ export function createLiveInterviewQuestionArtifactPatch(
   project: DeckProject,
   record: LiveTextArtifactRecord,
 ): LiveInterviewQuestionArtifactPatch {
+  return createLiveTextArtifactPatch(project, "INTERVIEWING", [record]);
+}
+
+export function createLiveInterviewReadyArtifactPatch(
+  project: DeckProject,
+  patch: LiveInterviewReadyPatch,
+  records: readonly LiveTextArtifactRecord[],
+): LiveInterviewReadyArtifactPatch {
+  return { ...patch, ...createLiveTextArtifactPatch(project, patch.stage, records) };
+}
+
+function createLiveTextArtifactPatch<TStage extends "INTERVIEWING" | "INTERVIEW_APPROVAL_PENDING">(
+  project: DeckProject,
+  stage: TStage,
+  records: readonly LiveTextArtifactRecord[],
+): { readonly stage: TStage; readonly liveTextArtifacts: readonly LiveTextArtifactRecord[] } {
   return {
-    stage: "INTERVIEWING",
-    liveTextArtifacts: [...(project.liveTextArtifacts ?? []), record],
+    stage,
+    liveTextArtifacts: [...(project.liveTextArtifacts ?? []), ...records],
   };
 }
 

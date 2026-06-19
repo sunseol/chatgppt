@@ -7,6 +7,7 @@ import { updateProject } from "@/lib/deck-store";
 import type { DeckProject, StepKey } from "@/lib/deck-types";
 import {
   createLiveInterviewQuestionArtifactPatch,
+  createLiveInterviewReadyArtifactPatch,
   runDesktopLiveInterviewProductionWorkflow,
 } from "@/lib/desktop-live-interview-workflow";
 import { runDesktopLiveTextPipelineProductionWorkflow } from "@/lib/desktop-live-text-pipeline-workflow";
@@ -76,7 +77,14 @@ async function runInterviewQuestions(
         });
         return;
       case "ready":
-        updateProject(project.id, result.patch);
+        updateProject(
+          project.id,
+          createLiveInterviewReadyArtifactPatch(
+            project,
+            result.patch,
+            result.artifacts.map((artifact) => artifact.record),
+          ),
+        );
         setRunStatus({ kind: "succeeded", message: "Live interview brief is ready." });
         return;
       case "blocked":

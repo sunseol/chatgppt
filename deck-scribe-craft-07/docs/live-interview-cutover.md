@@ -25,7 +25,7 @@ Scope: DF-213 interview question and Interview Brief Live cutover contract.
 - `deckforge_codex_app_server_smoke`, `deckforge_codex_app_server_structured_turn`, `src/lib/desktop-app-server-bridge.ts`, and `src/lib/desktop-codex-app-server-production-job.ts` now provide the desktop commands/adapters needed to detect the App Server bridge, smoke-test it, and feed structured-turn notifications into the production Job Manager path
 - `src/lib/desktop-live-interview-workflow.ts` and `src/lib/desktop-live-interview-jobs.ts` now build desktop interview question and Brief prompts, parse the structured `InterviewQuestionPlan` / `InterviewBrief` outputs, run the live `questions` turn through the Tauri bridge adapter, bind the question turn to the project id as `questionInputArtifactId`, return a persisted question artifact when user follow-up is still required, and continue to a second live `brief` turn once required answers are present.
 - `src/lib/live-interview-answer-map.ts` converts an existing project draft Brief plus initial prompt into the answer map consumed by the desktop live interview launcher.
-- `src/components/deck/ProductionTextWorkflowLauncher.tsx` now wires the ready production interview button to the desktop interview launcher, passes draft-Brief answers when present, stores the question artifact record when follow-up is still required, and can apply the ready Brief patch when both live turns complete.
+- `src/components/deck/ProductionTextWorkflowLauncher.tsx` now wires the ready production interview button to the desktop interview launcher, passes draft-Brief answers when present, stores the question artifact record when follow-up is still required, and applies the ready Brief patch together with the question and Brief live artifact records when both live turns complete.
 
 ## Verified Locally
 
@@ -41,6 +41,7 @@ Scope: DF-213 interview question and Interview Brief Live cutover contract.
 - `src/lib/desktop-app-server-bridge.test.ts`, `src/lib/desktop-codex-app-server-production-job.test.ts`, and `cargo test --manifest-path src-tauri/Cargo.toml codex_app_server` verify the desktop bridge smoke adapter, structured-turn adapter, production notification adapter, and Rust protocol command pieces.
 - `src/lib/live-interview-answer-map.test.ts` verifies the production launcher answer handoff from a project draft Brief.
 - `src/lib/desktop-live-interview-workflow.test.ts` verifies the app-level desktop interview launcher invokes a structured `questions` turn, returns a persisted question artifact when follow-up is required, invokes a second structured `brief` turn when answers are present, preserves question input lineage, and uses strict App Server response schemas for both stages.
+- `src/lib/desktop-live-interview-artifact-patch.test.ts` verifies the ready interview UI patch preserves both question and Brief live artifact records instead of storing only the Brief data.
 
 ## Verified Live Recheck
 
