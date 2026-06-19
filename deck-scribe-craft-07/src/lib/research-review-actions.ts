@@ -33,6 +33,11 @@ export function excludeResearchSource(input: ExcludeResearchSourceInput): Resear
       .filter((dataset) => dataset.sourceIds.includes(input.sourceId))
       .map((dataset) => dataset.id),
   );
+  const liveEvidenceRefs = input.pack.liveEvidenceRefs?.filter(
+    (evidenceRef) =>
+      evidenceRef.sourceId !== input.sourceId &&
+      (evidenceRef.datasetId === undefined || !removedDatasetIds.has(evidenceRef.datasetId)),
+  );
   const message = `출처 제외: ${input.sourceId}`;
   const next = clearApprovedHash({
     ...input.pack,
@@ -42,6 +47,7 @@ export function excludeResearchSource(input: ExcludeResearchSourceInput): Resear
     ),
     datasets: input.pack.datasets.filter((dataset) => !removedDatasetIds.has(dataset.id)),
     charts: input.pack.charts.filter((chart) => !removedDatasetIds.has(chart.datasetId)),
+    ...(liveEvidenceRefs === undefined ? {} : { liveEvidenceRefs }),
     factCheckReport: {
       ...input.pack.factCheckReport,
       issues: [

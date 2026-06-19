@@ -9,7 +9,20 @@ import type { ResearchPack } from "./research-types";
 describe("research review actions", () => {
   test("records source exclusion and removes dependent research artifacts", () => {
     // Given
-    const pack = researchPack({ approvedHash: "sha256:stale_approval" });
+    const pack = researchPack({
+      approvedHash: "sha256:stale_approval",
+      liveEvidenceRefs: [
+        {
+          id: "ev_001",
+          claimId: "claim_001",
+          sourceId: "src_001",
+          sourceArtifactPath: "docs/live-source-capture-bundle/html_001/original.html",
+          kind: "quote_span",
+          quoteSpan: { start: 0, end: 3, text: "67%" },
+          datasetId: "dataset_001",
+        },
+      ],
+    });
 
     // When
     const next = excludeResearchSource({
@@ -24,6 +37,7 @@ describe("research review actions", () => {
     expect(next.sources.map((source) => source.id)).toEqual(["src_002"]);
     expect(next.datasets).toEqual([]);
     expect(next.charts).toEqual([]);
+    expect(next.liveEvidenceRefs).toEqual([]);
     expect(next.claims[0]?.sourceIds).toEqual([]);
     expect(next.claims[0]?.datasetIds).toEqual([]);
     expect(next.claims[0]?.hasNumber).toBe(false);
