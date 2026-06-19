@@ -8,7 +8,7 @@ const DOCS = {
   decision: new URL("../../docs/live-release-decision.md", import.meta.url),
 } as const;
 
-const CURRENT_DRY_RUN_SHA = "377df1eabfc41128c08d24f6c00a40b2f80dac01ccd7f4fc90e810f16924d20e";
+const CURRENT_DRY_RUN_SHA = "93b567bcdcc6dba485c6869f456068ceb7b4b1a8e434da7e3c91f49a5f7390e5";
 
 describe("live packaging documentation", () => {
   test("records the current DF-245 dry-run package scan evidence", () => {
@@ -20,13 +20,13 @@ describe("live packaging documentation", () => {
     for (const doc of [auth, runbook, progress, decision]) {
       expect(doc.includes(CURRENT_DRY_RUN_SHA)).toBe(true);
     }
-    expect(runbook.includes("281,804 bytes compressed")).toBe(true);
+    expect(runbook.includes("282,639 bytes compressed")).toBe(true);
     expect(runbook.includes("26 archive members")).toBe(true);
     expect(runbook.includes("OPENAI_API_KEY` string appears only in redaction guard code")).toBe(
       true,
     );
     expect(progress.includes("DF-245 live update")).toBe(true);
-    expect(decision.includes("665 tests")).toBe(true);
+    expect(decision.includes("696 tests")).toBe(true);
   });
 });
 
