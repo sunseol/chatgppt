@@ -8,6 +8,14 @@ export const LIVE_INTERRUPTION_SCENARIOS = [
   "cancel_job",
   "interrupted_artifact_gate",
 ] as const;
+const LIVE_RECOVERED_JOB_STATES = [
+  "queued",
+  "running",
+  "succeeded",
+  "failed",
+  "cancelled",
+  "interrupted",
+] as const satisfies readonly LiveRecoveredJobState[];
 
 export type LiveInterruptionScenarioId = (typeof LIVE_INTERRUPTION_SCENARIOS)[number];
 export type LiveRecoveredJobState =
@@ -51,6 +59,7 @@ export type LiveInterruptionIssueCode =
   | "missing_interruption_scenario"
   | "missing_live_job_evidence"
   | "duplicate_interruption_live_job"
+  | "invalid_recovered_job_state"
   | "missing_recovery_snapshot"
   | "missing_app_cancel_snapshot"
   | "missing_cancel_signal_evidence"
@@ -81,6 +90,7 @@ export function evaluateLiveInterruptionMatrix(
   const issues = [
     ...missingScenarioIssues(matrix.scenarios),
     ...scenarioEvidenceDetailIssues(matrix.scenarios),
+    ...invalidRecoveredStateIssues(matrix.scenarios),
     ...unsafeRecoveredStateIssues(matrix.scenarios),
     ...completedArtifactLossIssues(matrix.scenarios),
     ...partialImageResumeIssues(matrix.scenarios),
@@ -110,6 +120,24 @@ function missingScenarioIssues(
   return missing.length === 0
     ? []
     : [issue("missing_interruption_scenario", "Live interruption matrix is incomplete.", missing)];
+}
+
+function invalidRecoveredStateIssues(
+  scenarios: readonly LiveInterruptionScenarioEvidence[],
+): readonly LiveInterruptionIssue[] {
+  const validStates = new Set<string>(LIVE_RECOVERED_JOB_STATES);
+  const invalid = scenarios
+    .filter((scenario) => !validStates.has(scenario.jobStatusAfterRestart))
+    .map((scenario) => `${scenario.id}:${scenario.jobStatusAfterRestart}`);
+  return invalid.length === 0
+    ? []
+    : [
+        issue(
+          "invalid_recovered_job_state",
+          "Recovered job state must match the DF-243 taxonomy.",
+          invalid,
+        ),
+      ];
 }
 
 function unsafeRecoveredStateIssues(

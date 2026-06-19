@@ -207,6 +207,7 @@ describe("live readiness documentation", () => {
     expect(interruptionMatrix.includes("missing_recovery_snapshot")).toBe(true);
     expect(interruptionMatrix.includes("missing_cancel_signal_evidence")).toBe(true);
     expect(interruptionMatrix.includes("persisted approval/export gate JSON paths")).toBe(true);
+    expect(interruptionMatrix.includes("invalid_recovered_job_state")).toBe(true);
     expect(interruptionMatrix.includes("unsafe_recovered_job_state")).toBe(true);
     expect(interruptionMatrix.includes("cancelled_job_still_running")).toBe(true);
     expect(interruptionMatrix.includes("cancelled_job_completed_after_cancel")).toBe(true);
