@@ -62,15 +62,25 @@ export function formatLiveUsageSummary(stages: readonly LiveUsageStageSummary[])
 }
 
 function providerUsageIssues(stage: LiveUsageStageSummary): readonly LiveUsageSummaryIssue[] {
-  return stage.providerUsageProvided && stage.usage === undefined
+  return stage.providerUsageProvided &&
+    (stage.usage === undefined || !usageSummaryHasUsageEvidence(stage.usage))
     ? [
         issue(
           "missing_provider_usage_summary",
           stage,
-          "Provider usage or cost must be recorded when supplied.",
+          "Provider usage or cost fields must be recorded when supplied.",
         ),
       ]
     : [];
+}
+
+function usageSummaryHasUsageEvidence(usage: ProviderUsageSummary): boolean {
+  return (
+    usage.inputTokens !== undefined ||
+    usage.outputTokens !== undefined ||
+    usage.imageCount !== undefined ||
+    usage.estimatedCostUsd !== undefined
+  );
 }
 
 function usageAmountIssues(stage: LiveUsageStageSummary): readonly LiveUsageSummaryIssue[] {

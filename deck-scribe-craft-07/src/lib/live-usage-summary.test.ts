@@ -67,6 +67,24 @@ describe("live usage summary", () => {
     ]);
   });
 
+  test("blocks empty usage objects when provider usage was supplied", () => {
+    // Given
+    const stages = [
+      stage("plan", {
+        providerUsageProvided: true,
+        usage: {},
+      }),
+    ];
+
+    // When
+    const result = evaluateLiveUsageSummary(stages);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual(["missing_provider_usage_summary"]);
+  });
+
   test("blocks estimated provider costs labelled as actual charges", () => {
     // Given
     const stages = [

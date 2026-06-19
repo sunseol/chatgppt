@@ -16,7 +16,7 @@ Before image generation, the UI must make API key and billing usage visible and 
 
 `src/lib/live-usage-summary.ts` returns these issue codes:
 
-- `missing_provider_usage_summary`: provider supplied usage/cost data but the project summary did not record it.
+- `missing_provider_usage_summary`: provider supplied usage/cost data but the project summary did not record token, image, or cost fields.
 - `invalid_usage_amount`: token or image usage counts are negative, fractional, or not finite.
 - `invalid_duration`: stage duration is missing, negative, or not finite.
 - `invalid_retry_count`: retry count is missing, negative, or not an integer.
@@ -27,7 +27,7 @@ Before image generation, the UI must make API key and billing usage visible and 
 
 ## Local Evidence
 
-- `src/lib/live-usage-summary.test.ts` verifies stage-level provider/duration/retry display, estimated cost formatting, usage recording, invalid usage/cost amount blockers, estimated-cost-as-actual blockers, and image billing confirmation blockers.
+- `src/lib/live-usage-summary.test.ts` verifies stage-level provider/duration/retry display, estimated cost formatting, usage recording, empty usage-object blockers, invalid usage/cost amount blockers, estimated-cost-as-actual blockers, and image billing confirmation blockers.
 - `src/lib/live-app-server-usage-summary.ts` converts `thread/tokenUsage/updated` notifications from `codex app-server --stdio` into `LiveUsageStageSummary.usage`, and deliberately leaves `usage` empty when the provider supplied a malformed usage notification so `missing_provider_usage_summary` blocks the summary.
 - `src/lib/provider-job-progress-view.ts` and `src/components/deck/ProviderJobProgressPanel.tsx` expose app-surface provider id, execution duration, retry count, token/image usage, and estimated provider cost as `cost estimate` while still preserving job status, retry availability, recovered state, partial artifacts, and redacted failure messages.
 - `src/lib/audit-log.ts` records provider usage summaries into report audit events and renders `estimatedCostUsd` as `cost estimate`, not as an exact charge.
