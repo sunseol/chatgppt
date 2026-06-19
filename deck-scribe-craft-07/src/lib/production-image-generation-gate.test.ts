@@ -86,6 +86,40 @@ describe("production image generation gate", () => {
       requestId: "img_req_001",
     });
   });
+
+  test("revalidates persisted locked decisions before production image generation", () => {
+    const decision = {
+      ...lockedDecision(),
+      fixtureFallbackAllowed: true,
+      binaryArtifactPath: "fixtures/mock-slide.png",
+      requestId: " ",
+    };
+
+    const gate = createProductionImageGenerationGate({
+      executionMode: "production",
+      imagePathDecision: decision,
+    });
+
+    expect(gate).toEqual({
+      kind: "blocked",
+      executionMode: "production",
+      providerId: "openaiImage",
+      issues: [
+        {
+          code: "fixture_fallback_enabled",
+          message: "Production image generation cannot use a fixture fallback path.",
+        },
+        {
+          code: "invalid_binary_artifact_path",
+          message: "Production image generation requires versioned project image artifact storage.",
+        },
+        {
+          code: "missing_request_id",
+          message: "OpenAI image production generation requires a provider request id.",
+        },
+      ],
+    });
+  });
 });
 
 function lockedDecision(): ImagePathDecisionRecord {

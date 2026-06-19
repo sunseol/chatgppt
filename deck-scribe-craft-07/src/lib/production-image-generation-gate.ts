@@ -1,11 +1,20 @@
-import type { ImagePathBlockerCode, ImagePathDecisionRecord } from "./image-path-decision";
+import {
+  isVersionedProjectImageArtifactPath,
+  type ImagePathBlockerCode,
+  type ImagePathDecisionRecord,
+} from "./image-path-decision";
 import type { SlideImageProviderId } from "./slide-image-provider";
 
 export type ImageGenerationExecutionMode = "development" | "production";
 
+type PersistedImagePathDecisionRecord = Omit<ImagePathDecisionRecord, "fixtureFallbackAllowed"> & {
+  readonly fixtureFallbackAllowed: boolean;
+};
+
 export type ProductionImageGenerationIssueCode =
   | "missing_image_path_decision"
   | "image_path_not_locked"
+  | "fixture_fallback_enabled"
   | ImagePathBlockerCode;
 
 export type ProductionImageGenerationIssue = {
@@ -36,7 +45,7 @@ export type ProductionImageGenerationGate =
 
 export function createProductionImageGenerationGate(input: {
   readonly executionMode: ImageGenerationExecutionMode;
-  readonly imagePathDecision?: ImagePathDecisionRecord;
+  readonly imagePathDecision?: PersistedImagePathDecisionRecord;
 }): ProductionImageGenerationGate {
   if (input.executionMode === "development") {
     return {
@@ -60,8 +69,8 @@ export function createProductionImageGenerationGate(input: {
     };
   }
 
-  const binaryArtifactPath = decision.binaryArtifactPath;
-  const requestId = decision.requestId;
+  const binaryArtifactPath = decision.binaryArtifactPath?.trim();
+  const requestId = decision.requestId?.trim();
   const issues = decisionIssues(decision, binaryArtifactPath, requestId);
   if (issues.length > 0) {
     return {
@@ -97,7 +106,7 @@ export function createProductionImageGenerationGate(input: {
 }
 
 function decisionIssues(
-  decision: ImagePathDecisionRecord,
+  decision: PersistedImagePathDecisionRecord,
   binaryArtifactPath: string | undefined,
   requestId: string | undefined,
 ): readonly ProductionImageGenerationIssue[] {
@@ -114,7 +123,15 @@ function decisionIssues(
       code: blocker.code,
       message: blocker.message,
     })),
-    ...(binaryArtifactPath === undefined
+    ...(decision.fixtureFallbackAllowed === false
+      ? []
+      : [
+          {
+            code: "fixture_fallback_enabled" as const,
+            message: "Production image generation cannot use a fixture fallback path.",
+          },
+        ]),
+    ...(binaryArtifactPath === undefined || binaryArtifactPath.length === 0
       ? [
           {
             code: "missing_binary_artifact" as const,
@@ -122,7 +139,16 @@ function decisionIssues(
           },
         ]
       : []),
-    ...(decision.providerId === "openaiImage" && requestId === undefined
+    ...(binaryArtifactPath && !isVersionedProjectImageArtifactPath(binaryArtifactPath)
+      ? [
+          {
+            code: "invalid_binary_artifact_path" as const,
+            message:
+              "Production image generation requires versioned project image artifact storage.",
+          },
+        ]
+      : []),
+    ...(decision.providerId === "openaiImage" && !requestId
       ? [
           {
             code: "missing_request_id" as const,

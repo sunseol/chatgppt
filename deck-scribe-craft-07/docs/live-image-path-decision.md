@@ -19,6 +19,7 @@ Status: partial local contract
 - `src/lib/production-image-generation-gate.ts` allows the `mock` provider only in development mode.
 - Production generation is blocked with `missing_image_path_decision` until `DeckProject.imagePathDecision` contains a locked decision record.
 - A blocked decision forwards `image_path_not_locked` plus the underlying decision blockers to the Generate stage.
+- The production gate revalidates persisted locked decisions before use: fixture fallback flags block with `fixture_fallback_enabled`, blank OpenAI image request ids block with `missing_request_id`, and non-versioned binary paths block with `invalid_binary_artifact_path`.
 - `src/components/deck/GenerateStage.tsx` disables the production image generation action when this gate is blocked, so the stage cannot return mock preview output as a fixture fallback.
 
 ## Decision inputs recorded
@@ -36,7 +37,7 @@ Status: partial local contract
 
 - `bun test src/lib/image-path-decision.test.ts src/lib/image-path-decision-request-model.test.ts src/lib/image-path-decision-slide-path.test.ts src/lib/image-path-decision-doc.test.ts` passes: 12 tests.
 - `bun test src/lib/image-path-decision.test.ts src/lib/image-path-decision-request-model.test.ts src/lib/image-provider-feasibility.test.ts src/lib/slide-image-provider.test.ts` passes: 18 tests.
-- `bun test src/lib/production-image-generation-gate.test.ts src/components/deck/GenerateStage.integration.test.tsx` passes: 5 tests. The SSR GenerateStage test emits the existing TanStack Router context warning but verifies the production image path Lock blocker markup.
+- `bun test src/lib/production-image-generation-gate.test.ts src/components/deck/GenerateStage.integration.test.tsx` passes: 6 tests. The SSR GenerateStage test emits the existing TanStack Router context warning but verifies the production image path Lock blocker markup.
 - `bun run typecheck` passes.
 - `bun run lint` passes with the existing six React Fast Refresh warnings only.
 

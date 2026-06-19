@@ -131,6 +131,7 @@ describe("live readiness documentation", () => {
     expect(imagePathDecision.includes("missing_required_permissions")).toBe(true);
     expect(imagePathDecision.includes("stale feasibility evidence")).toBe(true);
     expect(imagePathDecision.includes("fixtureFallbackAllowed: false")).toBe(true);
+    expect(imagePathDecision.includes("fixture_fallback_enabled")).toBe(true);
     expect(imagePathDecision.includes("missing_image_path_decision")).toBe(true);
     expect(imagePathDecision.includes("image_path_not_locked")).toBe(true);
     expect(imagePathDecision.includes("one real image artifact")).toBe(true);

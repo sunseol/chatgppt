@@ -213,6 +213,10 @@ function versionedProjectImageSlideNumber(path: string): number | undefined {
   return Number.parseInt(value, 10);
 }
 
+export function isVersionedProjectImageArtifactPath(path: string): boolean {
+  return versionedProjectImageSlideNumber(path) !== undefined;
+}
+
 function decisionMetadataBlockers(input: {
   readonly organizationVerification: OrganizationVerification;
   readonly billingOwner: string;
