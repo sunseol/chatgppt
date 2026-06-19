@@ -64,6 +64,7 @@ export type LiveBenchmarkEvidenceIssueCode =
   | "missing_output_bundle"
   | "missing_output_bundle_manifest"
   | "duplicate_output_bundle"
+  | "duplicate_output_bundle_report"
   | "output_bundle_benchmark_mismatch"
   | "output_bundle_package_mismatch"
   | "output_bundle_report_missing"

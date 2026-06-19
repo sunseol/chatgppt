@@ -1,11 +1,15 @@
 import type {
   LiveBenchmarkEvidenceIssue,
   LiveBenchmarkEvidenceIssueCode,
-  LiveBenchmarkId,
   LiveBenchmarkOutputBundleManifest,
   LiveBenchmarkRun,
 } from "./live-benchmark-evidence";
 import { duplicatePassedArtifactRefs } from "./live-benchmark-output-artifact-duplicates";
+import {
+  duplicateOutputBundleRefs,
+  duplicateOutputBundleReports,
+  duplicatePassedExportArtifacts,
+} from "./live-benchmark-output-bundle-duplicates";
 import { hasNonSyntheticEvidencePath } from "./live-evidence-path";
 
 export function outputBundleIssues(
@@ -23,6 +27,7 @@ export function outputBundleIssues(
     )
     .map((run) => run.id);
   const duplicates = duplicateOutputBundleRefs(runs);
+  const duplicateReports = duplicateOutputBundleReports(runs);
   const mismatched = runs
     .filter(
       (run) =>
@@ -89,6 +94,15 @@ export function outputBundleIssues(
             "duplicate_output_bundle",
             "Each Live benchmark requires a distinct output bundle.",
             duplicates,
+          ),
+        ]),
+    ...(duplicateReports.length === 0
+      ? []
+      : [
+          issue(
+            "duplicate_output_bundle_report",
+            "Each Live benchmark output bundle must reference a distinct scenario report.",
+            duplicateReports,
           ),
         ]),
     ...(mismatched.length === 0
@@ -182,39 +196,6 @@ export function outputBundleIssues(
           ),
         ]),
   ];
-}
-
-function duplicateOutputBundleRefs(runs: readonly LiveBenchmarkRun[]): readonly string[] {
-  const seen = new Map<string, LiveBenchmarkId>();
-  const duplicates: string[] = [];
-  for (const run of runs) {
-    const path = run.outputBundlePath.trim();
-    if (!validOutputBundlePath(path)) continue;
-    const firstRunId = seen.get(path);
-    if (firstRunId === undefined) {
-      seen.set(path, run.id);
-      continue;
-    }
-    duplicates.push(`${firstRunId}:${run.id}:${path}`);
-  }
-  return duplicates;
-}
-
-function duplicatePassedExportArtifacts(runs: readonly LiveBenchmarkRun[]): readonly string[] {
-  const seen = new Map<string, LiveBenchmarkId>();
-  const duplicates: string[] = [];
-  for (const run of runs) {
-    if (run.status !== "passed") continue;
-    const exportArtifactId = run.outputBundle.exportArtifactId.trim();
-    if (!exportArtifactId) continue;
-    const firstRunId = seen.get(exportArtifactId);
-    if (firstRunId === undefined) {
-      seen.set(exportArtifactId, run.id);
-      continue;
-    }
-    duplicates.push(`${firstRunId}:${run.id}:${exportArtifactId}`);
-  }
-  return duplicates;
 }
 
 function hasGoldenPathEvidence(bundle: LiveBenchmarkOutputBundleManifest): boolean {

@@ -37,7 +37,7 @@ Release requirement: at least 4 of 5 live benchmarks must pass without counting 
 - the 64-character package archive SHA-256 for the release candidate under benchmark
 - output bundle 5 sets, one distinct non-synthetic, non-local `.zip` or `.json` bundle per benchmark
 - output bundle manifests matching their benchmark id, bundle path, and package archive SHA-256
-- passed benchmark bundle manifests with a non-synthetic, non-local scenario report path, distinct final export artifact id, distinct non-synthetic, non-local `live_e2e_report.md` path, at least 10 step screenshots, at least 3 distinct source artifact ids, at least 5 distinct live image artifact ids, and at least 5 distinct live image request ids
+- passed benchmark bundle manifests with a distinct non-synthetic, non-local scenario report path, distinct final export artifact id, distinct non-synthetic, non-local `live_e2e_report.md` path, at least 10 step screenshots, at least 3 distinct source artifact ids, at least 5 distinct live image artifact ids, and at least 5 distinct live image request ids
 - passed benchmark runs must not reuse Golden Path report paths, source artifact ids, live image artifact ids, or live image request ids from another passed benchmark run
 - at least four `live` runs whose Live Golden Path completed
 - no mock scores counted in Live pass totals
@@ -53,6 +53,7 @@ Blocking issue codes:
 - `missing_output_bundle` - missing, synthetic, or developer-local output bundle path
 - `missing_output_bundle_manifest`
 - `duplicate_output_bundle`
+- `duplicate_output_bundle_report`
 - `output_bundle_benchmark_mismatch`
 - `output_bundle_package_mismatch`
 - `output_bundle_report_missing` - missing, synthetic, or developer-local scenario report path
@@ -71,4 +72,4 @@ Blocking issue codes:
 - `live_benchmark_shortfall`
 - `missing_live_benchmark_report`
 
-Current local status: the validator is implemented and tested, including rejection of unsupported failure domains, `mock`, `fixture`, `test`, `fake`, developer-local absolute, and `file://` output bundle paths and report paths, plus cross-run source/image/request evidence reuse, but no real provider output bundle 5 sets have been produced.
+Current local status: the validator is implemented and tested, including rejection of unsupported failure domains, `mock`, `fixture`, `test`, `fake`, developer-local absolute, and `file://` output bundle paths and report paths, duplicate scenario report reuse, plus cross-run source/image/request evidence reuse, but no real provider output bundle 5 sets have been produced.
