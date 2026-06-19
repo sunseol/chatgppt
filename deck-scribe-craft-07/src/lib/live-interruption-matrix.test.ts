@@ -103,6 +103,28 @@ describe("live interruption matrix", () => {
     expect(result.issues[0]?.refs).toEqual(["cancelled_job_output"]);
   });
 
+  test("blocks cancellation records without persisted cancel signal evidence", () => {
+    // Given
+    const matrix = completeMatrix({
+      scenarios: LIVE_INTERRUPTION_SCENARIOS.map((id) =>
+        id === "cancel_job"
+          ? scenario(id, {
+              cancellationRecorded: true,
+              cancelSignalEvidencePath: "",
+            })
+          : scenario(id),
+      ),
+    });
+
+    // When
+    const result = evaluateLiveInterruptionMatrix(matrix);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual(["missing_cancel_signal_evidence"]);
+  });
+
   test("blocks synthetic interruption evidence without live job snapshots", () => {
     // Given
     const matrix = completeMatrix({
@@ -205,6 +227,7 @@ function scenario(
     recoverySnapshotPath: `recovery/${id}.json`,
     recoverySnapshotScope: "app_storage",
     cancellationRecorded: true,
+    ...(id === "cancel_job" ? { cancelSignalEvidencePath: "recovery/cancel-job-signal.json" } : {}),
     pendingImageArtifactIds: id === "image_partial_resume" ? ["img_003", "img_004"] : [],
     resumedArtifactIds: id === "image_partial_resume" ? ["img_003", "img_004"] : [],
     cancelledJobStillRunning: false,

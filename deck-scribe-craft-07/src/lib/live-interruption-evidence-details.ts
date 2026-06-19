@@ -13,11 +13,7 @@ export function scenarioEvidenceDetailIssues(
     )
     .map((scenario) => scenario.id);
   const missingSnapshots = scenarios
-    .filter(
-      (scenario) =>
-        !scenario.recoverySnapshotPath.endsWith(".json") ||
-        hasSyntheticEvidenceMarker(scenario.recoverySnapshotPath),
-    )
+    .filter((scenario) => !isPersistedJsonEvidencePath(scenario.recoverySnapshotPath))
     .map((scenario) => scenario.id);
   const missingAppCancelSnapshots = scenarios
     .filter(
@@ -26,7 +22,12 @@ export function scenarioEvidenceDetailIssues(
     )
     .map((scenario) => scenario.id);
   const missingCancelSignals = scenarios
-    .filter((scenario) => scenario.id === "cancel_job" && !scenario.cancellationRecorded)
+    .filter(
+      (scenario) =>
+        scenario.id === "cancel_job" &&
+        (!scenario.cancellationRecorded ||
+          !isPersistedJsonEvidencePath(scenario.cancelSignalEvidencePath)),
+    )
     .map((scenario) => scenario.id);
   const missingApprovalGateChecks = scenarios
     .filter(
@@ -95,6 +96,10 @@ export function scenarioEvidenceDetailIssues(
           ),
         ]),
   ];
+}
+
+function isPersistedJsonEvidencePath(value: string | undefined): boolean {
+  return value !== undefined && value.endsWith(".json") && !hasSyntheticEvidenceMarker(value);
 }
 
 function hasSyntheticEvidenceMarker(value: string): boolean {

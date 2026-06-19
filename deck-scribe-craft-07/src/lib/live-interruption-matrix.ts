@@ -27,6 +27,7 @@ export type LiveInterruptionScenarioEvidence = {
   readonly recoverySnapshotPath: string;
   readonly recoverySnapshotScope: LiveRecoverySnapshotScope;
   readonly cancellationRecorded: boolean;
+  readonly cancelSignalEvidencePath?: string;
   readonly pendingImageArtifactIds: readonly string[];
   readonly resumedArtifactIds: readonly string[];
   readonly cancelledJobStillRunning: boolean;

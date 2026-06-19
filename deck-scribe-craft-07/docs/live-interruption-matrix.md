@@ -8,7 +8,7 @@ Ticket: DF-243
 
 The Live interruption matrix validates that provider interruptions do not corrupt project state or allow partial artifacts into approval/export.
 
-Every scenario must carry a non-synthetic live job id plus a persisted recovery snapshot path. Job ids or snapshots marked as `mock`, `fixture`, `test`, or `fake` are not accepted as Live interruption evidence. The cancellation scenario must record persisted cancel signal evidence and an app-storage recovery snapshot. The interrupted artifact gate scenario must explicitly exercise both approval and export gates, even when no interrupted artifact becomes approvable or exportable.
+Every scenario must carry a non-synthetic live job id plus a persisted recovery snapshot path. Job ids or snapshots marked as `mock`, `fixture`, `test`, or `fake` are not accepted as Live interruption evidence. The cancellation scenario must record both an app-storage recovery snapshot and a persisted cancel signal JSON path; a `cancellationRecorded` boolean alone is not enough Live evidence. The interrupted artifact gate scenario must explicitly exercise both approval and export gates, even when no interrupted artifact becomes approvable or exportable.
 
 Required scenarios:
 
@@ -26,7 +26,7 @@ Required scenarios:
 - `missing_live_job_evidence`: a scenario lacks a non-synthetic live job id.
 - `missing_recovery_snapshot`: a scenario lacks a persisted, non-synthetic recovery snapshot.
 - `missing_app_cancel_snapshot`: cancellation evidence lacks an app-storage recovery snapshot.
-- `missing_cancel_signal_evidence`: cancellation evidence lacks a persisted cancel signal.
+- `missing_cancel_signal_evidence`: cancellation evidence lacks a persisted, non-synthetic cancel signal JSON path.
 - `unsafe_recovered_job_state`: interrupted text/fetch job recovered as queued, running, or succeeded.
 - `completed_artifact_lost`: an artifact completed before interruption is missing after recovery.
 - `unsafe_partial_image_resume`: image resume retries a completed artifact or skips a pending artifact.
@@ -39,7 +39,7 @@ Required scenarios:
 
 ## Local Evidence
 
-- `src/lib/live-interruption-matrix.test.ts` verifies safe recovery, summary formatting, live job/snapshot/app-storage cancel snapshot/cancel signal evidence requirements, fixture/test/fake interruption evidence rejection, unsafe restart/resume/cancel/approval/export blockers, and cancellation attempts that still complete artifacts after cancellation.
+- `src/lib/live-interruption-matrix.test.ts` verifies safe recovery, summary formatting, live job/snapshot/app-storage cancel snapshot/cancel signal path requirements, fixture/test/fake interruption evidence rejection, unsafe restart/resume/cancel/approval/export blockers, and cancellation attempts that still complete artifacts after cancellation.
 - `src/lib/provider-job-recovery.ts` preserves job snapshots for restart recovery.
 - `src/lib/slide-generation-queue-live-controls.test.ts` already covers retry, partial image resume, and cancellation behavior at the queue level.
 
