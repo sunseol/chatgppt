@@ -26,6 +26,9 @@ describe("project thread resume evidence", () => {
         deckContextId: "deckctx_001",
         deckContextHash: "sha256:context",
         approvedArtifactIds: ["brief_001", "research_001", "plan_001", "design_001", "layout_001"],
+        providerKind: "codex",
+        authMode: "codex_session",
+        executionMode: "production",
       },
     });
 
@@ -58,6 +61,9 @@ describe("project thread resume evidence", () => {
         deckContextId: "deckctx_old",
         deckContextHash: "sha256:old",
         approvedArtifactIds: ["brief_001"],
+        providerKind: "codex",
+        authMode: "codex_session",
+        executionMode: "production",
       },
     });
 
@@ -97,6 +103,9 @@ describe("project thread resume evidence", () => {
         deckContextId: "deckctx_001",
         deckContextHash: "sha256:context",
         approvedArtifactIds: ["brief_001", "research_001", "plan_001", "design_001", "layout_001"],
+        providerKind: "codex",
+        authMode: "codex_session",
+        executionMode: "production",
       },
     });
 
@@ -106,6 +115,44 @@ describe("project thread resume evidence", () => {
     expect(result.issues.map((issue) => issue.code)).toEqual([
       "missing_resume_previous_turn",
       "missing_resume_next_turn",
+    ]);
+  });
+
+  test("requires resumed worker turns to be live Codex production evidence", () => {
+    // Given
+    const context = contextFixture();
+    const manifest = createProjectThreadManifest({
+      context,
+      coordinatorThreadId: "thread_coordinator_live",
+      workers: [{ stage: "plan", threadId: "thread_plan_live" }],
+    });
+
+    // When
+    const result = evaluateProjectThreadResumeEvidence({
+      context,
+      snapshot: { manifest, persistedAt: 1_789_400_000_000 },
+      evidence: {
+        threadId: "thread_plan_live",
+        previousTurnId: "turn_plan_context",
+        resumedTurnId: "turn_plan_resume_after_restart",
+        completed: true,
+        resumedAfterProcessRestart: true,
+        deckContextId: "deckctx_001",
+        deckContextHash: "sha256:context",
+        approvedArtifactIds: ["brief_001", "research_001", "plan_001", "design_001", "layout_001"],
+        providerKind: "mock",
+        authMode: "none",
+        executionMode: "development",
+      },
+    });
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "resume_non_codex_turn",
+      "resume_non_codex_session_auth",
+      "resume_non_production_turn",
     ]);
   });
 
@@ -132,6 +179,9 @@ describe("project thread resume evidence", () => {
         deckContextId: "deckctx_001",
         deckContextHash: "sha256:context",
         approvedArtifactIds: ["brief_001", "research_001", "plan_001", "design_001", "layout_001"],
+        providerKind: "codex",
+        authMode: "codex_session",
+        executionMode: "production",
       },
     });
 

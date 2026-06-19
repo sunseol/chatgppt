@@ -122,8 +122,8 @@ describe("live readiness documentation", () => {
     expect(textSmoke.includes("missing_resume_next_turn")).toBe(true);
     expect(textSmoke.includes("resume_non_codex_turn")).toBe(true);
     expect(textSmoke.includes("Smoke result: partial")).toBe(true);
-    expect(projectThreadLifecycle.includes("DF-212")).toBe(true);
     expect(projectThreadLifecycle.includes("evaluateProjectThreadResumeEvidence")).toBe(true);
+    expect(projectThreadLifecycle.includes("resume_non_codex_turn")).toBe(true);
     expect(projectThreadLifecycle.includes("019edc28-bf27-7380-b7d2-65405e6c6758")).toBe(true);
     expect(projectThreadLifecycle.includes("packaged desktop restart/reopen run")).toBe(true);
   });

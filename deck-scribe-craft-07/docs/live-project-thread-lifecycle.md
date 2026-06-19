@@ -18,13 +18,14 @@ Scope: DF-212 Project Thread and Context lifecycle.
 - the resumed App Server thread id must be one of the recovered worker thread ids
 - the evidence deck context id, context hash, and approved artifact ids must match the current frozen deck context
 - the resumed turn must complete
+- the resumed turn must be live Codex production evidence using the authenticated Codex session
 - the resumed turn must be a new turn, not the pre-restart turn id
 - the evidence must be collected after recreating the App Server process
 
 ## Verified Locally
 
 - `src/lib/project-thread-lifecycle.test.ts` verifies manifest creation, worker context drift rejection, restart recovery, changed-context blockers, and stale live-job detection.
-- `src/lib/project-thread-resume-evidence.test.ts` verifies the DF-212 resume evidence gate accepts a completed post-restart App Server turn and rejects stale context, incomplete turns, unknown threads, reused turns, and non-restart evidence.
+- `src/lib/project-thread-resume-evidence.test.ts` verifies the DF-212 resume evidence gate accepts a completed post-restart App Server turn and rejects stale context, incomplete turns, unknown threads, reused turns, non-restart evidence, and non-live resumed worker turns such as `resume_non_codex_turn`.
 
 ## Verified Live Recheck
 
