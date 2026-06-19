@@ -40,6 +40,8 @@ export type LiveTextPipelineProductionWorkflowInput = {
   readonly createdAt: number;
   readonly version?: number;
   readonly jobManager: ProviderJobManager;
+  readonly approvedBriefArtifactId: string;
+  readonly approvedResearchPackArtifactId: string;
   readonly deckContextId: string;
   readonly expectedSlideCount: number;
   readonly deckPlanJob: LiveTextProductionJobSpec<DeckPlan>;
@@ -104,6 +106,8 @@ export async function runLiveTextPipelineProductionWorkflow(
     projectId: input.projectId,
     createdAt: input.createdAt,
     ...(input.version === undefined ? {} : { version: input.version }),
+    approvedBriefArtifactId: input.approvedBriefArtifactId,
+    approvedResearchPackArtifactId: input.approvedResearchPackArtifactId,
     deckContextId: input.deckContextId,
     expectedSlideCount: input.expectedSlideCount,
     deckPlan: deckPlan.accepted,

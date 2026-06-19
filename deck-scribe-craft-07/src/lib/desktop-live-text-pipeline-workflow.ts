@@ -83,6 +83,8 @@ export async function runDesktopLiveTextPipelineProductionWorkflow(
     projectId: input.project.id,
     createdAt: input.createdAt,
     ...(input.version === undefined ? {} : { version: input.version }),
+    approvedBriefArtifactId: brief.id,
+    approvedResearchPackArtifactId: research.id,
     deckContextId,
     expectedSlideCount: input.project.slideCount,
     deckPlan: deckPlan.accepted,

@@ -43,6 +43,8 @@ export type LiveTextPipelineIssueCode =
   | "non_codex_text_turn"
   | "non_production_text_turn"
   | "shared_live_turn"
+  | "missing_brief_input"
+  | "missing_research_input"
   | "missing_plan_input"
   | "missing_design_input"
   | "text_pipeline_prompt_version_mismatch"
@@ -62,6 +64,8 @@ export type LiveTextPipelineIssue = {
 };
 
 export type LiveTextPipelineCutoverInput = {
+  readonly approvedBriefArtifactId: string;
+  readonly approvedResearchPackArtifactId: string;
   readonly deckContextId: string;
   readonly expectedSlideCount: number;
   readonly deckPlan: LiveTextPipelineTurnArtifact<DeckPlan>;

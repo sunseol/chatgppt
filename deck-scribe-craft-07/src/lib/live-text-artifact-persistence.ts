@@ -1,10 +1,4 @@
-import type {
-  DeckPlan,
-  DeckProject,
-  DesignSystem,
-  InterviewBrief,
-  LayoutPrototype,
-} from "./deck-types";
+import type { DeckPlan, DeckProject, DesignSystem, InterviewBrief } from "./deck-types";
 import type { InterviewQuestionPlan } from "./interview-questions";
 import { renderLayoutIrToPrototype, type LayoutIR } from "./layout-ir";
 import {
@@ -30,10 +24,10 @@ import {
   type LiveTextPipelineCutoverResult,
   type LiveTextPipelineIssue,
   type LiveTextPipelineRecovery,
-  type LiveTextPipelineSlideContextRef,
 } from "./live-text-pipeline-cutover";
 import type { ProviderArtifactProvenance } from "./provider-provenance";
 import type { StructuredCodexAccepted } from "./codex-structured-task-runner";
+import type { LiveTextPipelineReadyPatch } from "./live-text-pipeline-persistence-types";
 
 export type LiveInterviewPersistenceInput = {
   readonly projectId: string;
@@ -80,22 +74,16 @@ export type LiveTextPipelinePersistenceInput = {
   readonly projectId: string;
   readonly createdAt: number;
   readonly version?: number;
+  readonly approvedBriefArtifactId: string;
+  readonly approvedResearchPackArtifactId: string;
   readonly deckContextId: string;
   readonly expectedSlideCount: number;
   readonly deckPlan: StructuredCodexAccepted<DeckPlan>;
   readonly designSystem: StructuredCodexAccepted<DesignSystem>;
   readonly layoutIr: StructuredCodexAccepted<LayoutIR>;
-  readonly slideContextRefs: readonly LiveTextPipelineSlideContextRef[];
+  readonly slideContextRefs: LiveTextPipelineCutoverInput["slideContextRefs"];
   readonly repairAttempts: LiveTextPipelineCutoverInput["repairAttempts"];
 };
-
-export type LiveTextPipelineReadyPatch = Readonly<
-  Pick<DeckProject, "stage"> & {
-    readonly plan: DeckPlan;
-    readonly design: DesignSystem;
-    readonly layout: LayoutPrototype;
-  }
->;
 
 export type LiveTextPipelinePersistenceResult =
   | {
@@ -160,6 +148,8 @@ export function createLiveTextPipelinePersistence(
   input: LiveTextPipelinePersistenceInput,
 ): LiveTextPipelinePersistenceResult {
   const cutover = evaluateLiveTextPipelineCutover({
+    approvedBriefArtifactId: input.approvedBriefArtifactId,
+    approvedResearchPackArtifactId: input.approvedResearchPackArtifactId,
     deckContextId: input.deckContextId,
     expectedSlideCount: input.expectedSlideCount,
     deckPlan: textTurnArtifact(input.deckPlan, input.deckContextId),

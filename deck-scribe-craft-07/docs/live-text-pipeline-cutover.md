@@ -11,6 +11,7 @@ Scope: DF-214 Deck Plan, Design System, and Layout IR Live cutover contract.
 - Deck Plan, Design System, and Layout IR must each come from separate production Codex turns using authenticated `codex_session` auth.
 - Every artifact must carry complete provider provenance with thread id, turn id, runtime, prompt version, duration, and input artifact ids.
 - Stage prompt lineage must match the artifact: Deck Plan uses `deck_plan@v1` or `deck_plan_desktop@v1`, Design System uses `design_system@v1` or `design_system_desktop@v1`, and Layout IR uses `layout_ir@v1` or `layout_ir_desktop@v1`; otherwise `text_pipeline_prompt_version_mismatch` blocks approval.
+- Deck Plan provenance must cite the approved Brief artifact id and approved Live Research Pack artifact id; otherwise `missing_brief_input` or `missing_research_input` blocks approval.
 - Design System provenance must cite the live Deck Plan artifact.
 - Layout IR provenance must cite both the live Deck Plan and live Design System artifacts.
 - Deck Plan markdown must parse through the existing slide spec parser.
@@ -29,7 +30,7 @@ Scope: DF-214 Deck Plan, Design System, and Layout IR Live cutover contract.
 ## Verified Locally
 
 - `src/lib/live-text-pipeline-cutover.test.ts` accepts a five-slide live bundle with separate plan/design/layout turn provenance.
-- `src/lib/live-text-pipeline-auth.test.ts` accepts the desktop text-pipeline prompt versions and rejects stage-wrong prompt lineage with `text_pipeline_prompt_version_mismatch`.
+- `src/lib/live-text-pipeline-auth.test.ts` accepts the desktop text-pipeline prompt versions, rejects stage-wrong prompt lineage with `text_pipeline_prompt_version_mismatch`, and rejects Deck Plan turns that omit the approved Research Pack input with `missing_research_input`.
 - It schedules a repair turn for invalid Layout IR schema output, rejects repair evidence that lacks a fresh repair turn id, and blocks after two failed repair attempts.
 - It blocks mock/fixture provenance and non-session Codex auth with no fixture fallback.
 - It blocks slide refs that drift from the shared deck context or design system.

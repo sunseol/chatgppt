@@ -87,6 +87,24 @@ describe("live text pipeline Codex session provenance", () => {
     if (result.kind !== "blocked") return;
     expect(result.issues.map((issue) => issue.code).includes("non_codex_session_auth")).toBe(true);
   });
+
+  test("blocks deck plan turns that omit the approved research pack input", () => {
+    const input = completeInput();
+
+    const result = evaluateLiveTextPipelineCutover({
+      ...input,
+      deckPlan: {
+        ...input.deckPlan,
+        provenance: liveCodexProvenance("deck_plan_live_1", "turn_plan", "deck_plan@v1", [
+          "brief_live_1",
+        ]),
+      },
+    });
+
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code).includes("missing_research_input")).toBe(true);
+  });
 });
 
 function completeInput(): LiveTextPipelineCutoverInput {
@@ -118,6 +136,8 @@ function completeInput(): LiveTextPipelineCutoverInput {
   const design: DesignSystem = { ...generated.design, approvedHash: "hash_design" };
   const layoutIr = createLayoutIrFromPlan({ plan, design });
   return {
+    approvedBriefArtifactId: "brief_live_1",
+    approvedResearchPackArtifactId: "research_live_1",
     deckContextId: "deckctx_214",
     expectedSlideCount: 5,
     deckPlan: {

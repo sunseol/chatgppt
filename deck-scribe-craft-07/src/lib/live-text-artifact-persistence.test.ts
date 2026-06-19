@@ -76,6 +76,8 @@ describe("live text artifact persistence", () => {
     const result = createLiveTextPipelinePersistence({
       projectId: "p_live_text",
       createdAt: 1_710_000_000_000,
+      approvedBriefArtifactId: "brief_live_1",
+      approvedResearchPackArtifactId: "research_live_1",
       deckContextId: "deckctx_live_text",
       expectedSlideCount: 5,
       deckPlan: accepted(
@@ -131,6 +133,8 @@ describe("live text artifact persistence", () => {
     const result = createLiveTextPipelinePersistence({
       projectId: "p_live_text",
       createdAt: 1_710_000_000_000,
+      approvedBriefArtifactId: "brief_live_1",
+      approvedResearchPackArtifactId: "research_live_1",
       deckContextId: "deckctx_live_text",
       expectedSlideCount: 5,
       deckPlan: accepted(

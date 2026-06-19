@@ -89,6 +89,7 @@ function turnIdentityIssues(input: LiveTextPipelineCutoverInput): readonly LiveT
 
 function lineageIssues(input: LiveTextPipelineCutoverInput): readonly LiveTextPipelineIssue[] {
   return [
+    ...deckPlanInputIssues(input),
     ...(input.designSystem.provenance.inputArtifactIds.includes(
       input.deckPlan.provenance.artifactId,
     )
@@ -111,6 +112,34 @@ function lineageIssues(input: LiveTextPipelineCutoverInput): readonly LiveTextPi
             artifactId: input.layoutIr.provenance.artifactId,
             message:
               "Layout IR turn must cite both live Deck Plan and Design System artifacts as inputs.",
+          },
+        ]),
+  ];
+}
+
+function deckPlanInputIssues(
+  input: LiveTextPipelineCutoverInput,
+): readonly LiveTextPipelineIssue[] {
+  const inputs = input.deckPlan.provenance.inputArtifactIds;
+  return [
+    ...(inputs.includes(input.approvedBriefArtifactId)
+      ? []
+      : [
+          {
+            code: "missing_brief_input" as const,
+            stage: "deck_plan" as const,
+            artifactId: input.deckPlan.provenance.artifactId,
+            message: "Deck Plan turn must cite the approved Brief artifact as input.",
+          },
+        ]),
+    ...(inputs.includes(input.approvedResearchPackArtifactId)
+      ? []
+      : [
+          {
+            code: "missing_research_input" as const,
+            stage: "deck_plan" as const,
+            artifactId: input.deckPlan.provenance.artifactId,
+            message: "Deck Plan turn must cite the approved Live Research Pack artifact as input.",
           },
         ]),
   ];
