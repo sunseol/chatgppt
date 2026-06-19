@@ -198,16 +198,18 @@ function imageArtifactIssues(
 }
 
 function restartIssues(bundle: LiveGoldenPathE2EBundle): readonly LiveGoldenPathE2EIssue[] {
+  const reopenedAt = bundle.restartReopen.reopenedAt.trim();
   const restartReady =
     bundle.restartReopen.projectId === bundle.projectId &&
-    bundle.restartReopen.reopenedAt.trim() &&
+    reopenedAt.length > 0 &&
+    Number.isFinite(Date.parse(reopenedAt)) &&
     bundle.restartReopen.exportArtifactId === bundle.finalExportArtifactId;
   return restartReady
     ? []
     : [
         liveGoldenPathIssue(
           "missing_restart_reopen_evidence",
-          "Project must reopen after restart with the same final export artifact.",
+          "Project must reopen after restart with a timestamp and the same final export artifact.",
           [bundle.restartReopen.projectId, bundle.restartReopen.exportArtifactId],
         ),
       ];

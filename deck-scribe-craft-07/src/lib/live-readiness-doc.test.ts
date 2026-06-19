@@ -5,6 +5,7 @@ const DOCS = {
   audit: new URL("../../docs/live-readiness-audit.md", import.meta.url),
   migration: new URL("../../docs/ticket-status-migration-report.md", import.meta.url),
   benchmark: new URL("../../docs/live-benchmark-report.md", import.meta.url),
+  goldenPath: new URL("../../docs/live-golden-path-e2e.md", import.meta.url),
   interviewCutover: new URL("../../docs/live-interview-cutover.md", import.meta.url),
   textPipelineCutover: new URL("../../docs/live-text-pipeline-cutover.md", import.meta.url),
   imagePathDecision: new URL("../../docs/live-image-path-decision.md", import.meta.url),
@@ -44,6 +45,7 @@ describe("live readiness documentation", () => {
   test("documents ticket migration, live benchmark, runbook, manual QA, and release decision", () => {
     const migration = readDoc(DOCS.migration);
     const benchmark = readDoc(DOCS.benchmark);
+    const goldenPath = readDoc(DOCS.goldenPath);
     const runbook = readDoc(DOCS.runbook);
     const manualQa = readDoc(DOCS.manualQa);
     const decision = readDoc(DOCS.decision);
@@ -79,6 +81,7 @@ describe("live readiness documentation", () => {
     expect(benchmark.includes("passed_failure_domain_present")).toBe(true);
     expect(benchmark.includes("live_benchmark_shortfall")).toBe(true);
     expect(benchmark.includes("non-synthetic, non-local `.zip`")).toBe(true);
+    expect(goldenPath.includes("parseable `reopenedAt` timestamp")).toBe(true);
     expect(runbook.includes("runtime absence remediation")).toBe(true);
     expect(runbook.includes("DF-245")).toBe(true);
     expect(runbook.includes("missing_package_hash")).toBe(true);
