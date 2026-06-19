@@ -127,6 +127,23 @@ describe("live generation report lineage", () => {
     ]);
   });
 
+  test("blocks mixed blank source ids in slide lineage", () => {
+    // Given
+    const [base] = completeLineage();
+    if (!base) throw new Error("Expected lineage fixture.");
+
+    // When
+    const validation = validateLiveGenerationReportLineage({
+      executionMode: "production",
+      slides: [{ ...base, sourceIds: ["src_001", "  "] }],
+    });
+
+    // Then
+    expect(validation.kind).toBe("blocked");
+    if (validation.kind !== "blocked") return;
+    expect(validation.issues.map((issue) => issue.code)).toEqual(["missing_source_trace"]);
+  });
+
   test("blocks missing text prompt version evidence", () => {
     // Given
     const [base] = completeLineage();

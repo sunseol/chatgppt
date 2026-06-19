@@ -6,7 +6,23 @@ import type {
 export function lineageReferenceIssues(
   slides: readonly LiveSlideReportLineage[],
 ): readonly LiveGenerationReportLineageIssue[] {
-  return [...duplicateSlideIssues(slides), ...duplicateImageRequestIssues(slides)];
+  return [
+    ...blankSourceTraceIssues(slides),
+    ...duplicateSlideIssues(slides),
+    ...duplicateImageRequestIssues(slides),
+  ];
+}
+
+function blankSourceTraceIssues(
+  slides: readonly LiveSlideReportLineage[],
+): readonly LiveGenerationReportLineageIssue[] {
+  return slides
+    .filter((slide) => hasBlankAndNonblankValues(slide.sourceIds))
+    .map((slide) => ({
+      code: "missing_source_trace" as const,
+      slideNumber: slide.slideNumber,
+      message: "Live report source ids cannot include blank entries.",
+    }));
 }
 
 function duplicateSlideIssues(
@@ -43,4 +59,8 @@ function duplicateValues(values: readonly string[]): readonly string[] {
     }
   }
   return [...duplicates];
+}
+
+function hasBlankAndNonblankValues(values: readonly string[]): boolean {
+  return values.some((value) => !value.trim()) && values.some((value) => value.trim());
 }
