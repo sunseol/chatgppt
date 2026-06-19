@@ -10,7 +10,7 @@ Live jobs must show enough usage context for a user to understand what ran under
 
 When a provider supplies usage or cost data, the project summary records it. Cost is displayed only when it can be labelled as exact or estimated; otherwise it remains hidden. Estimated values render as `cost estimate`.
 
-Before image generation, the UI must make API key and billing usage visible and require confirmation when the image provider uses the user's API key. API-key billing confirmation must carry a persisted `confirmationEvidencePath` JSON record; `userConfirmed: true` plus display copy alone is not enough Live evidence.
+Before image generation, the UI must make API key and billing usage visible and require confirmation when the image provider uses the user's API key. API-key billing confirmation must carry a persisted `confirmationEvidencePath` JSON record that is not synthetic and not a developer-local absolute path; `userConfirmed: true` plus display copy alone is not enough Live evidence.
 
 ## Blocking Rules
 
@@ -29,7 +29,7 @@ Before image generation, the UI must make API key and billing usage visible and 
 
 ## Local Evidence
 
-- `src/lib/live-usage-summary.test.ts` verifies stage-level provider/duration/retry display, estimated cost formatting, usage recording, empty usage-object blockers, incomplete text/image usage blockers, invalid usage/cost amount blockers, estimated-cost-as-actual blockers, persisted API-key billing confirmation evidence blockers, and image billing confirmation blockers.
+- `src/lib/live-usage-summary.test.ts` verifies stage-level provider/duration/retry display, estimated cost formatting, usage recording, empty usage-object blockers, incomplete text/image usage blockers, invalid usage/cost amount blockers, estimated-cost-as-actual blockers, persisted API-key billing confirmation evidence blockers, developer-local billing evidence path blockers, and image billing confirmation blockers.
 - `src/lib/live-app-server-usage-summary.ts` converts `thread/tokenUsage/updated` notifications from `codex app-server --stdio` into `LiveUsageStageSummary.usage`, and deliberately leaves `usage` empty when the provider supplied a malformed usage notification so `missing_provider_usage_summary` blocks the summary.
 - `src/lib/provider-job-progress-view.ts` and `src/components/deck/ProviderJobProgressPanel.tsx` expose app-surface provider id, execution duration, retry count, valid token/image usage, and finite estimated provider cost as `cost estimate` while still preserving job status, retry availability, recovered state, partial artifacts, and redacted failure messages.
 - `src/lib/audit-log.ts` records provider usage summaries into report audit events and renders `estimatedCostUsd` as `cost estimate`, not as an exact charge.
@@ -59,17 +59,17 @@ The provider job progress panel now renders DF-244 usage context for any job tha
 - token/image usage items such as `input 25006`, `output 141`, or `images 1`
 - `estimatedCostUsd` only as `cost estimate $...`, never as exact `cost $...`
 - invalid provider payload amounts such as negative tokens, fractional token counts, or non-finite costs are omitted from the visible usage list instead of being rendered as real usage
-- image API key billing disclosure labels such as `API key billing confirmed` only when the payload includes a non-synthetic `confirmationEvidencePath` JSON record
+- image API key billing disclosure labels such as `API key billing confirmed` only when the payload includes a non-synthetic, non-local `confirmationEvidencePath` JSON record
 - unconfirmed API-key billing payloads, or confirmed-looking payloads without persisted confirmation evidence, render as `API key billing not confirmed` instead of reusing a provider-supplied confirmed-looking label
 
-`src/lib/provider-job-progress-view.test.ts` locks the app-progress view so invalid provider usage values such as `input -1`, fractional outputs, or `cost estimate $NaN` are not shown to the user.
+`src/lib/provider-job-progress-view.test.ts` locks the app-progress view so invalid provider usage values such as `input -1`, fractional outputs, or `cost estimate $NaN` are not shown to the user, and developer-local absolute image billing evidence paths render as `API key billing not confirmed`.
 
 `src/components/deck/ProviderJobProgressPanel.integration.test.tsx` locks the rendered app surface for the live Codex usage probe shape: provider `codex`, duration `7158ms`, `retries 1`, `input 25006`, `output 141`, and `cost estimate $0.0400`. It also locks the image usage shape with `images 5`, `cost estimate $0.1800`, and `API key billing confirmed`.
 
-The same integration surface now blocks misleading confirmation copy when the image billing disclosure says `userConfirmed: false` or omits persisted API-key billing confirmation evidence.
+The same integration surface now blocks misleading confirmation copy when the image billing disclosure says `userConfirmed: false`, omits persisted API-key billing confirmation evidence, or only points at developer-local evidence.
 
 `src/lib/audit-log.ts` preserves the same image billing disclosure label in report usage lines while continuing to redact secret-like text from the displayed label.
 
 ## Remaining Live Evidence
 
-The local contract, one live Codex text usage probe, app progress-panel usage display with invalid provider payload omission, incomplete text/image usage blockers, invalid usage/cost amount blockers, persisted API-key billing confirmation evidence blockers, and report/audit image billing disclosure display are ready, but DF-244 still needs manual QA against the packaged app surface with real provider image billing/API-key disclosure payloads.
+The local contract, one live Codex text usage probe, app progress-panel usage display with invalid provider payload omission, incomplete text/image usage blockers, invalid usage/cost amount blockers, persisted API-key billing confirmation evidence blockers, developer-local billing evidence path blockers, and report/audit image billing disclosure display are ready, but DF-244 still needs manual QA against the packaged app surface with real provider image billing/API-key disclosure payloads.

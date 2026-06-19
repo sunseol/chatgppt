@@ -1,5 +1,6 @@
 import type { ProviderImageBillingDisclosure, ProviderUsageSummary } from "./provider-job-manager";
 import type { ProviderKind } from "./provider-types";
+import { hasNonSyntheticJsonEvidencePath } from "./live-evidence-path";
 
 export type LiveCostLabel = "actual" | "estimate" | "hidden";
 
@@ -186,7 +187,10 @@ function imageBillingIssues(stage: LiveUsageStageSummary): readonly LiveUsageSum
 }
 
 function billingConfirmationHasEvidence(disclosure: LiveImageBillingDisclosure): boolean {
-  return !disclosure.apiKeyRequired || validEvidencePath(disclosure.confirmationEvidencePath);
+  return (
+    !disclosure.apiKeyRequired ||
+    hasNonSyntheticJsonEvidencePath(disclosure.confirmationEvidencePath)
+  );
 }
 
 function isImageGenerationStage(stage: LiveUsageStageSummary): boolean {
@@ -229,12 +233,6 @@ function imageBillingDisclosure(
 
 function validUsageAmount(amount: number | undefined): boolean {
   return amount === undefined || (Number.isInteger(amount) && amount >= 0);
-}
-
-function validEvidencePath(value: string | undefined): boolean {
-  if (value === undefined || !value.endsWith(".json")) return false;
-  const normalized = value.toLowerCase();
-  return !["mock", "fixture", "test", "fake"].some((marker) => normalized.includes(marker));
 }
 
 function issue(
