@@ -29,7 +29,7 @@ Before image generation, the UI must make API key and billing usage visible and 
 
 - `src/lib/live-usage-summary.test.ts` verifies stage-level provider/duration/retry display, estimated cost formatting, usage recording, empty usage-object blockers, invalid usage/cost amount blockers, estimated-cost-as-actual blockers, and image billing confirmation blockers.
 - `src/lib/live-app-server-usage-summary.ts` converts `thread/tokenUsage/updated` notifications from `codex app-server --stdio` into `LiveUsageStageSummary.usage`, and deliberately leaves `usage` empty when the provider supplied a malformed usage notification so `missing_provider_usage_summary` blocks the summary.
-- `src/lib/provider-job-progress-view.ts` and `src/components/deck/ProviderJobProgressPanel.tsx` expose app-surface provider id, execution duration, retry count, token/image usage, and estimated provider cost as `cost estimate` while still preserving job status, retry availability, recovered state, partial artifacts, and redacted failure messages.
+- `src/lib/provider-job-progress-view.ts` and `src/components/deck/ProviderJobProgressPanel.tsx` expose app-surface provider id, execution duration, retry count, valid token/image usage, and finite estimated provider cost as `cost estimate` while still preserving job status, retry availability, recovered state, partial artifacts, and redacted failure messages.
 - `src/lib/audit-log.ts` records provider usage summaries into report audit events and renders `estimatedCostUsd` as `cost estimate`, not as an exact charge.
 
 ## Live Codex Usage Probe
@@ -56,7 +56,10 @@ The provider job progress panel now renders DF-244 usage context for any job tha
 - retry count as `retries N`
 - token/image usage items such as `input 25006`, `output 141`, or `images 1`
 - `estimatedCostUsd` only as `cost estimate $...`, never as exact `cost $...`
+- invalid provider payload amounts such as negative tokens, fractional token counts, or non-finite costs are omitted from the visible usage list instead of being rendered as real usage
 - image API key billing disclosure labels such as `API key billing confirmed`
+
+`src/lib/provider-job-progress-view.test.ts` locks the app-progress view so invalid provider usage values such as `input -1`, fractional outputs, or `cost estimate $NaN` are not shown to the user.
 
 `src/components/deck/ProviderJobProgressPanel.integration.test.tsx` locks the rendered app surface for the live Codex usage probe shape: provider `codex`, duration `7158ms`, `retries 1`, `input 25006`, `output 141`, and `cost estimate $0.0400`. It also locks the image usage shape with `images 5`, `cost estimate $0.1800`, and `API key billing confirmed`.
 
@@ -64,4 +67,4 @@ The provider job progress panel now renders DF-244 usage context for any job tha
 
 ## Remaining Live Evidence
 
-The local contract, one live Codex text usage probe, app progress-panel usage display, invalid usage/cost amount blockers, and report/audit image billing disclosure display are ready, but DF-244 still needs manual QA against the packaged app surface with real provider image billing/API-key disclosure payloads.
+The local contract, one live Codex text usage probe, app progress-panel usage display with invalid provider payload omission, invalid usage/cost amount blockers, and report/audit image billing disclosure display are ready, but DF-244 still needs manual QA against the packaged app surface with real provider image billing/API-key disclosure payloads.

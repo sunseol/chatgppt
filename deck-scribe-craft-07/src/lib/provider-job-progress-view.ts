@@ -114,14 +114,22 @@ function durationLabel(job: ProviderJob): string {
 function usageItems(usageSummary: ProviderUsageSummary | undefined): readonly string[] {
   if (usageSummary === undefined) return [];
   return [
-    usageSummary.inputTokens === undefined ? "" : `input ${usageSummary.inputTokens}`,
-    usageSummary.outputTokens === undefined ? "" : `output ${usageSummary.outputTokens}`,
-    usageSummary.imageCount === undefined ? "" : `images ${usageSummary.imageCount}`,
-    usageSummary.estimatedCostUsd === undefined
-      ? ""
-      : `cost estimate $${usageSummary.estimatedCostUsd.toFixed(4)}`,
+    usageAmountItem("input", usageSummary.inputTokens),
+    usageAmountItem("output", usageSummary.outputTokens),
+    usageAmountItem("images", usageSummary.imageCount),
+    costEstimateItem(usageSummary.estimatedCostUsd),
     imageBillingDisclosureItem(usageSummary),
   ].filter(isNonEmpty);
+}
+
+function usageAmountItem(label: string, amount: number | undefined): string {
+  return amount === undefined || !validUsageAmount(amount) ? "" : `${label} ${amount}`;
+}
+
+function costEstimateItem(cost: number | undefined): string {
+  return cost === undefined || !Number.isFinite(cost) || cost < 0
+    ? ""
+    : `cost estimate $${cost.toFixed(4)}`;
 }
 
 function imageBillingDisclosureItem(usageSummary: ProviderUsageSummary): string {
@@ -131,6 +139,10 @@ function imageBillingDisclosureItem(usageSummary: ProviderUsageSummary): string 
 
 function isNonEmpty(value: string): boolean {
   return value.length > 0;
+}
+
+function validUsageAmount(amount: number): boolean {
+  return Number.isInteger(amount) && amount >= 0;
 }
 
 function summarizeFailure(errorMessage: string | undefined): string | undefined {

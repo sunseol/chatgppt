@@ -64,6 +64,29 @@ describe("provider job progress view", () => {
     expect(view.retryLabel).toBe("retries 1");
     expect(view.usageItems).toEqual(["input 25006", "output 141", "cost estimate $0.0400"]);
   });
+
+  test("omits invalid provider usage amounts from the app progress surface", () => {
+    // Given
+    const job: ProviderJob = {
+      ...runningJob(),
+      usageSummary: {
+        inputTokens: -1,
+        outputTokens: 0.5,
+        imageCount: 5,
+        estimatedCostUsd: Number.NaN,
+      },
+    };
+
+    // When
+    const view = createProviderJobProgressView({
+      stageLabel: "Live image generation",
+      job,
+      recovered: false,
+    });
+
+    // Then
+    expect(view.usageItems).toEqual(["images 5"]);
+  });
 });
 
 function runningJob(): ProviderJob {
