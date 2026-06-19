@@ -8,7 +8,7 @@ Ticket: DF-243
 
 The Live interruption matrix validates that provider interruptions do not corrupt project state or allow partial artifacts into approval/export.
 
-Every scenario must carry a distinct non-synthetic live job id plus a persisted recovery snapshot path, and the matrix itself must be documented by a non-synthetic `docs/live-interruption-matrix.md` report path. Job ids, snapshots, or report paths marked as `mock`, `fixture`, `test`, or `fake` are not accepted as Live interruption evidence. Reusing one live job id across multiple required scenarios is blocked because it can hide a missing text, fetch, image, cancellation, or approval/export run. The cancellation scenario must record both an app-storage recovery snapshot and a persisted cancel signal JSON path that targets the same live job id; a `cancellationRecorded` boolean alone is not enough Live evidence. The interrupted artifact gate scenario must explicitly exercise both approval and export gates, with persisted approval/export gate JSON paths, even when no interrupted artifact becomes approvable or exportable.
+Every scenario must carry a distinct non-synthetic live job id plus a persisted recovery snapshot path, and the matrix itself must be documented by a non-synthetic, non-developer-local `docs/live-interruption-matrix.md` report path. Job ids, snapshots, or report paths marked as `mock`, `fixture`, `test`, or `fake` are not accepted as Live interruption evidence, and local absolute or `file://` paths are rejected. Reusing one live job id across multiple required scenarios is blocked because it can hide a missing text, fetch, image, cancellation, or approval/export run. The cancellation scenario must record both an app-storage recovery snapshot and a persisted cancel signal JSON path that targets the same live job id; a `cancellationRecorded` boolean alone is not enough Live evidence. The interrupted artifact gate scenario must explicitly exercise both approval and export gates, with persisted approval/export gate JSON paths, even when no interrupted artifact becomes approvable or exportable.
 
 Required scenarios:
 
@@ -25,9 +25,9 @@ Required scenarios:
 - `missing_interruption_scenario`: a required matrix scenario is absent.
 - `missing_live_job_evidence`: a scenario lacks a non-synthetic live job id.
 - `duplicate_interruption_live_job`: multiple required scenarios reuse one live job id.
-- `missing_recovery_snapshot`: a scenario lacks a persisted, non-synthetic recovery snapshot.
+- `missing_recovery_snapshot`: a scenario lacks a persisted, non-synthetic, non-developer-local recovery snapshot.
 - `missing_app_cancel_snapshot`: cancellation evidence lacks an app-storage recovery snapshot.
-- `missing_cancel_signal_evidence`: cancellation evidence lacks a persisted, non-synthetic cancel signal JSON path.
+- `missing_cancel_signal_evidence`: cancellation evidence lacks a persisted, non-synthetic, non-developer-local cancel signal JSON path.
 - `cancel_signal_job_mismatch`: cancel signal evidence targets a different or missing live job id.
 - `unsafe_recovered_job_state`: interrupted text/fetch job recovered as queued, running, or succeeded.
 - `completed_artifact_lost`: an artifact completed before interruption is missing after recovery.
@@ -37,11 +37,11 @@ Required scenarios:
 - `missing_interrupted_approval_gate_evidence`: interrupted artifact evidence did not exercise the approval gate with a persisted JSON evidence path.
 - `missing_interrupted_export_gate_evidence`: interrupted artifact evidence did not exercise the export gate with a persisted JSON evidence path.
 - `interrupted_artifact_approvable`: interrupted artifact is approvable or exportable.
-- `missing_interruption_report`: `docs/live-interruption-matrix.md` evidence path is missing or synthetic.
+- `missing_interruption_report`: `docs/live-interruption-matrix.md` evidence path is missing, synthetic, or developer-local.
 
 ## Local Evidence
 
-- `src/lib/live-interruption-matrix.test.ts` and `src/lib/live-interruption-report-path.test.ts` verify safe recovery, summary formatting, distinct live job/snapshot/app-storage cancel snapshot/cancel signal path and job-id matching requirements, persisted interrupted approval/export gate JSON paths, fixture/test/fake interruption evidence rejection, non-synthetic matrix report path requirements, unsafe restart/resume/cancel/approval/export blockers, and cancellation attempts that still complete artifacts after cancellation.
+- `src/lib/live-interruption-matrix.test.ts` and `src/lib/live-interruption-report-path.test.ts` verify safe recovery, summary formatting, distinct live job/snapshot/app-storage cancel snapshot/cancel signal path and job-id matching requirements, persisted interrupted approval/export gate JSON paths, fixture/test/fake interruption evidence rejection, synthetic and developer-local matrix report/evidence path rejection, unsafe restart/resume/cancel/approval/export blockers, and cancellation attempts that still complete artifacts after cancellation.
 - `src/lib/provider-job-recovery.ts` preserves job snapshots for restart recovery.
 - `src/lib/slide-generation-queue-live-controls.test.ts` already covers retry, partial image resume, and cancellation behavior at the queue level.
 

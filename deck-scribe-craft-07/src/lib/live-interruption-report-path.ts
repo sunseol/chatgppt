@@ -1,4 +1,5 @@
 import type { LiveInterruptionIssue } from "./live-interruption-matrix";
+import { hasNonSyntheticEvidencePath } from "./live-evidence-path";
 
 export function interruptionReportPathIssues(reportPath: string): readonly LiveInterruptionIssue[] {
   return validInterruptionReportPath(reportPath)
@@ -15,6 +16,7 @@ export function interruptionReportPathIssues(reportPath: string): readonly LiveI
 function validInterruptionReportPath(value: string): boolean {
   const normalized = value.toLowerCase().trim();
   if (!normalized.endsWith("live-interruption-matrix.md")) return false;
+  if (!hasNonSyntheticEvidencePath(value, [".md"])) return false;
   const segments = normalized.split(/[/\\._-]+/).filter(Boolean);
   return !["mock", "fixture", "fixtures", "test", "tests", "fake", "fakes"].some((marker) =>
     segments.includes(marker),

@@ -19,6 +19,53 @@ describe("live interruption report path evidence", () => {
       "missing_interruption_report",
     ]);
   });
+
+  test("blocks developer-local interruption matrix report paths", () => {
+    // Given
+    const matrix = completeMatrix({
+      reportPath: "/Users/jake/chatgppt/docs/live-interruption-matrix.md",
+    });
+
+    // When
+    const result = evaluateLiveInterruptionMatrix(matrix);
+
+    // Then
+    expect(result.kind === "blocked" ? result.issues.map((issue) => issue.code) : []).toEqual([
+      "missing_interruption_report",
+    ]);
+  });
+
+  test("blocks developer-local interruption evidence JSON paths", () => {
+    // Given
+    const matrix = completeMatrix({
+      scenarios: LIVE_INTERRUPTION_SCENARIOS.map((id) =>
+        id === "cancel_job"
+          ? scenario(id, {
+              recoverySnapshotPath: "/Users/jake/chatgppt/recovery/cancel-job.json",
+              cancelSignalEvidencePath: "/Users/jake/chatgppt/recovery/cancel-job-signal.json",
+            })
+          : id === "interrupted_artifact_gate"
+            ? scenario(id, {
+                approvalGateEvidencePath:
+                  "/Users/jake/chatgppt/recovery/interrupted-approval-gate.json",
+                exportGateEvidencePath:
+                  "/Users/jake/chatgppt/recovery/interrupted-export-gate.json",
+              })
+            : scenario(id),
+      ),
+    });
+
+    // When
+    const result = evaluateLiveInterruptionMatrix(matrix);
+
+    // Then
+    expect(result.kind === "blocked" ? result.issues.map((issue) => issue.code) : []).toEqual([
+      "missing_recovery_snapshot",
+      "missing_cancel_signal_evidence",
+      "missing_interrupted_approval_gate_evidence",
+      "missing_interrupted_export_gate_evidence",
+    ]);
+  });
 });
 
 function completeMatrix(
