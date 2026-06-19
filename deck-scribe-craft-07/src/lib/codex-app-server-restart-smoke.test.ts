@@ -35,4 +35,51 @@ describe("Codex app-server restart smoke evidence", () => {
     if (result.kind !== "failed") return;
     expect(result.message).toBe("Codex App Server crash restart smoke failed.");
   });
+
+  test("blocks restart evidence with padded reused turns or app-server version drift", () => {
+    const preRestartHealthTurn = {
+      kind: "completed" as const,
+      transport: "stdio" as const,
+      cliVersion: "0.141.0",
+      account: {
+        type: "chatgpt" as const,
+        requiresOpenaiAuth: true,
+      },
+      threadId: "thread_before_restart",
+      turnId: "turn_before_restart",
+      turnStatus: "completed" as const,
+    };
+    const restartEvidence = {
+      kind: "restarted" as const,
+      cliVersion: "0.141.0",
+      appServerVersion: "0.141.0",
+      oldPid: 97850,
+      newPid: 5889,
+      crashProbeError: "failed to connect to app-server-control.sock: Connection refused",
+      preRestartHealthTurn,
+      postRestartHealthTurn: {
+        ...preRestartHealthTurn,
+        threadId: " thread_before_restart ",
+        turnId: " turn_before_restart ",
+      },
+    };
+
+    const paddedReuse = evaluateCodexAppServerRestartSmoke(restartEvidence);
+    const blankAppServerVersion = evaluateCodexAppServerRestartSmoke({
+      ...restartEvidence,
+      preRestartHealthTurn: undefined,
+      postRestartHealthTurn: { ...preRestartHealthTurn, threadId: "thread_after_restart" },
+      appServerVersion: " ",
+    });
+    const mismatchedAppServerVersion = evaluateCodexAppServerRestartSmoke({
+      ...restartEvidence,
+      preRestartHealthTurn: undefined,
+      postRestartHealthTurn: { ...preRestartHealthTurn, threadId: "thread_after_restart" },
+      appServerVersion: "0.140.0",
+    });
+
+    expect([paddedReuse.kind, blankAppServerVersion.kind, mismatchedAppServerVersion.kind]).toEqual(
+      ["failed", "failed", "failed"],
+    );
+  });
 });

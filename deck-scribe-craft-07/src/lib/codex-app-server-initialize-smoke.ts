@@ -194,6 +194,8 @@ export function evaluateCodexAppServerRestartSmoke(
     case "restarted":
       if (
         evidence.oldPid === evidence.newPid ||
+        evidence.appServerVersion.trim() === "" ||
+        evidence.appServerVersion !== evidence.cliVersion ||
         evidence.crashProbeError.trim() === "" ||
         evidence.postRestartHealthTurn.cliVersion !== evidence.cliVersion ||
         evidence.postRestartHealthTurn.threadId.trim() === "" ||
@@ -224,7 +226,14 @@ function isSameHealthTurn(
   before: CompletedCodexAppServerHealthTurnEvidence | undefined,
   after: CompletedCodexAppServerHealthTurnEvidence,
 ): boolean {
-  return before?.threadId === after.threadId && before.turnId === after.turnId;
+  return (
+    normalizeTurnEvidenceId(before?.threadId) === normalizeTurnEvidenceId(after.threadId) &&
+    normalizeTurnEvidenceId(before?.turnId) === normalizeTurnEvidenceId(after.turnId)
+  );
+}
+
+function normalizeTurnEvidenceId(value: string | undefined): string {
+  return value?.trim() ?? "";
 }
 
 function failedHealthTurn(
