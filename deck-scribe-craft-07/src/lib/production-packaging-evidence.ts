@@ -226,7 +226,7 @@ function runtimeRemediationIssues(shown: boolean): readonly ProductionPackagingI
 
 function runbookIssues(runbookPath: string): readonly ProductionPackagingIssue[] {
   return hasNonSyntheticEvidencePath(runbookPath, [".md"]) &&
-    runbookPath.endsWith("production-clean-machine-runbook.md")
+    runbookPath === "docs/production-clean-machine-runbook.md"
     ? []
     : [
         issue("missing_clean_machine_runbook", "Clean-machine installation runbook is required.", [

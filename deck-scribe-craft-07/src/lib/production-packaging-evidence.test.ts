@@ -124,6 +124,21 @@ describe("production packaging evidence", () => {
     ]);
   });
 
+  test("blocks non-canonical clean-machine runbook paths", () => {
+    // Given
+    const evidence = completeEvidence({
+      runbookPath: "release-evidence/production-clean-machine-runbook.md",
+    });
+
+    // When
+    const result = evaluateProductionPackagingEvidence(evidence);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual(["missing_clean_machine_runbook"]);
+  });
+
   test("blocks native macOS release trust evidence that is unsigned or unnotarized", () => {
     // Given
     const evidence = completeEvidence({

@@ -27,13 +27,14 @@ describe("live packaging documentation", () => {
     );
     expect(progress.includes("DF-245 live update")).toBe(true);
     expect(progress.includes("non-synthetic/non-local package archive")).toBe(true);
+    expect(progress.includes("canonical clean-machine runbook path evidence")).toBe(true);
     expect(progress.includes("developer-local package archive")).toBe(true);
     expect(runbook.includes("file://")).toBe(true);
     expect(progress.includes("releaseTrustEvidencePath")).toBe(true);
     expect(progress.includes("developer-local persisted `releaseTrustEvidencePath`")).toBe(true);
     expect(decision.includes("releaseTrustEvidencePath")).toBe(true);
     expect(decision.includes("developer-local persisted `releaseTrustEvidencePath`")).toBe(true);
-    expect(decision.includes("772 tests")).toBe(true);
+    expect(decision.includes("773 tests")).toBe(true);
   });
 });
 
