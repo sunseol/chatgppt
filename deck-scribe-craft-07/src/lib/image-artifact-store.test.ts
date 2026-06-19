@@ -52,6 +52,29 @@ describe("image artifact store", () => {
     expect(typeof writes[1].content).toBe("string");
   });
 
+  test("rejects unsafe project ids before writing image artifacts", async () => {
+    // Given
+    const writes: ImageArtifactStoreWrite[] = [];
+    const store = createImageArtifactStore({
+      write: async (entry) => {
+        writes.push(entry);
+      },
+    });
+
+    // When
+    const result = storeSlideImageArtifact({
+      store,
+      projectId: "../outside",
+      artifact: realImageArtifact(),
+      version: 1,
+      createdAt: 1_789_800_004,
+    });
+
+    // Then
+    expect((await rejectionMessage(result)).includes("Project id")).toBe(true);
+    expect(writes.length).toBe(0);
+  });
+
   test("creates complete OpenAI image provenance from stored request metadata", async () => {
     // Given
     const store = createImageArtifactStore({ write: async () => undefined });

@@ -47,6 +47,7 @@ export async function storeSlideImageArtifact(input: {
   readonly version: number;
   readonly createdAt: number;
 }): Promise<StoredSlideImageArtifact> {
+  assertSafeStorageAddress(input);
   const imageBytes = pngBytesFromDataUrl(input.artifact.imageDataUrl);
   const request = requireRequestMetadata(input.artifact);
   const binary = {
@@ -69,6 +70,12 @@ export async function storeSlideImageArtifact(input: {
     metadata,
     provenance: imageProvenance(input.artifact, binary, request),
   };
+}
+
+function assertSafeStorageAddress(input: { readonly projectId: string }): void {
+  if (!/^[A-Za-z0-9_-]+$/.test(input.projectId)) {
+    throw new ImageArtifactStoreError("Project id must be a safe storage segment.");
+  }
 }
 
 function imageMetadata(
