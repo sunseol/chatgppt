@@ -100,6 +100,10 @@ export function storedArtifact(artifact: SlideImageArtifact): StoredSlideImageAr
       generatedAt: artifact.generatedAt,
     },
     provenance: {
+      path: `projects/project_001/slides/images/slide_${String(artifact.slideNumber).padStart(
+        3,
+        "0",
+      )}.v1.provenance.json`,
       artifactId: `project_001_image_slide_${String(artifact.slideNumber).padStart(3, "0")}_v1`,
       executionMode: "production",
       providerKind: artifact.providerId,

@@ -76,6 +76,7 @@ describe("live image provider adapter", () => {
     expect(writes.map((write) => write.path)).toEqual([
       "projects/project_001/slides/images/slide_001.v3.png",
       "projects/project_001/slides/images/slide_001.v3.metadata.json",
+      "projects/project_001/slides/images/slide_001.v3.provenance.json",
     ]);
     expect(firstWriteBytes(writes)).toEqual([137, 80, 78, 71, 13, 10, 26, 10]);
   });

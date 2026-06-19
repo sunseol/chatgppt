@@ -36,6 +36,9 @@ describe("image artifact store", () => {
     expect(stored.metadata.path).toBe(
       "projects/project_001/slides/images/slide_001.v2.metadata.json",
     );
+    expect(stored.provenance.path).toBe(
+      "projects/project_001/slides/images/slide_001.v2.provenance.json",
+    );
     expect(/^sha256:[a-f0-9]{64}$/.test(stored.binary.hash)).toBe(true);
     expect(stored.metadata.request).toEqual({
       requestId: "img_req_001",
@@ -45,11 +48,16 @@ describe("image artifact store", () => {
       latencyMs: 2_400,
       usage: { imageCount: 1, estimatedCostUsd: 0.08 },
     });
-    expect(writes.map((write) => write.path)).toEqual([stored.binary.path, stored.metadata.path]);
+    expect(writes.map((write) => write.path)).toEqual([
+      stored.binary.path,
+      stored.metadata.path,
+      stored.provenance.path,
+    ]);
     expect([...(writes[0].content as Uint8Array).slice(0, 8)]).toEqual([
       137, 80, 78, 71, 13, 10, 26, 10,
     ]);
     expect(typeof writes[1].content).toBe("string");
+    expect(typeof writes[2].content).toBe("string");
   });
 
   test("rejects unsafe project ids before writing image artifacts", async () => {

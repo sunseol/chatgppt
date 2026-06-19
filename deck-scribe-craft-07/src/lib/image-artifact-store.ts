@@ -30,10 +30,14 @@ export type StoredImageMetadata = {
   readonly generatedAt: number;
 };
 
+export type StoredImageProvenance = ProviderArtifactProvenanceInput & {
+  readonly path: string;
+};
+
 export type StoredSlideImageArtifact = {
   readonly binary: StoredImageBinary;
   readonly metadata: StoredImageMetadata;
-  readonly provenance: ProviderArtifactProvenanceInput;
+  readonly provenance: StoredImageProvenance;
 };
 
 export function createImageArtifactStore(store: ImageArtifactStore): ImageArtifactStore {
@@ -58,17 +62,22 @@ export async function storeSlideImageArtifact(input: {
     createdAt: input.createdAt,
   };
   const metadata = imageMetadata(input, request);
+  const provenance = imageProvenance(input, binary, request);
 
   await input.store.write({ path: binary.path, content: imageBytes });
   await input.store.write({
     path: metadata.path,
     content: JSON.stringify(metadata, null, 2),
   });
+  await input.store.write({
+    path: provenance.path,
+    content: JSON.stringify(provenance, null, 2),
+  });
 
   return {
     binary,
     metadata,
-    provenance: imageProvenance(input.artifact, binary, request),
+    provenance,
   };
 }
 
@@ -110,19 +119,24 @@ function imageMetadata(
 }
 
 function imageProvenance(
-  artifact: SlideImageArtifact,
+  input: {
+    readonly projectId: string;
+    readonly artifact: SlideImageArtifact;
+    readonly version: number;
+  },
   binary: StoredImageBinary,
   request: SlideImageRequestMetadata,
-): ProviderArtifactProvenanceInput {
+): StoredImageProvenance {
   return {
+    path: imageProvenancePath(input.projectId, input.artifact.slideNumber, input.version),
     artifactId: binary.artifactId,
     executionMode: "production",
-    providerKind: artifact.providerId,
-    authMode: artifact.providerId === "openaiImage" ? "api_key" : "codex_session",
+    providerKind: input.artifact.providerId,
+    authMode: input.artifact.providerId === "openaiImage" ? "api_key" : "codex_session",
     modelOrRuntime: request.model,
-    promptVersion: `${artifact.prompt.id}@${artifact.prompt.version}`,
+    promptVersion: `${input.artifact.prompt.id}@${input.artifact.prompt.version}`,
     durationMs: request.latencyMs ?? 0,
-    inputArtifactIds: [artifact.prompt.hash, artifact.layoutReference.screenshot],
+    inputArtifactIds: [input.artifact.prompt.hash, input.artifact.layoutReference.screenshot],
     fixture: false,
     ...(request.requestId === undefined ? {} : { requestId: request.requestId }),
   };
@@ -199,6 +213,10 @@ function imageArtifactPath(projectId: string, slideNumber: number, version: numb
 
 function imageMetadataPath(projectId: string, slideNumber: number, version: number): string {
   return `projects/${projectId}/slides/images/slide_${pad3(slideNumber)}.v${version}.metadata.json`;
+}
+
+function imageProvenancePath(projectId: string, slideNumber: number, version: number): string {
+  return `projects/${projectId}/slides/images/slide_${pad3(slideNumber)}.v${version}.provenance.json`;
 }
 
 function pad3(value: number): string {
