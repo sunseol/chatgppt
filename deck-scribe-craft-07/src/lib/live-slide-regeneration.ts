@@ -10,6 +10,7 @@ export type LiveSlideRegenerationIssueCode =
   | "missing_must_change_targets"
   | "revision_targets_overlap"
   | "slide_spec_mismatch"
+  | "original_slide_not_approved"
   | "original_slide_mismatch"
   | "original_slide_version_mismatch"
   | "deck_context_mismatch"
@@ -95,6 +96,7 @@ export function buildLiveSlideRegenerationRequest(input: {
   const issues = [
     ...requestIssues(input),
     ...slideSpecIssues(input.revisionRequest, input.slideSpec, input.currentSlide),
+    ...originalSlideStatusIssues(input.currentSlide),
     ...designSystemIssues(input.revisionRequest, input.designSystemId),
   ];
   if (issues.length > 0) return { kind: "blocked", issues };
@@ -208,6 +210,20 @@ function designSystemIssues(
           code: "design_system_mismatch",
           slideNumber: request.slideNumber,
           message: "Revision request must keep the approved design system id.",
+        },
+      ];
+}
+
+function originalSlideStatusIssues(
+  currentSlide: GeneratedSlide,
+): readonly LiveSlideRegenerationIssue[] {
+  return currentSlide.status === "approved"
+    ? []
+    : [
+        {
+          code: "original_slide_not_approved" as const,
+          slideNumber: currentSlide.number,
+          message: "Live regeneration requires an approved original slide.",
         },
       ];
 }
