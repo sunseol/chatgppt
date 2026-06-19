@@ -1,6 +1,7 @@
 import { redactSensitiveText } from "./redaction";
 import type { ExecutionMode, ProviderArtifactProvenance } from "./provider-provenance";
 import { lineageReferenceIssues } from "./live-generation-report-reference-uniqueness";
+import { lineageFieldSecretIssues } from "./live-generation-report-lineage-secret";
 import { slideCoverageIssues } from "./live-generation-report-slide-coverage";
 
 export type LiveGenerationReportLineageIssueCode =
@@ -186,6 +187,7 @@ function slideIssues(
             message: "Project export content contains secret-like text.",
           },
         ]),
+    ...lineageFieldSecretIssues(slide),
   ];
 }
 

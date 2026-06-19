@@ -174,6 +174,28 @@ describe("live generation report lineage", () => {
     ]);
   });
 
+  test("blocks secret-like text inside sidecar lineage fields", () => {
+    // Given
+    const [base] = completeLineage();
+    if (!base) throw new Error("Expected lineage fixture.");
+
+    // When
+    const validation = validateLiveGenerationReportLineage({
+      executionMode: "production",
+      slides: [
+        {
+          ...base,
+          sourceIds: ["src_001", "OPENAI_API_KEY=sk-live-secret123"],
+        },
+      ],
+    });
+
+    // Then
+    expect(validation.kind).toBe("blocked");
+    if (validation.kind !== "blocked") return;
+    expect(validation.issues.map((issue) => issue.code)).toEqual(["secret_leak"]);
+  });
+
   test("blocks duplicate slide rows and reused image request evidence", () => {
     // Given
     const [base] = completeLineage();

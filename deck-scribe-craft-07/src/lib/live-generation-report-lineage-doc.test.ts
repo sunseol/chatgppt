@@ -34,6 +34,7 @@ describe("live generation report lineage documentation", () => {
     expect(generationReportLineage.includes("mock_lineage_contamination")).toBe(true);
     expect(generationReportLineage.includes("exported project content")).toBe(true);
     expect(generationReportLineage.includes("report markdown")).toBe(true);
+    expect(generationReportLineage.includes("sidecar lineage")).toBe(true);
     expect(generationReportLineage.includes("final-export-report-gate.ts")).toBe(true);
     expect(generationReportLineage.includes("secret_leak")).toBe(true);
   });
