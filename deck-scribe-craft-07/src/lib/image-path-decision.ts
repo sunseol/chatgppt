@@ -15,6 +15,7 @@ export type ImagePathBlockerCode =
   | "missing_required_permissions"
   | "missing_real_image_artifact"
   | "missing_binary_artifact"
+  | "invalid_binary_artifact_path"
   | "invalid_image_binary"
   | "artifact_provider_mismatch"
   | "artifact_model_mismatch"
@@ -146,14 +147,7 @@ function artifactBlockers(input: {
             message: "The successful image artifact must contain PNG binary data.",
           },
         ]),
-    ...(input.binaryArtifactPath?.trim()
-      ? []
-      : [
-          {
-            code: "missing_binary_artifact" as const,
-            message: "The successful image artifact must be written to artifact storage.",
-          },
-        ]),
+    ...binaryArtifactPathBlockers(input.binaryArtifactPath),
     ...(artifact.providerId === "openaiImage" && !artifact.request?.requestId
       ? [
           {
@@ -163,6 +157,30 @@ function artifactBlockers(input: {
         ]
       : []),
   ];
+}
+
+function binaryArtifactPathBlockers(
+  binaryArtifactPath: string | undefined,
+): readonly ImagePathBlocker[] {
+  if (!binaryArtifactPath?.trim()) {
+    return [
+      {
+        code: "missing_binary_artifact",
+        message: "The successful image artifact must be written to artifact storage.",
+      },
+    ];
+  }
+  if (isVersionedProjectImagePath(binaryArtifactPath)) return [];
+  return [
+    {
+      code: "invalid_binary_artifact_path",
+      message: "The successful image artifact path must point to versioned project image storage.",
+    },
+  ];
+}
+
+function isVersionedProjectImagePath(path: string): boolean {
+  return /^projects\/[A-Za-z0-9_-]+\/slides\/images\/slide_\d{3}\.v\d+\.png$/.test(path);
 }
 
 function decisionMetadataBlockers(input: {

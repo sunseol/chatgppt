@@ -22,7 +22,7 @@ describe("image path decision record", () => {
       decidedAt: 1_789_700_000,
       feasibility,
       successfulArtifact: realImageArtifact(),
-      binaryArtifactPath: "artifacts/images/slide_001.png",
+      binaryArtifactPath: BINARY_ARTIFACT_PATH,
       billingOwner: "openai_api_project",
       requiredPermissions: ["images.generate", "model:gpt-image-2"],
       organizationVerification: "verified",
@@ -33,7 +33,7 @@ describe("image path decision record", () => {
     expect(record.providerId).toBe("openaiImage");
     expect(record.authMode).toBe("openaiApiKey");
     expect(record.model).toBe("gpt-image-2");
-    expect(record.binaryArtifactPath).toBe("artifacts/images/slide_001.png");
+    expect(record.binaryArtifactPath).toBe(BINARY_ARTIFACT_PATH);
     expect(record.fixtureFallbackAllowed).toBe(false);
     expect(getProductionImageProviderChoices(record)).toEqual(["openaiImage"]);
   });
@@ -104,7 +104,7 @@ describe("image path decision record", () => {
       decidedAt: 1_789_700_003,
       feasibility,
       successfulArtifact: { ...realImageArtifact(), providerId: "codex" },
-      binaryArtifactPath: "artifacts/images/slide_001.png",
+      binaryArtifactPath: BINARY_ARTIFACT_PATH,
       billingOwner: "openai_api_project",
       requiredPermissions: ["images.generate", "model:gpt-image-2"],
       organizationVerification: "verified",
@@ -133,7 +133,7 @@ describe("image path decision record", () => {
         ...realImageArtifact(),
         imageDataUrl: "data:image/png;base64,ZmFrZQ==",
       },
-      binaryArtifactPath: "artifacts/images/slide_001.png",
+      binaryArtifactPath: BINARY_ARTIFACT_PATH,
       billingOwner: "openai_api_project",
       requiredPermissions: ["images.generate", "model:gpt-image-2"],
       organizationVerification: "verified",
@@ -142,6 +142,34 @@ describe("image path decision record", () => {
     // Then
     expect(record.status).toBe("blocked");
     expect(record.blockers.map((blocker) => blocker.code)).toEqual(["invalid_image_binary"]);
+    expect(getProductionImageProviderChoices(record)).toEqual([]);
+  });
+
+  test("rejects binary artifact paths outside versioned project image storage", () => {
+    // Given
+    const feasibility = decideImageProviderFeasibility({
+      codexImageCapability: "unknown",
+      apiCredential: "available",
+      organizationVerification: "verified",
+    });
+
+    // When
+    const record = createImagePathDecisionRecord({
+      decisionId: "image_path_fixture_path",
+      decidedAt: 1_789_700_008,
+      feasibility,
+      successfulArtifact: realImageArtifact(),
+      binaryArtifactPath: "fixtures/mock-slide.png",
+      billingOwner: "openai_api_project",
+      requiredPermissions: ["images.generate", "model:gpt-image-2"],
+      organizationVerification: "verified",
+    });
+
+    // Then
+    expect(record.status).toBe("blocked");
+    expect(record.blockers.map((blocker) => blocker.code)).toEqual([
+      "invalid_binary_artifact_path",
+    ]);
     expect(getProductionImageProviderChoices(record)).toEqual([]);
   });
 
@@ -165,7 +193,7 @@ describe("image path decision record", () => {
           model: "gpt-image-old",
         },
       },
-      binaryArtifactPath: "artifacts/images/slide_001.png",
+      binaryArtifactPath: BINARY_ARTIFACT_PATH,
       billingOwner: "openai_api_project",
       requiredPermissions: ["images.generate", "model:gpt-image-2"],
       organizationVerification: "verified",
@@ -191,7 +219,7 @@ describe("image path decision record", () => {
       decidedAt: 1_789_700_005,
       feasibility,
       successfulArtifact: realImageArtifact(),
-      binaryArtifactPath: "artifacts/images/slide_001.png",
+      binaryArtifactPath: BINARY_ARTIFACT_PATH,
       billingOwner: " ",
       requiredPermissions: [],
       organizationVerification: "verified",
@@ -220,7 +248,7 @@ describe("image path decision record", () => {
       decidedAt: 1_789_700_007,
       feasibility,
       successfulArtifact: realImageArtifact(),
-      binaryArtifactPath: "artifacts/images/slide_001.png",
+      binaryArtifactPath: BINARY_ARTIFACT_PATH,
       billingOwner: "openai_api_project",
       requiredPermissions: ["images.generate", "model:gpt-image-2"],
       organizationVerification: "unknown",
@@ -234,6 +262,8 @@ describe("image path decision record", () => {
     expect(getProductionImageProviderChoices(record)).toEqual([]);
   });
 });
+
+const BINARY_ARTIFACT_PATH = "projects/project_001/slides/images/slide_001.v1.png";
 
 function realImageArtifact(): SlideImageArtifact {
   return {
