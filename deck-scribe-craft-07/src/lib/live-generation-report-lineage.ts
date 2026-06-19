@@ -204,12 +204,30 @@ function productionContaminationIssues(
           },
         ]
       : []),
+    ...(hasMockExportMarker(slide.projectFileContent)
+      ? [
+          {
+            code: "mock_lineage_contamination" as const,
+            slideNumber: slide.slideNumber,
+            message: "Production project export cannot retain mock-mode markers.",
+          },
+        ]
+      : []),
     ...(slide.fixture
       ? [
           {
             code: "fixture_lineage_contamination" as const,
             slideNumber: slide.slideNumber,
             message: "Production live report cannot include fixture artifacts.",
+          },
+        ]
+      : []),
+    ...(hasFixtureExportMarker(slide.projectFileContent)
+      ? [
+          {
+            code: "fixture_lineage_contamination" as const,
+            slideNumber: slide.slideNumber,
+            message: "Production project export cannot retain fixture markers.",
           },
         ]
       : []),
@@ -226,6 +244,14 @@ function isSha256Digest(value: string): boolean {
 
 function imageArtifactMatchesSlide(imageArtifactId: string, slideNumber: number): boolean {
   return !imageArtifactId.trim() || imageArtifactId.includes(`_slide_${pad3(slideNumber)}_`);
+}
+
+function hasMockExportMarker(value: string): boolean {
+  return /\bMOCK MODE\b/i.test(value) || /"providerKind"\s*:\s*"mock"/i.test(value);
+}
+
+function hasFixtureExportMarker(value: string): boolean {
+  return /"fixture"\s*:\s*true/i.test(value) || /\bfixtures\//i.test(value);
 }
 
 function pad3(value: number): string {

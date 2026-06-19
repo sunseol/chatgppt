@@ -30,6 +30,7 @@ describe("live generation report lineage documentation", () => {
     expect(generationReportLineage.includes("invalid_export_hash")).toBe(true);
     expect(generationReportLineage.includes("export_compositor_mismatch")).toBe(true);
     expect(generationReportLineage.includes("mock_lineage_contamination")).toBe(true);
+    expect(generationReportLineage.includes("exported project content")).toBe(true);
     expect(generationReportLineage.includes("secret_leak")).toBe(true);
   });
 });

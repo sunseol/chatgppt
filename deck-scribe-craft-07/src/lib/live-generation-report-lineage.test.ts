@@ -120,6 +120,31 @@ describe("live generation report lineage", () => {
     expect(validation.issues.map((issue) => issue.code)).toEqual(["image_artifact_slide_mismatch"]);
   });
 
+  test("blocks mock or fixture markers inside exported project content", () => {
+    // Given
+    const [base] = completeLineage();
+    if (!base) throw new Error("Expected lineage fixture.");
+
+    // When
+    const validation = validateLiveGenerationReportLineage({
+      executionMode: "production",
+      slides: [
+        {
+          ...base,
+          projectFileContent: '{"banner":"MOCK MODE","assetPath":"fixtures/report.json"}',
+        },
+      ],
+    });
+
+    // Then
+    expect(validation.kind).toBe("blocked");
+    if (validation.kind !== "blocked") return;
+    expect(validation.issues.map((issue) => issue.code)).toEqual([
+      "mock_lineage_contamination",
+      "fixture_lineage_contamination",
+    ]);
+  });
+
   test("blocks duplicate slide rows and reused image request evidence", () => {
     // Given
     const [base] = completeLineage();
