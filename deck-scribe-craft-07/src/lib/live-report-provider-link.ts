@@ -7,6 +7,7 @@ export type LiveReportProviderLinkIssueCode =
   | "text_provider_auth_mismatch"
   | "image_provider_auth_mismatch"
   | "text_provider_lineage_mismatch"
+  | "text_prompt_version_mismatch"
   | "image_provider_lineage_mismatch";
 
 export type LiveReportProviderLinkIssue = {
@@ -53,23 +54,34 @@ function textProviderLinkIssues(
       ),
     ];
   }
-  if (
+  const lineageMatches =
     artifact.executionMode === "production" &&
     artifact.providerKind === slide.textProviderKind &&
     artifact.authMode === "codex_session" &&
     artifact.turnId === slide.textTurnId &&
     artifact.threadId === slide.textThreadId &&
-    artifact.fixture === slide.fixture
-  ) {
-    return [];
-  }
+    artifact.fixture === slide.fixture;
   return [
-    issue(
-      "text_provider_lineage_mismatch",
-      slide,
-      slide.textArtifactId,
-      "Live report text lineage must match provider turn provenance.",
-    ),
+    ...(lineageMatches
+      ? []
+      : [
+          issue(
+            "text_provider_lineage_mismatch",
+            slide,
+            slide.textArtifactId,
+            "Live report text lineage must match provider turn provenance.",
+          ),
+        ]),
+    ...(artifact.promptVersion === slide.textPromptVersion
+      ? []
+      : [
+          issue(
+            "text_prompt_version_mismatch",
+            slide,
+            slide.textArtifactId,
+            "Live report text prompt version must match provider provenance.",
+          ),
+        ]),
   ];
 }
 

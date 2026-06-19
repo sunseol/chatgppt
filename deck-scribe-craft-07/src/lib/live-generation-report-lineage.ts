@@ -3,12 +3,14 @@ import type { ExecutionMode, ProviderArtifactProvenance } from "./provider-prove
 import { lineageReferenceIssues } from "./live-generation-report-reference-uniqueness";
 import { lineageFieldSecretIssues } from "./live-generation-report-lineage-secret";
 import { slideCoverageIssues } from "./live-generation-report-slide-coverage";
+import { textPromptIssues } from "./live-generation-report-text-prompt";
 
 export type LiveGenerationReportLineageIssueCode =
   | "missing_source_trace"
   | "missing_slide_lineage"
   | "duplicate_slide_lineage"
   | "missing_text_turn"
+  | "missing_text_prompt_version"
   | "missing_text_artifact"
   | "missing_image_artifact"
   | "image_artifact_slide_mismatch"
@@ -39,6 +41,7 @@ export interface LiveSlideReportLineage {
   readonly textProviderKind: ProviderArtifactProvenance["providerKind"];
   readonly textTurnId?: string;
   readonly textThreadId?: string;
+  readonly textPromptVersion: string;
   readonly imageArtifactId: string;
   readonly imageProviderKind: ProviderArtifactProvenance["providerKind"];
   readonly imageRequestId?: string;
@@ -59,7 +62,9 @@ export function formatLiveGenerationReportLineage(
       `  - sources ${joinOrNone(slide.sourceIds)}`,
       `  - text turn ${slide.textTurnId ?? "missing"} · thread ${
         slide.textThreadId ?? "missing"
-      } · artifact ${slide.textArtifactId} · ${slide.textProviderKind}`,
+      } · prompt ${slide.textPromptVersion || "missing"} · artifact ${slide.textArtifactId} · ${
+        slide.textProviderKind
+      }`,
       `  - image request ${slide.imageRequestId ?? "missing"} · artifact ${
         slide.imageArtifactId
       } · ${slide.imageProviderKind}`,
@@ -105,6 +110,7 @@ function slideIssues(
             message: "Live text artifacts require turn and thread ids.",
           },
         ]),
+    ...textPromptIssues(slide),
     ...(slide.textArtifactId.trim()
       ? []
       : [
@@ -240,9 +246,7 @@ function joinOrNone(values: readonly string[]): string {
   return values.length === 0 ? "none" : values.join(", ");
 }
 
-function isSha256Digest(value: string): boolean {
-  return /^sha256:[a-f0-9]{64}$/.test(value);
-}
+const isSha256Digest = (value: string): boolean => /^sha256:[a-f0-9]{64}$/.test(value);
 
 function imageArtifactMatchesSlide(imageArtifactId: string, slideNumber: number): boolean {
   return !imageArtifactId.trim() || imageArtifactId.includes(`_slide_${pad3(slideNumber)}_`);
@@ -252,9 +256,8 @@ function hasMockExportMarker(value: string): boolean {
   return /\bMOCK MODE\b/i.test(value) || /"providerKind"\s*:\s*"mock"/i.test(value);
 }
 
-function hasFixtureExportMarker(value: string): boolean {
-  return /"fixture"\s*:\s*true/i.test(value) || /\bfixtures\//i.test(value);
-}
+const hasFixtureExportMarker = (value: string): boolean =>
+  /"fixture"\s*:\s*true/i.test(value) || /\bfixtures\//i.test(value);
 
 function pad3(value: number): string {
   return String(value).padStart(3, "0");

@@ -16,6 +16,7 @@ describe("generation report live lineage", () => {
     expect(report.includes("## Live Slide Lineage")).toBe(true);
     expect(report.includes("sources src_001")).toBe(true);
     expect(report.includes("text turn turn_text_001")).toBe(true);
+    expect(report.includes("prompt deck_plan@v1")).toBe(true);
     expect(report.includes("image request img_req_001")).toBe(true);
     expect(report.includes("prompt slide_generation@v1")).toBe(true);
   });
@@ -45,6 +46,7 @@ function liveReportLineageFixture(): LiveSlideReportLineage {
     textProviderKind: "codex",
     textTurnId: "turn_text_001",
     textThreadId: "thread_project_001",
+    textPromptVersion: "deck_plan@v1",
     imageArtifactId: "project_001_image_slide_001_v1",
     imageProviderKind: "openaiImage",
     imageRequestId: "img_req_001",

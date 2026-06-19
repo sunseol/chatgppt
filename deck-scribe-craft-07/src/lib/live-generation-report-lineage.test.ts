@@ -18,6 +18,7 @@ describe("live generation report lineage", () => {
     expect(section.includes("slide 1")).toBe(true);
     expect(section.includes("sources src_001, src_002")).toBe(true);
     expect(section.includes("text turn turn_plan_001")).toBe(true);
+    expect(section.includes("prompt deck_plan@v1")).toBe(true);
     expect(section.includes("image request img_req_001")).toBe(true);
     expect(section.includes("prompt slide_generation@v1")).toBe(true);
     expect(section.includes("fixture no")).toBe(true);
@@ -124,6 +125,23 @@ describe("live generation report lineage", () => {
       "missing_text_turn",
       "missing_image_request",
     ]);
+  });
+
+  test("blocks missing text prompt version evidence", () => {
+    // Given
+    const [base] = completeLineage();
+    if (!base) throw new Error("Expected lineage fixture.");
+
+    // When
+    const validation = validateLiveGenerationReportLineage({
+      executionMode: "production",
+      slides: [{ ...base, textPromptVersion: " " }],
+    });
+
+    // Then
+    expect(validation.kind).toBe("blocked");
+    if (validation.kind !== "blocked") return;
+    expect(validation.issues.map((issue) => issue.code)).toEqual(["missing_text_prompt_version"]);
   });
 
   test("blocks image artifacts that point at a different slide", () => {
@@ -235,6 +253,7 @@ function completeLineage(): readonly LiveSlideReportLineage[] {
       textProviderKind: "codex",
       textTurnId: "turn_plan_001",
       textThreadId: "thread_project_001",
+      textPromptVersion: "deck_plan@v1",
       imageArtifactId: "project_001_image_slide_001_v1",
       imageProviderKind: "openaiImage",
       imageRequestId: "img_req_001",

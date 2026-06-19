@@ -110,6 +110,7 @@ function liveReportLineageFixture(): LiveSlideReportLineage {
     textProviderKind: "codex",
     textTurnId: "turn_text_001",
     textThreadId: "thread_project_001",
+    textPromptVersion: "deck_plan@v1",
     imageArtifactId: "project_001_image_slide_001_v1",
     imageProviderKind: "openaiImage",
     imageRequestId: "img_req_001",
