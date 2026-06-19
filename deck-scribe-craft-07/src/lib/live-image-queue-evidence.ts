@@ -7,6 +7,7 @@ export type LiveImageQueueEvidenceIssueCode =
   | "queue_result_blocked"
   | "retry_job_not_found"
   | "retry_attempt_count_mismatch"
+  | "retry_attempt_sequence_mismatch"
   | "retry_prompt_usage_missing"
   | "retry_bundle_mismatch"
   | "retry_non_transient_failure"
@@ -73,16 +74,26 @@ function retryAttemptIssues(
   jobs: ReadyQueueResult["jobs"],
   retryProvenance: ReadyQueueResult["retryProvenance"],
 ): readonly LiveImageQueueEvidenceIssue[] {
-  return jobs.flatMap((job) => {
-    const retryCount = retryProvenance.filter((event) => event.jobId === job.id).length;
+  return jobs.flatMap((job): readonly LiveImageQueueEvidenceIssue[] => {
+    const retryEvents = retryProvenance.filter((event) => event.jobId === job.id);
+    const retryCount = retryEvents.length;
     const expectedRetryCount = Math.max(0, job.attempt - 1);
-    return retryCount === expectedRetryCount
+    if (retryCount !== expectedRetryCount) {
+      return [
+        {
+          code: "retry_attempt_count_mismatch" as const,
+          jobId: job.id,
+          message: `Retry evidence for ${job.id} does not match final attempt ${job.attempt}.`,
+        },
+      ];
+    }
+    return retryEvents.every((event, index) => event.attempt === index + 1)
       ? []
       : [
           {
-            code: "retry_attempt_count_mismatch" as const,
+            code: "retry_attempt_sequence_mismatch" as const,
             jobId: job.id,
-            message: `Retry evidence for ${job.id} does not match final attempt ${job.attempt}.`,
+            message: `Retry evidence for ${job.id} must preserve attempts 1 through ${expectedRetryCount}.`,
           },
         ];
   });

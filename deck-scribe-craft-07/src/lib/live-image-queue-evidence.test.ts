@@ -91,6 +91,47 @@ describe("live image queue evidence", () => {
     ]);
   });
 
+  test("blocks retry evidence that repeats an attempt instead of preserving sequence", () => {
+    // Given
+    const result = readyQueueResult({
+      jobs: [job({ id: "job_retry", attempt: 3 })],
+      promptUsages: [
+        createPromptUsageRecord({
+          promptId: "slide_generation",
+          artifactId: "bundle_live_001",
+          jobId: "job_retry",
+          recordedAt: 1_789_500_000,
+        }),
+      ],
+      retryProvenance: [
+        {
+          jobId: "job_retry",
+          bundleId: "bundle_live_001",
+          slideNumber: 1,
+          attempt: 1,
+          delayMs: 500,
+          failureKind: "rate_limit",
+          message: "rate limited",
+        },
+        {
+          jobId: "job_retry",
+          bundleId: "bundle_live_001",
+          slideNumber: 1,
+          attempt: 1,
+          delayMs: 1_000,
+          failureKind: "server",
+          message: "server error",
+        },
+      ],
+    });
+
+    // When
+    const validation = evaluateLiveImageQueueEvidence(result);
+
+    // Then
+    expect(issueCodes(validation)).toEqual(["retry_attempt_sequence_mismatch"]);
+  });
+
   test("blocks cancellation failures without a cancelled provider job", () => {
     // Given
     const result = readyQueueResult({
