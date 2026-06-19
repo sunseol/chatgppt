@@ -9,24 +9,18 @@ import {
 
 describe("live interruption matrix", () => {
   test("passes when interrupted jobs recover safely and preserve completed artifacts", () => {
-    // Given
     const matrix = completeMatrix();
 
-    // When
     const result = evaluateLiveInterruptionMatrix(matrix);
 
-    // Then
     expect(result).toEqual({ kind: "ready" });
   });
 
   test("summarizes the interruption matrix for the release evidence report", () => {
-    // Given
     const matrix = completeMatrix();
 
-    // When
     const summary = formatLiveInterruptionMatrixSummary(matrix);
 
-    // Then
     expect(summary.includes("DF-243 Live Interruption Matrix")).toBe(true);
     expect(summary.includes("text_turn_shutdown: failed")).toBe(true);
     expect(summary.includes("image_partial_resume: interrupted")).toBe(true);
@@ -34,7 +28,6 @@ describe("live interruption matrix", () => {
   });
 
   test("blocks unsafe restart, resume, cancellation, and artifact approval states", () => {
-    // Given
     const matrix = completeMatrix({
       reportPath: "",
       scenarios: [
@@ -59,10 +52,8 @@ describe("live interruption matrix", () => {
       ],
     });
 
-    // When
     const result = evaluateLiveInterruptionMatrix(matrix);
 
-    // Then
     expect(result.kind).toBe("blocked");
     if (result.kind !== "blocked") return;
     expect(result.issues.map((issue) => issue.code)).toEqual([
@@ -77,7 +68,6 @@ describe("live interruption matrix", () => {
   });
 
   test("blocks cancelled jobs that complete after cancellation", () => {
-    // Given
     const matrix = completeMatrix({
       scenarios: LIVE_INTERRUPTION_SCENARIOS.map((id) =>
         id === "cancel_job"
@@ -91,10 +81,8 @@ describe("live interruption matrix", () => {
       ),
     });
 
-    // When
     const result = evaluateLiveInterruptionMatrix(matrix);
 
-    // Then
     expect(result.kind).toBe("blocked");
     if (result.kind !== "blocked") return;
     expect(result.issues.map((issue) => issue.code)).toEqual([
@@ -104,7 +92,6 @@ describe("live interruption matrix", () => {
   });
 
   test("blocks cancellation records without persisted cancel signal evidence", () => {
-    // Given
     const matrix = completeMatrix({
       scenarios: LIVE_INTERRUPTION_SCENARIOS.map((id) =>
         id === "cancel_job"
@@ -116,17 +103,36 @@ describe("live interruption matrix", () => {
       ),
     });
 
-    // When
     const result = evaluateLiveInterruptionMatrix(matrix);
 
-    // Then
     expect(result.kind).toBe("blocked");
     if (result.kind !== "blocked") return;
     expect(result.issues.map((issue) => issue.code)).toEqual(["missing_cancel_signal_evidence"]);
   });
 
+  test("blocks cancel signal evidence that belongs to another live job", () => {
+    const matrix = completeMatrix({
+      scenarios: LIVE_INTERRUPTION_SCENARIOS.map((id) =>
+        id === "cancel_job"
+          ? scenario(id, {
+              liveJobId: "live_job_cancel_job",
+              cancellationRecorded: true,
+              cancelSignalEvidencePath: "recovery/cancel-job-signal.json",
+              cancelSignalJobId: "live_job_other",
+            })
+          : scenario(id),
+      ),
+    });
+
+    const result = evaluateLiveInterruptionMatrix(matrix);
+
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual(["cancel_signal_job_mismatch"]);
+    expect(result.issues[0]?.refs).toEqual(["live_job_other"]);
+  });
+
   test("blocks synthetic interruption evidence without live job snapshots", () => {
-    // Given
     const matrix = completeMatrix({
       scenarios: LIVE_INTERRUPTION_SCENARIOS.map((id) =>
         scenario(id, {
@@ -138,10 +144,8 @@ describe("live interruption matrix", () => {
       ),
     });
 
-    // When
     const result = evaluateLiveInterruptionMatrix(matrix);
 
-    // Then
     expect(result.kind).toBe("blocked");
     if (result.kind !== "blocked") return;
     expect(result.issues.map((issue) => issue.code)).toEqual([
@@ -153,7 +157,6 @@ describe("live interruption matrix", () => {
   });
 
   test("blocks fixture and test interruption evidence masquerading as live jobs", () => {
-    // Given
     const matrix = completeMatrix({
       scenarios: LIVE_INTERRUPTION_SCENARIOS.map((id) =>
         scenario(id, {
@@ -164,10 +167,8 @@ describe("live interruption matrix", () => {
       ),
     });
 
-    // When
     const result = evaluateLiveInterruptionMatrix(matrix);
 
-    // Then
     expect(result.kind).toBe("blocked");
     if (result.kind !== "blocked") return;
     expect(result.issues.map((issue) => issue.code)).toEqual([
@@ -177,7 +178,6 @@ describe("live interruption matrix", () => {
   });
 
   test("blocks interrupted artifact gate evidence that did not exercise approval and export gates", () => {
-    // Given
     const matrix = completeMatrix({
       scenarios: LIVE_INTERRUPTION_SCENARIOS.map((id) =>
         id === "interrupted_artifact_gate"
@@ -191,10 +191,8 @@ describe("live interruption matrix", () => {
       ),
     });
 
-    // When
     const result = evaluateLiveInterruptionMatrix(matrix);
 
-    // Then
     expect(result.kind).toBe("blocked");
     if (result.kind !== "blocked") return;
     expect(result.issues.map((issue) => issue.code)).toEqual([
@@ -228,6 +226,7 @@ function scenario(
     recoverySnapshotScope: "app_storage",
     cancellationRecorded: true,
     ...(id === "cancel_job" ? { cancelSignalEvidencePath: "recovery/cancel-job-signal.json" } : {}),
+    ...(id === "cancel_job" ? { cancelSignalJobId: "live_job_cancel_job" } : {}),
     pendingImageArtifactIds: id === "image_partial_resume" ? ["img_003", "img_004"] : [],
     resumedArtifactIds: id === "image_partial_resume" ? ["img_003", "img_004"] : [],
     cancelledJobStillRunning: false,

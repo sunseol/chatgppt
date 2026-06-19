@@ -29,6 +29,17 @@ export function scenarioEvidenceDetailIssues(
           !isPersistedJsonEvidencePath(scenario.cancelSignalEvidencePath)),
     )
     .map((scenario) => scenario.id);
+  const cancelSignalJobMismatches = scenarios
+    .filter(
+      (scenario) =>
+        scenario.id === "cancel_job" &&
+        scenario.liveJobId.trim().length > 0 &&
+        !hasSyntheticEvidenceMarker(scenario.liveJobId) &&
+        scenario.cancellationRecorded &&
+        isPersistedJsonEvidencePath(scenario.cancelSignalEvidencePath) &&
+        scenario.cancelSignalJobId !== scenario.liveJobId,
+    )
+    .map((scenario) => scenario.cancelSignalJobId ?? "missing");
   const missingApprovalGateChecks = scenarios
     .filter(
       (scenario) => scenario.id === "interrupted_artifact_gate" && !scenario.approvalGateChecked,
@@ -75,6 +86,15 @@ export function scenarioEvidenceDetailIssues(
             "missing_cancel_signal_evidence",
             "Cancellation scenario requires persisted cancel signal evidence.",
             missingCancelSignals,
+          ),
+        ]),
+    ...(cancelSignalJobMismatches.length === 0
+      ? []
+      : [
+          issue(
+            "cancel_signal_job_mismatch",
+            "Cancellation signal evidence must target the same live job id.",
+            cancelSignalJobMismatches,
           ),
         ]),
     ...(missingApprovalGateChecks.length === 0

@@ -57,7 +57,7 @@ Scope: DF-200 audit of the current DeckForge implementation before Live Initial 
 5. Evidence extraction and approval have local capture, claim-to-source, review-action, persisted evidence-reference, and persisted provenance contracts, but they are not yet populated by app-produced live Research Pack artifacts.
 6. Layout and design generation still use local deterministic output.
 7. Real image generation has not yet produced five request-metadata-bearing binary artifacts from the app surface.
-8. Binary image artifact storage, five-background batch validation, queue retry/cancellation/resume controls, interruption recovery validation, usage/cost summary validation, compositor review validation, full-slide regeneration candidate validation, DF-241 Golden Path evidence validation, DF-242 Live benchmark validation, and DF-246 manual QA evidence validation are available but still need live app-surface evidence.
+8. Binary image artifact storage, five-background batch validation, queue retry/cancellation/resume controls, interruption recovery and same-job cancel signal validation, usage/cost summary validation, compositor review validation, full-slide regeneration candidate validation, DF-241 Golden Path evidence validation, DF-242 Live benchmark validation, and DF-246 manual QA evidence validation are available but still need live app-surface evidence.
 9. Final export can produce internal packages, and production packaging evidence is locally gated, but signed/notarized production evidence, fresh macOS validation, and the real Golden Path bundle are absent.
 10. Manual live QA and clean-machine validation have not been executed.
 
