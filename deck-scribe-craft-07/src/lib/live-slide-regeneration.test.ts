@@ -42,6 +42,56 @@ describe("live full-slide regeneration", () => {
     expect(result.request.slideSpecHash.startsWith("sha256:")).toBe(true);
   });
 
+  test("blocks regeneration requests without explicit keep, change, and original background evidence", () => {
+    // Given
+    const revisionRequest = {
+      ...revisionRequestFixture(),
+      mustKeep: ["title text"],
+      mustChange: ["title text"],
+    };
+
+    // When
+    const result = buildLiveSlideRegenerationRequest({
+      revisionRequest,
+      deckContextId: "deckctx_001",
+      designSystemId: "design_001",
+      slideSpec: slideSpecFixture(),
+      currentSlide: approvedSlideFixture(),
+      originalBackgroundArtifactId: "",
+      originalBackgroundRequestId: "",
+    });
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code).join("|")).toBe(
+      "revision_targets_overlap|missing_original_background_artifact|missing_original_background_request",
+    );
+  });
+
+  test("blocks regeneration requests with empty keep and change targets", () => {
+    // Given
+    const revisionRequest = { ...revisionRequestFixture(), mustKeep: [], mustChange: [] };
+
+    // When
+    const result = buildLiveSlideRegenerationRequest({
+      revisionRequest,
+      deckContextId: "deckctx_001",
+      designSystemId: "design_001",
+      slideSpec: slideSpecFixture(),
+      currentSlide: approvedSlideFixture(),
+      originalBackgroundArtifactId: "project_001_image_slide_003_v1",
+      originalBackgroundRequestId: "img_req_original",
+    });
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code).join("|")).toBe(
+      "missing_must_keep_targets|missing_must_change_targets",
+    );
+  });
+
   test("stores a new background artifact version and keeps the approved slide until approval", async () => {
     // Given
     const stored = await storedBackgrounds();

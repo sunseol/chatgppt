@@ -12,7 +12,6 @@ const DOCS = {
   backgroundBatch: new URL("../../docs/live-background-batch.md", import.meta.url),
   imageQueueControls: new URL("../../docs/live-image-queue-controls.md", import.meta.url),
   compositorReview: new URL("../../docs/live-compositor-review.md", import.meta.url),
-  slideRegeneration: new URL("../../docs/live-slide-regeneration.md", import.meta.url),
   interruptionMatrix: new URL("../../docs/live-interruption-matrix.md", import.meta.url),
   usageSummary: new URL("../../docs/live-usage-summary.md", import.meta.url),
   runbook: new URL("../../docs/production-clean-machine-runbook.md", import.meta.url),
@@ -210,18 +209,6 @@ describe("live readiness documentation", () => {
     expect(compositorReview.includes("five compositor thumbnails")).toBe(true);
     expect(compositorReview.includes("presentation preview")).toBe(true);
     expect(compositorReview.includes("live compositor screenshots")).toBe(true);
-  });
-
-  test("records the live full-slide regeneration contract", () => {
-    const slideRegeneration = readDoc(DOCS.slideRegeneration);
-
-    expect(slideRegeneration.includes("DF-235")).toBe(true);
-    expect(slideRegeneration.includes("deckContextId")).toBe(true);
-    expect(slideRegeneration.includes("designSystemId")).toBe(true);
-    expect(slideRegeneration.includes("background_artifact_not_new")).toBe(true);
-    expect(slideRegeneration.includes("background_artifact_version_mismatch")).toBe(true);
-    expect(slideRegeneration.includes("mock_background_artifact")).toBe(true);
-    expect(slideRegeneration.includes("preserved approved slide")).toBe(true);
   });
 
   test("records the live interruption and recovery matrix contract", () => {

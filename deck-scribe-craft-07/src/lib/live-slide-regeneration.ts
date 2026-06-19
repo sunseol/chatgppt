@@ -2,12 +2,18 @@ import { hashContent } from "./artifacts";
 import type { GeneratedSlide, SlideSpec } from "./deck-types";
 import type { StoredSlideImageArtifact } from "./image-artifact-store";
 import { candidateIssues } from "./live-slide-regeneration-candidate";
+import { requestIssues } from "./live-slide-regeneration-request-validation";
 import type { SlideRevisionRequest } from "./slide-revision-model";
 
 export type LiveSlideRegenerationIssueCode =
+  | "missing_must_keep_targets"
+  | "missing_must_change_targets"
+  | "revision_targets_overlap"
   | "slide_spec_mismatch"
   | "deck_context_mismatch"
   | "design_system_mismatch"
+  | "missing_original_background_artifact"
+  | "missing_original_background_request"
   | "mock_background_artifact"
   | "background_artifact_not_new"
   | "background_artifact_version_mismatch"
@@ -81,6 +87,7 @@ export function buildLiveSlideRegenerationRequest(input: {
   readonly originalBackgroundRequestId: string;
 }): BuildLiveSlideRegenerationRequestResult {
   const issues = [
+    ...requestIssues(input),
     ...slideSpecIssues(input.revisionRequest, input.slideSpec, input.currentSlide),
     ...designSystemIssues(input.revisionRequest, input.designSystemId),
   ];
