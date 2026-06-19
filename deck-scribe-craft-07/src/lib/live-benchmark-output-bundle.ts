@@ -58,6 +58,11 @@ export function outputBundleIssues(
     runs,
     (run) => run.outputBundle.liveImageRequestIds,
   );
+  const duplicateGoldenPathReports = duplicatePassedArtifactRefs(runs, (run) =>
+    validEvidenceReportPath(run.outputBundle.goldenPathReportPath, "live_e2e_report.md")
+      ? [run.outputBundle.goldenPathReportPath]
+      : [],
+  );
   const missingGoldenPathEvidence = runs
     .filter((run) => run.status === "passed" && !hasGoldenPathEvidence(run.outputBundle))
     .map((run) => run.id);
@@ -156,6 +161,15 @@ export function outputBundleIssues(
             "duplicate_output_bundle_image_request",
             "Passed Live benchmark bundles must not reuse live image requests.",
             duplicateImageRequests,
+          ),
+        ]),
+    ...(duplicateGoldenPathReports.length === 0
+      ? []
+      : [
+          issue(
+            "duplicate_output_bundle_golden_path_report",
+            "Passed Live benchmark bundles must not reuse Golden Path report evidence.",
+            duplicateGoldenPathReports,
           ),
         ]),
     ...(missingGoldenPathEvidence.length === 0

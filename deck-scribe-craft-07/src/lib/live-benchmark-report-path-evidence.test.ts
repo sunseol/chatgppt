@@ -87,7 +87,7 @@ function passedRun(
       benchmarkId: id,
       packageArchiveSha256: PACKAGE_SHA,
       reportPath: `reports/${id}.md`,
-      goldenPathReportPath: "live_e2e_report.md",
+      goldenPathReportPath: `golden-path/${id}/live_e2e_report.md`,
       exportArtifactId: `${id}_export`,
       screenshotCount: 10,
       sourceCount: 3,

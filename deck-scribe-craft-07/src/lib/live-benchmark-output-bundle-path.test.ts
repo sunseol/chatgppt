@@ -57,7 +57,7 @@ function run(id: LiveBenchmarkId, status: "passed" | "failed"): LiveBenchmarkRun
       benchmarkId: id,
       packageArchiveSha256: PACKAGE_SHA,
       reportPath: `reports/${id}.md`,
-      goldenPathReportPath: "live_e2e_report.md",
+      goldenPathReportPath: `golden-path/${id}/live_e2e_report.md`,
       exportArtifactId: status === "passed" ? `${id}_export` : "",
       screenshotCount: status === "passed" ? 10 : 0,
       sourceCount: status === "passed" ? 3 : 0,

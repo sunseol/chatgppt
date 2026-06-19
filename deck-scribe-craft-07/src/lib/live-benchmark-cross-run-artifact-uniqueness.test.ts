@@ -47,6 +47,28 @@ describe("live benchmark cross-run artifact uniqueness", () => {
       "duplicate_output_bundle_image_request",
     ]);
   });
+
+  test("blocks passed benchmark runs that reuse one Golden Path report", () => {
+    const sharedReportPath = "golden-path/shared/live_e2e_report.md";
+    const result = evaluateLiveBenchmarkEvidence({
+      reportPath: "docs/live-benchmark-report.md",
+      packageArchiveSha256: PACKAGE_SHA,
+      runs: [
+        withGoldenPathReport(run("korean_business", "passed"), sharedReportPath),
+        withGoldenPathReport(run("market_research", "passed"), sharedReportPath),
+        run("chart_report", "passed"),
+        run("image_intro", "passed"),
+        run("revision_regeneration", "failed"),
+      ],
+    });
+
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "duplicate_output_bundle_golden_path_report",
+    ]);
+    expect(result.issues[0]?.refs).toEqual([`korean_business:market_research:${sharedReportPath}`]);
+  });
 });
 
 function run(
@@ -78,7 +100,7 @@ function run(
       benchmarkId: id,
       packageArchiveSha256: PACKAGE_SHA,
       reportPath: `reports/${id}.md`,
-      goldenPathReportPath: "live_e2e_report.md",
+      goldenPathReportPath: `golden-path/${id}/live_e2e_report.md`,
       exportArtifactId: status === "passed" ? `${id}_export` : "",
       screenshotCount: status === "passed" ? 10 : 0,
       sourceCount: status === "passed" ? 3 : 0,
@@ -87,5 +109,15 @@ function run(
       liveImageArtifactIds: status === "passed" ? liveImageArtifactIds : [],
       liveImageRequestIds: status === "passed" ? liveImageRequestIds : [],
     },
+  };
+}
+
+function withGoldenPathReport(
+  run: LiveBenchmarkRun,
+  goldenPathReportPath: string,
+): LiveBenchmarkRun {
+  return {
+    ...run,
+    outputBundle: { ...run.outputBundle, goldenPathReportPath },
   };
 }
