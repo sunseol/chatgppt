@@ -5,6 +5,7 @@ import type { DeckPlan, DeckProject, DesignSystem } from "./deck-types";
 import { DesignSystemSchema } from "./design-system";
 import type { DesktopProductionCodexAppServerJobInput } from "./desktop-codex-app-server-production-job";
 import type { DeckforgeTauriRuntime } from "./desktop-app-server-bridge";
+import { createLiveResearchDeckPlanInput } from "./live-research-approval-gate";
 import {
   DesignSystemOutputSchema,
   LayoutIROutputSchema,
@@ -38,6 +39,8 @@ export function deckPlanJob(
 ): DesktopProductionCodexAppServerJobInput<DeckPlan> {
   const brief = requireApprovedBrief(input.project);
   const research = requireApprovedResearch(input.project);
+  const deckPlanInput = createLiveResearchDeckPlanInput(research);
+  if (deckPlanInput === undefined) throw new DesktopLiveTextPipelineInvariantError("research");
   return {
     tauriRuntime: input.tauriRuntime,
     jobManager: input.jobManager,
@@ -48,7 +51,15 @@ export function deckPlanJob(
     promptVersion: "deck_plan_desktop@v1",
     inputArtifactIds: [brief.id, research.id],
     turnRequest: {
-      prompt: `${buildDeckPlanPrompt({ brief, research }).prompt}\n\nReturn JSON only: { "markdown": "..." }.`,
+      prompt: [
+        "# Live Research Approval Handoff",
+        `researchPackId: ${deckPlanInput.researchPackId}`,
+        `approvedResearchPackHash: ${deckPlanInput.approvedResearchPackHash}`,
+        "",
+        buildDeckPlanPrompt({ brief, research }).prompt,
+        "",
+        'Return JSON only: { "markdown": "..." }.',
+      ].join("\n"),
       outputSchema: DeckPlanOutputSchema,
       model: "gpt-5.4",
       networkAccess: false,

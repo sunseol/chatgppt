@@ -20,6 +20,7 @@ Status: partial local contract
 - `ResearchPack.provenanceLineage` persists provider lineage through Research Pack parsing and approved Research Pack artifacts.
 - `createLiveResearchDeckPlanInput` forwards only `researchPackId` and `approvedResearchPackHash` to the downstream live deck-plan input.
 - `src/lib/live-research-approval-action.ts` creates the production approval patch only after the live gate is ready, writes `ResearchPack.approvedHash`, returns the DF-214 deck-plan input containing `approvedResearchPackHash`, and creates an approved research artifact record at `projects/{projectId}/research/research.v{version}.json`.
+- `src/lib/desktop-live-text-pipeline-jobs.ts` includes the same `researchPackId` and `approvedResearchPackHash` in the live Deck Plan App Server prompt, so DF-214 receives the approved Research Pack hash as an actual turn input rather than only a local return value.
 
 ## Review UI contract
 
@@ -44,6 +45,7 @@ When the ready-state approval action runs, it records the approved research arti
 
 - `bun test src/lib/live-research-approval-gate.test.ts src/lib/live-research-source-capture-gate.test.ts` passes: 7 tests.
 - `bun test src/lib/live-research-approval-action.test.ts` passes: 2 tests.
+- `bun test src/lib/desktop-live-text-pipeline-workflow.test.ts` passes and locks the Deck Plan turn handoff prompt containing `approvedResearchPackHash`.
 - `bun test src/lib/research-review-actions.test.ts` passes: 2 tests.
 - `bun test src/lib/research-pack.test.ts` passes: 7 tests.
 - `bun test src/components/deck/ResearchStage.integration.test.tsx` passes: 5 tests.
