@@ -67,6 +67,31 @@ describe("live usage summary", () => {
     ]);
   });
 
+  test("blocks API-key image billing confirmation without persisted evidence", () => {
+    // Given
+    const stages = [
+      stage("generate", {
+        providerKind: "openaiImage",
+        usage: { imageCount: 1 },
+        imageBillingDisclosure: {
+          apiKeyRequired: true,
+          userConfirmed: true,
+          label: "API key billing confirmed",
+        },
+      }),
+    ];
+
+    // When
+    const result = evaluateLiveUsageSummary(stages);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "missing_image_billing_confirmation",
+    ]);
+  });
+
   test("blocks empty usage objects when provider usage was supplied", () => {
     // Given
     const stages = [
@@ -101,6 +126,7 @@ describe("live usage summary", () => {
             apiKeyRequired: true,
             userConfirmed: true,
             label: "API key billing confirmed",
+            confirmationEvidencePath: "usage/image-billing-confirmation.json",
           },
         },
         costLabel: "estimate",
@@ -130,6 +156,7 @@ describe("live usage summary", () => {
           apiKeyRequired: true,
           userConfirmed: true,
           label: "API key billing confirmed",
+          confirmationEvidencePath: "usage/image-billing-confirmation.json",
         },
       }),
     ];
@@ -149,6 +176,7 @@ describe("live usage summary", () => {
       apiKeyRequired: true,
       userConfirmed: true,
       label: "API key billing confirmed",
+      confirmationEvidencePath: "usage/image-billing-confirmation.json",
     };
     const stages = [
       stage("plan", {
@@ -195,6 +223,7 @@ function completeStages(): readonly LiveUsageStageSummary[] {
           apiKeyRequired: true,
           userConfirmed: true,
           label: "API key billing confirmed",
+          confirmationEvidencePath: "usage/image-billing-confirmation.json",
         },
       },
       costLabel: "estimate",

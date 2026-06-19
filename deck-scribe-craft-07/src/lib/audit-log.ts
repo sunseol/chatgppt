@@ -144,6 +144,9 @@ function copyImageBillingDisclosure(
     apiKeyRequired: disclosure.apiKeyRequired,
     userConfirmed: disclosure.userConfirmed,
     label: disclosure.label,
+    ...(disclosure.confirmationEvidencePath === undefined
+      ? {}
+      : { confirmationEvidencePath: disclosure.confirmationEvidencePath }),
   };
 }
 

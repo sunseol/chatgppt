@@ -135,7 +135,10 @@ function costEstimateItem(cost: number | undefined): string {
 function imageBillingDisclosureItem(usageSummary: ProviderUsageSummary): string {
   const disclosure = usageSummary.imageBillingDisclosure;
   if (disclosure === undefined) return "";
-  if (disclosure.apiKeyRequired && !disclosure.userConfirmed) {
+  if (
+    disclosure.apiKeyRequired &&
+    (!disclosure.userConfirmed || !validBillingEvidencePath(disclosure.confirmationEvidencePath))
+  ) {
     return "API key billing not confirmed";
   }
   return disclosure.label.trim();
@@ -147,6 +150,12 @@ function isNonEmpty(value: string): boolean {
 
 function validUsageAmount(amount: number): boolean {
   return Number.isInteger(amount) && amount >= 0;
+}
+
+function validBillingEvidencePath(value: string | undefined): boolean {
+  if (value === undefined || !value.endsWith(".json")) return false;
+  const normalized = value.toLowerCase();
+  return !["mock", "fixture", "test", "fake"].some((marker) => normalized.includes(marker));
 }
 
 function summarizeFailure(errorMessage: string | undefined): string | undefined {

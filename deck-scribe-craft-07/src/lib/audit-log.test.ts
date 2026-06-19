@@ -107,6 +107,7 @@ describe("full audit log", () => {
           apiKeyRequired: true,
           userConfirmed: true,
           label: "API key billing confirmed",
+          confirmationEvidencePath: "usage/image-billing-confirmation.json",
         },
       },
     });
@@ -117,6 +118,7 @@ describe("full audit log", () => {
       apiKeyRequired: true,
       userConfirmed: true,
       label: "API key billing confirmed",
+      confirmationEvidencePath: "usage/image-billing-confirmation.json",
     });
     expect(report.includes("images 5")).toBe(true);
     expect(report.includes("API key billing confirmed")).toBe(true);

@@ -11,6 +11,7 @@ export interface ProviderImageBillingDisclosure {
   readonly apiKeyRequired: boolean;
   readonly userConfirmed: boolean;
   readonly label: string;
+  readonly confirmationEvidencePath?: string;
 }
 
 export interface ProviderUsageSummary {

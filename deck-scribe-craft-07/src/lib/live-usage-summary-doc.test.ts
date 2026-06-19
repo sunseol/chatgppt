@@ -18,15 +18,18 @@ describe("live usage summary documentation", () => {
     expect(usageSummary.includes("cost estimate $0.0400")).toBe(true);
     expect(usageSummary.includes("API key billing confirmed")).toBe(true);
     expect(usageSummary.includes("API key billing not confirmed")).toBe(true);
+    expect(usageSummary.includes("confirmationEvidencePath")).toBe(true);
     expect(usageSummary.includes("incomplete_text_token_usage")).toBe(true);
     expect(usageSummary.includes("missing_image_usage_count")).toBe(true);
     expect(usageSummary.includes("manual QA against the packaged app surface")).toBe(true);
 
     expect(progress.includes("DF-244 live update")).toBe(true);
     expect(progress.includes("estimatedCostUsd` only as `cost estimate")).toBe(true);
+    expect(progress.includes("confirmationEvidencePath")).toBe(true);
     expect(progress.includes("real provider image billing/API-key disclosure payloads")).toBe(true);
 
     expect(decision.includes("ProviderJobProgressPanel.tsx")).toBe(true);
+    expect(decision.includes("confirmationEvidencePath")).toBe(true);
     expect(decision.includes("packaged app-surface usage summary manual QA")).toBe(true);
     expect(decision.includes("real provider image billing/API key payloads")).toBe(true);
   });

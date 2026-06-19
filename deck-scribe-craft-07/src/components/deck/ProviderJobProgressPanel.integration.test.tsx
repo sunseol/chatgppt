@@ -102,6 +102,7 @@ describe("provider job progress panel", () => {
               apiKeyRequired: true,
               userConfirmed: true,
               label: "API key billing confirmed",
+              confirmationEvidencePath: "usage/image-billing-confirmation.json",
             },
           },
         }}

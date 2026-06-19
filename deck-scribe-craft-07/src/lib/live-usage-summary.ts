@@ -172,7 +172,9 @@ function costLabelIssues(stage: LiveUsageStageSummary): readonly LiveUsageSummar
 function imageBillingIssues(stage: LiveUsageStageSummary): readonly LiveUsageSummaryIssue[] {
   if (!isImageGenerationStage(stage)) return [];
   const disclosure = imageBillingDisclosure(stage);
-  return disclosure?.userConfirmed === true && disclosure.label.trim().length > 0
+  return disclosure?.userConfirmed === true &&
+    disclosure.label.trim().length > 0 &&
+    billingConfirmationHasEvidence(disclosure)
     ? []
     : [
         issue(
@@ -181,6 +183,10 @@ function imageBillingIssues(stage: LiveUsageStageSummary): readonly LiveUsageSum
           "Image generation requires visible billing/API key confirmation.",
         ),
       ];
+}
+
+function billingConfirmationHasEvidence(disclosure: LiveImageBillingDisclosure): boolean {
+  return !disclosure.apiKeyRequired || validEvidencePath(disclosure.confirmationEvidencePath);
 }
 
 function isImageGenerationStage(stage: LiveUsageStageSummary): boolean {
@@ -223,6 +229,12 @@ function imageBillingDisclosure(
 
 function validUsageAmount(amount: number | undefined): boolean {
   return amount === undefined || (Number.isInteger(amount) && amount >= 0);
+}
+
+function validEvidencePath(value: string | undefined): boolean {
+  if (value === undefined || !value.endsWith(".json")) return false;
+  const normalized = value.toLowerCase();
+  return !["mock", "fixture", "test", "fake"].some((marker) => normalized.includes(marker));
 }
 
 function issue(

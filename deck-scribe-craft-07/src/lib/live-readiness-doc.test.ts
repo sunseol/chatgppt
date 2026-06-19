@@ -256,6 +256,7 @@ describe("live readiness documentation", () => {
     expect(usageSummary.includes("unlabelled_estimated_cost")).toBe(true);
     expect(usageSummary.includes("estimated_cost_marked_actual")).toBe(true);
     expect(usageSummary.includes("missing_image_billing_confirmation")).toBe(true);
+    expect(usageSummary.includes("confirmationEvidencePath")).toBe(true);
     expect(usageSummary.includes("thread/tokenUsage/updated")).toBe(true);
     expect(usageSummary.includes("019edc53-3bfe-76d3-912d-31769ee3fd3f")).toBe(true);
     expect(usageSummary.includes("input 25006")).toBe(true);
