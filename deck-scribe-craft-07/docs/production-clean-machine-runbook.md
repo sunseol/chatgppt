@@ -7,7 +7,7 @@ Scope: DF-245 internal production package and clean macOS account validation.
 ## Package inputs
 
 - Internal unsigned archive: `dist/deckforge-macos-dry-run.tgz`.
-- Internal archive SHA-256: `93b567bcdcc6dba485c6869f456068ceb7b4b1a8e434da7e3c91f49a5f7390e5`.
+- Internal archive SHA-256: `9bdf67f487ae5750306cedf8b9514d0a61db1541d977cea2c6ff601fc0fd0883`.
 - Unsigned Tauri DMG: `release-artifacts/DeckForge_0.1.0_aarch64.dmg`.
 - DMG SHA-256: `ad8b11dee61a15c193fabfc3a7bf85110b116db65098bd2a845c2533a25dae5d`.
 
@@ -32,7 +32,7 @@ Before sharing any production candidate, scan the extracted app and DMG staging 
 
 Any hit in production resources blocks release unless it is part of documentation that clearly labels the build as internal only.
 
-Latest local dry-run package scan on 2026-06-19 for PR branch `jacobex/live-issue-contracts` found no hits for mock provider ids, mock provider labels, mock stage function names, fixture paths, test files, bundled `auth.json` or `.codex` payload files, local absolute workspace paths, `.omx/`, `.playwright-mcp/`, long `Bearer` tokens, or OpenAI/Codex secret-like values in `dist/client`, `dist/server`, or `dist/deckforge-macos-dry-run/DeckForge.app`. The regenerated archive SHA-256 is `93b567bcdcc6dba485c6869f456068ceb7b4b1a8e434da7e3c91f49a5f7390e5`; it contains 17 app files, 26 archive members, is 282,639 bytes compressed, and the extracted dry-run app bundle is 1,036 KiB.
+Latest local dry-run package scan on 2026-06-19 for PR branch `jacobex/live-issue-contracts` found no hits for mock provider ids, mock provider labels, mock stage function names, fixture paths, test files, bundled `auth.json` or `.codex` payload files, local absolute workspace paths, `.omx/`, `.playwright-mcp/`, long `Bearer` tokens, or OpenAI/Codex secret-like values in `dist/client`, `dist/server`, or `dist/deckforge-macos-dry-run/DeckForge.app`. The regenerated archive SHA-256 is `9bdf67f487ae5750306cedf8b9514d0a61db1541d977cea2c6ff601fc0fd0883`; it contains 17 app files, 26 archive members, is 284,752 bytes compressed, and the extracted dry-run app bundle is 1,052 KiB.
 
 The broader scan does find expected guard-code literals and status copy: `mock_lineage_contamination`, `fixture_lineage_contamination`, `pending_reinforcement_request`, `summary_without_original`, `missing_provenance`, production messages that say mock stages are not run in production, and secret-redaction regex definitions such as `API_KEY_PATTERN`, `SECRET_ASSIGNMENT_PATTERN`, `.codex/auth.json`, and `Bearer` token redaction expressions. The `OPENAI_API_KEY` string appears only in redaction guard code, not as an assigned credential. Broad `sk-*` scans also match Tailwind/class-merge names such as `sk-image-linear-from-pos`. Those strings are release/research approval gate rejection reasons, redaction guards, sensitive-path guards, or CSS utility identifiers, not bundled mock resources or actual secrets.
 
@@ -59,7 +59,7 @@ Signing state remains release-blocking: `codesign -dv --verbose=4` reports `Sign
 
 Package archive and native macOS bundle paths must be persisted non-synthetic, non-local evidence paths; `file://`, absolute developer-local, mock, fixture, test, or fake paths do not count as DF-245 package evidence. The clean-machine runbook must be the canonical `docs/production-clean-machine-runbook.md`; a separate or renamed markdown file that merely ends with the same filename does not count.
 
-Native macOS release trust evidence must include a Developer ID team signature, a 10-character uppercase alphanumeric Apple TeamIdentifier, notarization, stapling, Gatekeeper acceptance, and a persisted non-synthetic, non-local `releaseTrustEvidencePath` JSON bundle containing the codesign, notarytool, stapler, and `spctl` assessment records. Ad-hoc signatures, missing TeamIdentifier values, placeholder values such as `not set`, missing or developer-local release-trust evidence bundles, unstapled notarization tickets, or rejected `spctl` assessments block DF-245.
+Native macOS release trust evidence must include a Developer ID team signature, a 10-character uppercase alphanumeric Apple TeamIdentifier, notarization, stapling, Gatekeeper acceptance, and a persisted non-synthetic, non-local `releaseTrustEvidencePath` JSON bundle whose path identifies a release-trust bundle containing the codesign, notarytool, stapler, and `spctl` assessment records. Ad-hoc signatures, missing TeamIdentifier values, placeholder values such as `not set`, missing, generically named, or developer-local release-trust evidence bundles, unstapled notarization tickets, or rejected `spctl` assessments block DF-245.
 
 The clean-machine checklist must include install, Codex login, image credential setup, project launch, and first live interview.
 

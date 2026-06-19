@@ -165,7 +165,7 @@ function macosReleaseTrustIssues(
             ["spctl"],
           ),
         ]),
-    ...(hasNonSyntheticJsonEvidencePath(trust.releaseTrustEvidencePath)
+    ...(hasReleaseTrustEvidencePath(trust.releaseTrustEvidencePath)
       ? []
       : [
           issue(
@@ -255,6 +255,11 @@ function hasNativeMacosBundle(evidence: ProductionPackagingEvidence): boolean {
 const isSha256 = (value: string): boolean => /^[a-f0-9]{64}$/.test(value);
 
 const isDeveloperTeamIdentifier = (value: string): boolean => /^[A-Z0-9]{10}$/.test(value);
+
+function hasReleaseTrustEvidencePath(value: string | undefined): boolean {
+  const normalized = value?.toLowerCase() ?? "";
+  return hasNonSyntheticJsonEvidencePath(value) && normalized.includes("release-trust");
+}
 
 function issue(
   code: ProductionPackagingIssueCode,

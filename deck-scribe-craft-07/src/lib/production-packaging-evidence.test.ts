@@ -231,6 +231,28 @@ describe("production packaging evidence", () => {
     if (result.kind !== "blocked") return;
     expect(result.issues.map((issue) => issue.code)).toEqual(["missing_release_trust_evidence"]);
   });
+
+  test("blocks release trust evidence paths that are not release-trust bundles", () => {
+    // Given
+    const evidence = completeEvidence({
+      nativeMacosReleaseTrust: {
+        signature: "developer_id",
+        teamIdentifier: "TEAMID1234",
+        notarized: true,
+        stapled: true,
+        gatekeeperAccepted: true,
+        releaseTrustEvidencePath: "release-evidence/notarization-notes.json",
+      },
+    });
+
+    // When
+    const result = evaluateProductionPackagingEvidence(evidence);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual(["missing_release_trust_evidence"]);
+  });
 });
 
 function completeEvidence(
