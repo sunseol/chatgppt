@@ -14,6 +14,7 @@ Status: partial local contract
 - Stores a versioned PNG binary at `projects/<projectId>/slides/images/slide_<n>.v<version>.png`.
 - Stores metadata at `projects/<projectId>/slides/images/slide_<n>.v<version>.metadata.json`.
 - Requires `projectId` to be a safe storage segment before writing the binary or metadata files, so path traversal values cannot create false project-local artifacts.
+- Requires slide number and artifact version to be positive integers before writing, so `slide_000`, fractional, or non-positive versioned-looking paths cannot count as stored provider output.
 - Records a real 64-character SHA-256 digest for the stored binary.
 - Preserves request metadata when available: `requestId`, model, size, quality, latency, and usage.
 - Rejects blank request models, missing/invalid latency, and negative or non-finite usage values before writing image bytes or metadata.
@@ -35,10 +36,10 @@ Existing provider tests plus `src/lib/image-provider-errors.test.ts` cover the D
 
 ## Verification
 
-- `bun test src/lib/image-artifact-store.test.ts` passes: 5 tests.
+- `bun test src/lib/image-artifact-store.test.ts` passes: 6 tests.
 - `bun test src/lib/image-provider-errors.test.ts` passes: 1 test.
-- `bun test src/lib/live-image-provider-adapter.test.ts` passes: 2 tests.
-- `bun test src/lib/live-image-provider-adapter.test.ts src/lib/image-artifact-store.test.ts src/lib/image-provider-errors.test.ts src/lib/slide-image-provider.test.ts src/lib/image-path-decision.test.ts` passes: 20 tests.
+- `bun test src/lib/live-image-provider-adapter.test.ts` passes: 3 tests.
+- `bun test src/lib/live-image-provider-adapter.test.ts src/lib/image-artifact-store.test.ts src/lib/image-provider-errors.test.ts src/lib/slide-image-provider.test.ts src/lib/image-path-decision.test.ts` passes: 24 tests.
 - `bun run typecheck` passes.
 - `bun run lint` passes with the existing six React Fast Refresh warnings only.
 

@@ -72,9 +72,19 @@ export async function storeSlideImageArtifact(input: {
   };
 }
 
-function assertSafeStorageAddress(input: { readonly projectId: string }): void {
+function assertSafeStorageAddress(input: {
+  readonly projectId: string;
+  readonly artifact: SlideImageArtifact;
+  readonly version: number;
+}): void {
   if (!/^[A-Za-z0-9_-]+$/.test(input.projectId)) {
     throw new ImageArtifactStoreError("Project id must be a safe storage segment.");
+  }
+  if (!positiveInteger(input.artifact.slideNumber)) {
+    throw new ImageArtifactStoreError("Slide number must be a positive integer.");
+  }
+  if (!positiveInteger(input.version)) {
+    throw new ImageArtifactStoreError("Artifact version must be a positive integer.");
   }
 }
 
@@ -152,6 +162,10 @@ function validUsageSummary(usage: SlideImageRequestMetadata["usage"]): boolean {
 
 function validOptionalAmount(value: number | undefined): boolean {
   return value === undefined || (Number.isFinite(value) && value >= 0);
+}
+
+function positiveInteger(value: number): boolean {
+  return Number.isInteger(value) && value > 0;
 }
 
 function pngBytesFromDataUrl(dataUrl: string): Uint8Array {

@@ -75,6 +75,37 @@ describe("image artifact store", () => {
     expect(writes.length).toBe(0);
   });
 
+  test("rejects non-positive slide numbers and versions before writing image artifacts", async () => {
+    // Given
+    const writes: ImageArtifactStoreWrite[] = [];
+    const store = createImageArtifactStore({
+      write: async (entry) => {
+        writes.push(entry);
+      },
+    });
+
+    // When
+    const slideZero = storeSlideImageArtifact({
+      store,
+      projectId: "project_001",
+      artifact: { ...realImageArtifact(), slideNumber: 0 },
+      version: 1,
+      createdAt: 1_789_800_009,
+    });
+    const versionZero = storeSlideImageArtifact({
+      store,
+      projectId: "project_001",
+      artifact: realImageArtifact(),
+      version: 0,
+      createdAt: 1_789_800_010,
+    });
+
+    // Then
+    expect((await rejectionMessage(slideZero)).includes("Slide number")).toBe(true);
+    expect((await rejectionMessage(versionZero)).includes("Artifact version")).toBe(true);
+    expect(writes.length).toBe(0);
+  });
+
   test("creates complete OpenAI image provenance from stored request metadata", async () => {
     // Given
     const store = createImageArtifactStore({ write: async () => undefined });
