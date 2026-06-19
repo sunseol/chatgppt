@@ -64,6 +64,8 @@ export function liveImageArtifacts(
       artifact.artifactId.length > 0 &&
       artifact.providerKind === "openaiImage" &&
       artifact.authMode === "api_key" &&
+      artifact.modelOrRuntime.trim().length > 0 &&
+      artifact.promptVersion.trim().length > 0 &&
       !artifact.fixture &&
       Boolean(artifact.requestId?.trim()),
   );

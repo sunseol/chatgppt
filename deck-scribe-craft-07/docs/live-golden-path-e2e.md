@@ -31,7 +31,7 @@ The `completedSteps` evidence must match this canonical sequence exactly; a bund
 - Zero mock or fixture artifacts in Golden Path lineage
 - At least three distinct real source URLs with distinct source artifact ids
 - At least one primary or official source URL
-- At least five distinct production `openaiImage` artifacts with nonblank artifact ids, `api_key` auth, and distinct provider request ids
+- At least five distinct production `openaiImage` artifacts with nonblank artifact ids, model/runtime, prompt version, `api_key` auth, and distinct provider request ids
 - Restart/reopen evidence proving the same project reloads with a parseable `reopenedAt` timestamp and the same final export artifact
 - Redacted report summary with no raw secret-like text
 
@@ -60,13 +60,13 @@ The local gate returns these issue codes:
 - `missing_primary_source`: no primary or official source URL is present.
 - `duplicate_live_image_artifact`: repeated live image artifact ids cannot satisfy the five-image requirement.
 - `duplicate_live_image_request`: repeated provider request ids cannot satisfy the five-image requirement.
-- `insufficient_live_image_artifacts`: fewer than five distinct production image artifacts with nonblank ids, API key auth, and request ids are present.
+- `insufficient_live_image_artifacts`: fewer than five distinct production image artifacts with nonblank ids, model/runtime, prompt version, API key auth, and request ids are present.
 - `missing_restart_reopen_evidence`: app restart/reopen evidence does not include a parseable timestamp or match the final project/export artifact.
 - `secret_leak`: report content contains secret-like text.
 
 ## Local Evidence
 
-- `src/lib/live-golden-path-e2e.test.ts`, `src/lib/live-golden-path-step-order.test.ts`, `src/lib/live-golden-path-local-path-evidence.test.ts`, `src/lib/live-golden-path-validation-bundle-path.test.ts`, `src/lib/live-golden-path-restart-reopen-timestamp.test.ts`, `src/lib/live-golden-path-image-request-uniqueness.test.ts`, and `src/lib/live-golden-path-image-auth-evidence.test.ts` verify a passing signed bundle, redacted summary formatting, digest matching, canonical step order, per-step screenshot requirements, final validation bundle manifest consistency, synthetic and developer-local evidence path rejection, restart timestamp rejection, unauthenticated image rejection, duplicate validation bundle reference rejection, blank image artifact id rejection, duplicate source/image artifact/request rejection, and incomplete/contaminated bundle blockers.
+- `src/lib/live-golden-path-e2e.test.ts`, `src/lib/live-golden-path-step-order.test.ts`, `src/lib/live-golden-path-local-path-evidence.test.ts`, `src/lib/live-golden-path-validation-bundle-path.test.ts`, `src/lib/live-golden-path-restart-reopen-timestamp.test.ts`, `src/lib/live-golden-path-image-request-uniqueness.test.ts`, `src/lib/live-golden-path-image-auth-evidence.test.ts`, and `src/lib/live-golden-path-image-model-evidence.test.ts` verify a passing signed bundle, redacted summary formatting, digest matching, canonical step order, per-step screenshot requirements, final validation bundle manifest consistency, synthetic and developer-local evidence path rejection, restart timestamp rejection, unauthenticated image rejection, missing model/runtime or prompt version rejection, duplicate validation bundle reference rejection, blank image artifact id rejection, duplicate source/image artifact/request rejection, and incomplete/contaminated bundle blockers.
 - `src/lib/live-release-gate.ts` still requires DF-241 to be `verified_live` before the Live Initial Version can release.
 - `docs/live-release-decision.md` remains blocked because no real authenticated Golden Path bundle has been produced.
 
