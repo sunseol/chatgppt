@@ -209,17 +209,11 @@ describe("live readiness documentation", () => {
   test("records the live compositor review contract", () => {
     const compositorReview = readDoc(DOCS.compositorReview);
 
-    expect(compositorReview.includes("DF-234")).toBe(true);
-    expect(compositorReview.includes("mock_background_artifact")).toBe(true);
-    expect(compositorReview.includes("missing_stored_background_artifact")).toBe(true);
-    expect(compositorReview.includes("invalid_stored_background_artifact_hash")).toBe(true);
-    expect(compositorReview.includes("stored_background_artifact_slide_mismatch")).toBe(true);
-    expect(compositorReview.includes("missing_editable_overlay")).toBe(true);
-    expect(compositorReview.includes("invalid_compositor_preview")).toBe(true);
-    expect(compositorReview.includes("text_overlay_collision")).toBe(true);
-    expect(compositorReview.includes("five compositor thumbnails")).toBe(true);
-    expect(compositorReview.includes("presentation preview")).toBe(true);
-    expect(compositorReview.includes("duplicate_compositor_slide")).toBe(true);
+    for (const needle of "DF-234|mock_background_artifact|background_provider_not_live_image|missing_stored_background_artifact|invalid_stored_background_artifact_hash|stored_background_artifact_slide_mismatch|missing_editable_overlay|invalid_compositor_preview|text_overlay_collision|five compositor thumbnails|presentation preview|duplicate_compositor_slide".split(
+      "|",
+    )) {
+      expect(compositorReview.includes(needle)).toBe(true);
+    }
   });
 
   test("records the live interruption and recovery matrix contract", () => {

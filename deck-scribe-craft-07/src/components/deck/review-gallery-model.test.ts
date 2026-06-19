@@ -62,6 +62,29 @@ describe("review gallery live composition validation", () => {
     ]);
   });
 
+  test("blocks non-image live providers as compositor backgrounds", () => {
+    // Given
+    const items = buildReviewGalleryItems({
+      slides: [{ number: 1, version: 1, status: "ready", imageDescriptor: "slide 1" }],
+      specs: [slideSpec()],
+      selectedSlideNumber: 1,
+      compositions: [{ ...validComposition(), backgroundProviderId: "codex" }],
+    });
+
+    // When
+    const validation = validateReviewGalleryLiveCompositions({
+      items,
+      expectedSlideCount: 1,
+    });
+
+    // Then
+    expect(validation.kind).toBe("blocked");
+    if (validation.kind !== "blocked") return;
+    expect(validation.issues.map((issue) => issue.code)).toEqual([
+      "background_provider_not_live_image",
+    ]);
+  });
+
   test("blocks duplicate review items that hide a missing compositor slide", () => {
     // Given
     const items = buildReviewGalleryItems({

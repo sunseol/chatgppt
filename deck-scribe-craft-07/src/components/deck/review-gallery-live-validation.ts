@@ -12,6 +12,7 @@ export type ReviewGalleryLiveCompositionIssueCode =
   | "missing_compositor_result"
   | "slide_composition_mismatch"
   | "mock_background_artifact"
+  | "background_provider_not_live_image"
   | "missing_stored_background_artifact"
   | "invalid_stored_background_artifact_hash"
   | "stored_background_artifact_slide_mismatch"
@@ -145,6 +146,15 @@ function backgroundIssues(
         code: "mock_background_artifact",
         slideNumber: composition.slideNumber,
         message: "Live review must use a real image artifact background.",
+      },
+    ];
+  }
+  if (composition.backgroundProviderId !== "openaiImage") {
+    return [
+      {
+        code: "background_provider_not_live_image",
+        slideNumber: composition.slideNumber,
+        message: "Live review backgrounds must come from the locked image provider.",
       },
     ];
   }
