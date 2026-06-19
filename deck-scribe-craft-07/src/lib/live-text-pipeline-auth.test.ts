@@ -105,6 +105,24 @@ describe("live text pipeline Codex session provenance", () => {
     if (result.kind !== "blocked") return;
     expect(result.issues.map((issue) => issue.code).includes("missing_research_input")).toBe(true);
   });
+
+  test("blocks plan design and layout artifacts that reuse an artifact id", () => {
+    const input = completeInput();
+
+    const result = evaluateLiveTextPipelineCutover({
+      ...input,
+      designSystem: {
+        ...input.designSystem,
+        provenance: liveCodexProvenance("deck_plan_live_1", "turn_design", "design_system@v1", [
+          "deck_plan_live_1",
+        ]),
+      },
+    });
+
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code).includes("shared_live_artifact")).toBe(true);
+  });
 });
 
 function completeInput(): LiveTextPipelineCutoverInput {
