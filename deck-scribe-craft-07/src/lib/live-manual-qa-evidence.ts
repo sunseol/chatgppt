@@ -1,3 +1,4 @@
+import { manualQaCountShapeIssues, safeManualQaCount } from "./live-manual-qa-counts";
 import { realSourceOpenIssues } from "./live-manual-qa-source-evidence";
 
 export const MANUAL_QA_SETUP_TASKS = ["new_project", "login_check", "prompt_input"] as const;
@@ -53,6 +54,7 @@ export type LiveManualQaIssueCode =
   | "missing_slide_regeneration"
   | "missing_title_edit"
   | "missing_export_open"
+  | "invalid_manual_qa_count"
   | "critical_issue_present"
   | "mock_indicator_present"
   | "placeholder_output_present"
@@ -89,19 +91,20 @@ export function evaluateLiveManualQaEvidence(
       "At least one title edit must survive the QA flow.",
     ),
     ...exportIssues(evidence.openedExports),
+    ...manualQaCountShapeIssues(evidence),
     ...countIssue(
       "critical_issue_present",
-      evidence.criticalErrorCount + p0IssueCount(evidence.issueLog),
+      safeManualQaCount(evidence.criticalErrorCount) + p0IssueCount(evidence.issueLog),
       "Critical errors and P0 manual QA issues must be zero.",
     ),
     ...countIssue(
       "mock_indicator_present",
-      evidence.mockIndicatorCount,
+      safeManualQaCount(evidence.mockIndicatorCount),
       "Mock indicators must not appear in production manual QA.",
     ),
     ...countIssue(
       "placeholder_output_present",
-      evidence.placeholderOutputCount,
+      safeManualQaCount(evidence.placeholderOutputCount),
       "Placeholder outputs must not appear in manual QA artifacts.",
     ),
     ...severityListIssues(evidence),

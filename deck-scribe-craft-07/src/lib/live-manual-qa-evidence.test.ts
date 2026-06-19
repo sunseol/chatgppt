@@ -102,6 +102,33 @@ describe("live manual QA evidence", () => {
     );
   });
 
+  test("blocks invalid manual QA counts without letting them cancel P0 issues", () => {
+    // Given
+    const evidence = completeEvidence({
+      criticalErrorCount: -1,
+      mockIndicatorCount: 0.5,
+      placeholderOutputCount: Number.NaN,
+      issueLog: [
+        {
+          severity: "P0",
+          title: "Billing confusion",
+          description: "Tester thought image API-key billing was free.",
+        },
+      ],
+    });
+
+    // When
+    const result = evaluateLiveManualQaEvidence(evidence);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "invalid_manual_qa_count",
+      "critical_issue_present",
+    ]);
+  });
+
   test("blocks manual QA evidence that skips approval targets", () => {
     // Given
     const evidence = completeEvidence({

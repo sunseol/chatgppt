@@ -45,10 +45,11 @@ Within 10 minutes, the tester must:
 - at least one opened real HTTP(S) source URL that also appears in the final report sources, excluding placeholder or local domains
 - at least one regenerated slide id and one edited title slide id
 - opened export artifacts `png`, `project`, and `report`
+- non-negative integer counters for critical errors, mock indicators, and placeholder outputs
 - zero critical errors, zero mock indicators, and zero placeholder outputs
 - a severity issue list using P0/P1/P2
 
-Blocker codes: `tester_not_non_developer`, `setup_over_time`, `missing_approval_target_check`, `approval_target_misunderstood`, `missing_real_source_open`, `invalid_real_source_url`, `placeholder_real_source_url`, `opened_source_not_in_report`, `missing_slide_regeneration`, `missing_title_edit`, `missing_export_open`, `critical_issue_present`, `mock_indicator_present`, `placeholder_output_present`, `missing_severity_issue_list`.
+Blocker codes: `tester_not_non_developer`, `setup_over_time`, `missing_approval_target_check`, `approval_target_misunderstood`, `missing_real_source_open`, `invalid_real_source_url`, `placeholder_real_source_url`, `opened_source_not_in_report`, `missing_slide_regeneration`, `missing_title_edit`, `missing_export_open`, `invalid_manual_qa_count`, `critical_issue_present`, `mock_indicator_present`, `placeholder_output_present`, `missing_severity_issue_list`.
 
 ## Pass criteria
 

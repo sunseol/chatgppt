@@ -89,6 +89,7 @@ describe("live readiness documentation", () => {
     expect(manualQa.includes("10 minutes")).toBe(true);
     expect(manualQa.includes("tester_not_non_developer")).toBe(true);
     expect(manualQa.includes("invalid_real_source_url")).toBe(true);
+    expect(manualQa.includes("invalid_manual_qa_count")).toBe(true);
     expect(manualQa.includes("setup_over_time")).toBe(true);
     expect(manualQa.includes("critical_issue_present")).toBe(true);
     expect(manualQa.includes("placeholder_output_present")).toBe(true);
