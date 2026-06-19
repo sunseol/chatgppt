@@ -5,6 +5,7 @@ import type { Claim, ResearchPack } from "./research-types";
 export type LiveResearchEvidenceIssueCode =
   | "summary_without_original"
   | "missing_source_artifact"
+  | "source_artifact_mismatch"
   | "missing_quote_or_table"
   | "missing_number_dataset"
   | "missing_dataset_or_numeric_evidence"
@@ -54,6 +55,9 @@ export function validateLiveResearchEvidence(input: {
 }): LiveResearchEvidenceReport {
   const issues: LiveResearchEvidenceIssue[] = [];
   const sourceIds = new Set(input.pack.sources.map((source) => source.id));
+  const sourceArtifactPathsById = new Map(
+    input.pack.sources.map((source) => [source.id, source.capture?.rawArchivePath] as const),
+  );
   const datasetsById = new Map(input.pack.datasets.map((dataset) => [dataset.id, dataset]));
   const datasetIds = new Set(datasetsById.keys());
   const refsByClaim = groupEvidenceRefsByClaim(input.evidenceRefs);
@@ -62,7 +66,14 @@ export function validateLiveResearchEvidence(input: {
 
   for (const claim of input.pack.claims) {
     const evidenceRefs = refsByClaim.get(claim.id) ?? [];
-    validateClaimOriginalEvidence(claim, evidenceRefs, sourceIds, datasetIds, issues);
+    validateClaimOriginalEvidence(
+      claim,
+      evidenceRefs,
+      sourceIds,
+      sourceArtifactPathsById,
+      datasetIds,
+      issues,
+    );
     validateClaimNumericEvidenceReferences(claim, sourceIds, datasetIds, issues);
     validateClaimNumberEvidence(claim, evidenceRefs, datasetsById, issues);
   }
@@ -100,6 +111,7 @@ function validateClaimOriginalEvidence(
   claim: Claim,
   evidenceRefs: readonly LiveResearchEvidenceReference[],
   sourceIds: ReadonlySet<string>,
+  sourceArtifactPathsById: ReadonlyMap<string, string | undefined>,
   datasetIds: ReadonlySet<string>,
   issues: LiveResearchEvidenceIssue[],
 ) {
@@ -131,6 +143,21 @@ function validateClaimOriginalEvidence(
           claimId: claim.id,
           sourceId: evidenceRef.sourceId,
           message: "Live evidence must point to the captured original source artifact.",
+        }),
+      );
+    }
+    const capturedArtifactPath = sourceArtifactPathsById.get(evidenceRef.sourceId);
+    if (
+      capturedArtifactPath?.trim() &&
+      evidenceRef.sourceArtifactPath.trim() &&
+      evidenceRef.sourceArtifactPath !== capturedArtifactPath
+    ) {
+      issues.push(
+        issue({
+          code: "source_artifact_mismatch",
+          claimId: claim.id,
+          sourceId: evidenceRef.sourceId,
+          message: "Live evidence must reference the source's captured original artifact path.",
         }),
       );
     }
