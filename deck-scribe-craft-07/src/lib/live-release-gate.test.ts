@@ -84,6 +84,26 @@ describe("live initial release gate", () => {
     if (result.kind !== "blocked") return;
     expect(result.blockers.map((blocker) => blocker.code)).toEqual(["live_benchmark_shortfall"]);
   });
+
+  test("requires the five named DF-242 benchmark scenarios", () => {
+    // Given
+    const result = evaluateLiveInitialReleaseGate({
+      ...readyInput(),
+      liveBenchmarks: [
+        { id: "ad_hoc_business", status: "passed", failureDomain: "none" },
+        { id: "ad_hoc_research", status: "passed", failureDomain: "none" },
+        { id: "ad_hoc_chart", status: "passed", failureDomain: "none" },
+        { id: "ad_hoc_image", status: "passed", failureDomain: "none" },
+        { id: "ad_hoc_revision", status: "passed", failureDomain: "none" },
+      ],
+    });
+
+    // When / Then
+    expect(result.kind).toBe("blocked");
+    expect(result.passedBenchmarkCount).toBe(0);
+    if (result.kind !== "blocked") return;
+    expect(result.blockers.map((blocker) => blocker.code)).toEqual(["live_benchmark_shortfall"]);
+  });
 });
 
 function readyInput(): LiveReleaseGateInput {

@@ -1,3 +1,7 @@
+import {
+  benchmarkBlockers,
+  distinctCleanPassedBenchmarkCount,
+} from "./live-release-benchmark-gate";
 import { decisionBlockers } from "./live-release-decision-gate";
 import {
   collectLineageContamination,
@@ -197,27 +201,6 @@ function productionPackageBlockers(
           ),
         ]),
   ];
-}
-
-function benchmarkBlockers(
-  benchmarks: readonly LiveBenchmarkEvidence[],
-  passedBenchmarkCount: number,
-): readonly LiveReleaseBlocker[] {
-  return new Set(benchmarks.map((benchmark) => benchmark.id)).size >= 5 && passedBenchmarkCount >= 4
-    ? []
-    : [
-        blocker("live_benchmark_shortfall", "At least four of five Live benchmarks must pass.", [
-          "DF-242",
-        ]),
-      ];
-}
-
-function distinctCleanPassedBenchmarkCount(benchmarks: readonly LiveBenchmarkEvidence[]): number {
-  return new Set(
-    benchmarks
-      .filter((benchmark) => benchmark.status === "passed" && benchmark.failureDomain === "none")
-      .map((benchmark) => benchmark.id),
-  ).size;
 }
 
 function lineageBlockers(
