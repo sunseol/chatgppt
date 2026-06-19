@@ -1,4 +1,5 @@
 import type { MvpEditableLayer, MvpEditableLayerModel } from "./editable-layer-model";
+import { isVersionedProjectImageArtifactPath } from "./image-path-decision";
 import { encodeSolidPngDataUrl } from "./png-encoder";
 import type {
   SlideImageArtifact,
@@ -73,7 +74,9 @@ function assertBackgroundArtifactTargetsSlide(
     throw new Error("Stored background artifact hash must be a SHA-256 digest.");
   }
   if (backgroundArtifactTargetsSlide(artifact, slideNumber)) return;
-  throw new Error(`Stored background artifact must target slide ${slideNumber}.`);
+  throw new Error(
+    `Stored background artifact must target slide ${slideNumber} with versioned project image storage.`,
+  );
 }
 
 function isSha256Digest(hash: string): boolean {
@@ -85,7 +88,12 @@ export function backgroundArtifactTargetsSlide(
   slideNumber: number,
 ): boolean {
   const token = `slide_${String(slideNumber).padStart(3, "0")}`;
-  return artifact.artifactId.includes(token) && artifact.path.includes(`${token}.`);
+  const artifactIdPattern = new RegExp(`^[A-Za-z0-9_-]+_image_${token}_v[1-9]\\d*$`);
+  return (
+    artifactIdPattern.test(artifact.artifactId) &&
+    artifact.path.includes(`${token}.`) &&
+    isVersionedProjectImageArtifactPath(artifact.path)
+  );
 }
 
 export function countKoreanTextOverlays(composition: FinalSlideComposition): number {

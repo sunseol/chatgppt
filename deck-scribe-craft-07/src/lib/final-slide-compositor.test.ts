@@ -105,7 +105,9 @@ describe("final slide compositor", () => {
     if (result.kind !== "rejected") return;
     expect(result.error instanceof Error).toBe(true);
     if (!(result.error instanceof Error)) return;
-    expect(result.error.message).toBe("Stored background artifact must target slide 3.");
+    expect(result.error.message).toBe(
+      "Stored background artifact must target slide 3 with versioned project image storage.",
+    );
   });
 
   test("rejects stored live background artifacts without a full SHA-256 digest", async () => {
