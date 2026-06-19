@@ -80,6 +80,37 @@ describe("slide image provider call", () => {
     });
   });
 
+  test("OpenAI-style provider records measured latency when the response omits it", async () => {
+    // Given
+    const ticks = [1_000, 1_375, 1_376];
+    const provider = createOpenAIImageProvider(
+      {
+        async generate() {
+          return {
+            imageDataUrl: "data:image/png;base64,ZmFrZQ==",
+            requestId: "img_req_002",
+            size: "1600x900",
+            quality: "high",
+          };
+        },
+      },
+      { now: () => ticks.shift() ?? 1_376 },
+    );
+
+    // When
+    const result = await generateSlideImage({
+      provider,
+      package: buildSlidePromptPackage(chartSlideBundle()),
+      aspectRatio: "16:9",
+    });
+
+    // Then
+    expect(result.kind).toBe("ready");
+    if (result.kind !== "ready") return;
+    expect(result.artifact.request?.latencyMs).toBe(375);
+    expect(result.artifact.generatedAt).toBe(1_376);
+  });
+
   test("provider failures return retryable user-facing metadata", async () => {
     const provider = createOpenAIImageProvider({
       async generate() {

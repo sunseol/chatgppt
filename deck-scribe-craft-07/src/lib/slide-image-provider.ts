@@ -117,23 +117,31 @@ export function createMockSlideImageProvider(
   };
 }
 
-export function createOpenAIImageProvider(client: OpenAIImageClient): SlideImageProvider {
+export function createOpenAIImageProvider(
+  client: OpenAIImageClient,
+  options: {
+    readonly now?: () => number;
+  } = {},
+): SlideImageProvider {
   return {
     id: "openaiImage",
     async generate(input) {
       const layoutReference = layoutReferenceForPackage(input.package);
+      const now = options.now ?? Date.now;
+      const startedAt = now();
       const response = await client.generate({
         model: TARGET_IMAGE_MODEL,
         prompt: input.package.prompt,
         aspectRatio: input.aspectRatio,
         layoutReference,
       });
+      const completedAt = now();
       return createArtifact({
         input,
         providerId: "openaiImage",
         imageDataUrl: response.imageDataUrl,
-        request: requestMetadata(response),
-        generatedAt: Date.now(),
+        request: requestMetadata(response, completedAt - startedAt),
+        generatedAt: now(),
       });
     },
   };
@@ -184,13 +192,16 @@ function createArtifact(input: {
   };
 }
 
-function requestMetadata(response: OpenAIImageClientResponse): SlideImageRequestMetadata {
+function requestMetadata(
+  response: OpenAIImageClientResponse,
+  measuredLatencyMs: number,
+): SlideImageRequestMetadata {
   return {
     model: TARGET_IMAGE_MODEL,
     ...(response.requestId === undefined ? {} : { requestId: response.requestId }),
     ...(response.size === undefined ? {} : { size: response.size }),
     ...(response.quality === undefined ? {} : { quality: response.quality }),
-    ...(response.latencyMs === undefined ? {} : { latencyMs: response.latencyMs }),
+    latencyMs: response.latencyMs ?? measuredLatencyMs,
     ...(response.usage === undefined ? {} : { usage: response.usage }),
   };
 }

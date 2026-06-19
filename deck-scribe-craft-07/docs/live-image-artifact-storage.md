@@ -15,6 +15,7 @@ Status: partial local contract
 - Stores metadata at `projects/<projectId>/slides/images/slide_<n>.v<version>.metadata.json`.
 - Records a real 64-character SHA-256 digest for the stored binary.
 - Preserves request metadata when available: `requestId`, model, size, quality, latency, and usage.
+- Measures provider-call latency in the OpenAI image adapter when the provider response omits `latencyMs`, so stored provenance duration does not silently fall back to `0`.
 - Produces provider provenance for the stored binary artifact, including prompt version, prompt hash, layout reference, request id, model/runtime, duration, auth mode, and fixture flag.
 - Rejects non-PNG image data, fake PNG data URLs without a PNG signature, and OpenAI image artifacts without `requestId`.
 - `src/lib/live-image-provider-adapter.ts` links provider generation to storage in one production-oriented call.
@@ -24,7 +25,7 @@ Status: partial local contract
 
 Existing provider tests plus `src/lib/image-provider-errors.test.ts` cover the DF-231 adapter/error requirements:
 
-- `src/lib/slide-image-provider.test.ts` verifies that prompt package, aspect ratio, model, and layout reference are passed to the provider.
+- `src/lib/slide-image-provider.test.ts` verifies prompt/layout handoff, failure classification, provider response metadata preservation, and adapter-measured latency when a response omits `latencyMs`.
 - `src/lib/live-image-provider-adapter.test.ts` verifies the provider-to-storage path, versioned writes, request metadata preservation, provenance request id, and no-write behavior for `content_policy` failures.
 - `src/lib/image-provider-errors.ts` distinguishes `auth`, `quota`, `rate_limit`, `content_policy`, `server`, and `unknown`.
 - Retry is allowed only for transient classes: `rate_limit`, `server`, and `unknown`.
