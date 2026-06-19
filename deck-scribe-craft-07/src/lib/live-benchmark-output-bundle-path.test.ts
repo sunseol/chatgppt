@@ -24,6 +24,22 @@ describe("live benchmark output bundle path", () => {
     if (result.kind !== "blocked") return;
     expect(result.issues.map((issue) => issue.code)).toEqual(["missing_output_bundle"]);
   });
+
+  test("blocks developer-local output bundle paths", () => {
+    const result = evaluateLiveBenchmarkEvidence({
+      reportPath: "docs/live-benchmark-report.md",
+      packageArchiveSha256: PACKAGE_SHA,
+      runs: LIVE_BENCHMARK_IDS.map((id) =>
+        id === "korean_business"
+          ? withOutputBundlePath(run(id, "passed"), `/Users/jake/chatgppt/benchmarks/${id}.zip`)
+          : run(id, id === "revision_regeneration" ? "failed" : "passed"),
+      ),
+    });
+
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual(["missing_output_bundle"]);
+  });
 });
 
 function run(id: LiveBenchmarkId, status: "passed" | "failed"): LiveBenchmarkRun {

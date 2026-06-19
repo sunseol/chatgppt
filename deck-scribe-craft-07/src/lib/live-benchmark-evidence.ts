@@ -1,5 +1,6 @@
 import { outputBundleIssues } from "./live-benchmark-output-bundle";
 import { packageHashIssues } from "./live-benchmark-package-hash";
+import { hasNonSyntheticEvidencePath } from "./live-evidence-path";
 
 export const LIVE_BENCHMARK_IDS = [
   "korean_business",
@@ -244,7 +245,9 @@ function shortfallIssues(passedLiveCount: number): readonly LiveBenchmarkEvidenc
 }
 
 function reportIssues(reportPath: string): readonly LiveBenchmarkEvidenceIssue[] {
-  return reportPath.endsWith("live-benchmark-report.md")
+  const normalized = reportPath.toLowerCase().trim();
+  return normalized.endsWith("live-benchmark-report.md") &&
+    hasNonSyntheticEvidencePath(reportPath, [".md"])
     ? []
     : [
         issue("missing_live_benchmark_report", "Live benchmark report path is required.", [

@@ -32,6 +32,30 @@ describe("live benchmark report path evidence", () => {
       "output_bundle_golden_path_evidence_missing",
     ]);
   });
+
+  test("blocks developer-local benchmark report paths", () => {
+    const bundle = completeBundle({
+      reportPath: "/Users/jake/chatgppt/reports/live-benchmark-report.md",
+      runs: [
+        passedRun("korean_business", {
+          reportPath: "/Users/jake/chatgppt/reports/korean_business.md",
+          goldenPathReportPath: "/Users/jake/chatgppt/reports/live_e2e_report.md",
+        }),
+        passedRun("market_research"),
+        passedRun("chart_report"),
+        passedRun("image_intro"),
+        failedRun("revision_regeneration"),
+      ],
+    });
+
+    const result = evaluateLiveBenchmarkEvidence(bundle);
+
+    expect(result.kind === "blocked" ? result.issues.map((issue) => issue.code) : []).toEqual([
+      "output_bundle_report_missing",
+      "output_bundle_golden_path_evidence_missing",
+      "missing_live_benchmark_report",
+    ]);
+  });
 });
 
 function completeBundle(patch: Partial<LiveBenchmarkEvidenceBundle>): LiveBenchmarkEvidenceBundle {

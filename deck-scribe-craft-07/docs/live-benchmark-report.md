@@ -35,9 +35,9 @@ Release requirement: at least 4 of 5 live benchmarks must pass without counting 
 
 - exactly the five required scenarios listed above
 - the 64-character package archive SHA-256 for the release candidate under benchmark
-- output bundle 5 sets, one distinct non-synthetic `.zip` or `.json` bundle per benchmark
+- output bundle 5 sets, one distinct non-synthetic, non-local `.zip` or `.json` bundle per benchmark
 - output bundle manifests matching their benchmark id, bundle path, and package archive SHA-256
-- passed benchmark bundle manifests with a non-synthetic scenario report path, distinct final export artifact id, non-synthetic `live_e2e_report.md` path, at least 10 step screenshots, at least 3 distinct source artifact ids, at least 5 distinct live image artifact ids, and at least 5 distinct live image request ids
+- passed benchmark bundle manifests with a non-synthetic, non-local scenario report path, distinct final export artifact id, non-synthetic, non-local `live_e2e_report.md` path, at least 10 step screenshots, at least 3 distinct source artifact ids, at least 5 distinct live image artifact ids, and at least 5 distinct live image request ids
 - at least four `live` runs whose Live Golden Path completed
 - no mock scores counted in Live pass totals
 - failure classification as provider, context, research, image, renderer, or editor for every failed or blocked benchmark
@@ -49,15 +49,15 @@ Blocking issue codes:
 - `duplicate_benchmark_scenario`
 - `missing_benchmark_package_hash`
 - `invalid_benchmark_package_hash`
-- `missing_output_bundle` - missing or synthetic output bundle path
+- `missing_output_bundle` - missing, synthetic, or developer-local output bundle path
 - `missing_output_bundle_manifest`
 - `duplicate_output_bundle`
 - `output_bundle_benchmark_mismatch`
 - `output_bundle_package_mismatch`
-- `output_bundle_report_missing` - missing or synthetic scenario report path
+- `output_bundle_report_missing` - missing, synthetic, or developer-local scenario report path
 - `output_bundle_export_missing`
 - `duplicate_output_bundle_artifact`
-- `output_bundle_golden_path_evidence_missing` - missing screenshots, sources, images, image requests, or non-synthetic Golden Path report evidence
+- `output_bundle_golden_path_evidence_missing` - missing screenshots, sources, images, image requests, or non-synthetic, non-local Golden Path report evidence
 - `mock_score_contamination`
 - `missing_failure_domain`
 - `passed_failure_domain_present`
@@ -65,4 +65,4 @@ Blocking issue codes:
 - `live_benchmark_shortfall`
 - `missing_live_benchmark_report`
 
-Current local status: the validator is implemented and tested, including rejection of `mock`, `fixture`, `test`, or `fake` output bundle paths and report paths, but no real provider output bundle 5 sets have been produced.
+Current local status: the validator is implemented and tested, including rejection of `mock`, `fixture`, `test`, `fake`, developer-local absolute, and `file://` output bundle paths and report paths, but no real provider output bundle 5 sets have been produced.

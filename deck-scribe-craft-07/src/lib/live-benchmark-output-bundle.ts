@@ -5,6 +5,7 @@ import type {
   LiveBenchmarkOutputBundleManifest,
   LiveBenchmarkRun,
 } from "./live-benchmark-evidence";
+import { hasNonSyntheticEvidencePath } from "./live-evidence-path";
 
 export function outputBundleIssues(
   runs: readonly LiveBenchmarkRun[],
@@ -183,22 +184,13 @@ function hasDistinctArtifactEvidence(
 }
 
 function validOutputBundlePath(value: string): boolean {
-  const normalized = value.toLowerCase().trim();
-  if (!normalized.endsWith(".zip") && !normalized.endsWith(".json")) return false;
-  return isNonSyntheticPath(normalized);
+  return hasNonSyntheticEvidencePath(value, [".zip", ".json"]);
 }
 
 function validEvidenceReportPath(value: string, expectedSuffix: string): boolean {
   const normalized = value.toLowerCase().trim();
   if (!normalized.endsWith(expectedSuffix)) return false;
-  return isNonSyntheticPath(normalized);
-}
-
-function isNonSyntheticPath(normalized: string): boolean {
-  const segments = normalized.split(/[/\\._-]+/).filter(Boolean);
-  return !["mock", "fixture", "fixtures", "test", "tests", "fake", "fakes"].some((marker) =>
-    segments.includes(marker),
-  );
+  return hasNonSyntheticEvidencePath(value, [".md"]);
 }
 
 function issue(
