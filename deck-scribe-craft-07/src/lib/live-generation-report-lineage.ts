@@ -4,6 +4,7 @@ import { lineageReferenceIssues } from "./live-generation-report-reference-uniqu
 import { lineageFieldSecretIssues } from "./live-generation-report-lineage-secret";
 import { slideCoverageIssues } from "./live-generation-report-slide-coverage";
 import { textPromptIssues } from "./live-generation-report-text-prompt";
+import { productionContaminationIssues } from "./live-generation-report-contamination";
 
 export type LiveGenerationReportLineageIssueCode =
   | "missing_source_trace"
@@ -12,7 +13,9 @@ export type LiveGenerationReportLineageIssueCode =
   | "missing_text_turn"
   | "missing_text_prompt_version"
   | "missing_text_artifact"
+  | "duplicate_text_artifact"
   | "missing_image_artifact"
+  | "duplicate_image_artifact"
   | "image_artifact_slide_mismatch"
   | "missing_image_request"
   | "duplicate_image_request"
@@ -197,51 +200,6 @@ function slideIssues(
   ];
 }
 
-function productionContaminationIssues(
-  executionMode: ExecutionMode,
-  slide: LiveSlideReportLineage,
-): readonly LiveGenerationReportLineageIssue[] {
-  if (executionMode !== "production") return [];
-  return [
-    ...(slide.textProviderKind === "mock" || slide.imageProviderKind === "mock"
-      ? [
-          {
-            code: "mock_lineage_contamination" as const,
-            slideNumber: slide.slideNumber,
-            message: "Production live report cannot include mock provider artifacts.",
-          },
-        ]
-      : []),
-    ...(hasMockExportMarker(slide.projectFileContent)
-      ? [
-          {
-            code: "mock_lineage_contamination" as const,
-            slideNumber: slide.slideNumber,
-            message: "Production project export cannot retain mock-mode markers.",
-          },
-        ]
-      : []),
-    ...(slide.fixture
-      ? [
-          {
-            code: "fixture_lineage_contamination" as const,
-            slideNumber: slide.slideNumber,
-            message: "Production live report cannot include fixture artifacts.",
-          },
-        ]
-      : []),
-    ...(hasFixtureExportMarker(slide.projectFileContent)
-      ? [
-          {
-            code: "fixture_lineage_contamination" as const,
-            slideNumber: slide.slideNumber,
-            message: "Production project export cannot retain fixture markers.",
-          },
-        ]
-      : []),
-  ];
-}
-
 function joinOrNone(values: readonly string[]): string {
   return values.length === 0 ? "none" : values.join(", ");
 }
@@ -251,13 +209,6 @@ const isSha256Digest = (value: string): boolean => /^sha256:[a-f0-9]{64}$/.test(
 function imageArtifactMatchesSlide(imageArtifactId: string, slideNumber: number): boolean {
   return !imageArtifactId.trim() || imageArtifactId.includes(`_slide_${pad3(slideNumber)}_`);
 }
-
-function hasMockExportMarker(value: string): boolean {
-  return /\bMOCK MODE\b/i.test(value) || /"providerKind"\s*:\s*"mock"/i.test(value);
-}
-
-const hasFixtureExportMarker = (value: string): boolean =>
-  /"fixture"\s*:\s*true/i.test(value) || /\bfixtures\//i.test(value);
 
 function pad3(value: number): string {
   return String(value).padStart(3, "0");

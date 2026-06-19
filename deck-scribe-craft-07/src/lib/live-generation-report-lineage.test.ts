@@ -261,10 +261,16 @@ describe("live generation report lineage", () => {
         base,
         {
           ...base,
+          textArtifactId: "plan_live_001_retry",
           imageArtifactId: "project_001_image_slide_001_v2",
           imageRequestId: "img_req_002",
         },
-        { ...base, slideNumber: 2, imageArtifactId: "project_001_image_slide_002_v1" },
+        {
+          ...base,
+          slideNumber: 2,
+          textArtifactId: "plan_live_002",
+          imageArtifactId: "project_001_image_slide_002_v1",
+        },
       ],
     });
 

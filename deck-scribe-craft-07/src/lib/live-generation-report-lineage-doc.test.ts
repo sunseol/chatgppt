@@ -20,7 +20,9 @@ describe("live generation report lineage documentation", () => {
     expect(generationReportLineage.includes("duplicate_slide_lineage")).toBe(true);
     expect(generationReportLineage.includes("missing_text_prompt_version")).toBe(true);
     expect(generationReportLineage.includes("missing_text_artifact")).toBe(true);
+    expect(generationReportLineage.includes("duplicate_text_artifact")).toBe(true);
     expect(generationReportLineage.includes("missing_image_artifact")).toBe(true);
+    expect(generationReportLineage.includes("duplicate_image_artifact")).toBe(true);
     expect(generationReportLineage.includes("duplicate_image_request")).toBe(true);
     expect(generationReportLineage.includes("missing_text_provider_lineage")).toBe(true);
     expect(generationReportLineage.includes("missing_image_provider_lineage")).toBe(true);

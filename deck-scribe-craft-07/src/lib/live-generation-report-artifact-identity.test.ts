@@ -1,0 +1,59 @@
+import { describe, expect, test } from "bun:test";
+import {
+  validateLiveGenerationReportLineage,
+  type LiveSlideReportLineage,
+} from "./live-generation-report-lineage";
+
+describe("live generation report artifact identity", () => {
+  test("blocks reused text and image artifact ids across slide lineage", () => {
+    // Given
+    const base = liveSlideLineage();
+
+    // When
+    const validation = validateLiveGenerationReportLineage({
+      executionMode: "production",
+      expectedSlideCount: 2,
+      slides: [
+        base,
+        {
+          ...base,
+          slideNumber: 2,
+          imageRequestId: "img_req_002",
+        },
+      ],
+    });
+
+    // Then
+    expect(validation.kind).toBe("blocked");
+    if (validation.kind !== "blocked") return;
+    expect(validation.issues.map((issue) => issue.code)).toEqual([
+      "duplicate_text_artifact",
+      "duplicate_image_artifact",
+      "image_artifact_slide_mismatch",
+    ]);
+  });
+});
+
+function liveSlideLineage(): LiveSlideReportLineage {
+  return {
+    slideNumber: 1,
+    sourceIds: ["src_001"],
+    textArtifactId: "deck_plan_live_artifact_001",
+    textProviderKind: "codex",
+    textTurnId: "turn_plan_001",
+    textThreadId: "thread_project_001",
+    textPromptVersion: "deck_plan@v1",
+    imageArtifactId: "project_001_image_slide_001_v1",
+    imageProviderKind: "openaiImage",
+    imageRequestId: "img_req_001",
+    promptVersion: "slide_generation@v1",
+    fixture: false,
+    compositorHash: hashA(),
+    exportedPngHash: hashA(),
+    projectFileContent: '{"project":"project_001"}',
+  };
+}
+
+function hashA(): string {
+  return `sha256:${"a".repeat(64)}`;
+}

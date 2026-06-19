@@ -66,6 +66,7 @@ describe("final export gate live report lineage", () => {
         {
           ...liveReportLineageFixture(),
           slideNumber: 2,
+          textArtifactId: "text_artifact_002",
           imageArtifactId: "project_001_image_slide_002_v1",
         },
       ],
