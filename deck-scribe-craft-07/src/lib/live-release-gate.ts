@@ -139,9 +139,7 @@ const RELEASE_BLOCKING_P1_CATEGORIES: readonly ReleaseBlockingP1Category[] = [
 ];
 
 export function evaluateLiveInitialReleaseGate(input: LiveReleaseGateInput): LiveReleaseGateResult {
-  const passedBenchmarkCount = input.liveBenchmarks.filter(
-    (benchmark) => benchmark.status === "passed",
-  ).length;
+  const passedBenchmarkCount = distinctCleanPassedBenchmarkCount(input.liveBenchmarks);
   const blockers = [
     ...p0Blockers(input.p0Tickets),
     ...productionPackageBlockers(input.productionPackage),
@@ -205,13 +203,21 @@ function benchmarkBlockers(
   benchmarks: readonly LiveBenchmarkEvidence[],
   passedBenchmarkCount: number,
 ): readonly LiveReleaseBlocker[] {
-  return benchmarks.length >= 5 && passedBenchmarkCount >= 4
+  return new Set(benchmarks.map((benchmark) => benchmark.id)).size >= 5 && passedBenchmarkCount >= 4
     ? []
     : [
         blocker("live_benchmark_shortfall", "At least four of five Live benchmarks must pass.", [
           "DF-242",
         ]),
       ];
+}
+
+function distinctCleanPassedBenchmarkCount(benchmarks: readonly LiveBenchmarkEvidence[]): number {
+  return new Set(
+    benchmarks
+      .filter((benchmark) => benchmark.status === "passed" && benchmark.failureDomain === "none")
+      .map((benchmark) => benchmark.id),
+  ).size;
 }
 
 function lineageBlockers(

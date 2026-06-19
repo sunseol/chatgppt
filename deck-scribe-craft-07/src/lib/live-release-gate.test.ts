@@ -66,6 +66,24 @@ describe("live initial release gate", () => {
       "missing_known_limits",
     ]);
   });
+
+  test("counts only distinct passed benchmarks without failure domains", () => {
+    const result = evaluateLiveInitialReleaseGate({
+      ...readyInput(),
+      liveBenchmarks: [
+        { id: "korean_business", status: "passed", failureDomain: "none" },
+        { id: "market_research", status: "passed", failureDomain: "none" },
+        { id: "chart_report", status: "passed", failureDomain: "none" },
+        { id: "chart_report", status: "passed", failureDomain: "none" },
+        { id: "image_intro", status: "passed", failureDomain: "image" },
+      ],
+    });
+
+    expect(result.kind).toBe("blocked");
+    expect(result.passedBenchmarkCount).toBe(3);
+    if (result.kind !== "blocked") return;
+    expect(result.blockers.map((blocker) => blocker.code)).toEqual(["live_benchmark_shortfall"]);
+  });
 });
 
 function readyInput(): LiveReleaseGateInput {
