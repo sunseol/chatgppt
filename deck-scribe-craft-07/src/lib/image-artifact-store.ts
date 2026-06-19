@@ -125,7 +125,7 @@ function requireRequestMetadata(artifact: SlideImageArtifact): SlideImageRequest
   if (!artifact.request.model.trim()) {
     throw new ImageArtifactStoreError("Image artifact request model is required.");
   }
-  if (artifact.providerId === "openaiImage" && !artifact.request.requestId) {
+  if (artifact.providerId === "openaiImage" && !artifact.request.requestId?.trim()) {
     throw new ImageArtifactStoreError("OpenAI image artifacts require a provider request id.");
   }
   if (!validLatencyMs(artifact.request.latencyMs)) {

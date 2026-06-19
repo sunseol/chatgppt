@@ -124,10 +124,18 @@ describe("image artifact store", () => {
       version: 1,
       createdAt: 1_789_800_003,
     });
+    const blankRequest = storeSlideImageArtifact({
+      store,
+      projectId: "project_001",
+      artifact: { ...realImageArtifact(), request: { model: "gpt-image-2", requestId: " " } },
+      version: 1,
+      createdAt: 1_789_800_008,
+    });
 
     // Then
     expect((await rejectionMessage(invalidData)).includes("valid PNG signature")).toBe(true);
     expect((await rejectionMessage(missingRequest)).includes("request id")).toBe(true);
+    expect((await rejectionMessage(blankRequest)).includes("request id")).toBe(true);
   });
 
   test("rejects incomplete request metadata before writing image artifacts", async () => {

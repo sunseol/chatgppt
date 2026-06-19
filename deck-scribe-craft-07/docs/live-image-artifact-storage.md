@@ -19,7 +19,7 @@ Status: partial local contract
 - Rejects blank request models, missing/invalid latency, and negative or non-finite usage values before writing image bytes or metadata.
 - Measures provider-call latency in the OpenAI image adapter when the provider response omits `latencyMs`, so stored provenance duration does not silently fall back to `0`.
 - Produces provider provenance for the stored binary artifact, including prompt version, prompt hash, layout reference, request id, model/runtime, duration, auth mode, and fixture flag.
-- Rejects non-PNG image data, fake PNG data URLs without a PNG signature, and OpenAI image artifacts without `requestId`.
+- Rejects non-PNG image data, fake PNG data URLs without a PNG signature, and OpenAI image artifacts with missing or blank `requestId`.
 - `src/lib/live-image-provider-adapter.ts` links provider generation to storage in one production-oriented call.
 - The adapter passes the full prompt package and layout reference to the provider, stores successful binary output, returns stored artifact/provenance metadata, and does not write artifacts when the provider returns a classified failure.
 - `src/lib/slide-image-provider-contract.ts` rejects `provider_contract` mismatches before storage when the returned artifact provider, slide number, aspect ratio, layout reference, or prompt lineage does not match the requested prompt package.
