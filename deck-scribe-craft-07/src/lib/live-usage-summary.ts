@@ -18,6 +18,8 @@ export type LiveUsageStageSummary = {
 
 export type LiveUsageSummaryIssueCode =
   | "missing_provider_usage_summary"
+  | "incomplete_text_token_usage"
+  | "missing_image_usage_count"
   | "invalid_usage_amount"
   | "invalid_duration"
   | "invalid_retry_count"
@@ -41,6 +43,7 @@ export function evaluateLiveUsageSummary(
 ): LiveUsageSummaryResult {
   const issues = stages.flatMap((stage) => [
     ...providerUsageIssues(stage),
+    ...providerSpecificUsageIssues(stage),
     ...usageAmountIssues(stage),
     ...durationIssues(stage),
     ...retryIssues(stage),
@@ -81,6 +84,36 @@ function usageSummaryHasUsageEvidence(usage: ProviderUsageSummary): boolean {
     usage.imageCount !== undefined ||
     usage.estimatedCostUsd !== undefined
   );
+}
+
+function providerSpecificUsageIssues(
+  stage: LiveUsageStageSummary,
+): readonly LiveUsageSummaryIssue[] {
+  const hasUsageSignal = stage.usage !== undefined && usageSummaryHasUsageEvidence(stage.usage);
+  if (!hasUsageSignal) return [];
+
+  return [
+    ...(isCodexTextStage(stage) && !hasCompleteTextTokenUsage(stage.usage)
+      ? [
+          issue(
+            "incomplete_text_token_usage",
+            stage,
+            "Codex usage summaries require both input and output token counts.",
+          ),
+        ]
+      : []),
+    ...(isImageGenerationStage(stage) && stage.usage?.imageCount === undefined
+      ? [issue("missing_image_usage_count", stage, "Image usage summaries require an image count.")]
+      : []),
+  ];
+}
+
+function isCodexTextStage(stage: LiveUsageStageSummary): boolean {
+  return stage.providerKind === "codex" && !isImageGenerationStage(stage);
+}
+
+function hasCompleteTextTokenUsage(usage: ProviderUsageSummary | undefined): boolean {
+  return usage?.inputTokens !== undefined && usage.outputTokens !== undefined;
 }
 
 function usageAmountIssues(stage: LiveUsageStageSummary): readonly LiveUsageSummaryIssue[] {

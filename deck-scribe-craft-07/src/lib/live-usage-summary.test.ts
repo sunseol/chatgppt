@@ -85,6 +85,40 @@ describe("live usage summary", () => {
     expect(result.issues.map((issue) => issue.code)).toEqual(["missing_provider_usage_summary"]);
   });
 
+  test("blocks incomplete provider-specific usage payloads", () => {
+    // Given
+    const stages = [
+      stage("plan", {
+        providerUsageProvided: true,
+        usage: { inputTokens: 1_000 },
+      }),
+      stage("generate", {
+        providerKind: "openaiImage",
+        providerUsageProvided: true,
+        usage: {
+          estimatedCostUsd: 0.2,
+          imageBillingDisclosure: {
+            apiKeyRequired: true,
+            userConfirmed: true,
+            label: "API key billing confirmed",
+          },
+        },
+        costLabel: "estimate",
+      }),
+    ];
+
+    // When
+    const result = evaluateLiveUsageSummary(stages);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "incomplete_text_token_usage",
+      "missing_image_usage_count",
+    ]);
+  });
+
   test("blocks estimated provider costs labelled as actual charges", () => {
     // Given
     const stages = [
