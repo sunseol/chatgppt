@@ -144,7 +144,7 @@ describe("live readiness documentation", () => {
     expect(textPipelineCutover.includes("DesignSystemSchema")).toBe(true);
     expect(textPipelineCutover.includes("LayoutIRSchema")).toBe(true);
     expect(textPipelineCutover.includes("schema_repair_exhausted")).toBe(true);
-    expect(textPipelineCutover.includes("fixtureFallbackAllowed: false")).toBe(true);
+    expect(textPipelineCutover.includes("non-session Codex auth")).toBe(true);
   });
 
   test("records the live image path decision contract", () => {

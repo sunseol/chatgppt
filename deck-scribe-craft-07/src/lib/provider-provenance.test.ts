@@ -76,6 +76,28 @@ describe("provider artifact provenance", () => {
     expect(validation.issues.map((issue) => issue.code)).toEqual(["missing_request_id"]);
   });
 
+  test("requires Codex artifacts to use the authenticated session", () => {
+    const provenance = createProviderArtifactProvenance({
+      artifactId: "plan_live_no_session",
+      executionMode: "production",
+      providerKind: "codex",
+      authMode: "none",
+      modelOrRuntime: "codex-cli 0.141.0",
+      promptVersion: "deck_plan@v1",
+      durationMs: 1400,
+      inputArtifactIds: ["research_live_1"],
+      turnId: "turn_001",
+      threadId: "thread_001",
+      fixture: false,
+    });
+
+    const validation = validateProviderArtifactProvenance(provenance);
+
+    expect(validation.kind).toBe("incomplete");
+    if (validation.kind !== "incomplete") return;
+    expect(validation.issues.map((issue) => issue.code)).toEqual(["non_codex_session_auth"]);
+  });
+
   test("blocks approval when provenance identity is incomplete", () => {
     const provenance = createProviderArtifactProvenance({
       artifactId: "plan_live_1",

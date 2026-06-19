@@ -8,7 +8,7 @@ Scope: DF-214 Deck Plan, Design System, and Layout IR Live cutover contract.
 
 `src/lib/live-text-pipeline-cutover.ts` defines the approval boundary for the three post-interview text artifacts:
 
-- Deck Plan, Design System, and Layout IR must each come from separate production Codex turns.
+- Deck Plan, Design System, and Layout IR must each come from separate production Codex turns using authenticated `codex_session` auth.
 - Every artifact must carry complete provider provenance with thread id, turn id, runtime, prompt version, duration, and input artifact ids.
 - Design System provenance must cite the live Deck Plan artifact.
 - Layout IR provenance must cite both the live Deck Plan and live Design System artifacts.
@@ -29,7 +29,7 @@ Scope: DF-214 Deck Plan, Design System, and Layout IR Live cutover contract.
 
 - `src/lib/live-text-pipeline-cutover.test.ts` accepts a five-slide live bundle with separate plan/design/layout turn provenance.
 - It schedules a repair turn for invalid Layout IR schema output and blocks after two failed repair attempts.
-- It blocks mock/fixture provenance with no fixture fallback.
+- It blocks mock/fixture provenance and non-session Codex auth with no fixture fallback.
 - It blocks slide refs that drift from the shared deck context or design system.
 - `src/lib/live-text-artifact-persistence.test.ts` verifies accepted App Server outputs persist live artifact ids/provenance, render Layout IR into a project layout prototype, and return a live repair turn instead of storing invalid plan output.
 - `src/lib/live-text-production-workflow.test.ts` verifies production App Server jobs are run before persistence and that a failed structured job stops before artifact persistence.

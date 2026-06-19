@@ -28,6 +28,7 @@ export type ProviderProvenanceIssueCode =
   | "missing_prompt_version"
   | "invalid_duration"
   | "missing_thread_or_turn"
+  | "non_codex_session_auth"
   | "missing_request_id"
   | "mock_lineage_contamination"
   | "fixture_lineage_contamination";
@@ -129,13 +130,26 @@ function commonIssues(provenance: ProviderArtifactProvenance): readonly Provider
 function identityIssues(
   provenance: ProviderArtifactProvenance,
 ): readonly ProviderProvenanceIssue[] {
-  if (provenance.providerKind === "codex" && (!provenance.turnId || !provenance.threadId)) {
+  if (provenance.providerKind === "codex") {
     return [
-      issue(
-        "missing_thread_or_turn",
-        provenance,
-        "Codex artifacts require both turn id and thread id.",
-      ),
+      ...(!provenance.turnId || !provenance.threadId
+        ? [
+            issue(
+              "missing_thread_or_turn",
+              provenance,
+              "Codex artifacts require both turn id and thread id.",
+            ),
+          ]
+        : []),
+      ...(provenance.authMode === "codex_session"
+        ? []
+        : [
+            issue(
+              "non_codex_session_auth",
+              provenance,
+              "Codex artifacts require the authenticated Codex session.",
+            ),
+          ]),
     ];
   }
 
