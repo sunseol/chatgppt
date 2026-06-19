@@ -1,6 +1,5 @@
 import { describe, expect, test } from "bun:test";
 import {
-  LIVE_BENCHMARK_IDS,
   evaluateLiveBenchmarkEvidence,
   type LiveBenchmarkEvidenceBundle,
   type LiveBenchmarkRun,
@@ -8,36 +7,39 @@ import {
 
 const PACKAGE_SHA = "93b567bcdcc6dba485c6869f456068ceb7b4b1a8e434da7e3c91f49a5f7390e5";
 
-describe("live benchmark scenario uniqueness", () => {
-  test("blocks duplicate benchmark scenarios from counting as five Live benchmark outputs", () => {
+describe("live benchmark export artifact uniqueness", () => {
+  test("blocks passed benchmark bundles that reuse one final export artifact", () => {
     // Given
     const bundle = completeBundle({
-      runs: [...LIVE_BENCHMARK_IDS.map((id) => run(id)), run("korean_business", "duplicate")],
+      runs: [
+        passedRun("korean_business", "shared_export"),
+        passedRun("market_research", "shared_export"),
+        passedRun("chart_report", "chart_report_export"),
+        passedRun("image_intro", "image_intro_export"),
+        failedRun("revision_regeneration"),
+      ],
     });
 
     // When
     const result = evaluateLiveBenchmarkEvidence(bundle);
 
     // Then
-    expect(result.kind).toBe("blocked");
-    if (result.kind !== "blocked") return;
-    expect(result.issues.map((issue) => issue.code)).toEqual(["duplicate_benchmark_scenario"]);
+    expect(result.kind === "blocked" ? result.issues.map((issue) => issue.code) : []).toEqual([
+      "duplicate_output_bundle_artifact",
+    ]);
   });
 });
 
-function completeBundle(
-  patch: Partial<LiveBenchmarkEvidenceBundle> = {},
-): LiveBenchmarkEvidenceBundle {
+function completeBundle(patch: Partial<LiveBenchmarkEvidenceBundle>): LiveBenchmarkEvidenceBundle {
   return {
     reportPath: "docs/live-benchmark-report.md",
     packageArchiveSha256: PACKAGE_SHA,
-    runs: LIVE_BENCHMARK_IDS.map((id) => run(id)),
+    runs: [],
     ...patch,
   };
 }
 
-function run(id: (typeof LIVE_BENCHMARK_IDS)[number], pathSuffix: string = id): LiveBenchmarkRun {
-  const outputBundlePath = `bundles/${id}-${pathSuffix}.zip`;
+function passedRun(id: LiveBenchmarkRun["id"], exportArtifactId: string): LiveBenchmarkRun {
   return {
     id,
     status: "passed",
@@ -46,14 +48,14 @@ function run(id: (typeof LIVE_BENCHMARK_IDS)[number], pathSuffix: string = id): 
     score: 92,
     mockScore: 0,
     goldenPathCompleted: true,
-    outputBundlePath,
+    outputBundlePath: `bundles/${id}.zip`,
     outputBundle: {
-      path: outputBundlePath,
+      path: `bundles/${id}.zip`,
       benchmarkId: id,
       packageArchiveSha256: PACKAGE_SHA,
       reportPath: `reports/${id}.md`,
       goldenPathReportPath: "live_e2e_report.md",
-      exportArtifactId: `${id}_${pathSuffix}_export`,
+      exportArtifactId,
       screenshotCount: 10,
       sourceCount: 3,
       sourceArtifactIds: [`${id}_source_1`, `${id}_source_2`, `${id}_source_3`],
@@ -65,13 +67,17 @@ function run(id: (typeof LIVE_BENCHMARK_IDS)[number], pathSuffix: string = id): 
         `${id}_image_4`,
         `${id}_image_5`,
       ],
-      liveImageRequestIds: [
-        `${id}_img_req_1`,
-        `${id}_img_req_2`,
-        `${id}_img_req_3`,
-        `${id}_img_req_4`,
-        `${id}_img_req_5`,
-      ],
+      liveImageRequestIds: Array.from({ length: 5 }, (_, index) => `${id}_img_req_${index + 1}`),
     },
+  };
+}
+
+function failedRun(id: LiveBenchmarkRun["id"]): LiveBenchmarkRun {
+  return {
+    ...passedRun(id, ""),
+    status: "failed",
+    failureDomain: "editor",
+    score: 0,
+    goldenPathCompleted: false,
   };
 }

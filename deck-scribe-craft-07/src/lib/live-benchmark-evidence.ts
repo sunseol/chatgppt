@@ -66,6 +66,7 @@ export type LiveBenchmarkEvidenceIssueCode =
   | "output_bundle_package_mismatch"
   | "output_bundle_report_missing"
   | "output_bundle_export_missing"
+  | "duplicate_output_bundle_artifact"
   | "output_bundle_golden_path_evidence_missing"
   | "mock_score_contamination"
   | "missing_failure_domain"

@@ -35,6 +35,7 @@ export function outputBundleIssues(
   const missingExports = runs
     .filter((run) => run.status === "passed" && !run.outputBundle.exportArtifactId.trim())
     .map((run) => run.id);
+  const duplicateExportArtifacts = duplicatePassedExportArtifacts(runs);
   const missingGoldenPathEvidence = runs
     .filter((run) => run.status === "passed" && !hasGoldenPathEvidence(run.outputBundle))
     .map((run) => run.id);
@@ -99,6 +100,15 @@ export function outputBundleIssues(
             missingExports,
           ),
         ]),
+    ...(duplicateExportArtifacts.length === 0
+      ? []
+      : [
+          issue(
+            "duplicate_output_bundle_artifact",
+            "Passed Live benchmark bundles must reference distinct final export artifacts.",
+            duplicateExportArtifacts,
+          ),
+        ]),
     ...(missingGoldenPathEvidence.length === 0
       ? []
       : [
@@ -123,6 +133,23 @@ function duplicateOutputBundleRefs(runs: readonly LiveBenchmarkRun[]): readonly 
       continue;
     }
     duplicates.push(`${firstRunId}:${run.id}:${path}`);
+  }
+  return duplicates;
+}
+
+function duplicatePassedExportArtifacts(runs: readonly LiveBenchmarkRun[]): readonly string[] {
+  const seen = new Map<string, LiveBenchmarkId>();
+  const duplicates: string[] = [];
+  for (const run of runs) {
+    if (run.status !== "passed") continue;
+    const exportArtifactId = run.outputBundle.exportArtifactId.trim();
+    if (!exportArtifactId) continue;
+    const firstRunId = seen.get(exportArtifactId);
+    if (firstRunId === undefined) {
+      seen.set(exportArtifactId, run.id);
+      continue;
+    }
+    duplicates.push(`${firstRunId}:${run.id}:${exportArtifactId}`);
   }
   return duplicates;
 }
