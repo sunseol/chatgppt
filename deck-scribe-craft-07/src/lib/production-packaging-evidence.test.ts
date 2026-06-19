@@ -173,6 +173,28 @@ describe("production packaging evidence", () => {
     if (result.kind !== "blocked") return;
     expect(result.issues.map((issue) => issue.code)).toEqual(["missing_release_trust_evidence"]);
   });
+
+  test("blocks release trust claims backed only by developer-local assessment evidence", () => {
+    // Given
+    const evidence = completeEvidence({
+      nativeMacosReleaseTrust: {
+        signature: "developer_id",
+        teamIdentifier: "TEAMID1234",
+        notarized: true,
+        stapled: true,
+        gatekeeperAccepted: true,
+        releaseTrustEvidencePath: "/Users/jake/chatgppt/release-evidence/macos-release-trust.json",
+      },
+    });
+
+    // When
+    const result = evaluateProductionPackagingEvidence(evidence);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual(["missing_release_trust_evidence"]);
+  });
 });
 
 function completeEvidence(

@@ -1,3 +1,5 @@
+import { hasNonSyntheticJsonEvidencePath } from "./live-evidence-path";
+
 export const CLEAN_MACHINE_STEPS = [
   "install_app",
   "codex_login",
@@ -161,7 +163,7 @@ function macosReleaseTrustIssues(
             ["spctl"],
           ),
         ]),
-    ...(validReleaseTrustEvidencePath(trust.releaseTrustEvidencePath)
+    ...(hasNonSyntheticJsonEvidencePath(trust.releaseTrustEvidencePath)
       ? []
       : [
           issue(
@@ -251,12 +253,6 @@ function hasNativeMacosBundle(evidence: ProductionPackagingEvidence): boolean {
 const isSha256 = (value: string): boolean => /^[a-f0-9]{64}$/.test(value);
 
 const isDeveloperTeamIdentifier = (value: string): boolean => /^[A-Z0-9]{10}$/.test(value);
-
-function validReleaseTrustEvidencePath(value: string | undefined): boolean {
-  if (value === undefined || !value.endsWith(".json")) return false;
-  const normalized = value.toLowerCase();
-  return !["mock", "fixture", "test", "fake"].some((marker) => normalized.includes(marker));
-}
 
 function issue(
   code: ProductionPackagingIssueCode,
