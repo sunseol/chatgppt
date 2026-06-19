@@ -26,7 +26,7 @@ describe("live packaging documentation", () => {
       true,
     );
     expect(progress.includes("DF-245 live update")).toBe(true);
-    expect(decision.includes("629 tests")).toBe(true);
+    expect(decision.includes("664 tests")).toBe(true);
   });
 });
 

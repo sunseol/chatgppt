@@ -181,7 +181,7 @@ describe("live golden path E2E evidence", () => {
     expect(result.kind).toBe("blocked");
     if (result.kind !== "blocked") return;
     expect(result.issues.map((issue) => issue.code).join("|")).toBe(
-      "validation_bundle_duplicate_reference|duplicate_live_image_artifact|insufficient_live_image_artifacts",
+      "validation_bundle_duplicate_reference|duplicate_live_image_artifact|duplicate_live_image_request|insufficient_live_image_artifacts",
     );
   });
 

@@ -137,15 +137,27 @@ function imageArtifactIssues(
   const liveImages = liveImageArtifacts(imageArtifacts);
   const artifactIds = liveImages.map((artifact) => artifact.artifactId);
   const distinctArtifactIds = new Set(artifactIds);
-  const duplicates = duplicateValues(artifactIds);
+  const duplicateArtifactIds = duplicateValues(artifactIds);
+  const duplicateRequestIds = duplicateValues(
+    liveImages.map((artifact) => artifact.requestId?.trim() ?? ""),
+  );
   return [
-    ...(duplicates.length === 0
+    ...(duplicateArtifactIds.length === 0
       ? []
       : [
           liveGoldenPathIssue(
             "duplicate_live_image_artifact",
             "Live Golden Path image artifacts must be distinct.",
-            duplicates,
+            duplicateArtifactIds,
+          ),
+        ]),
+    ...(duplicateRequestIds.length === 0
+      ? []
+      : [
+          liveGoldenPathIssue(
+            "duplicate_live_image_request",
+            "Live Golden Path image artifacts must come from distinct provider requests.",
+            duplicateRequestIds,
           ),
         ]),
     ...(distinctArtifactIds.size >= 5
