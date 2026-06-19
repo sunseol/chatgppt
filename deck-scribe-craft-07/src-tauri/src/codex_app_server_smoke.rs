@@ -19,6 +19,8 @@ pub struct CodexAppServerSmokeEvidence {
     pub thread_id: String,
     pub turn_id: String,
     pub turn_completed: bool,
+    pub protocol_line_count: usize,
+    pub stderr_log_line_count: usize,
     pub event_methods: Vec<String>,
     pub final_text: String,
 }
@@ -136,6 +138,8 @@ pub fn run_codex_app_server_smoke() -> SmokeResult<CodexAppServerSmokeEvidence> 
         thread_id,
         turn_id,
         turn_completed: accumulator.turn_completed,
+        protocol_line_count: session.protocol_line_count(),
+        stderr_log_line_count: session.stderr_log_line_count(),
         event_methods,
         final_text,
     })

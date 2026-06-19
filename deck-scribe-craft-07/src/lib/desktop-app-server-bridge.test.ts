@@ -30,6 +30,8 @@ describe("desktop app server bridge", () => {
           threadId: "thread_live",
           turnId: "turn_live",
           turnCompleted: true,
+          protocolLineCount: 7,
+          stderrLogLineCount: 1,
           eventMethods: ["turn/started", "turn/completed"],
           finalText: '{"status":"ok"}',
         }),
@@ -45,6 +47,8 @@ describe("desktop app server bridge", () => {
     if (result.kind !== "completed") throw new Error("Expected completed bridge smoke.");
     expect(result.evidence.threadId).toBe("thread_live");
     expect(result.evidence.turnId).toBe("turn_live");
+    expect(result.evidence.protocolLineCount).toBe(7);
+    expect(result.evidence.stderrLogLineCount).toBe(1);
   });
 
   test("returns typed command errors from failed smoke invocations", async () => {
@@ -90,6 +94,8 @@ describe("desktop app server bridge", () => {
             turnId: "turn_live",
             turnCompleted: true,
             durationMs: 2_400,
+            protocolLineCount: 11,
+            stderrLogLineCount: 2,
             eventMethods: ["turn/started", "item/completed", "turn/completed"],
             notifications: [
               {
@@ -120,6 +126,8 @@ describe("desktop app server bridge", () => {
     // Then
     if (result.kind !== "completed") throw new Error("Expected completed structured turn.");
     expect(result.evidence.runtime).toBe("codex app-server --stdio");
+    expect(result.evidence.protocolLineCount).toBe(11);
+    expect(result.evidence.stderrLogLineCount).toBe(2);
     expect(result.evidence.notifications.map((notification) => notification.method)).toEqual([
       "turn/started",
       "turn/completed",

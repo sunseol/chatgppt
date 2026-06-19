@@ -212,6 +212,8 @@ function sequenceStructuredTurnRuntime(
           turnId,
           turnCompleted: true,
           durationMs: 1_900,
+          protocolLineCount: 5,
+          stderrLogLineCount: 0,
           eventMethods: ["turn/started", "item/completed", "turn/completed"],
           notifications: [
             { method: "turn/started", params: { threadId, turn: { id: turnId } } },

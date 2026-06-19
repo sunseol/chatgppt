@@ -6,7 +6,10 @@ use serde_json::Value;
 use std::{
     io::{BufRead, BufReader, Write},
     process::{Child, ChildStdin, Command, Stdio},
-    sync::mpsc::{self, Receiver, RecvTimeoutError},
+    sync::{
+        mpsc::{self, Receiver, RecvTimeoutError},
+        Arc, Mutex,
+    },
     thread,
     time::{Duration, Instant},
 };
@@ -15,6 +18,8 @@ pub(super) struct AppServerSession {
     child: Child,
     stdin: ChildStdin,
     receiver: Receiver<String>,
+    stderr_log_lines: Arc<Mutex<Vec<String>>>,
+    protocol_line_count: usize,
     next_id: u64,
     notifications: Vec<Value>,
 }
@@ -33,7 +38,7 @@ impl AppServerSession {
             .arg("--stdio")
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
-            .stderr(Stdio::null())
+            .stderr(Stdio::piped())
             .spawn()
             .map_err(|error| {
                 CodexAppServerSmokeError::new(
@@ -53,6 +58,12 @@ impl AppServerSession {
                 "app-server stdout is unavailable".to_owned(),
             )
         })?;
+        let stderr = child.stderr.take().ok_or_else(|| {
+            CodexAppServerSmokeError::new(
+                "stderr_missing",
+                "app-server stderr is unavailable".to_owned(),
+            )
+        })?;
         let (sender, receiver) = mpsc::channel();
         thread::spawn(move || {
             let reader = BufReader::new(stdout);
@@ -67,10 +78,26 @@ impl AppServerSession {
                 }
             }
         });
+        let stderr_log_lines = Arc::new(Mutex::new(Vec::new()));
+        let stderr_log_lines_reader = Arc::clone(&stderr_log_lines);
+        thread::spawn(move || {
+            let reader = BufReader::new(stderr);
+            for line in reader.lines() {
+                match line {
+                    Ok(value) => match stderr_log_lines_reader.lock() {
+                        Ok(mut lines) => lines.push(value),
+                        Err(_) => break,
+                    },
+                    Err(_) => break,
+                }
+            }
+        });
         Ok(Self {
             child,
             stdin,
             receiver,
+            stderr_log_lines,
+            protocol_line_count: 0,
             next_id: 1,
             notifications: Vec::new(),
         })
@@ -138,6 +165,17 @@ impl AppServerSession {
         std::mem::take(&mut self.notifications)
     }
 
+    pub(super) fn protocol_line_count(&self) -> usize {
+        self.protocol_line_count
+    }
+
+    pub(super) fn stderr_log_line_count(&self) -> usize {
+        match self.stderr_log_lines.lock() {
+            Ok(lines) => lines.len(),
+            Err(_) => 0,
+        }
+    }
+
     fn wait_for_response(
         &mut self,
         id: u64,
@@ -154,7 +192,7 @@ impl AppServerSession {
         }
     }
 
-    fn read_message(&self, deadline: Instant, wait_target: &str) -> SmokeResult<Value> {
+    fn read_message(&mut self, deadline: Instant, wait_target: &str) -> SmokeResult<Value> {
         let now = Instant::now();
         if now >= deadline {
             return Err(CodexAppServerSmokeError::new(
@@ -176,6 +214,7 @@ impl AppServerSession {
                     format!("app-server stdout closed while waiting for {wait_target}"),
                 ),
             })?;
+        self.protocol_line_count = self.protocol_line_count.saturating_add(1);
         serde_json::from_str(&line).map_err(|error| {
             CodexAppServerSmokeError::new(
                 "protocol_parse_failed",

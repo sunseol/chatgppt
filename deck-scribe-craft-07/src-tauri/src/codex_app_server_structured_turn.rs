@@ -28,6 +28,8 @@ pub struct CodexAppServerStructuredTurnEvidence {
     pub turn_id: String,
     pub turn_completed: bool,
     pub duration_ms: u64,
+    pub protocol_line_count: usize,
+    pub stderr_log_line_count: usize,
     pub event_methods: Vec<String>,
     pub notifications: Vec<Value>,
 }
@@ -52,6 +54,8 @@ pub fn run_codex_app_server_structured_turn(
         turn_id,
         turn_completed: true,
         duration_ms,
+        protocol_line_count: session.protocol_line_count(),
+        stderr_log_line_count: session.stderr_log_line_count(),
         event_methods,
         notifications,
     })

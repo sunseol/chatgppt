@@ -18,15 +18,21 @@ describe("live App Server bootstrap documentation", () => {
     expect(textSmoke.includes("Stdio Shutdown and Channel Cleanup Recheck")).toBe(true);
     expect(textSmoke.includes("3 parseable stdout protocol JSON lines")).toBe(true);
     expect(textSmoke.includes("stderr contained 0 lines")).toBe(true);
+    expect(textSmoke.includes("protocolLineCount")).toBe(true);
+    expect(textSmoke.includes("stderrLogLineCount")).toBe(true);
     expect(textSmoke.includes("shutdown after stdin close took 4 ms")).toBe(true);
     expect(textSmoke.includes(STDIO_SHUTDOWN_DIGEST)).toBe(true);
 
     expect(progress.includes("DF-210 live update")).toBe(true);
     expect(progress.includes("The child exited with code `0`, signal `null`")).toBe(true);
+    expect(progress.includes("protocolLineCount")).toBe(true);
+    expect(progress.includes("stderrLogLineCount")).toBe(true);
     expect(progress.includes(STDIO_SHUTDOWN_DIGEST)).toBe(true);
 
     expect(decision.includes("DF-210 stdio shutdown/channel cleanup probe")).toBe(true);
     expect(decision.includes("clean macOS account reproduction")).toBe(true);
+    expect(decision.includes("protocolLineCount")).toBe(true);
+    expect(decision.includes("stderrLogLineCount")).toBe(true);
     expect(decision.includes(STDIO_SHUTDOWN_DIGEST)).toBe(true);
   });
 });

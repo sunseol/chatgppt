@@ -137,6 +137,8 @@ function turnEvidence(artifactId: string, payload: unknown) {
     turnId,
     turnCompleted: true,
     durationMs: 2_400,
+    protocolLineCount: 5,
+    stderrLogLineCount: 0,
     eventMethods: ["turn/started", "item/completed", "turn/completed"],
     notifications: [
       { method: "turn/started", params: { threadId, turn: { id: turnId } } },

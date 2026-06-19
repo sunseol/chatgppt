@@ -13,6 +13,8 @@ const CodexAppServerSmokeEvidenceSchema = z.object({
   threadId: z.string(),
   turnId: z.string(),
   turnCompleted: z.boolean(),
+  protocolLineCount: z.number().int().nonnegative(),
+  stderrLogLineCount: z.number().int().nonnegative(),
   eventMethods: z.array(z.string()),
   finalText: z.string(),
 });
@@ -28,6 +30,8 @@ const CodexAppServerStructuredTurnEvidenceSchema = z.object({
   turnId: z.string(),
   turnCompleted: z.boolean(),
   durationMs: z.number().int().nonnegative(),
+  protocolLineCount: z.number().int().nonnegative(),
+  stderrLogLineCount: z.number().int().nonnegative(),
   eventMethods: z.array(z.string()),
   notifications: z.array(CodexAppServerJsonRpcNotificationSchema),
 });
@@ -44,6 +48,8 @@ export type CodexAppServerStructuredTurnEvidence = {
   readonly turnId: string;
   readonly turnCompleted: boolean;
   readonly durationMs: number;
+  readonly protocolLineCount: number;
+  readonly stderrLogLineCount: number;
   readonly eventMethods: readonly string[];
   readonly notifications: readonly CodexAppServerJsonRpcNotification[];
 };
@@ -159,6 +165,8 @@ function parseStructuredTurnEvidence(value: unknown): CodexAppServerStructuredTu
     turnId: parsed.turnId,
     turnCompleted: parsed.turnCompleted,
     durationMs: parsed.durationMs,
+    protocolLineCount: parsed.protocolLineCount,
+    stderrLogLineCount: parsed.stderrLogLineCount,
     eventMethods: parsed.eventMethods,
     notifications: parsed.notifications,
   };

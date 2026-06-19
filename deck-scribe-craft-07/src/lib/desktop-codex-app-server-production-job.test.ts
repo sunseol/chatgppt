@@ -48,6 +48,8 @@ describe("desktop production Codex App Server job", () => {
           turnId: "turn_live_brief",
           turnCompleted: true,
           durationMs: 3_200,
+          protocolLineCount: 5,
+          stderrLogLineCount: 0,
           eventMethods: ["turn/started", "item/completed", "turn/completed"],
           notifications: [
             {
