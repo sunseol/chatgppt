@@ -16,6 +16,7 @@ export type ImagePathBlockerCode =
   | "missing_real_image_artifact"
   | "missing_binary_artifact"
   | "invalid_binary_artifact_path"
+  | "binary_artifact_slide_mismatch"
   | "invalid_image_binary"
   | "artifact_provider_mismatch"
   | "missing_request_model"
@@ -140,7 +141,7 @@ function artifactBlockers(input: {
             message: "The successful image artifact must contain PNG binary data.",
           },
         ]),
-    ...binaryArtifactPathBlockers(input.binaryArtifactPath),
+    ...binaryArtifactPathBlockers(input.binaryArtifactPath, artifact.slideNumber),
     ...(artifact.providerId === "openaiImage" && !artifact.request?.requestId
       ? [
           {
@@ -175,6 +176,7 @@ function requestModelBlockers(
 
 function binaryArtifactPathBlockers(
   binaryArtifactPath: string | undefined,
+  artifactSlideNumber: number,
 ): readonly ImagePathBlocker[] {
   if (!binaryArtifactPath?.trim()) {
     return [
@@ -184,17 +186,31 @@ function binaryArtifactPathBlockers(
       },
     ];
   }
-  if (isVersionedProjectImagePath(binaryArtifactPath)) return [];
+  const pathSlideNumber = versionedProjectImageSlideNumber(binaryArtifactPath);
+  if (pathSlideNumber === undefined) {
+    return [
+      {
+        code: "invalid_binary_artifact_path",
+        message:
+          "The successful image artifact path must point to versioned project image storage.",
+      },
+    ];
+  }
+  if (pathSlideNumber === artifactSlideNumber) return [];
   return [
     {
-      code: "invalid_binary_artifact_path",
-      message: "The successful image artifact path must point to versioned project image storage.",
+      code: "binary_artifact_slide_mismatch",
+      message: "The stored binary artifact path must match the successful image slide number.",
     },
   ];
 }
 
-function isVersionedProjectImagePath(path: string): boolean {
-  return /^projects\/[A-Za-z0-9_-]+\/slides\/images\/slide_\d{3}\.v\d+\.png$/.test(path);
+function versionedProjectImageSlideNumber(path: string): number | undefined {
+  const match = /^projects\/[A-Za-z0-9_-]+\/slides\/images\/slide_(\d{3})\.v\d+\.png$/.exec(path);
+  if (!match) return undefined;
+  const value = match[1];
+  if (value === undefined) return undefined;
+  return Number.parseInt(value, 10);
 }
 
 function decisionMetadataBlockers(input: {
