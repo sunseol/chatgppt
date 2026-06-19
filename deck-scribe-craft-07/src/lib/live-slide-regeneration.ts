@@ -9,6 +9,7 @@ import type { SlideRevisionRequest } from "./slide-revision-model";
 export type LiveSlideRegenerationIssueCode =
   | "missing_must_keep_targets"
   | "missing_must_change_targets"
+  | "blank_revision_target"
   | "revision_targets_overlap"
   | "slide_spec_mismatch"
   | "original_slide_not_approved"

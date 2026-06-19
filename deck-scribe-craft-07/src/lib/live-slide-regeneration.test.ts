@@ -92,6 +92,31 @@ describe("live full-slide regeneration", () => {
     );
   });
 
+  test("blocks regeneration requests with blank target entries", () => {
+    // Given
+    const revisionRequest = {
+      ...revisionRequestFixture(),
+      mustKeep: ["title text", "  "],
+      mustChange: ["chart area size"],
+    };
+
+    // When
+    const result = buildLiveSlideRegenerationRequest({
+      revisionRequest,
+      deckContextId: "deckctx_001",
+      designSystemId: "design_001",
+      slideSpec: slideSpecFixture(),
+      currentSlide: approvedSlideFixture(),
+      originalBackgroundArtifactId: "project_001_image_slide_003_v1",
+      originalBackgroundRequestId: "img_req_original",
+    });
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual(["blank_revision_target"]);
+  });
+
   test("stores a new background artifact version and keeps the approved slide until approval", async () => {
     // Given
     const stored = await storedBackgrounds();

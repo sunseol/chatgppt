@@ -9,6 +9,7 @@ export function requestIssues(input: {
   return [
     ...mustKeepIssues(input.revisionRequest),
     ...mustChangeIssues(input.revisionRequest),
+    ...blankTargetIssues(input.revisionRequest),
     ...targetOverlapIssues(input.revisionRequest),
     ...originalBackgroundIssues(input),
   ];
@@ -56,6 +57,23 @@ function targetOverlapIssues(
           message: "Live regeneration cannot keep and change the same target.",
         },
       ];
+}
+
+function blankTargetIssues(
+  revisionRequest: SlideRevisionRequest,
+): readonly LiveSlideRegenerationIssue[] {
+  const hasBlankTarget = [...revisionRequest.mustKeep, ...revisionRequest.mustChange].some(
+    (target) => !target.trim(),
+  );
+  return hasBlankTarget
+    ? [
+        {
+          code: "blank_revision_target" as const,
+          slideNumber: revisionRequest.slideNumber,
+          message: "Live regeneration targets cannot be blank.",
+        },
+      ]
+    : [];
 }
 
 function originalBackgroundIssues(input: {
