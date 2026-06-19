@@ -1,4 +1,5 @@
 import { scenarioEvidenceDetailIssues } from "./live-interruption-evidence-details";
+import { partialImageResumeIssues } from "./live-interruption-image-resume";
 import { interruptionReportPathIssues } from "./live-interruption-report-path";
 
 export const LIVE_INTERRUPTION_SCENARIOS = [
@@ -172,29 +173,6 @@ function completedArtifactLossIssues(
           "completed_artifact_lost",
           "Completed artifacts must survive restart recovery.",
           lost,
-        ),
-      ];
-}
-
-function partialImageResumeIssues(
-  scenarios: readonly LiveInterruptionScenarioEvidence[],
-): readonly LiveInterruptionIssue[] {
-  const imageScenario = scenarios.find((scenario) => scenario.id === "image_partial_resume");
-  if (!imageScenario) return [];
-  const resumedCompleted = imageScenario.resumedArtifactIds.filter((artifactId) =>
-    imageScenario.completedArtifactIdsBefore.includes(artifactId),
-  );
-  const missedPending = imageScenario.pendingImageArtifactIds.filter(
-    (artifactId) => !imageScenario.resumedArtifactIds.includes(artifactId),
-  );
-  const refs = [...resumedCompleted, ...missedPending];
-  return refs.length === 0
-    ? []
-    : [
-        issue(
-          "unsafe_partial_image_resume",
-          "Partial image resume must retry only unfinished image artifacts.",
-          refs,
         ),
       ];
 }
