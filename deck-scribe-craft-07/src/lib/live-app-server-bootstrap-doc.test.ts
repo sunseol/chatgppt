@@ -21,6 +21,8 @@ describe("live App Server bootstrap documentation", () => {
     expect(textSmoke.includes("protocolLineCount")).toBe(true);
     expect(textSmoke.includes("stderrLogLineCount")).toBe(true);
     expect(textSmoke.includes("invalid_smoke_evidence")).toBe(true);
+    expect(textSmoke.includes("invalid_structured_turn_evidence")).toBe(true);
+    expect(textSmoke.includes("preserved notifications prove a completed")).toBe(true);
     expect(textSmoke.includes("completed protocol health turn")).toBe(true);
     expect(textSmoke.includes("blank completed health turns")).toBe(true);
     expect(textSmoke.includes("same-pid restart evidence")).toBe(true);
@@ -34,6 +36,7 @@ describe("live App Server bootstrap documentation", () => {
     expect(progress.includes("protocolLineCount")).toBe(true);
     expect(progress.includes("stderrLogLineCount")).toBe(true);
     expect(progress.includes("invalid_smoke_evidence")).toBe(true);
+    expect(progress.includes("invalid_structured_turn_evidence")).toBe(true);
     expect(progress.includes("DF-210 local contract update")).toBe(true);
     expect(progress.includes("blank completed health turns")).toBe(true);
     expect(progress.includes("blank or CLI-mismatched `appServerVersion`")).toBe(true);
@@ -45,6 +48,7 @@ describe("live App Server bootstrap documentation", () => {
     expect(decision.includes("protocolLineCount")).toBe(true);
     expect(decision.includes("stderrLogLineCount")).toBe(true);
     expect(decision.includes("invalid_smoke_evidence")).toBe(true);
+    expect(decision.includes("invalid_structured_turn_evidence")).toBe(true);
     expect(decision.includes("blank completed health turns")).toBe(true);
     expect(decision.includes("same-pid restarts")).toBe(true);
     expect(decision.includes("blank or CLI-mismatched `appServerVersion`")).toBe(true);

@@ -160,9 +160,20 @@ export async function runDesktopCodexAppServerStructuredTurn(
 
   try {
     const value = await invoke("deckforge_codex_app_server_structured_turn", { request });
+    const evidence = parseStructuredTurnEvidence(value);
+    const issue = structuredTurnEvidenceIssue(evidence);
+    if (issue) {
+      return {
+        kind: "failed",
+        error: {
+          code: "invalid_structured_turn_evidence",
+          message: issue,
+        },
+      };
+    }
     return {
       kind: "completed",
-      evidence: parseStructuredTurnEvidence(value),
+      evidence,
     };
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -196,6 +207,25 @@ function parseStructuredTurnEvidence(value: unknown): CodexAppServerStructuredTu
     eventMethods: parsed.eventMethods,
     notifications: parsed.notifications,
   };
+}
+
+function structuredTurnEvidenceIssue(
+  evidence: CodexAppServerStructuredTurnEvidence,
+): string | null {
+  if (!evidence.runtime.trim()) return "App Server structured turn did not report a runtime.";
+  if (!evidence.threadId.trim()) return "App Server structured turn did not report a thread id.";
+  if (!evidence.turnId.trim()) return "App Server structured turn did not report a turn id.";
+  if (!evidence.turnCompleted) return "App Server structured turn did not complete.";
+  if (evidence.protocolLineCount <= 0) {
+    return "App Server structured turn did not capture stdout protocol frames.";
+  }
+  if (!evidence.eventMethods.includes("turn/completed")) {
+    return "App Server structured turn did not observe a completed turn protocol event.";
+  }
+  if (!evidence.notifications.some((notification) => notification.method === "turn/completed")) {
+    return "App Server structured turn did not preserve a completed turn notification.";
+  }
+  return null;
 }
 
 function getTauriRuntime(): DeckforgeTauriRuntime | undefined {

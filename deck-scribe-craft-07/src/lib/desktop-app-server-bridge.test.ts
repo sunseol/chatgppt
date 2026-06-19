@@ -159,4 +159,36 @@ describe("desktop app server bridge", () => {
       "turn/completed",
     ]);
   });
+
+  test("rejects structured turn evidence without a completed protocol turn", async () => {
+    // Given
+    const runtime: DeckforgeTauriRuntime = {
+      core: {
+        invoke: async () => ({
+          runtime: "codex app-server --stdio",
+          threadId: " ",
+          turnId: "",
+          turnCompleted: false,
+          durationMs: 2_400,
+          protocolLineCount: 0,
+          stderrLogLineCount: 2,
+          eventMethods: ["turn/started"],
+          notifications: [{ method: "turn/started", params: {} }],
+        }),
+      },
+    };
+
+    // When
+    const result = await runDesktopCodexAppServerStructuredTurn(
+      {
+        prompt: "Return JSON only.",
+        outputSchema: { type: "object" },
+      },
+      runtime,
+    );
+
+    // Then
+    if (result.kind !== "failed") throw new Error("Expected failed structured turn.");
+    expect(result.error.code).toBe("invalid_structured_turn_evidence");
+  });
 });
