@@ -81,6 +81,7 @@ export function getProductionImageProviderChoices(
 }
 
 function imagePathBlockers(input: {
+  readonly organizationVerification: OrganizationVerification;
   readonly billingOwner: string;
   readonly requiredPermissions: readonly string[];
   readonly feasibility: ImageProviderFeasibilityDecision;
@@ -165,10 +166,23 @@ function artifactBlockers(input: {
 }
 
 function decisionMetadataBlockers(input: {
+  readonly organizationVerification: OrganizationVerification;
   readonly billingOwner: string;
   readonly requiredPermissions: readonly string[];
+  readonly feasibility: ImageProviderFeasibilityDecision;
 }): readonly ImagePathBlocker[] {
   return [
+    ...(input.feasibility.authMode === "openaiApiKey" &&
+    input.feasibility.setup === "ready" &&
+    input.organizationVerification !== "verified"
+      ? [
+          {
+            code: "requiresOrganizationVerification" as const,
+            message:
+              "OpenAI image route evidence must retain verified organization status before locking.",
+          },
+        ]
+      : []),
     ...(input.billingOwner.trim()
       ? []
       : [

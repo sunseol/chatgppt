@@ -205,6 +205,34 @@ describe("image path decision record", () => {
     ]);
     expect(getProductionImageProviderChoices(record)).toEqual([]);
   });
+
+  test("blocks route locking when OpenAI organization verification evidence drifts", () => {
+    // Given
+    const feasibility = decideImageProviderFeasibility({
+      codexImageCapability: "unknown",
+      apiCredential: "available",
+      organizationVerification: "verified",
+    });
+
+    // When
+    const record = createImagePathDecisionRecord({
+      decisionId: "image_path_org_drift",
+      decidedAt: 1_789_700_007,
+      feasibility,
+      successfulArtifact: realImageArtifact(),
+      binaryArtifactPath: "artifacts/images/slide_001.png",
+      billingOwner: "openai_api_project",
+      requiredPermissions: ["images.generate", "model:gpt-image-2"],
+      organizationVerification: "unknown",
+    });
+
+    // Then
+    expect(record.status).toBe("blocked");
+    expect(record.blockers.map((blocker) => blocker.code)).toEqual([
+      "requiresOrganizationVerification",
+    ]);
+    expect(getProductionImageProviderChoices(record)).toEqual([]);
+  });
 });
 
 function realImageArtifact(): SlideImageArtifact {

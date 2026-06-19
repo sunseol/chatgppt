@@ -154,6 +154,7 @@ describe("live readiness documentation", () => {
     expect(imagePathDecision.includes("invalid_image_binary")).toBe(true);
     expect(imagePathDecision.includes("missing_billing_owner")).toBe(true);
     expect(imagePathDecision.includes("missing_required_permissions")).toBe(true);
+    expect(imagePathDecision.includes("stale feasibility evidence")).toBe(true);
     expect(imagePathDecision.includes("fixtureFallbackAllowed: false")).toBe(true);
     expect(imagePathDecision.includes("missing_image_path_decision")).toBe(true);
     expect(imagePathDecision.includes("image_path_not_locked")).toBe(true);
