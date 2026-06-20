@@ -15,6 +15,7 @@ export function scenarioEvidenceDetailIssues(
     .map((scenario) => scenario.id);
   const duplicateLiveJobs = duplicateLiveJobIds(scenarios);
   const duplicateSnapshots = duplicateRecoverySnapshotPaths(scenarios);
+  const noncanonicalIdentities = scenarios.flatMap(noncanonicalScenarioIdentityRefs);
   const missingSnapshots = scenarios
     .filter((scenario) => !isPersistedJsonEvidencePath(scenario.recoverySnapshotPath))
     .map((scenario) => scenario.id);
@@ -95,6 +96,15 @@ export function scenarioEvidenceDetailIssues(
             "duplicate_recovery_snapshot",
             "Each interruption scenario requires distinct recovery snapshot evidence.",
             duplicateSnapshots,
+          ),
+        ]),
+    ...(noncanonicalIdentities.length === 0
+      ? []
+      : [
+          issue(
+            "noncanonical_interruption_evidence_identity",
+            "Interruption evidence ids and paths must be stored in canonical form.",
+            noncanonicalIdentities,
           ),
         ]),
     ...(missingSnapshots.length === 0
@@ -191,6 +201,43 @@ function duplicateValues(values: readonly string[]): readonly string[] {
     seen.add(value);
   }
   return Array.from(duplicates);
+}
+
+function noncanonicalScenarioIdentityRefs(
+  scenario: LiveInterruptionScenarioEvidence,
+): readonly string[] {
+  return [
+    ...noncanonicalRef(scenario.id, "liveJobId", scenario.liveJobId),
+    ...noncanonicalRef(scenario.id, "recoverySnapshotPath", scenario.recoverySnapshotPath),
+    ...noncanonicalOptionalRef(
+      scenario.id,
+      "cancelSignalEvidencePath",
+      scenario.cancelSignalEvidencePath,
+    ),
+    ...noncanonicalOptionalRef(scenario.id, "cancelSignalJobId", scenario.cancelSignalJobId),
+    ...noncanonicalOptionalRef(
+      scenario.id,
+      "approvalGateEvidencePath",
+      scenario.approvalGateEvidencePath,
+    ),
+    ...noncanonicalOptionalRef(
+      scenario.id,
+      "exportGateEvidencePath",
+      scenario.exportGateEvidencePath,
+    ),
+  ];
+}
+
+function noncanonicalOptionalRef(
+  scenarioId: string,
+  label: string,
+  value: string | undefined,
+): readonly string[] {
+  return value === undefined ? [] : noncanonicalRef(scenarioId, label, value);
+}
+
+function noncanonicalRef(scenarioId: string, label: string, value: string): readonly string[] {
+  return value === value.trim() ? [] : [`${scenarioId}:${label}`];
 }
 
 function isPersistedJsonEvidencePath(value: string | undefined): boolean {

@@ -63,6 +63,7 @@ export type LiveInterruptionIssueCode =
   | "missing_app_cancel_snapshot"
   | "missing_cancel_signal_evidence"
   | "cancel_signal_job_mismatch"
+  | "noncanonical_interruption_evidence_identity"
   | "unsafe_recovered_job_state"
   | "completed_artifact_lost"
   | "unsafe_partial_image_resume"

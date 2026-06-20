@@ -209,6 +209,8 @@ describe("live readiness documentation", () => {
     expect(interruptionMatrix.includes("missing_recovery_snapshot")).toBe(true);
     expect(interruptionMatrix.includes("template, sample, example, or placeholder")).toBe(true);
     expect(interruptionMatrix.includes("live-interruption-template-evidence.test.ts")).toBe(true);
+    expect(interruptionMatrix.includes("live-interruption-evidence-identity.test.ts")).toBe(true);
+    expect(interruptionMatrix.includes("noncanonical_interruption_evidence_identity")).toBe(true);
     expect(interruptionMatrix.includes("duplicate_recovery_snapshot")).toBe(true);
     expect(interruptionMatrix.includes("missing_cancel_signal_evidence")).toBe(true);
     expect(interruptionMatrix.includes("persisted approval/export gate JSON paths")).toBe(true);
