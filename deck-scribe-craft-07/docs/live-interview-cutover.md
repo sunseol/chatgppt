@@ -16,6 +16,7 @@ Scope: DF-213 interview question and Interview Brief Live cutover contract.
 - question provenance must cite the project or initial prompt input artifact id supplied as `questionInputArtifactId`; otherwise `question_missing_project_input` blocks approval
 - Brief provenance must cite the question artifact id in `inputArtifactIds`; otherwise `brief_missing_question_input` blocks approval
 - Brief provenance must cite the user answer bundle id in `inputArtifactIds`; otherwise `brief_missing_answer_input` blocks approval
+- the user answer bundle id must be separate from the live question artifact id; otherwise `brief_reused_question_answer` blocks approval
 - mock provider and fixture lineage are blocked through `mock_lineage_contamination` and `fixture_lineage_contamination`
 - missing required answers return `follow_up_required` and schedule an `interview_follow_up@v1` live turn with both question and answer-bundle inputs
 - provider failure recovery has `fixtureFallbackAllowed: false` and exposes only `retry_live_turn` or `manual_input`
@@ -30,7 +31,7 @@ Scope: DF-213 interview question and Interview Brief Live cutover contract.
 ## Verified Locally
 
 - `src/lib/live-interview-cutover.test.ts` accepts separate live question/Brief turns with thread and turn provenance.
-- `src/lib/live-interview-artifact-identity.test.ts` rejects Brief artifacts that reuse the question artifact id with `brief_reused_question_artifact`, including whitespace-padded reuse of both question artifact and turn ids.
+- `src/lib/live-interview-artifact-identity.test.ts` rejects Brief artifacts that reuse the question artifact id with `brief_reused_question_artifact`, rejects answer bundles that reuse the question artifact id with `brief_reused_question_answer`, and blocks whitespace-padded reuse of both question artifact and turn ids.
 - It blocks Brief acceptance when required fields are unanswered, returns a follow-up turn input bundle, and rejects Brief provenance that omits the user answer bundle.
 - `src/lib/live-interview-question-input.test.ts` blocks question turns that omit the project/initial prompt artifact from `inputArtifactIds`.
 - `src/lib/live-interview-cutover-prompt-version.test.ts` rejects Codex artifacts produced with non-interview prompt versions while allowing the desktop interview question prompt version.
@@ -59,7 +60,7 @@ DF-213 is not Verified Live yet. The app now exposes the production interview wo
 
 - live question artifact bundle
 - question artifact input ids that cite the project or initial prompt input artifact
-- user answer bundle
+- user answer bundle distinct from the live question artifact
 - live follow-up turn evidence when required fields are missing
 - live Interview Brief artifact bundle from the packaged app surface
 - normalized-distinct thread id, turn id, prompt version, runtime, duration, and input artifact ids for each artifact

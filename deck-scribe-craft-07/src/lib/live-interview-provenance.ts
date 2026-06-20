@@ -94,6 +94,16 @@ export function briefRelationIssues(
             message: "The brief turn must cite the user answer bundle as an input.",
           },
         ]),
+    ...(!sameIdentity(answerArtifactId, questionProvenance.artifactId)
+      ? []
+      : [
+          {
+            code: "brief_reused_question_answer" as const,
+            artifactId: briefProvenance.artifactId,
+            stage: "brief" as const,
+            message: "The brief answer bundle must be separate from the live question artifact.",
+          },
+        ]),
     ...(!sameIdentity(briefProvenance.turnId, questionProvenance.turnId)
       ? []
       : [
