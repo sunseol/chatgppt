@@ -7,7 +7,7 @@ Scope: DF-245 internal production package and clean macOS account validation.
 ## Package inputs
 
 - Internal unsigned archive: `dist/deckforge-macos-dry-run.tgz`.
-- Internal archive SHA-256: `83032811d035f19bc7ac6d1837f137d535e011334197e6b18ae8f9477e342df7`.
+- Internal archive SHA-256: `3df0570343e5998f02bb2609e6b2d152b7cfb90c66db1da7bde57c0d383a0db9`.
 - Unsigned Tauri DMG: `release-artifacts/DeckForge_0.1.0_aarch64.dmg`.
 - DMG SHA-256: `ad8b11dee61a15c193fabfc3a7bf85110b116db65098bd2a845c2533a25dae5d`.
 
@@ -32,7 +32,9 @@ Before sharing any production candidate, scan the extracted app and DMG staging 
 
 Any hit in production resources blocks release unless it is part of documentation that clearly labels the build as internal only.
 
-Latest local dry-run package scan on 2026-06-20 for PR branch `jacobex/live-issue-contracts` found no hits for mock provider ids, mock provider labels, mock stage function names, fixture paths, test files, bundled `auth.json` or `.codex` payload files, local absolute workspace paths, `.omx/`, `.playwright-mcp/`, long `Bearer` tokens, or OpenAI/Codex secret-like values in `dist/client`, `dist/server`, or `dist/deckforge-macos-dry-run/DeckForge.app`. The regenerated archive SHA-256 is `83032811d035f19bc7ac6d1837f137d535e011334197e6b18ae8f9477e342df7`; it contains 17 app files, 26 archive members, is 284,517 bytes compressed, and the extracted dry-run app bundle is 1,052 KiB.
+Previous local dry-run package scan on 2026-06-20 for PR branch `jacobex/live-issue-contracts` found no hits for mock provider ids, mock provider labels, mock stage function names, fixture paths, test files, bundled `auth.json` or `.codex` payload files, local absolute workspace paths, `.omx/`, `.playwright-mcp/`, long `Bearer` tokens, or OpenAI/Codex secret-like values in `dist/client`, `dist/server`, or `dist/deckforge-macos-dry-run/DeckForge.app`. The regenerated archive SHA-256 was `83032811d035f19bc7ac6d1837f137d535e011334197e6b18ae8f9477e342df7`; it contained 17 app files, 26 archive members, was 284,517 bytes compressed, and the extracted dry-run app bundle was 1,052 KiB.
+
+Latest lane dry-run package scan on 2026-06-21 for branch `jacobex/live-image-export-evidence` regenerated `dist/deckforge-macos-dry-run.tgz` with SHA-256 `3df0570343e5998f02bb2609e6b2d152b7cfb90c66db1da7bde57c0d383a0db9`, 288,075 compressed bytes, 26 archive members, and a 1,068 KiB extracted dry-run app bundle. Direct package scans found 0 files matching mock provider ids, mock provider labels, `MOCK MODE`, mock stage function names, fixture paths, test files, local absolute workspace paths, `.omx/`, `.playwright-mcp/`, or long `Bearer` tokens. The two `sk-*` pattern matches are the expected bundled `API_KEY_PATTERN` redaction regex copies in the server bundle and extracted dry-run app server resources, not credential values.
 
 The broader scan does find expected guard-code literals and status copy: `mock_lineage_contamination`, `fixture_lineage_contamination`, `pending_reinforcement_request`, `summary_without_original`, `missing_provenance`, production messages that say mock stages are not run in production, and secret-redaction regex definitions such as `API_KEY_PATTERN`, `SECRET_ASSIGNMENT_PATTERN`, `.codex/auth.json`, and `Bearer` token redaction expressions. The `OPENAI_API_KEY` string appears only in redaction guard code, not as an assigned credential. Broad `sk-*` scans also match Tailwind/class-merge names such as `sk-image-linear-from-pos`. Those strings are release/research approval gate rejection reasons, redaction guards, sensitive-path guards, or CSS utility identifiers, not bundled mock resources or actual secrets.
 
@@ -99,3 +101,7 @@ If image credentials are missing, the app must show:
 ## Current result
 
 Blocked for final production release. The local dry-run package scan and regenerated native DMG scan pass, but clean-machine Live execution, Developer ID signing, notarization, and Gatekeeper acceptance are not recorded.
+
+## Current blocker evidence
+
+2026-06-21 KST Image/Packaging lane recheck ran from the developer worktree `/Users/jake/chatgppt-lane-image/deck-scribe-craft-07` as user `jake` on `Darwin jakeui-Macmini.local 25.5.0 arm64`, so it is not clean-machine evidence. `dist/deckforge-macos-dry-run.tgz` was absent before rerunning the dry-run package command, then `bun run package:dry-run` regenerated the unsigned archive with SHA-256 `3df0570343e5998f02bb2609e6b2d152b7cfb90c66db1da7bde57c0d383a0db9`. The tracked DMG remains `release-artifacts/DeckForge_0.1.0_aarch64.dmg` with SHA-256 `ad8b11dee61a15c193fabfc3a7bf85110b116db65098bd2a845c2533a25dae5d`. `codesign -dv --verbose=4 release-artifacts/DeckForge_0.1.0_aarch64.dmg` exits 1 with `code object is not signed at all`, and `spctl --assess --type open --context context:primary-signature --verbose=4 release-artifacts/DeckForge_0.1.0_aarch64.dmg` exits 3 with `rejected` and `source=no usable signature`. `src-tauri/target/release/bundle` is not present in this worktree before a native rebuild. DF-245 remains blocked on a signed/notarized package, release-trust evidence, and clean macOS account install/login/image-credential/project-launch/live-interview evidence.

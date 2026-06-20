@@ -44,3 +44,7 @@ Status: partial local contract
 ## Remaining Live work
 
 DF-230 is not ready to close. The local decision record and Generate-stage gate now prevent fixture fallback and unverified production choices, but the acceptance criteria still require one successful real image request plus stored binary and provenance sidecar artifacts from the selected route.
+
+## Current blocker evidence
+
+2026-06-21 KST Image/Packaging lane recheck from `/Users/jake/chatgppt-lane-image` on branch `jacobex/live-image-export-evidence` found the GitHub issue still open with `status:needs-live-evidence`. The local shell has `OPENAI_API_KEY` unset, and no production image credential was available to this worker. Codex CLI is installed (`codex-cli 0.141.0`), but this does not provide the required API-key image route evidence for the locked production path. No real packaged-app image request was run, so there is still no live binary artifact path, provider provenance sidecar, request id, billing owner, permission, model, or organization-verification evidence from the selected route.
