@@ -1,5 +1,5 @@
 import type { StoredSlideImageArtifact } from "./image-artifact-store";
-import { isVersionedProjectImageArtifactPath } from "./image-path-decision";
+import { parseVersionedProjectImageArtifactPath } from "./image-artifact-path";
 import type { LiveBackgroundBatchIssue } from "./live-background-batch";
 import type { SlideImageArtifact } from "./slide-image-provider";
 
@@ -43,9 +43,22 @@ function storedArtifactMatches(
     stored.metadata.prompt.version === artifact.prompt.version &&
     stored.metadata.prompt.hash === artifact.prompt.hash &&
     storedRequestMatches(artifact, stored) &&
-    isVersionedProjectImageArtifactPath(stored.binary.path) &&
+    storedBinaryPathMatchesSlide(stored.binary.path, artifact.slideNumber) &&
+    sidecarPathsMatchBinary(stored) &&
     /^sha256:[a-f0-9]{64}$/.test(stored.binary.hash) &&
     stored.provenance.fixture === false
+  );
+}
+
+function storedBinaryPathMatchesSlide(path: string, slideNumber: number): boolean {
+  return parseVersionedProjectImageArtifactPath(path)?.slideNumber === slideNumber;
+}
+
+function sidecarPathsMatchBinary(stored: StoredSlideImageArtifact): boolean {
+  const sidecarBasePath = stored.binary.path.replace(/\.png$/, "");
+  return (
+    stored.metadata.path === `${sidecarBasePath}.metadata.json` &&
+    stored.provenance.path === `${sidecarBasePath}.provenance.json`
   );
 }
 

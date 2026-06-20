@@ -48,6 +48,7 @@ describe("live background batch uniqueness", () => {
     expect(validation.issues.map((issue) => issue.code)).toEqual([
       "duplicate_provider_request_metadata",
       "duplicate_stored_background_artifact",
+      "stored_background_artifact_mismatch",
     ]);
   });
 
