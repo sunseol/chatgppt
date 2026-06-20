@@ -25,6 +25,7 @@ describe("live App Server bootstrap documentation", () => {
     expect(textSmoke.includes("preserved notifications prove a completed")).toBe(true);
     expect(textSmoke.includes("completed protocol health turn")).toBe(true);
     expect(textSmoke.includes("blank completed health turns")).toBe(true);
+    expect(textSmoke.includes("missing protocol identity fields")).toBe(true);
     expect(textSmoke.includes("same-pid restart evidence")).toBe(true);
     expect(textSmoke.includes("blank or CLI-mismatched `appServerVersion`")).toBe(true);
     expect(textSmoke.includes("whitespace-padded")).toBe(true);
@@ -39,6 +40,7 @@ describe("live App Server bootstrap documentation", () => {
     expect(progress.includes("invalid_structured_turn_evidence")).toBe(true);
     expect(progress.includes("DF-210 local contract update")).toBe(true);
     expect(progress.includes("blank completed health turns")).toBe(true);
+    expect(progress.includes("missing protocol identity fields")).toBe(true);
     expect(progress.includes("blank or CLI-mismatched `appServerVersion`")).toBe(true);
     expect(progress.includes("whitespace-padded")).toBe(true);
     expect(progress.includes(STDIO_SHUTDOWN_DIGEST)).toBe(true);
@@ -50,6 +52,7 @@ describe("live App Server bootstrap documentation", () => {
     expect(decision.includes("invalid_smoke_evidence")).toBe(true);
     expect(decision.includes("invalid_structured_turn_evidence")).toBe(true);
     expect(decision.includes("blank completed health turns")).toBe(true);
+    expect(decision.includes("missing protocol identity fields")).toBe(true);
     expect(decision.includes("same-pid restarts")).toBe(true);
     expect(decision.includes("blank or CLI-mismatched `appServerVersion`")).toBe(true);
     expect(decision.includes("whitespace-padded")).toBe(true);

@@ -1,3 +1,8 @@
+import {
+  failedInitializeSmokeStatus,
+  initializedEvidenceIsComplete,
+} from "./codex-app-server-initialize-evidence";
+
 export type CodexAppServerTransport = "daemon" | "stdio";
 
 export type CodexAppServerInitializeResponse = {
@@ -136,6 +141,9 @@ export function evaluateCodexAppServerInitializeSmoke(
 ): CodexAppServerInitializeSmokeStatus {
   switch (evidence.kind) {
     case "initialized":
+      if (!initializedEvidenceIsComplete(evidence)) {
+        return failedInitializeSmokeStatus({ transport: evidence.transport, exitCode: 0 });
+      }
       return {
         kind: "ready",
         transport: evidence.transport,
@@ -148,15 +156,7 @@ export function evaluateCodexAppServerInitializeSmoke(
         message: `Codex App Server initialize succeeded over ${evidence.transport}.`,
       };
     case "failed":
-      return {
-        kind: "failed",
-        transport: evidence.transport,
-        exitCode: evidence.exitCode,
-        message: "Codex App Server initialize smoke failed.",
-        remediation:
-          "Inspect app-server stderr and retry initialize before starting Live text jobs.",
-        retryable: true,
-      };
+      return failedInitializeSmokeStatus(evidence);
     default:
       return assertNever(evidence);
   }
