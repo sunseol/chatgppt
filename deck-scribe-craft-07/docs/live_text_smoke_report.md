@@ -58,7 +58,7 @@ Using the current standalone `codex-cli 0.141.0` binary on 2026-06-19 KST, a DF-
 - The child process exited with code `0`, signal `null`, after `stdin_close`; total duration was 69 ms and shutdown after stdin close took 4 ms.
 - Evidence digest: `f35e49556578ced8eedb4f6fbe5dcdf8ee742863037c7787166cd1d4232eb1cd`.
 
-This strengthens DF-210's local stdio contract: the current App Server can initialize, report authenticated account state, keep protocol output on stdout, and cleanly terminate when the desktop-owned stdio session is closed. The local initialize evaluator now also rejects initialized evidence with missing protocol identity fields, including blank CLI version, request id, user agent, Codex home, platform family, or platform OS. It remains local-machine evidence rather than clean macOS account reproduction.
+This strengthens DF-210's local stdio contract: the current App Server can initialize, report authenticated account state, keep protocol output on stdout, and cleanly terminate when the desktop-owned stdio session is closed. The local initialize evaluator now also rejects initialized evidence with missing protocol identity fields, including blank CLI version, request id, user agent, Codex home, platform family, or platform OS, and rejects stderr JSON-RPC protocol frames before channel separation can count as ready. It remains local-machine evidence rather than clean macOS account reproduction.
 
 ## Daemon Bootstrap Evidence
 

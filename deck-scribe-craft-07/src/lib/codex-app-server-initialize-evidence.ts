@@ -16,8 +16,14 @@ export function initializedEvidenceIsComplete(evidence: InitializedEvidence): bo
     evidence.response.userAgent.trim().length > 0 &&
     evidence.response.codexHome.trim().length > 0 &&
     evidence.response.platformFamily.trim().length > 0 &&
-    evidence.response.platformOs.trim().length > 0
+    evidence.response.platformOs.trim().length > 0 &&
+    evidence.stderrWarnings.every((warning) => !looksLikeJsonRpcProtocolFrame(warning))
   );
+}
+
+function looksLikeJsonRpcProtocolFrame(value: string): boolean {
+  const trimmed = value.trim();
+  return trimmed.startsWith("{") && trimmed.includes('"jsonrpc"');
 }
 
 export function failedInitializeSmokeStatus(input: {
