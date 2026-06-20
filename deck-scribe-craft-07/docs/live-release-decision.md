@@ -21,13 +21,16 @@ The current worktree has stronger Live-readiness contracts than the previous moc
 
 ## Latest local verification
 
-- `bun run verify` passes: typecheck, 991 tests, and production build.
-- `bun run lint` exits 0 with six pre-existing React Fast Refresh warnings in shared UI files.
+- `bun test` passes: 991 tests, 0 failures, 3853 expectations.
+- `bun run typecheck` passes.
+- `bun run lint` exits 0 with six pre-existing React Fast Refresh warnings in
+  shared UI files.
+- `bun run build` passes for client, SSR, and prerendered `/`.
 - `bun run package:dry-run` creates `dist/deckforge-macos-dry-run.tgz`.
-- Dry-run archive SHA-256: `cec0077d117f8cc2d863db2075bbbd55cc812830e91233474a9f550ee6de427b`.
-- Current unsigned DMG SHA-256: `232d0fd67eed137ff8b048848823d95cd71f2c8cd044a07ba279defd0a934108`.
-- Package content scan finds no hits for mock provider ids, mock provider labels, mock stage function names, `mock-provider`, `MOCK MODE`, fixture paths, test files, local developer absolute paths, `.omx/`, `.playwright-mcp/`, bundled `auth.json` or `.codex` payload files, long `Bearer` tokens, or OpenAI/Codex secret-like values in `dist/client`, `dist/server`, or the extracted dry-run app bundle. The regenerated archive contains 17 app files, 26 archive members, and 288,674 compressed bytes. The broader mock/fixture/research approval/secret matches are expected production guard-code literals, production status copy, secret-redaction regex definitions, sensitive-path guards, and Tailwind/class-merge CSS utility identifiers: `mock_lineage_contamination`, `fixture_lineage_contamination`, `pending_reinforcement_request`, `summary_without_original`, `missing_provenance`, `API_KEY_PATTERN`, `SECRET_ASSIGNMENT_PATTERN`, `.codex/auth.json`, `OPENAI_API_KEY` redaction regex text, and `sk-image-linear-from-pos`.
-- Lane F regenerated the current native package with `bun run tauri:build`; the app binary SHA-256 is `dc927cc199e6456cbe12d5be42b9471cead63dafec58d77a699fa2f9c85d2c21`. Fixed-string scans of the dry-run app bundle, native `.app`, and mounted DMG found 0 mock provider id, mock stage, fixture/test path, local-path, `.omx`, `.playwright-mcp`, or assigned secret hits. `Bearer` and assigned `OPENAI_API_KEY` scans found 0 hits. A broad `sk-*` regex matches Tailwind/class-merge utility code, not a credential. The built app remains ad-hoc signed with no TeamIdentifier, `codesign --verify --deep --strict` fails with `code has no resources but signature indicates they must be present`, and Gatekeeper rejects the DMG with `source=no usable signature`. `security find-identity -v -p codesigning` found 0 valid identities, and `xcrun notarytool history` returned `Must provide credentials`.
+- Dry-run archive SHA-256: `e80f2378b21a79b5e600e49840deb97e6159d249e4d45d50ad9f19699a6a680f`.
+- Current unsigned DMG SHA-256: `33cc5cb29e25aba266288546037bd5f5007f7696a6a65bfb4787bd1aa50b2f20`.
+- Package content scan finds no hits for mock provider ids, mock provider labels, mock stage function names, `mock-provider`, `MOCK MODE`, fixture paths, test files, local developer absolute paths, `.omx/`, `.playwright-mcp/`, bundled `auth.json` or `.codex` payload files, long `Bearer` tokens, or OpenAI/Codex secret-like values in `dist/client`, `dist/server`, or the extracted dry-run app bundle. The regenerated archive contains 17 app files, 26 archive members, and 288,577 compressed bytes. The broader mock/fixture/research approval/secret matches are expected production guard-code literals, production status copy, secret-redaction regex definitions, sensitive-path guards, and Tailwind/class-merge CSS utility identifiers: `mock_lineage_contamination`, `fixture_lineage_contamination`, `pending_reinforcement_request`, `summary_without_original`, `missing_provenance`, `API_KEY_PATTERN`, `SECRET_ASSIGNMENT_PATTERN`, `.codex/auth.json`, `OPENAI_API_KEY` redaction regex text, and `sk-image-linear-from-pos`.
+- Lane I regenerated the current native package with `bun run tauri:build`; the app binary SHA-256 is `ae4f2216b92e03254cf9522406d7fc9b9d66c374a428858c055af7dd2feb6fd7`. Fixed-string scans of the dry-run app bundle and native `.app` found 0 mock provider id, mock stage, fixture/test path, local-path, `.omx`, `.playwright-mcp`, or assigned secret hits. `Bearer`, assigned `OPENAI_API_KEY`, bundled auth, and OpenAI key-shaped scans found 0 hits. The built app remains ad-hoc signed with no TeamIdentifier, `codesign --verify --deep --strict` fails with `code has no resources but signature indicates they must be present`, and Gatekeeper rejects the DMG with `source=no usable signature`. `security find-identity -v -p codesigning` found 0 valid identities, and `xcrun notarytool history` returned `Must provide credentials`.
 
 ## 2026-06-21 Lane F Release-Gates Recheck
 
@@ -105,3 +108,44 @@ Release remains `Blocked`. No ticket in the Lane F set can honestly close from t
 The Runtime/Text lane ran the production browser app surface against authenticated `codex app-server --stdio` through a Tauri-compatible bridge helper. The interview route completed live `questions` and `brief` App Server turns and persisted app records for project `p_live_runtime_text_20260621`; the ready records were `interview_questions` hash `sha256:29b8b76d` on thread `019ee652-f5e8-7eb2-b61b-6eadaba4307e`, turn `019ee652-f878-73c3-ae5d-80a212086a04`, and `interview_brief` hash `sha256:bd4566a1` on thread `019ee653-1eea-7e83-8a5c-5a0e786b8b4b`, turn `019ee653-2126-7b51-bc89-f0d16497dc2c`.
 
 The Plan route remained blocked before any Deck Plan turn launched because no real approved live Research Pack exists. A synthetic Research Pack with canonical local hash `sha256:fc483c37` still failed the handoff because it lacked live Research approval provenance, live evidence refs, and live source capture metadata. The production text gate has been fixed to block that state before launch. Release remains `Blocked`; this recheck improves DF-213 evidence but does not unblock DF-214, DF-215, DF-241, DF-243, or DF-247.
+
+## 2026-06-21 Lane I Release Gate Recheck
+
+Lane I ran from `/Users/jake/chatgppt-lane-auth-release-qa/deck-scribe-craft-07`
+on branch `jacobex/live-lane-auth-release-qa`. The release decision remains
+`Blocked`.
+
+Fresh evidence:
+
+- Non-destructive auth/runtime probe: `codex-cli 0.141.0`,
+  `codex login status` returned `Logged in using ChatGPT`, and
+  `codex app-server daemon version` returned `status: "running"` with
+  `cliVersion: "0.141.0"` and `appServerVersion: "0.141.0"`.
+- `bun run package:dry-run` passed after `bun install` restored missing
+  dependencies; fresh dry-run archive SHA-256
+  `e80f2378b21a79b5e600e49840deb97e6159d249e4d45d50ad9f19699a6a680f`, 288,577
+  bytes, 26 archive members, 17 app files.
+- Dry-run package scans found 0 mock provider/stage, fixture/test path,
+  local-path, `.omx`, `.playwright-mcp`, `CODEX_SESSION=`, long `Bearer`,
+  assigned `OPENAI_API_KEY`, OpenAI key-shaped, bundled `auth.json`, or bundled
+  `.codex` hits.
+- `bun run tauri:build` passed; the fresh DMG was copied to
+  `release-artifacts/DeckForge_0.1.0_aarch64.dmg`, and checksum verification
+  returned `OK` for SHA-256
+  `33cc5cb29e25aba266288546037bd5f5007f7696a6a65bfb4787bd1aa50b2f20`.
+- Native app binary SHA-256:
+  `ae4f2216b92e03254cf9522406d7fc9b9d66c374a428858c055af7dd2feb6fd7`.
+- Native bundle scans found 0 configured mock/fixture/test/local-path/secret
+  hits.
+- `security find-identity -v -p codesigning` found 0 valid identities.
+- `xcrun notarytool history` failed with `Must provide credentials`.
+- Native app signing remains ad-hoc with `TeamIdentifier=not set`;
+  `codesign --verify --deep --strict` fails with `code has no resources but
+  signature indicates they must be present`.
+- The DMG is unsigned; `spctl` rejects it with `source=no usable signature`.
+
+DF-247 cannot close. P0 prerequisites are still not all Verified Live, live
+benchmark count remains below 4 of 5, no real Golden Path final export lineage
+bundle exists, DF-245 lacks signed/notarized/Gatekeeper/clean-machine evidence,
+DF-246 lacks non-developer manual QA evidence, and the decision must stay
+`Blocked`.

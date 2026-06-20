@@ -7,9 +7,9 @@ Scope: DF-245 internal production package and clean macOS account validation.
 ## Package inputs
 
 - Internal unsigned archive: `dist/deckforge-macos-dry-run.tgz`.
-- Internal archive SHA-256: `cec0077d117f8cc2d863db2075bbbd55cc812830e91233474a9f550ee6de427b`.
+- Internal archive SHA-256: `e80f2378b21a79b5e600e49840deb97e6159d249e4d45d50ad9f19699a6a680f`.
 - Unsigned Tauri DMG: `release-artifacts/DeckForge_0.1.0_aarch64.dmg`.
-- DMG SHA-256: `232d0fd67eed137ff8b048848823d95cd71f2c8cd044a07ba279defd0a934108`.
+- DMG SHA-256: `33cc5cb29e25aba266288546037bd5f5007f7696a6a65bfb4787bd1aa50b2f20`.
 
 ## Build commands
 
@@ -119,3 +119,55 @@ Lane F rechecked packaging from developer worktree `/Users/jake/chatgppt-lane-re
 - Signing state: `security find-identity -v -p codesigning` found 0 valid identities; the app remains ad-hoc signed with `TeamIdentifier=not set`; `codesign --verify --deep --strict --verbose=4 src-tauri/target/release/bundle/macos/DeckForge.app` fails with `code has no resources but signature indicates they must be present`; `codesign -dv --verbose=4 release-artifacts/DeckForge_0.1.0_aarch64.dmg` reports `code object is not signed at all`; `xcrun notarytool history` returns `Must provide credentials`; `spctl --assess --type open --context context:primary-signature --verbose=4 release-artifacts/DeckForge_0.1.0_aarch64.dmg` rejects with `source=no usable signature`.
 
 DF-245 remains open. Next evidence needed: Developer ID Application signing identity, notarization credentials, successful notarization/stapling, Gatekeeper acceptance, persisted release-trust JSON bundle, and clean macOS account install/Codex login/image credential/project launch/first live interview evidence.
+
+## 2026-06-21 Lane I Recheck
+
+Lane I rechecked packaging from developer worktree
+`/Users/jake/chatgppt-lane-auth-release-qa/deck-scribe-craft-07` on branch
+`jacobex/live-lane-auth-release-qa`. This is not clean-machine evidence.
+
+- Initial `bun run package:dry-run` failed because dependencies were not
+  installed: `/bin/bash: vite: command not found`.
+- `bun install` restored dependencies from `bun.lock`, and a rerun of
+  `bun run package:dry-run` passed.
+- Dry-run archive: `dist/deckforge-macos-dry-run.tgz`, SHA-256
+  `e80f2378b21a79b5e600e49840deb97e6159d249e4d45d50ad9f19699a6a680f`,
+  288,577 bytes, 26 archive members, 17 app files, 1,072 KiB extracted app
+  bundle.
+- Direct dry-run scans found 0 fixed-string hits for mock provider ids,
+  `MOCK MODE`, mock stage resource names, fixture/test paths, local workspace
+  paths, `.omx`, `.playwright-mcp`, or `CODEX_SESSION=` assignments. Long
+  `Bearer`, assigned `OPENAI_API_KEY`, OpenAI key-shaped value, bundled
+  `auth.json`, and bundled `.codex` scans also returned 0 hits.
+- `bun run tauri:build` passed and produced
+  `src-tauri/target/release/bundle/macos/DeckForge.app` and
+  `src-tauri/target/release/bundle/dmg/DeckForge_0.1.0_aarch64.dmg`.
+- The fresh DMG was copied to
+  `release-artifacts/DeckForge_0.1.0_aarch64.dmg`; `shasum -a 256 -c
+  release-artifacts/DeckForge_0.1.0_aarch64.dmg.sha256` returned `OK` for
+  SHA-256 `33cc5cb29e25aba266288546037bd5f5007f7696a6a65bfb4787bd1aa50b2f20`.
+- Native app binary SHA-256:
+  `ae4f2216b92e03254cf9522406d7fc9b9d66c374a428858c055af7dd2feb6fd7`.
+- Native app bundle: 3 files, 4,984 KiB.
+- Native app bundle scans found 0 fixed-string mock/fixture/test/local-path
+  contamination hits, 0 long `Bearer` hits, 0 assigned `OPENAI_API_KEY` hits,
+  0 OpenAI key-shaped hits, and 0 bundled `auth.json`/`.codex` payloads.
+- `security find-identity -v -p codesigning` found 0 valid identities.
+- `xcrun notarytool history` failed with `Must provide credentials`.
+- `codesign -dv --verbose=4
+  src-tauri/target/release/bundle/macos/DeckForge.app` reported
+  `Signature=adhoc` and `TeamIdentifier=not set`.
+- `codesign --verify --deep --strict --verbose=4
+  src-tauri/target/release/bundle/macos/DeckForge.app` failed with
+  `code has no resources but signature indicates they must be present`.
+- `codesign -dv --verbose=4
+  src-tauri/target/release/bundle/dmg/DeckForge_0.1.0_aarch64.dmg` failed
+  with `code object is not signed at all`.
+- `spctl --assess --type open --context context:primary-signature
+  --verbose=4 src-tauri/target/release/bundle/dmg/DeckForge_0.1.0_aarch64.dmg`
+  rejected the DMG with `source=no usable signature`.
+
+DF-245 remains open. Lane I produced fresh package/hash/scan evidence, but no
+Developer ID signature, notarization/stapling, Gatekeeper acceptance, persisted
+release-trust assessment bundle, or clean macOS account install/login/image
+credential/project-launch/live-interview evidence exists.

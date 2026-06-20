@@ -76,3 +76,17 @@ Not run. This checklist and the local evidence validator are ready for execution
 Lane F ran as developer user `jake` from `/Users/jake/chatgppt-lane-release-gates/deck-scribe-craft-07` and did not discover or produce a persisted non-developer manual QA session bundle. The current package is unsigned and Gatekeeper-rejected, and DF-245 clean-machine evidence is still missing.
 
 DF-246 remains open. Next evidence needed: a non-developer tester session on a signed/notarized or explicitly approved production candidate, with a persisted non-synthetic `manual-qa` session JSON bundle, under-10-minute completion, source-open proof linked to final report sources, one regeneration, one title edit, opened PNG/project/report outputs, and zero critical/mock/placeholder indicators.
+
+## 2026-06-21 Lane I Recheck
+
+Lane I ran as autonomous developer user `jake` from
+`/Users/jake/chatgppt-lane-auth-release-qa/deck-scribe-craft-07` and did not
+find or produce a persisted non-developer manual QA session bundle. The current
+fresh package is still unsigned, not notarized, and Gatekeeper-rejected, so it
+is not a clean production candidate for non-developer QA.
+
+DF-246 remains open. The next closeable evidence is still a real
+non-developer, under-10-minute packaged-app session with validator-ready
+`manual-qa` session JSON, approval-target understanding, real source open linked
+to final report sources, slide regeneration, title edit, opened PNG/project/report
+outputs, severity issue list, and zero critical/mock/placeholder indicators.
