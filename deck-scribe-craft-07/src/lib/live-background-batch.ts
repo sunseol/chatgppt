@@ -159,7 +159,7 @@ function binaryIssues(artifact: SlideImageArtifact): readonly LiveBackgroundBatc
 }
 
 function requestMetadataIssues(artifact: SlideImageArtifact): readonly LiveBackgroundBatchIssue[] {
-  return artifact.request?.requestId
+  return artifact.request?.requestId?.trim() && artifact.request.model.trim()
     ? []
     : [
         {
