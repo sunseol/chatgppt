@@ -45,6 +45,7 @@ export function outputBundleIssues(
         run.outputBundle.packageArchiveSha256 !== packageArchiveSha256,
     )
     .map((run) => run.id);
+  const countMismatches = evidenceCountMismatchRefs(runs);
   const missingReports = runs
     .filter((run) => !validEvidenceReportPath(run.outputBundle.reportPath, ".md"))
     .map((run) => run.id);
@@ -118,6 +119,15 @@ export function outputBundleIssues(
             "output_bundle_package_mismatch",
             "Output bundle manifests must match the package archive SHA-256 under benchmark.",
             packageMismatched,
+          ),
+        ]),
+    ...(countMismatches.length === 0
+      ? []
+      : [
+          issue(
+            "output_bundle_evidence_count_mismatch",
+            "Passed output bundle evidence counts must match their manifest reference lists.",
+            countMismatches,
           ),
         ]),
     ...(missingReports.length === 0
@@ -196,6 +206,44 @@ function validEvidenceReportPath(value: string, expectedSuffix: string): boolean
   const normalized = value.toLowerCase().trim();
   if (!normalized.endsWith(expectedSuffix)) return false;
   return hasNonSyntheticEvidencePath(value, [".md"]);
+}
+
+function evidenceCountMismatchRefs(runs: readonly LiveBenchmarkRun[]): readonly string[] {
+  return runs
+    .filter((run) => run.status === "passed")
+    .flatMap((run) => [
+      ...countMismatchRef(
+        run.id,
+        "screenshots",
+        run.outputBundle.screenshotCount,
+        nonblankCount(run.outputBundle.screenshotPaths ?? []),
+      ),
+      ...countMismatchRef(
+        run.id,
+        "sources",
+        run.outputBundle.sourceCount,
+        nonblankCount(run.outputBundle.sourceArtifactIds),
+      ),
+      ...countMismatchRef(
+        run.id,
+        "images",
+        run.outputBundle.imageArtifactCount,
+        nonblankCount(run.outputBundle.liveImageArtifactIds),
+      ),
+    ]);
+}
+
+function countMismatchRef(
+  benchmarkId: string,
+  label: string,
+  claimed: number,
+  actual: number,
+): readonly string[] {
+  return claimed === actual ? [] : [`${benchmarkId}:${label}=${claimed}/${actual}`];
+}
+
+function nonblankCount(values: readonly string[]): number {
+  return values.map((value) => value.trim()).filter(Boolean).length;
 }
 
 function issue(

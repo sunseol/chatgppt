@@ -136,6 +136,7 @@ describe("live benchmark evidence", () => {
     if (result.kind !== "blocked") return;
     expect(result.issues.map((issue) => issue.code)).toEqual([
       "output_bundle_benchmark_mismatch",
+      "output_bundle_evidence_count_mismatch",
       "output_bundle_report_missing",
       "output_bundle_export_missing",
       "output_bundle_golden_path_evidence_missing",
@@ -169,6 +170,7 @@ describe("live benchmark evidence", () => {
     expect(result.kind).toBe("blocked");
     if (result.kind !== "blocked") return;
     expect(result.issues.map((issue) => issue.code)).toEqual([
+      "output_bundle_evidence_count_mismatch",
       "output_bundle_golden_path_evidence_missing",
     ]);
   });
