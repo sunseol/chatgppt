@@ -22,6 +22,7 @@ describe("live full-slide regeneration documentation", () => {
     expect(slideRegeneration.includes("original_slide_not_approved")).toBe(true);
     expect(slideRegeneration.includes("original_slide_mismatch")).toBe(true);
     expect(slideRegeneration.includes("original_slide_version_mismatch")).toBe(true);
+    expect(slideRegeneration.includes("original_background_evidence_not_canonical")).toBe(true);
     expect(slideRegeneration.includes("background_artifact_not_new")).toBe(true);
     expect(slideRegeneration.includes("background_artifact_version_mismatch")).toBe(true);
     expect(slideRegeneration.includes("background_artifact_storage_path_mismatch")).toBe(true);

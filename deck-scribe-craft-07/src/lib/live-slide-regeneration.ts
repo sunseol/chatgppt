@@ -23,6 +23,7 @@ export type LiveSlideRegenerationIssueCode =
   | "design_system_mismatch"
   | "missing_original_background_artifact"
   | "missing_original_background_request"
+  | "original_background_evidence_not_canonical"
   | "mock_background_artifact"
   | "background_artifact_not_new"
   | "background_artifact_version_mismatch"

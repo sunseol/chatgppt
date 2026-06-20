@@ -14,6 +14,7 @@ export function requestIssues(input: {
     ...duplicateTargetIssues(input.revisionRequest),
     ...targetOverlapIssues(input.revisionRequest),
     ...originalBackgroundIssues(input),
+    ...originalBackgroundCanonicalIssues(input),
   ];
 }
 
@@ -132,6 +133,24 @@ function originalBackgroundIssues(input: {
           },
         ]),
   ];
+}
+
+function originalBackgroundCanonicalIssues(input: {
+  readonly revisionRequest: SlideRevisionRequest;
+  readonly originalBackgroundArtifactId: string;
+  readonly originalBackgroundRequestId: string;
+}): readonly LiveSlideRegenerationIssue[] {
+  return [input.originalBackgroundArtifactId, input.originalBackgroundRequestId].some(
+    (value) => value.trim() && value !== value.trim(),
+  )
+    ? [
+        {
+          code: "original_background_evidence_not_canonical" as const,
+          slideNumber: input.revisionRequest.slideNumber,
+          message: "Live regeneration original background evidence must be canonical.",
+        },
+      ]
+    : [];
 }
 
 function hasTargets(values: readonly string[]): boolean {
