@@ -25,6 +25,7 @@ describe("live text smoke documentation", () => {
       "duplicate_text_artifact_id",
       "duplicate_text_turn_id",
       "text_artifact_noncanonical_identity",
+      "text_smoke_noncanonical_input_identity",
       "disconnected_text_stage_lineage",
       "text_smoke_missing_initial_prompt_input",
       "text_smoke_missing_answer_input",

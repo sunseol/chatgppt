@@ -17,6 +17,7 @@ export function textPathLineageIssues(
   artifacts: readonly LiveTextSmokeArtifact[],
 ): readonly LiveTextSmokeIssue[] {
   return [
+    ...inputIdentityIssues(artifacts),
     ...initialPromptInputIssues(artifacts),
     ...answerInputIssues(artifacts),
     ...researchInputIssues(artifacts),
@@ -24,6 +25,23 @@ export function textPathLineageIssues(
       lineageIssueForRequirement(artifacts, requirement),
     ),
   ];
+}
+
+function inputIdentityIssues(
+  artifacts: readonly LiveTextSmokeArtifact[],
+): readonly LiveTextSmokeIssue[] {
+  return artifacts.flatMap((artifact) =>
+    artifact.provenance.inputArtifactIds.some(isNonCanonicalNonBlank)
+      ? [
+          {
+            code: "text_smoke_noncanonical_input_identity" as const,
+            stage: artifact.stage,
+            artifactId: artifact.provenance.artifactId,
+            message: "Live text smoke input artifact ids must be canonical.",
+          },
+        ]
+      : [],
+  );
 }
 
 function initialPromptInputIssues(
@@ -132,4 +150,8 @@ function hasText(value: string): boolean {
 function normalizedIdentity(value: string): string | undefined {
   const trimmed = value.trim();
   return trimmed === "" ? undefined : trimmed;
+}
+
+function isNonCanonicalNonBlank(value: string): boolean {
+  return value.trim() !== "" && value !== value.trim();
 }

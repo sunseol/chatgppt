@@ -240,7 +240,8 @@ The App Server smoke path and reusable structured-turn path are now represented 
   artifact ids (`duplicate_text_artifact_id`), reused text turn ids
   (`duplicate_text_turn_id`), non-canonical artifact/thread/turn identities
   (`text_artifact_noncanonical_identity`), disconnected stage input lineage
-  (`disconnected_text_stage_lineage`), missing question project/initial-prompt
+  (`disconnected_text_stage_lineage`), non-canonical stage input artifact ids
+  (`text_smoke_noncanonical_input_identity`), missing question project/initial-prompt
   input (`text_smoke_missing_initial_prompt_input`), missing Brief
   answer-bundle input (`text_smoke_missing_answer_input`), missing Deck Plan
   Research Pack input distinct from Brief (`text_smoke_missing_research_input`),
@@ -268,12 +269,14 @@ Local verification:
 - `bun test src/lib/live-interview-artifact-identity.test.ts src/lib/desktop-live-interview-workflow.test.ts` covers whitespace-padded question artifact/turn reuse rejection, answer-bundle/question-artifact reuse rejection, the app-level desktop interview launcher calling a structured `questions` turn, preserving the question artifact record when follow-up is required, calling a second structured `brief` turn after supplied answers, preserving question input lineage, and keeping both response schemas strict.
 - `bun test src/lib/desktop-live-text-pipeline-workflow.test.ts` covers App Server strict response schemas for Deck Plan, Design System, and Layout IR stage jobs.
 - `bun test src/lib/codex-app-server-event-mapper.test.ts` covers current nested App Server error notifications and failed turn completion mapping.
-- `bun test src/lib/live-text-smoke-artifact-identity.test.ts src/lib/live-text-smoke-deck-plan-lineage.test.ts src/lib/live-text-smoke-gate.test.ts src/lib/live-text-smoke-interview-lineage.test.ts src/lib/live-text-smoke-prompt-lineage.test.ts src/lib/live-text-smoke-resume-identity.test.ts` covers the full text smoke bundle contract, disconnected stage lineage rejection, question initial-prompt input, Brief answer-bundle input, Deck Plan Research Pack input distinct from Brief, stage-wrong prompt rejection, mock/fixture and missing-turn rejection, whitespace-padded text artifact/turn reuse rejection, non-canonical text artifact identity rejection, whitespace-padded resume next-turn reuse rejection, and the requirement for a completed live Codex production post-resume next turn on the same thread as the previous text-artifact turn.
+- `bun test src/lib/live-text-smoke-artifact-identity.test.ts src/lib/live-text-smoke-deck-plan-lineage.test.ts src/lib/live-text-smoke-gate.test.ts src/lib/live-text-smoke-input-identity.test.ts src/lib/live-text-smoke-interview-lineage.test.ts src/lib/live-text-smoke-prompt-lineage.test.ts src/lib/live-text-smoke-resume-identity.test.ts` covers the full text smoke bundle contract, disconnected stage lineage rejection, question initial-prompt input, Brief answer-bundle input, Deck Plan Research Pack input distinct from Brief, non-canonical smoke input artifact id rejection, stage-wrong prompt rejection, mock/fixture and missing-turn rejection, whitespace-padded text artifact/turn reuse rejection, non-canonical text artifact identity rejection, whitespace-padded resume next-turn reuse rejection, and the requirement for a completed live Codex production post-resume next turn on the same thread as the previous text-artifact turn.
 - `bun run typecheck`, targeted ESLint, and the TypeScript no-excuse checker pass for the bridge and production UI files.
 
 This is still not a full DeckForge Live text run. The reusable command can execute schema-constrained turns and return App Server notifications, the library-level desktop interview workflow has now persisted live `questions` and `brief` artifacts from real App Server turns, the production interview button can launch that desktop interview path, the production Plan/Design/Layout button is wired to call the desktop launcher, and the library-level text pipeline has now persisted live Plan/Design/Layout artifacts from real App Server turns. A recorded packaged-app run with authenticated follow-up behavior and persisted end-to-end text artifacts is still required.
 
 Latest local DF-215 contract update: `evaluateLiveTextSmokeGate` now also blocks `text_artifact_noncanonical_identity` when a text artifact's artifact id, turn id, or thread id only becomes usable after trimming boundary whitespace. This prevents a packaged smoke bundle from passing with padded durable ids even when its stage lineage otherwise appears connected.
+
+Latest local DF-215 contract update: `evaluateLiveTextSmokeGate` now also blocks `text_smoke_noncanonical_input_identity` when a text artifact input id only becomes usable after trimming boundary whitespace. This prevents packaged smoke bundles from passing with padded project, answer, Research Pack, or stage handoff inputs.
 
 ## Crash/Restart Evidence
 
