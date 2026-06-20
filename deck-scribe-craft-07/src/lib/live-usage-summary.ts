@@ -2,6 +2,7 @@ import type { ProviderImageBillingDisclosure, ProviderUsageSummary } from "./pro
 import type { ProviderKind } from "./provider-types";
 import { hasNonSyntheticJsonEvidencePath } from "./live-evidence-path";
 import { redactSensitiveText } from "./redaction";
+import { usageStageIdentityIssues } from "./live-usage-stage-identity";
 
 export type LiveCostLabel = "actual" | "estimate" | "hidden";
 
@@ -19,6 +20,8 @@ export type LiveUsageStageSummary = {
 };
 
 export type LiveUsageSummaryIssueCode =
+  | "missing_usage_stage_identity"
+  | "invalid_usage_provider_kind"
   | "missing_provider_usage_summary"
   | "incomplete_text_token_usage"
   | "missing_image_usage_count"
@@ -44,16 +47,19 @@ export type LiveUsageSummaryResult =
 export function evaluateLiveUsageSummary(
   stages: readonly LiveUsageStageSummary[],
 ): LiveUsageSummaryResult {
-  const issues = stages.flatMap((stage) => [
-    ...providerUsageIssues(stage),
-    ...providerSpecificUsageIssues(stage),
-    ...usageAmountIssues(stage),
-    ...durationIssues(stage),
-    ...retryIssues(stage),
-    ...costAmountIssues(stage),
-    ...costLabelIssues(stage),
-    ...imageBillingIssues(stage),
-  ]);
+  const issues = [
+    ...usageStageIdentityIssues(stages),
+    ...stages.flatMap((stage) => [
+      ...providerUsageIssues(stage),
+      ...providerSpecificUsageIssues(stage),
+      ...usageAmountIssues(stage),
+      ...durationIssues(stage),
+      ...retryIssues(stage),
+      ...costAmountIssues(stage),
+      ...costLabelIssues(stage),
+      ...imageBillingIssues(stage),
+    ]),
+  ];
   return issues.length === 0 ? { kind: "ready" } : { kind: "blocked", issues };
 }
 
