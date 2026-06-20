@@ -18,6 +18,7 @@ describe("live generation report lineage documentation", () => {
     expect(generationReportLineage.includes("blank evidence ids")).toBe(true);
     expect(generationReportLineage.includes("missing_live_report_lineage")).toBe(true);
     expect(generationReportLineage.includes("duplicate_slide_lineage")).toBe(true);
+    expect(generationReportLineage.includes("duplicate_text_turn")).toBe(true);
     expect(generationReportLineage.includes("missing_text_prompt_version")).toBe(true);
     expect(generationReportLineage.includes("missing_text_artifact")).toBe(true);
     expect(generationReportLineage.includes("duplicate_text_artifact")).toBe(true);

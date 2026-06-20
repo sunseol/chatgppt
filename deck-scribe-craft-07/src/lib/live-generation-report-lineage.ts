@@ -11,6 +11,7 @@ export type LiveGenerationReportLineageIssueCode =
   | "missing_slide_lineage"
   | "duplicate_slide_lineage"
   | "missing_text_turn"
+  | "duplicate_text_turn"
   | "missing_text_prompt_version"
   | "missing_text_artifact"
   | "duplicate_text_artifact"

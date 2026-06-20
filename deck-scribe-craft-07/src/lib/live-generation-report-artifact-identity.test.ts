@@ -49,10 +49,40 @@ describe("live generation report artifact identity", () => {
     expect(validation.kind).toBe("blocked");
     if (validation.kind !== "blocked") return;
     expect(validation.issues.map((issue) => issue.code)).toEqual([
+      "duplicate_text_turn",
       "duplicate_text_artifact",
       "duplicate_image_artifact",
       "image_artifact_slide_mismatch",
     ]);
+  });
+
+  test("blocks reused text turn ids across distinct slide artifacts", () => {
+    // Given
+    const base = liveSlideLineage();
+
+    // When
+    const validation = validateLiveGenerationReportLineage({
+      executionMode: "production",
+      expectedSlideCount: 2,
+      slides: [
+        base,
+        {
+          ...base,
+          slideNumber: 2,
+          sourceIds: ["src_002"],
+          textArtifactId: "deck_plan_live_artifact_002",
+          imageArtifactId: "project_001_image_slide_002_v1",
+          imageRequestId: "img_req_002",
+          compositorHash: hashB(),
+          exportedPngHash: hashB(),
+        },
+      ],
+    });
+
+    // Then
+    expect(validation.kind).toBe("blocked");
+    if (validation.kind !== "blocked") return;
+    expect(validation.issues.map((issue) => issue.code)).toEqual(["duplicate_text_turn"]);
   });
 });
 
@@ -78,4 +108,8 @@ function liveSlideLineage(): LiveSlideReportLineage {
 
 function hashA(): string {
   return `sha256:${"a".repeat(64)}`;
+}
+
+function hashB(): string {
+  return `sha256:${"b".repeat(64)}`;
 }

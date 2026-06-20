@@ -10,6 +10,7 @@ export function lineageReferenceIssues(
     ...blankSourceTraceIssues(slides),
     ...duplicateSourceTraceIssues(slides),
     ...duplicateSlideIssues(slides),
+    ...duplicateTextTurnIssues(slides),
     ...duplicateTextArtifactIssues(slides),
     ...duplicateImageArtifactIssues(slides),
     ...duplicateImageRequestIssues(slides),
@@ -56,6 +57,15 @@ function duplicateImageRequestIssues(
   return duplicateValues(slides.map((slide) => slide.imageRequestId ?? "")).map((requestId) => ({
     code: "duplicate_image_request",
     message: `Image request ${requestId} cannot satisfy multiple slide lineage rows.`,
+  }));
+}
+
+function duplicateTextTurnIssues(
+  slides: readonly LiveSlideReportLineage[],
+): readonly LiveGenerationReportLineageIssue[] {
+  return duplicateValues(slides.map((slide) => slide.textTurnId ?? "")).map((turnId) => ({
+    code: "duplicate_text_turn",
+    message: `Text turn ${turnId} cannot satisfy multiple slide lineage rows.`,
   }));
 }
 
