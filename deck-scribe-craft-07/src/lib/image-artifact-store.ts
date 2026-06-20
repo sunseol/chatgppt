@@ -164,6 +164,9 @@ function requireRequestMetadata(artifact: SlideImageArtifact): SlideImageRequest
   if (artifact.providerId === "openaiImage" && !artifact.request.requestId?.trim()) {
     throw new ImageArtifactStoreError("OpenAI image artifacts require a provider request id.");
   }
+  if (!hasCanonicalRequestMetadata(artifact.request)) {
+    throw new ImageArtifactStoreError("Image artifact canonical request metadata is required.");
+  }
   if (!validLatencyMs(artifact.request.latencyMs)) {
     throw new ImageArtifactStoreError(
       "Image artifact request latency must be a non-negative number.",
@@ -175,6 +178,13 @@ function requireRequestMetadata(artifact: SlideImageArtifact): SlideImageRequest
     );
   }
   return artifact.request;
+}
+
+function hasCanonicalRequestMetadata(request: SlideImageRequestMetadata): boolean {
+  return (
+    request.model === request.model.trim() &&
+    (request.requestId === undefined || request.requestId === request.requestId.trim())
+  );
 }
 
 function validLatencyMs(value: number | undefined): boolean {
