@@ -19,6 +19,7 @@ Scope: DF-213 interview question and Interview Brief Live cutover contract.
 - the user answer bundle id must be separate from the live question artifact id; otherwise `brief_reused_question_answer` blocks approval
 - mock provider and fixture lineage are blocked through `mock_lineage_contamination` and `fixture_lineage_contamination`
 - missing required answers return `follow_up_required` and schedule an `interview_follow_up@v1` live turn with both question and answer-bundle inputs
+- every scheduled follow-up question must have nonblank question text; otherwise `invalid_follow_up_question` blocks the claim before a blank follow-up turn can count as live evidence
 - provider failure recovery has `fixtureFallbackAllowed: false` and exposes only `retry_live_turn` or `manual_input`
 - accepted structured App Server results can be converted into persisted live text artifact records plus an `INTERVIEW_APPROVAL_PENDING` project patch without using a fixture
 - `runLiveInterviewProductionWorkflow` runs production App Server question and Brief jobs before handing accepted outputs to the persistence gate
@@ -33,6 +34,7 @@ Scope: DF-213 interview question and Interview Brief Live cutover contract.
 - `src/lib/live-interview-cutover.test.ts` accepts separate live question/Brief turns with thread and turn provenance.
 - `src/lib/live-interview-artifact-identity.test.ts` rejects Brief artifacts that reuse the question artifact id with `brief_reused_question_artifact`, rejects answer bundles that reuse the question artifact id with `brief_reused_question_answer`, and blocks whitespace-padded reuse of both question artifact and turn ids.
 - It blocks Brief acceptance when required fields are unanswered, returns a follow-up turn input bundle, and rejects Brief provenance that omits the user answer bundle.
+- `src/lib/live-interview-follow-up-question.test.ts` rejects required follow-up evidence whose question text is blank, blocking `invalid_follow_up_question`.
 - `src/lib/live-interview-question-input.test.ts` blocks question turns that omit the project/initial prompt artifact from `inputArtifactIds`.
 - `src/lib/live-interview-cutover-prompt-version.test.ts` rejects Codex artifacts produced with non-interview prompt versions while allowing the desktop interview question prompt version.
 - It blocks mock/fixture provenance, non-session Codex auth via `non_codex_session_auth`, and verifies no fixture fallback is offered after provider failure.

@@ -34,6 +34,7 @@ export type LiveInterviewIssueCode =
   | "brief_reused_question_answer"
   | "brief_reused_question_turn"
   | "brief_reused_question_artifact"
+  | "invalid_follow_up_question"
   | "interview_prompt_version_mismatch";
 
 export type LiveInterviewIssue = {
@@ -139,7 +140,10 @@ function buildFollowUpRequirement(
   questionPlan: LiveInterviewTurnArtifact<InterviewQuestionPlan>,
   answers: LiveInterviewAnswerMap,
   answerArtifactId: string,
-): Extract<LiveInterviewCutoverResult, { readonly kind: "follow_up_required" }> | undefined {
+):
+  | Extract<LiveInterviewCutoverResult, { readonly kind: "follow_up_required" }>
+  | Extract<LiveInterviewCutoverResult, { readonly kind: "blocked" }>
+  | undefined {
   const missingQuestions = questionPlan.artifact.questions.filter(
     (question) => !answers[question.field]?.trim(),
   );
@@ -148,6 +152,15 @@ function buildFollowUpRequirement(
     ...questionPlan.artifact.openQuestions,
   ];
   if (questions.length === 0) return undefined;
+  if (questions.some((question) => question.trim().length === 0)) {
+    return blocked("follow_up", [
+      {
+        code: "invalid_follow_up_question",
+        stage: "follow_up",
+        message: "Follow-up turns require nonblank question text for every missing answer.",
+      },
+    ]);
+  }
 
   return {
     kind: "follow_up_required",
