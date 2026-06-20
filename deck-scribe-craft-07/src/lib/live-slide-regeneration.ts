@@ -7,6 +7,7 @@ import { candidateSlideSpecIssues } from "./live-slide-regeneration-slide-spec";
 import type { SlideRevisionRequest } from "./slide-revision-model";
 
 export type LiveSlideRegenerationIssueCode =
+  | "missing_edit_instruction"
   | "missing_must_keep_targets"
   | "missing_must_change_targets"
   | "blank_revision_target"

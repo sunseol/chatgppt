@@ -12,6 +12,7 @@ describe("live full-slide regeneration documentation", () => {
     expect(slideRegeneration.includes("designSystemId")).toBe(true);
     expect(slideRegeneration.includes("live-slide-regeneration-slide-spec.ts")).toBe(true);
     expect(slideRegeneration.includes("slide_spec_mismatch")).toBe(true);
+    expect(slideRegeneration.includes("missing_edit_instruction")).toBe(true);
     expect(slideRegeneration.includes("missing_must_keep_targets")).toBe(true);
     expect(slideRegeneration.includes("missing_must_change_targets")).toBe(true);
     expect(slideRegeneration.includes("blank_revision_target")).toBe(true);

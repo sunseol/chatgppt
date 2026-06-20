@@ -7,6 +7,30 @@ import {
 } from "./live-slide-regeneration-test-fixtures";
 
 describe("live full-slide regeneration request validation", () => {
+  test("blocks blank edit instructions before provider submission", () => {
+    // Given
+    const revisionRequest = {
+      ...revisionRequestFixture(),
+      editInstruction: "   ",
+    };
+
+    // When
+    const result = buildLiveSlideRegenerationRequest({
+      revisionRequest,
+      deckContextId: "deckctx_001",
+      designSystemId: "design_001",
+      slideSpec: slideSpecFixture(),
+      currentSlide: approvedSlideFixture(),
+      originalBackgroundArtifactId: "project_001_image_slide_003_v1",
+      originalBackgroundRequestId: "img_req_original",
+    });
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual(["missing_edit_instruction"]);
+  });
+
   test("blocks duplicate keep or change targets before provider submission", () => {
     // Given
     const revisionRequest = {

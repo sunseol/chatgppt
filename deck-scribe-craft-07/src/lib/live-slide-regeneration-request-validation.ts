@@ -7,6 +7,7 @@ export function requestIssues(input: {
   readonly originalBackgroundRequestId: string;
 }): readonly LiveSlideRegenerationIssue[] {
   return [
+    ...editInstructionIssues(input.revisionRequest),
     ...mustKeepIssues(input.revisionRequest),
     ...mustChangeIssues(input.revisionRequest),
     ...blankTargetIssues(input.revisionRequest),
@@ -14,6 +15,20 @@ export function requestIssues(input: {
     ...targetOverlapIssues(input.revisionRequest),
     ...originalBackgroundIssues(input),
   ];
+}
+
+function editInstructionIssues(
+  revisionRequest: SlideRevisionRequest,
+): readonly LiveSlideRegenerationIssue[] {
+  return revisionRequest.editInstruction.trim()
+    ? []
+    : [
+        {
+          code: "missing_edit_instruction" as const,
+          slideNumber: revisionRequest.slideNumber,
+          message: "Live regeneration requests must include an edit instruction.",
+        },
+      ];
 }
 
 function mustKeepIssues(
