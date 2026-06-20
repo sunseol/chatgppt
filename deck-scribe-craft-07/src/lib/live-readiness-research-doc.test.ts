@@ -89,6 +89,8 @@ describe("live readiness research documentation", () => {
     expect(researchApproval.includes("exact canonical current Research Pack artifact id")).toBe(
       true,
     );
+    expect(researchApproval.includes("live_research_pack@...")).toBe(true);
+    expect(researchApproval.includes("another live stage prompt")).toBe(true);
     expect(researchApproval.includes("source_missing_live_capture")).toBe(true);
     expect(researchApproval.includes("source_capture_incomplete")).toBe(true);
     expect(researchApproval.includes("approvedResearchPackHash")).toBe(true);

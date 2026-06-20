@@ -12,7 +12,8 @@ Status: partial local contract
 
 - Missing provider provenance blocks approval with `missing_provenance`.
 - Provider provenance must name the exact canonical current Research Pack artifact
-  id; padded or unrelated artifact provenance blocks approval with
+  id and a `live_research_pack@...` prompt version; padded, unrelated, or
+  stage-wrong artifact provenance blocks approval with
   `research_pack_provenance_mismatch`.
 - Any reviewed source without persisted live capture metadata blocks approval with
   `source_missing_live_capture`.
@@ -49,7 +50,7 @@ When the ready-state approval action runs, it records the approved research arti
 
 - `bun test src/lib/live-research-approval-gate.test.ts src/lib/live-research-source-capture-gate.test.ts` passes: 7 tests.
 - `bun test src/lib/live-research-approval-action.test.ts` passes: 2 tests.
-- `bun test src/lib/live-research-approval-provenance-identity.test.ts src/lib/live-research-approval-gate.test.ts src/lib/live-research-approval-action.test.ts` passes: 11 tests.
+- `bun test src/lib/live-research-approval-provenance-identity.test.ts src/lib/live-research-approval-gate.test.ts src/lib/live-research-approval-action.test.ts` passes: 12 tests.
 - `bun test src/lib/desktop-live-text-pipeline-workflow.test.ts` passes and locks the Deck Plan turn handoff prompt containing `approvedResearchPackHash`.
 - `bun test src/lib/research-review-actions.test.ts` passes: 3 tests.
 - `bun test src/lib/research-pack.test.ts` passes: 7 tests.
@@ -61,4 +62,4 @@ When the ready-state approval action runs, it records the approved research arti
 
 ## Remaining Live work
 
-DF-224 is not ready to close. The review UI and approval gate contracts exist locally, and production can now display a persisted Research Pack, source exclusion/reinforcement controls, approval blockers, saved source capture metadata, saved evidence references, saved provider provenance, and a ready-state approval action that writes a current-content `approvedResearchPackHash` plus an approved research artifact record for DF-214. Source exclusion now also purges numeric evidence that survives only through a removed dataset, preventing stale numbers from appearing review-ready after the source decision, and review mutations clear stale provider provenance before any later approval attempt. Approval also requires saved provider provenance for the exact canonical current Research Pack artifact id, so provenance for a different or whitespace-padded artifact cannot unlock the DF-214 handoff. A non-simulated packaged-app live research approval manual QA run is still required.
+DF-224 is not ready to close. The review UI and approval gate contracts exist locally, and production can now display a persisted Research Pack, source exclusion/reinforcement controls, approval blockers, saved source capture metadata, saved evidence references, saved provider provenance, and a ready-state approval action that writes a current-content `approvedResearchPackHash` plus an approved research artifact record for DF-214. Source exclusion now also purges numeric evidence that survives only through a removed dataset, preventing stale numbers from appearing review-ready after the source decision, and review mutations clear stale provider provenance before any later approval attempt. Approval also requires saved provider provenance for the exact canonical current Research Pack artifact id and a `live_research_pack@...` prompt version, so provenance for a different artifact, whitespace-padded artifact, or another live stage prompt cannot unlock the DF-214 handoff. A non-simulated packaged-app live research approval manual QA run is still required.

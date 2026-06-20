@@ -70,6 +70,39 @@ describe("live research approval provenance identity", () => {
       gate.issues.map((issue) => issue.code).includes("research_pack_provenance_mismatch"),
     ).toBe(true);
   });
+
+  test("blocks approval when Research Pack provenance uses another live stage prompt", () => {
+    // Given
+    const pack = readyResearchPack();
+
+    // When
+    const gate = evaluateLiveResearchApprovalGate({
+      pack,
+      evidenceRefs: pack.liveEvidenceRefs ?? [],
+      provenanceLineage: [
+        createProviderArtifactProvenance({
+          artifactId: "research_approved",
+          executionMode: "production",
+          providerKind: "codex",
+          authMode: "codex_session",
+          modelOrRuntime: "codex app-server --stdio",
+          promptVersion: "deck_plan_desktop@v1",
+          durationMs: 2_200,
+          inputArtifactIds: ["source_capture_bundle_001"],
+          fixture: false,
+          turnId: "turn_research_001",
+          threadId: "thread_project_001",
+        }),
+      ],
+    });
+
+    // Then
+    expect(gate.kind).toBe("blocked");
+    if (gate.kind !== "blocked") return;
+    expect(
+      gate.issues.map((issue) => issue.code).includes("research_pack_provenance_mismatch"),
+    ).toBe(true);
+  });
 });
 
 function readyResearchPack(): ResearchPack {

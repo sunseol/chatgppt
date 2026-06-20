@@ -13,6 +13,8 @@ import { sourceCaptureApprovalIssues } from "./live-research-source-capture-gate
 import { getPendingResearchReinforcementRequests } from "./research-review-actions";
 import type { ResearchPack } from "./research-types";
 
+const LIVE_RESEARCH_PACK_PROMPT_PREFIX = "live_research_pack@";
+
 type LiveResearchReviewIssueCode =
   | "pending_reinforcement_request"
   | "research_pack_provenance_mismatch"
@@ -117,11 +119,8 @@ function researchPackProvenanceIssues(
 ): readonly LiveResearchApprovalIssue[] {
   if (lineage.length === 0) return [];
   const packArtifactId = pack.id;
-  const hasPackProvenance = lineage.some(
-    (provenance) =>
-      packArtifactId === packArtifactId.trim() &&
-      provenance.artifactId === provenance.artifactId.trim() &&
-      provenance.artifactId === packArtifactId,
+  const hasPackProvenance = lineage.some((provenance) =>
+    isCurrentResearchPackProvenance(packArtifactId, provenance),
   );
   if (hasPackProvenance) return [];
   return [
@@ -131,4 +130,17 @@ function researchPackProvenanceIssues(
       message: "Research approval requires provider provenance for the current Research Pack.",
     },
   ];
+}
+
+function isCurrentResearchPackProvenance(
+  packArtifactId: string,
+  provenance: ProviderArtifactProvenance,
+): boolean {
+  return (
+    packArtifactId === packArtifactId.trim() &&
+    provenance.artifactId === provenance.artifactId.trim() &&
+    provenance.artifactId === packArtifactId &&
+    provenance.promptVersion === provenance.promptVersion.trim() &&
+    provenance.promptVersion.startsWith(LIVE_RESEARCH_PACK_PROMPT_PREFIX)
+  );
 }
