@@ -72,6 +72,7 @@ export type LiveReleaseBlockerCode =
   | "p0_not_live_verified"
   | "production_mock_enabled"
   | "production_package_contaminated"
+  | "live_benchmark_status_conflict"
   | "live_benchmark_shortfall"
   | "golden_path_lineage_missing"
   | "golden_path_contaminated"

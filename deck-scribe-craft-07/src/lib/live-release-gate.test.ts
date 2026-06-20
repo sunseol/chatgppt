@@ -116,6 +116,26 @@ describe("live initial release gate", () => {
     expect(result.blockers.map((blocker) => blocker.code)).toEqual(["live_benchmark_shortfall"]);
   });
 
+  test("blocks contradictory benchmark status evidence", () => {
+    // Given
+    const input = readyInput();
+    const result = evaluateLiveInitialReleaseGate({
+      ...input,
+      liveBenchmarks: [
+        ...input.liveBenchmarks,
+        { id: "image_intro", status: "failed", failureDomain: "image" },
+      ],
+    });
+
+    // When / Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.blockers.map((blocker) => blocker.code)).toEqual([
+      "live_benchmark_status_conflict",
+    ]);
+    expect(result.blockers[0]?.refs).toEqual(["image_intro"]);
+  });
+
   test("requires the five named DF-242 benchmark scenarios", () => {
     // Given
     const result = evaluateLiveInitialReleaseGate({
