@@ -255,7 +255,7 @@ function compositionsFixture(
           : encodeSolidPngDataUrl({
               width: 1,
               height: 1,
-              color: { r: 245, g: 246, b: 248, a: 255 },
+              color: { r: 240 + slideNumber, g: 246, b: 248, a: 255 },
             }),
     };
   });

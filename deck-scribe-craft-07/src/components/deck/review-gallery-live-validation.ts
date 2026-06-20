@@ -5,6 +5,10 @@ import {
 } from "./review-gallery-background-validation";
 import type { ReviewGalleryItem } from "./review-gallery-model";
 import { compositorSvgArtifactIssues } from "./review-gallery-compositor-svg";
+import {
+  compositorPreviewIdentityIssues,
+  compositorPreviewIssues,
+} from "./review-gallery-preview-validation";
 
 export type ReviewGalleryLiveCompositionIssueCode =
   | "expected_five_compositions"
@@ -20,6 +24,7 @@ export type ReviewGalleryLiveCompositionIssueCode =
   | "stored_background_artifact_slide_mismatch"
   | "compositor_svg_artifact_mismatch"
   | "invalid_compositor_preview"
+  | "duplicate_compositor_preview"
   | "missing_editable_overlay"
   | "invalid_editable_overlay_bounds"
   | "text_overlay_collision";
@@ -56,6 +61,7 @@ export function validateReviewGalleryLiveCompositions(input: {
     ...countIssues(input.items, expectedSlideCount),
     ...slideCoverageIssues(input.items, expectedSlideCount),
     ...storedBackgroundArtifactIdentityIssues(input.items),
+    ...compositorPreviewIdentityIssues(input.items),
     ...input.items.flatMap((item) => liveCompositionIssues(item, detections)),
   ];
   return issues.length === 0 ? { kind: "ready" } : { kind: "blocked", issues };
@@ -122,7 +128,7 @@ function liveCompositionIssues(
     ...compositionIdentityIssues(item, composition),
     ...backgroundIssues(composition),
     ...compositorSvgArtifactIssues(composition),
-    ...previewIssues(composition),
+    ...compositorPreviewIssues(composition),
     ...overlayIssues(composition),
     ...collisionIssues(composition, detections),
   ];
@@ -139,20 +145,6 @@ function compositionIdentityIssues(
           code: "slide_composition_mismatch",
           slideNumber: item.slide.number,
           message: "Compositor result must match the review slide number.",
-        },
-      ];
-}
-
-function previewIssues(
-  composition: FinalSlideComposition,
-): readonly ReviewGalleryLiveCompositionIssue[] {
-  return hasPngSignatureDataUrl(composition.previewPngDataUrl)
-    ? []
-    : [
-        {
-          code: "invalid_compositor_preview",
-          slideNumber: composition.slideNumber,
-          message: "Compositor review preview must contain PNG binary output.",
         },
       ];
 }
@@ -227,8 +219,4 @@ function overlaps(
     left.y < right.y + right.h &&
     left.y + left.h > right.y
   );
-}
-
-function hasPngSignatureDataUrl(dataUrl: string): boolean {
-  return dataUrl.startsWith("data:image/png;base64,iVBORw0KGgo");
 }
