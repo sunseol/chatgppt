@@ -11,6 +11,7 @@ describe("research review actions", () => {
     // Given
     const pack = researchPack({
       approvedHash: "sha256:stale_approval",
+      provenanceLineage: [reviewProvenance()],
       liveEvidenceRefs: [
         {
           id: "ev_001",
@@ -34,6 +35,7 @@ describe("research review actions", () => {
 
     // Then
     expect(next.approvedHash).toBe(undefined);
+    expect(next.provenanceLineage).toBe(undefined);
     expect(next.sources.map((source) => source.id)).toEqual(["src_002"]);
     expect(next.datasets).toEqual([]);
     expect(next.charts).toEqual([]);
@@ -96,7 +98,10 @@ describe("research review actions", () => {
 
   test("tracks pending and resolved reinforcement requests", () => {
     // Given
-    const pack = researchPack({ approvedHash: "sha256:stale_approval" });
+    const pack = researchPack({
+      approvedHash: "sha256:stale_approval",
+      provenanceLineage: [reviewProvenance()],
+    });
 
     // When
     const pending = requestResearchReinforcement({
@@ -112,6 +117,7 @@ describe("research review actions", () => {
 
     // Then
     expect(pending.approvedHash).toBe(undefined);
+    expect(pending.provenanceLineage).toBe(undefined);
     expect(pending.review?.reinforcementRequests).toEqual([
       {
         id: "reinforce_1",
@@ -129,8 +135,44 @@ describe("research review actions", () => {
         resolvedAt: 1_789_500_100,
       },
     ]);
+    expect(
+      resolveResearchReinforcementRequest({
+        pack: {
+          ...pack,
+          review: {
+            sourceDecisions: [],
+            reinforcementRequests: [
+              {
+                id: "reinforce_1",
+                prompt: "정부 원자료로 보강",
+                status: "pending",
+                requestedAt: 1_789_500_010,
+              },
+            ],
+          },
+        },
+        requestId: "reinforce_1",
+        resolvedAt: 1_789_500_100,
+      }).provenanceLineage,
+    ).toBe(undefined);
   });
 });
+
+function reviewProvenance(): NonNullable<ResearchPack["provenanceLineage"]>[number] {
+  return {
+    artifactId: "research_review_actions",
+    executionMode: "production",
+    providerKind: "codex",
+    authMode: "codex_session",
+    modelOrRuntime: "codex app-server --stdio",
+    promptVersion: "live_research_pack@v1",
+    durationMs: 2_200,
+    inputArtifactIds: ["source_capture_bundle_001"],
+    fixture: false,
+    turnId: "turn_research_001",
+    threadId: "thread_project_001",
+  };
+}
 
 function researchPack(overrides: Partial<ResearchPack> = {}): ResearchPack {
   return {

@@ -39,7 +39,7 @@ export function excludeResearchSource(input: ExcludeResearchSourceInput): Resear
       (evidenceRef.datasetId === undefined || !removedDatasetIds.has(evidenceRef.datasetId)),
   );
   const message = `출처 제외: ${input.sourceId}`;
-  const next = clearApprovedHash({
+  const next = clearApprovalEvidence({
     ...input.pack,
     sources: input.pack.sources.filter((source) => source.id !== input.sourceId),
     claims: input.pack.claims.map((claim) =>
@@ -87,7 +87,7 @@ export function requestResearchReinforcement(
   };
   const message = `보강 요청: ${prompt}`;
 
-  return clearApprovedHash({
+  return clearApprovalEvidence({
     ...input.pack,
     factCheckReport: {
       ...input.pack.factCheckReport,
@@ -119,13 +119,13 @@ export function resolveResearchReinforcementRequest(
   });
 
   if (!changed) return input.pack;
-  return {
+  return clearApprovalEvidence({
     ...input.pack,
     review: {
       ...input.pack.review,
       reinforcementRequests,
     },
-  };
+  });
 }
 
 export function getPendingResearchReinforcementRequests(
@@ -182,9 +182,10 @@ function appendReinforcementRequest(
   };
 }
 
-function clearApprovedHash(pack: ResearchPack): ResearchPack {
-  if (pack.approvedHash === undefined) return pack;
+function clearApprovalEvidence(pack: ResearchPack): ResearchPack {
+  if (pack.approvedHash === undefined && pack.provenanceLineage === undefined) return pack;
   const next = { ...pack };
   delete next.approvedHash;
+  delete next.provenanceLineage;
   return next;
 }
