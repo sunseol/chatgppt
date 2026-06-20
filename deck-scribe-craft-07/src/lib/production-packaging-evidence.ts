@@ -51,6 +51,7 @@ export type ProductionPackagingIssueCode =
   | "missing_gatekeeper_acceptance"
   | "package_not_production_mode"
   | "package_content_contaminated"
+  | "invalid_clean_machine_step"
   | "duplicate_clean_machine_step"
   | "missing_clean_machine_step"
   | "missing_runtime_absence_remediation"

@@ -11,12 +11,25 @@ export const CLEAN_MACHINE_STEPS = [
 export type CleanMachineStep = (typeof CLEAN_MACHINE_STEPS)[number];
 
 export function cleanMachineStepIssues(
-  steps: readonly CleanMachineStep[],
+  steps: readonly unknown[],
 ): readonly ProductionPackagingIssue[] {
-  const present = new Set(steps);
+  const validSteps = steps.filter(isCleanMachineStep);
+  const invalidSteps = steps
+    .filter((step) => !isCleanMachineStep(step))
+    .map((step) => String(step));
+  const present = new Set(validSteps);
   const missing = CLEAN_MACHINE_STEPS.filter((step) => !present.has(step));
-  const duplicates = duplicateCleanMachineSteps(steps);
+  const duplicates = duplicateCleanMachineSteps(validSteps);
   return [
+    ...(invalidSteps.length === 0
+      ? []
+      : [
+          issue(
+            "invalid_clean_machine_step",
+            "Clean-machine validation steps must match the release checklist taxonomy.",
+            invalidSteps,
+          ),
+        ]),
     ...(missing.length === 0
       ? []
       : [
@@ -38,8 +51,12 @@ export function cleanMachineStepIssues(
   ];
 }
 
-export function countDistinctCleanMachineSteps(steps: readonly CleanMachineStep[]): number {
-  return new Set(steps).size;
+export function countDistinctCleanMachineSteps(steps: readonly unknown[]): number {
+  return new Set(steps.filter(isCleanMachineStep)).size;
+}
+
+function isCleanMachineStep(value: unknown): value is CleanMachineStep {
+  return CLEAN_MACHINE_STEPS.some((step) => step === value);
 }
 
 function duplicateCleanMachineSteps(
