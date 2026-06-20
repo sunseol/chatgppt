@@ -102,7 +102,7 @@ describe("live readiness documentation", () => {
     expect(manualQa.includes("setup_over_time")).toBe(true);
     expect(manualQa.includes("critical_issue_present")).toBe(true);
     expect(manualQa.includes("placeholder_output_present")).toBe(true);
-    expect(manualQa.includes("generic notes JSON")).toBe(true);
+    expect(manualQa.includes("manual-qa/session-notes-20260619.json")).toBe(true);
     expect(manualQa.includes("severity issue list")).toBe(true);
     expect(manualQa.includes("invalid_manual_qa_issue_log")).toBe(true);
     expect(manualQa.includes("sessionEvidencePath")).toBe(true);
