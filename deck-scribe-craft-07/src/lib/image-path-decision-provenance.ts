@@ -18,7 +18,7 @@ export function storedProviderProvenanceBlockers(input: {
     ];
   }
 
-  const requestId = input.successfulArtifact.request?.requestId?.trim();
+  const requestId = input.successfulArtifact.request?.requestId;
   const expectedPromptVersion = `${input.successfulArtifact.prompt.id}@${input.successfulArtifact.prompt.version}`;
   return [
     ...(provenance.executionMode === "production"
@@ -71,8 +71,8 @@ export function storedProviderProvenanceBlockers(input: {
         ]),
     ...(input.feasibility.providerId === "openaiImage" &&
     requestId !== undefined &&
-    requestId.length > 0 &&
-    provenance.requestId !== requestId
+    requestId.trim().length > 0 &&
+    (requestId !== requestId.trim() || provenance.requestId !== requestId)
       ? [
           {
             code: "provenance_request_id_mismatch" as const,

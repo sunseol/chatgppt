@@ -141,6 +141,7 @@ describe("live readiness documentation", () => {
     expect(imagePathDecision.includes("missing_request_model")).toBe(true);
     expect(imagePathDecision.includes("missing_billing_owner")).toBe(true);
     expect(imagePathDecision.includes("missing_required_permissions")).toBe(true);
+    expect(imagePathDecision.includes("canonical request id")).toBe(true);
     expect(imagePathDecision.includes("stale feasibility evidence")).toBe(true);
     expect(imagePathDecision.includes("fixtureFallbackAllowed: false")).toBe(true);
     expect(imagePathDecision.includes("fixture_fallback_enabled")).toBe(true);

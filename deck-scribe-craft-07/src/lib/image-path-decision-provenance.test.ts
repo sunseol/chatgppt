@@ -12,6 +12,39 @@ import {
 import { decideImageProviderFeasibility } from "./image-provider-feasibility";
 
 describe("image path decision provider provenance evidence", () => {
+  test("blocks route locking when the artifact request id needs trimming", () => {
+    // Given / When
+    const record = createImagePathDecisionRecord({
+      decisionId: "image_path_padded_request_id",
+      decidedAt: 1_789_700_020,
+      feasibility: decideImageProviderFeasibility({
+        codexImageCapability: "unknown",
+        apiCredential: "available",
+        organizationVerification: "verified",
+      }),
+      billingOwner: "workspace-billing",
+      requiredPermissions: ["images.generate"],
+      organizationVerification: "verified",
+      successfulArtifact: {
+        ...imageDecisionRealImageArtifact(),
+        request: {
+          model: "gpt-image-2",
+          requestId: " img_req_001 ",
+          latencyMs: 2_400,
+        },
+      },
+      binaryArtifactPath: BINARY_ARTIFACT_PATH,
+      provenanceArtifactPath: PROVENANCE_ARTIFACT_PATH,
+      providerProvenance: imageDecisionProviderProvenance(),
+    });
+
+    // Then
+    expect(record.status).toBe("blocked");
+    expect(record.blockers.map((blocker) => blocker.code)).toEqual([
+      "provenance_request_id_mismatch",
+    ]);
+  });
+
   test("blocks route locking when the provider provenance sidecar is missing", () => {
     // Given
     const artifact = imageDecisionRealImageArtifact();
