@@ -30,7 +30,12 @@ describe("live packaging documentation", () => {
     expect(progress.includes("canonical clean-machine runbook path evidence")).toBe(true);
     expect(progress.includes("step-specific persisted evidence paths")).toBe(true);
     expect(progress.includes("cross-step")).toBe(true);
+    expect(progress.includes("reused-path")).toBe(true);
+    expect(progress.includes("one shared evidence path reused for every checklist step")).toBe(
+      true,
+    );
     expect(runbook.includes("missing_clean_machine_step_evidence")).toBe(true);
+    expect(runbook.includes("one shared evidence path that names every step")).toBe(true);
     expect(progress.includes("unsupported-step inflation")).toBe(true);
     expect(progress.includes("valid distinct checklist steps")).toBe(true);
     expect(progress.includes("developer-local package archive")).toBe(true);
@@ -45,7 +50,7 @@ describe("live packaging documentation", () => {
     expect(decision.includes("developer-local persisted `releaseTrustEvidencePath`")).toBe(true);
     expect(decision.includes("generic release-trust paths without codesign")).toBe(true);
     expect(decision.includes("release-trust evidence paths")).toBe(true);
-    expect(decision.includes("979 tests")).toBe(true);
+    expect(decision.includes("980 tests")).toBe(true);
   });
 });
 

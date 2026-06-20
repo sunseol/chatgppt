@@ -91,4 +91,35 @@ describe("production packaging clean-machine step evidence", () => {
     ]);
     expect(result.issues[0]?.refs).toEqual(["codex_login"]);
   });
+
+  test("blocks one clean-machine evidence path reused for every step", () => {
+    // Given
+    const reusedPath =
+      "release-evidence/clean-machine/install-app-codex-login-image-credentials-project-launch-live-interview.json";
+    const result = evaluateProductionPackagingEvidence(
+      completeProductionPackagingEvidence({
+        cleanMachineStepEvidencePaths: {
+          install_app: reusedPath,
+          codex_login: reusedPath,
+          image_credentials: reusedPath,
+          project_launch: reusedPath,
+          live_interview: reusedPath,
+        },
+      }),
+    );
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "missing_clean_machine_step_evidence",
+    ]);
+    expect(result.issues[0]?.refs).toEqual([
+      "install_app",
+      "codex_login",
+      "image_credentials",
+      "project_launch",
+      "live_interview",
+    ]);
+  });
 });

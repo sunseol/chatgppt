@@ -71,16 +71,20 @@ export function countDistinctCleanMachineSteps(steps: readonly unknown[]): numbe
 export function cleanMachineStepEvidencePathIssues(
   evidencePaths: CleanMachineStepEvidencePaths | undefined,
 ): readonly ProductionPackagingIssue[] {
-  const missing = CLEAN_MACHINE_STEPS.filter(
-    (step) => !hasStepSpecificEvidencePath(step, evidencePaths?.[step]),
-  );
-  return missing.length === 0
+  const missing = new Set([
+    ...CLEAN_MACHINE_STEPS.filter(
+      (step) => !hasStepSpecificEvidencePath(step, evidencePaths?.[step]),
+    ),
+    ...duplicatedStepEvidencePathSteps(evidencePaths),
+  ]);
+  const refs = CLEAN_MACHINE_STEPS.filter((step) => missing.has(step));
+  return refs.length === 0
     ? []
     : [
         issue(
           "missing_clean_machine_step_evidence",
           "Clean-machine validation steps must cite step-specific persisted evidence paths.",
-          missing,
+          refs,
         ),
       ];
 }
@@ -90,6 +94,19 @@ function hasStepSpecificEvidencePath(step: CleanMachineStep, path: string | unde
   if (!hasNonSyntheticJsonEvidencePath(path)) return false;
   const normalizedPath = path.toLowerCase();
   return CLEAN_MACHINE_STEP_PATH_MARKERS[step].some((marker) => normalizedPath.includes(marker));
+}
+
+function duplicatedStepEvidencePathSteps(
+  evidencePaths: CleanMachineStepEvidencePaths | undefined,
+): readonly CleanMachineStep[] {
+  const stepsByPath = new Map<string, readonly CleanMachineStep[]>();
+  for (const step of CLEAN_MACHINE_STEPS) {
+    const path = evidencePaths?.[step];
+    if (path === undefined || !hasStepSpecificEvidencePath(step, path)) continue;
+    const normalizedPath = path.trim().toLowerCase();
+    stepsByPath.set(normalizedPath, [...(stepsByPath.get(normalizedPath) ?? []), step]);
+  }
+  return [...stepsByPath.values()].filter((steps) => steps.length > 1).flat();
 }
 
 function isCleanMachineStep(value: unknown): value is CleanMachineStep {
