@@ -1,6 +1,10 @@
 import type { ProviderArtifactProvenanceInput } from "./provider-provenance";
+import { ImageArtifactStoreError } from "./image-artifact-store-error";
 import { assertLiveImageProviderArtifact } from "./image-artifact-store-live-provider";
+import { requireImageRequestMetadata } from "./image-artifact-store-request-metadata";
 import type { SlideImageArtifact, SlideImageRequestMetadata } from "./slide-image-provider";
+
+export { ImageArtifactStoreError } from "./image-artifact-store-error";
 
 export type ImageArtifactStoreWrite = {
   readonly path: string;
@@ -56,7 +60,7 @@ export async function storeSlideImageArtifact(input: {
   assertSafeStorageAddress(input);
   assertImageInputLineage(input.artifact);
   const imageBytes = pngBytesFromDataUrl(input.artifact.imageDataUrl);
-  const request = requireRequestMetadata(input.artifact);
+  const request = requireImageRequestMetadata(input.artifact);
   const binary = {
     artifactId: imageArtifactId(input.projectId, input.artifact.slideNumber, input.version),
     path: imageArtifactPath(input.projectId, input.artifact.slideNumber, input.version),
@@ -154,66 +158,6 @@ function imageProvenance(
   };
 }
 
-function requireRequestMetadata(artifact: SlideImageArtifact): SlideImageRequestMetadata {
-  if (!artifact.request) {
-    throw new ImageArtifactStoreError("Image artifact request metadata is required.");
-  }
-  if (!artifact.request.model.trim()) {
-    throw new ImageArtifactStoreError("Image artifact request model is required.");
-  }
-  if (artifact.providerId === "openaiImage" && !artifact.request.requestId?.trim()) {
-    throw new ImageArtifactStoreError("OpenAI image artifacts require a provider request id.");
-  }
-  if (!hasCanonicalRequestMetadata(artifact.request)) {
-    throw new ImageArtifactStoreError("Image artifact canonical request metadata is required.");
-  }
-  if (!validLatencyMs(artifact.request.latencyMs)) {
-    throw new ImageArtifactStoreError(
-      "Image artifact request latency must be a non-negative number.",
-    );
-  }
-  if (!validUsageSummary(artifact.request.usage)) {
-    throw new ImageArtifactStoreError(
-      "Image artifact request usage counts must be non-negative integers.",
-    );
-  }
-  return artifact.request;
-}
-
-function hasCanonicalRequestMetadata(request: SlideImageRequestMetadata): boolean {
-  return (
-    optionalCanonicalText(request.model) &&
-    optionalCanonicalText(request.requestId) &&
-    optionalCanonicalText(request.size) &&
-    optionalCanonicalText(request.quality)
-  );
-}
-
-function optionalCanonicalText(value: string | undefined): boolean {
-  if (value === undefined) return true;
-  return value.length > 0 && value === value.trim();
-}
-
-function validLatencyMs(value: number | undefined): boolean {
-  return value !== undefined && Number.isFinite(value) && value >= 0;
-}
-
-function validUsageSummary(usage: SlideImageRequestMetadata["usage"]): boolean {
-  if (usage === undefined) return true;
-  return (
-    [usage.inputTokens, usage.outputTokens, usage.imageCount].every(validOptionalCount) &&
-    validOptionalCost(usage.estimatedCostUsd)
-  );
-}
-
-function validOptionalCount(value: number | undefined): boolean {
-  return value === undefined || (Number.isInteger(value) && value >= 0);
-}
-
-function validOptionalCost(value: number | undefined): boolean {
-  return value === undefined || (Number.isFinite(value) && value >= 0);
-}
-
 function positiveInteger(value: number): boolean {
   return Number.isInteger(value) && value > 0;
 }
@@ -271,11 +215,4 @@ async function hashBytes(bytes: Uint8Array): Promise<string> {
   return `sha256:${[...new Uint8Array(digest)]
     .map((byte) => byte.toString(16).padStart(2, "0"))
     .join("")}`;
-}
-
-export class ImageArtifactStoreError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "ImageArtifactStoreError";
-  }
 }

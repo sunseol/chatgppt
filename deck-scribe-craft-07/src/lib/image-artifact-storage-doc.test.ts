@@ -11,6 +11,7 @@ describe("image artifact storage documentation", () => {
     expect(text.includes("prompt hash")).toBe(true);
     expect(text.includes("layout reference")).toBe(true);
     expect(text.includes("canonical provider request metadata")).toBe(true);
+    expect(text.includes("usage evidence")).toBe(true);
     expect(text.includes("image-artifact-store-lineage.test.ts")).toBe(true);
     expect(text.includes("image-artifact-store-request-metadata.test.ts")).toBe(true);
   });

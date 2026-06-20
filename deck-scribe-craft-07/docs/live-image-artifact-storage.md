@@ -21,7 +21,7 @@ Status: partial local contract
 - Rejects blank prompt version/hash and blank layout screenshot references before writing, so stored provenance `inputArtifactIds` cannot be built from missing prompt or layout lineage.
 - Preserves request metadata when available: `requestId`, model, size, quality, latency, and usage.
 - Rejects whitespace-padded request ids, request models, size values, or quality values before writing, so stored metadata and provenance keep canonical provider request metadata rather than trim-only evidence.
-- Rejects blank request models, missing/invalid latency, fractional or negative usage counts, and negative or non-finite usage/cost values before writing image bytes or metadata.
+- Rejects blank request models, missing/invalid latency, empty usage metadata without usage evidence, fractional or negative usage counts, and negative or non-finite usage/cost values before writing image bytes or metadata.
 - Measures provider-call latency in the OpenAI image adapter when the provider response omits `latencyMs`, so stored provenance duration does not silently fall back to `0`.
 - Produces and stores provider provenance for the stored binary artifact, including prompt version, prompt hash, layout reference, request id, model/runtime, duration, auth mode, and fixture flag.
 - Rejects non-PNG image data, fake PNG data URLs without a PNG signature, and OpenAI image artifacts with missing or blank `requestId`.
@@ -40,7 +40,7 @@ Existing provider tests plus `src/lib/image-provider-errors.test.ts` cover the D
 
 ## Verification
 
-- `bun test src/lib/image-artifact-store.test.ts src/lib/image-artifact-store-usage.test.ts src/lib/image-artifact-store-live-provider.test.ts src/lib/image-artifact-store-lineage.test.ts src/lib/image-artifact-store-request-metadata.test.ts src/lib/image-artifact-storage-doc.test.ts` passes: 12 tests.
+- `bun test src/lib/image-artifact-store.test.ts src/lib/image-artifact-store-usage.test.ts src/lib/image-artifact-store-live-provider.test.ts src/lib/image-artifact-store-lineage.test.ts src/lib/image-artifact-store-request-metadata.test.ts src/lib/image-artifact-storage-doc.test.ts` passes: 13 tests.
 - `bun test src/lib/image-provider-errors.test.ts` passes: 1 test.
 - `bun test src/lib/live-image-provider-adapter.test.ts src/lib/live-image-provider-adapter-live-provider.test.ts` passes: 5 tests.
 - `bun test src/lib/live-image-provider-adapter.test.ts src/lib/image-artifact-store.test.ts src/lib/image-provider-errors.test.ts src/lib/slide-image-provider.test.ts src/lib/image-path-decision.test.ts` passes: 24 tests.
