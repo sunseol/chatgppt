@@ -9,6 +9,7 @@ import {
   collectLineageContamination,
   type ProviderArtifactProvenance,
 } from "./provider-provenance";
+import { hasLiveFinalExportArtifactId } from "./live-release-final-export-gate";
 
 export { LIVE_P0_TICKET_IDS } from "./live-release-p0-gate";
 export type { LiveP0TicketId, LiveTicketEvidence, LiveTicketStatus } from "./live-release-p0-gate";
@@ -168,7 +169,9 @@ function lineageBlockers(
   }
   const expectedFinalExportId = finalExportArtifactId.trim();
   const hasCanonicalFinalExportId =
-    expectedFinalExportId.length > 0 && expectedFinalExportId === finalExportArtifactId;
+    expectedFinalExportId.length > 0 &&
+    expectedFinalExportId === finalExportArtifactId &&
+    hasLiveFinalExportArtifactId(expectedFinalExportId);
   const includesFinalExport =
     hasCanonicalFinalExportId && lineage.some((item) => item.artifactId === expectedFinalExportId);
   const contamination = collectLineageContamination(lineage);
