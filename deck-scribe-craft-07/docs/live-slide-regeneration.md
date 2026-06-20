@@ -8,7 +8,7 @@ Status: Partial, external evidence required
 
 ## Contract Summary
 
-DF-235 requires selected-slide regeneration to create a full new slide background from the approved original context instead of local inpainting. The local contract now requires the selected original slide to already be approved, preserves the selected slide spec hash, `deckContextId`, and `designSystemId`, requires a non-blank edit instruction plus non-empty, non-blank, non-duplicated, and non-overlapping `must_keep` and `must_change`, stores the regenerated background as a newer versioned production OpenAI image artifact with matching API-key provenance, exact storage paths, matching provenance sidecar identity, and metadata/provenance provider request id evidence that differs from the original request, and keeps the already approved slide unchanged until the user approves the candidate.
+DF-235 requires selected-slide regeneration to create a full new slide background from the approved original context instead of local inpainting. The local contract now requires the selected original slide to already be approved, preserves the selected slide spec hash, `deckContextId`, and `designSystemId`, requires a non-blank edit instruction plus non-empty, non-blank, non-duplicated, and non-overlapping `must_keep` and `must_change`, stores the regenerated background as a newer versioned production OpenAI image artifact with matching API-key provenance, exact storage paths, matching provenance sidecar identity, and metadata/provenance provider request id evidence that differs from the original request, keeps the already approved slide unchanged until the user approves the candidate, and requires matching before/after comparison evidence before approval can replace the original.
 
 ## Local Evidence
 
@@ -28,11 +28,12 @@ DF-235 requires selected-slide regeneration to create a full new slide backgroun
 - `regeneration_background_not_live` blocks a candidate when the regenerated background provenance is not production `openaiImage` with `api_key` auth and non-fixture output.
 - A ready candidate points at the new versioned background artifact id, keeps the original background artifact id plus `mustKeep`/`mustChange` provenance, and remains `ready` until explicitly approved.
 - Failed candidates return the preserved approved slide so the previous accepted version remains available for review and export.
-- `approveLiveSlideRegenerationCandidate` replaces only the selected slide and marks the chosen regenerated slide as approved.
+- `src/lib/live-slide-regeneration-approval.ts` blocks approval with `missing_regeneration_comparison`, `candidate_not_ready_for_approval`, or `regeneration_comparison_mismatch` unless the candidate is still `ready`, the current slide is the approved original, and before/after comparison evidence matches the original descriptor, regenerated descriptor, slide versions, selected slide, and new background artifact id.
+- `approveLiveSlideRegenerationCandidate` preserves the approved original when approval evidence is missing or mismatched, and only replaces the selected slide once matching before/after comparison evidence is present.
 
 ## Verification
 
-- `bun test src/lib/live-slide-regeneration-request-validation.test.ts src/lib/live-slide-regeneration-approved-original.test.ts src/lib/live-slide-regeneration-version.test.ts src/lib/live-slide-regeneration-slide-spec.test.ts src/lib/live-slide-regeneration.test.ts src/lib/slide-revision-generation.test.ts src/lib/slide-revision-model.test.ts src/components/deck/RevisionComparePanel.integration.test.tsx`
+- `bun test src/lib/live-slide-regeneration-approval.test.ts src/lib/live-slide-regeneration-request-validation.test.ts src/lib/live-slide-regeneration-approved-original.test.ts src/lib/live-slide-regeneration-version.test.ts src/lib/live-slide-regeneration-slide-spec.test.ts src/lib/live-slide-regeneration.test.ts src/lib/slide-revision-generation.test.ts src/lib/slide-revision-model.test.ts src/components/deck/RevisionComparePanel.integration.test.tsx`
 - `bun run typecheck`
 - `bun run lint`
 

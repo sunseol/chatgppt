@@ -1,9 +1,11 @@
 import { hashContent } from "./artifacts";
 import type { GeneratedSlide, SlideSpec } from "./deck-types";
 import type { StoredSlideImageArtifact } from "./image-artifact-store";
+import { liveSlideRegenerationApprovalIssues } from "./live-slide-regeneration-approval";
 import { candidateIssues } from "./live-slide-regeneration-candidate";
 import { requestIssues } from "./live-slide-regeneration-request-validation";
 import { candidateSlideSpecIssues } from "./live-slide-regeneration-slide-spec";
+import type { SlideRevisionComparison } from "./slide-revision-generation";
 import type { SlideRevisionRequest } from "./slide-revision-model";
 
 export type LiveSlideRegenerationIssueCode =
@@ -31,7 +33,10 @@ export type LiveSlideRegenerationIssueCode =
   | "stale_candidate_version"
   | "missing_regeneration_request_id"
   | "regeneration_request_provenance_mismatch"
-  | "regeneration_request_id_not_new";
+  | "regeneration_request_id_not_new"
+  | "missing_regeneration_comparison"
+  | "candidate_not_ready_for_approval"
+  | "regeneration_comparison_mismatch";
 
 export interface LiveSlideRegenerationIssue {
   readonly code: LiveSlideRegenerationIssueCode;
@@ -185,11 +190,16 @@ export function createLiveSlideRegenerationCandidate(input: {
 export function approveLiveSlideRegenerationCandidate(
   slides: readonly GeneratedSlide[],
   candidate: LiveSlideRegenerationCandidate,
+  comparison?: SlideRevisionComparison,
 ): readonly GeneratedSlide[] {
+  const issues = liveSlideRegenerationApprovalIssues({ slides, candidate, comparison });
+  if (issues.length > 0) return slides;
   return slides.map((slide) =>
     slide.number === candidate.slide.number ? { ...candidate.slide, status: "approved" } : slide,
   );
 }
+
+export { liveSlideRegenerationApprovalIssues };
 
 function slideSpecIssues(
   request: SlideRevisionRequest,

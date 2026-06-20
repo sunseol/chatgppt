@@ -1,7 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { createImageArtifactStore, storeSlideImageArtifact } from "./image-artifact-store";
 import {
-  approveLiveSlideRegenerationCandidate,
   buildLiveSlideRegenerationRequest,
   createLiveSlideRegenerationCandidate,
 } from "./live-slide-regeneration";
@@ -156,12 +155,9 @@ describe("live full-slide regeneration", () => {
     expect(candidateResult.candidate.mustKeep.includes("title text")).toBe(true);
     expect(candidateResult.candidate.mustChange).toEqual(["chart area size"]);
 
-    const approved = approveLiveSlideRegenerationCandidate(
-      originalSlides,
-      candidateResult.candidate,
-    );
-    expect(approved[0]?.status).toBe("approved");
-    expect(approved[0]?.imageDescriptor.includes("project_001_image_slide_003_v2")).toBe(true);
+    expect(
+      candidateResult.candidate.afterImageDescriptor.includes("project_001_image_slide_003_v2"),
+    ).toBe(true);
   });
 
   test("blocks invalid candidates and preserves the existing approved slide", async () => {

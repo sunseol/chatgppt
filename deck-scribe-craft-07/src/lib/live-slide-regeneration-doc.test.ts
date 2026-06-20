@@ -11,6 +11,7 @@ describe("live full-slide regeneration documentation", () => {
     expect(slideRegeneration.includes("deckContextId")).toBe(true);
     expect(slideRegeneration.includes("designSystemId")).toBe(true);
     expect(slideRegeneration.includes("live-slide-regeneration-slide-spec.ts")).toBe(true);
+    expect(slideRegeneration.includes("live-slide-regeneration-approval.ts")).toBe(true);
     expect(slideRegeneration.includes("slide_spec_mismatch")).toBe(true);
     expect(slideRegeneration.includes("missing_edit_instruction")).toBe(true);
     expect(slideRegeneration.includes("missing_must_keep_targets")).toBe(true);
@@ -31,6 +32,10 @@ describe("live full-slide regeneration documentation", () => {
     expect(slideRegeneration.includes("regeneration_request_provenance_mismatch")).toBe(true);
     expect(slideRegeneration.includes("regeneration_background_not_live")).toBe(true);
     expect(slideRegeneration.includes("production `openaiImage` with `api_key` auth")).toBe(true);
+    expect(slideRegeneration.includes("missing_regeneration_comparison")).toBe(true);
+    expect(slideRegeneration.includes("candidate_not_ready_for_approval")).toBe(true);
+    expect(slideRegeneration.includes("regeneration_comparison_mismatch")).toBe(true);
+    expect(slideRegeneration.includes("before/after comparison evidence")).toBe(true);
     expect(slideRegeneration.includes("preserved approved slide")).toBe(true);
   });
 });
