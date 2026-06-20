@@ -31,6 +31,7 @@ export function collectLiveTextSmokeIssues(
 ): readonly LiveTextSmokeIssue[] {
   return [
     ...stageIssues(input.artifacts),
+    ...artifactIdentityReuseIssues(input.artifacts),
     ...textPathLineageIssues(input.artifacts),
     ...textSmokePromptLineageIssues(input.artifacts),
     ...input.artifacts.flatMap((artifact) => artifactIssues(artifact)),
@@ -69,6 +70,33 @@ function artifactIssues(artifact: LiveTextSmokeArtifact): readonly LiveTextSmoke
     gate.kind === "blocked" ? gate.issues.map((item) => providerIssue(artifact, item)) : [];
 
   return [...gateIssues, ...liveCodexIssues(artifact), ...artifactIdentityIssues(artifact)];
+}
+
+function artifactIdentityReuseIssues(
+  artifacts: readonly LiveTextSmokeArtifact[],
+): readonly LiveTextSmokeIssue[] {
+  const duplicateArtifactIds = duplicateValues(
+    artifacts
+      .map((artifact) => normalizedIdentity(artifact.provenance.artifactId))
+      .filter((artifactId) => artifactId !== undefined),
+  );
+  const duplicateTurnIds = duplicateValues(
+    artifacts
+      .map((artifact) => normalizedIdentity(artifact.provenance.turnId))
+      .filter((turnId) => turnId !== undefined),
+  );
+
+  return [
+    ...duplicateArtifactIds.map((artifactId) => ({
+      code: "duplicate_text_artifact_id" as const,
+      artifactId,
+      message: `Live text smoke artifacts must not reuse artifact id ${artifactId}.`,
+    })),
+    ...duplicateTurnIds.map((turnId) => ({
+      code: "duplicate_text_turn_id" as const,
+      message: `Live text smoke artifacts must not reuse turn id ${turnId}.`,
+    })),
+  ];
 }
 
 function liveCodexIssues(artifact: LiveTextSmokeArtifact): readonly LiveTextSmokeIssue[] {
@@ -162,4 +190,22 @@ function artifactIssue(
 
 function hasText(value: string | undefined): boolean {
   return value !== undefined && value.trim().length > 0;
+}
+
+function normalizedIdentity(value: string | undefined): string | undefined {
+  const trimmed = value?.trim();
+  return trimmed === "" ? undefined : trimmed;
+}
+
+function duplicateValues(values: readonly string[]): readonly string[] {
+  const seen = new Set<string>();
+  const duplicates = new Set<string>();
+  for (const value of values) {
+    if (seen.has(value)) {
+      duplicates.add(value);
+      continue;
+    }
+    seen.add(value);
+  }
+  return [...duplicates];
 }

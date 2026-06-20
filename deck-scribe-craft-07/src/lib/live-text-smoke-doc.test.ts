@@ -22,6 +22,8 @@ describe("live text smoke documentation", () => {
       "Crash/Restart Evidence",
       "post-restart health turn",
       "evaluateLiveTextSmokeGate",
+      "duplicate_text_artifact_id",
+      "duplicate_text_turn_id",
       "disconnected_text_stage_lineage",
       "text_smoke_missing_initial_prompt_input",
       "text_smoke_missing_answer_input",
@@ -36,6 +38,8 @@ describe("live text smoke documentation", () => {
       "whitespace-padded resume next-turn reuse rejection",
       "resume_reused_existing_turn",
       "resume_non_codex_turn",
+      "distinct artifact ids",
+      "distinct turn ids",
       "Smoke result: partial",
     ]) {
       expect(textSmoke.includes(needle)).toBe(true);

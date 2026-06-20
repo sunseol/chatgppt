@@ -32,6 +32,8 @@ export type LiveTextSmokeIssueCode =
   | ProviderProvenanceIssue["code"]
   | "missing_text_stage"
   | "duplicate_text_stage"
+  | "duplicate_text_artifact_id"
+  | "duplicate_text_turn_id"
   | "non_codex_text_artifact"
   | "non_codex_session_auth"
   | "non_production_text_artifact"
