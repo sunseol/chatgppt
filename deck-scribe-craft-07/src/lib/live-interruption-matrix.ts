@@ -1,6 +1,7 @@
 import { scenarioEvidenceDetailIssues } from "./live-interruption-evidence-details";
 import { partialImageResumeIssues } from "./live-interruption-image-resume";
 import { interruptionReportPathIssues } from "./live-interruption-report-path";
+import { scenarioCoverageIssues } from "./live-interruption-scenario-coverage";
 
 export const LIVE_INTERRUPTION_SCENARIOS = [
   "text_turn_shutdown",
@@ -23,7 +24,7 @@ export type LiveRecoveredJobState = (typeof LIVE_RECOVERED_JOB_STATES)[number];
 export type LiveRecoverySnapshotScope = "app_storage" | "protocol_probe" | "transient";
 
 export type LiveInterruptionScenarioEvidence = {
-  readonly id: LiveInterruptionScenarioId;
+  readonly id: string;
   readonly jobStatusAfterRestart: LiveRecoveredJobState;
   readonly completedArtifactIdsBefore: readonly string[];
   readonly completedArtifactIdsAfter: readonly string[];
@@ -53,6 +54,7 @@ export type LiveInterruptionMatrixEvidence = {
 export type LiveInterruptionIssueCode =
   | "missing_interruption_scenario"
   | "duplicate_interruption_scenario"
+  | "unknown_interruption_scenario"
   | "missing_live_job_evidence"
   | "duplicate_interruption_live_job"
   | "duplicate_recovery_snapshot"
@@ -86,8 +88,7 @@ export function evaluateLiveInterruptionMatrix(
   matrix: LiveInterruptionMatrixEvidence,
 ): LiveInterruptionMatrixResult {
   const issues = [
-    ...missingScenarioIssues(matrix.scenarios),
-    ...duplicateScenarioIssues(matrix.scenarios),
+    ...scenarioCoverageIssues(matrix.scenarios, LIVE_INTERRUPTION_SCENARIOS),
     ...scenarioEvidenceDetailIssues(matrix.scenarios),
     ...invalidRecoveredStateIssues(matrix.scenarios),
     ...unsafeRecoveredStateIssues(matrix.scenarios),
@@ -109,36 +110,6 @@ export function formatLiveInterruptionMatrixSummary(
     `Report: ${matrix.reportPath || "missing"}`,
     ...matrix.scenarios.map((scenario) => `${scenario.id}: ${scenario.jobStatusAfterRestart}`),
   ].join("\n");
-}
-
-function missingScenarioIssues(
-  scenarios: readonly LiveInterruptionScenarioEvidence[],
-): readonly LiveInterruptionIssue[] {
-  const present = new Set(scenarios.map((scenario) => scenario.id));
-  const missing = LIVE_INTERRUPTION_SCENARIOS.filter((id) => !present.has(id));
-  return missing.length === 0
-    ? []
-    : [issue("missing_interruption_scenario", "Live interruption matrix is incomplete.", missing)];
-}
-
-function duplicateScenarioIssues(
-  scenarios: readonly LiveInterruptionScenarioEvidence[],
-): readonly LiveInterruptionIssue[] {
-  const seen = new Set<LiveInterruptionScenarioId>();
-  const duplicates = new Set<LiveInterruptionScenarioId>();
-  for (const scenario of scenarios) {
-    if (seen.has(scenario.id)) duplicates.add(scenario.id);
-    seen.add(scenario.id);
-  }
-  return duplicates.size === 0
-    ? []
-    : [
-        issue(
-          "duplicate_interruption_scenario",
-          "Each live interruption scenario must appear exactly once.",
-          Array.from(duplicates),
-        ),
-      ];
 }
 
 function invalidRecoveredStateIssues(

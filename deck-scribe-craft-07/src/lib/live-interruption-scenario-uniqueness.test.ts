@@ -25,6 +25,25 @@ describe("live interruption scenario uniqueness", () => {
     expect(result.issues.map((issue) => issue.code)).toEqual(["duplicate_interruption_scenario"]);
     expect(result.issues[0]?.refs).toEqual(["fetch_shutdown"]);
   });
+
+  test("blocks unknown interruption scenario rows from satisfying the matrix", () => {
+    const matrix = completeMatrix({
+      scenarios: [
+        ...LIVE_INTERRUPTION_SCENARIOS.map((id) => scenario(id)),
+        scenario("rogue_restart_probe", {
+          liveJobId: "live_job_rogue_restart_probe",
+          recoverySnapshotPath: "recovery/rogue-restart-probe.json",
+        }),
+      ],
+    });
+
+    const result = evaluateLiveInterruptionMatrix(matrix);
+
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual(["unknown_interruption_scenario"]);
+    expect(result.issues[0]?.refs).toEqual(["rogue_restart_probe"]);
+  });
 });
 
 function completeMatrix(
@@ -38,7 +57,7 @@ function completeMatrix(
 }
 
 function scenario(
-  id: (typeof LIVE_INTERRUPTION_SCENARIOS)[number],
+  id: string,
   patch: Partial<LiveInterruptionScenarioEvidence> = {},
 ): LiveInterruptionScenarioEvidence {
   return {
