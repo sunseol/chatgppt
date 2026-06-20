@@ -58,14 +58,16 @@ function run(id: (typeof LIVE_BENCHMARK_IDS)[number], pathSuffix: string = id): 
       screenshotPaths: screenshotPaths(id, pathSuffix),
       sourceCount: 3,
       sourceArtifactIds: [`${id}_source_1`, `${id}_source_2`, `${id}_source_3`],
-      imageArtifactCount: 5,
+      imageArtifactCount: 6,
       liveImageArtifactIds: [
         `${id}_image_1`,
         `${id}_image_2`,
         `${id}_image_3`,
         `${id}_image_4`,
         `${id}_image_5`,
+        `${id}_image_regenerated`,
       ],
+      regeneratedLiveImageArtifactIds: [`${id}_image_regenerated`],
       liveImageRequestIds: [
         `${id}_img_req_1`,
         `${id}_img_req_2`,

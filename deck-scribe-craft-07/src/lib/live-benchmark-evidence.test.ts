@@ -199,28 +199,6 @@ describe("live benchmark evidence", () => {
     if (result.kind !== "blocked") return;
     expect(result.issues.map((issue) => issue.code)).toEqual(["output_bundle_package_mismatch"]);
   });
-
-  test("blocks benchmark package hashes that are not SHA-256 digests", () => {
-    // Given
-    const invalidPackageSha = "not-a-sha";
-    const bundle = completeBundle({
-      packageArchiveSha256: invalidPackageSha,
-      runs: LIVE_BENCHMARK_IDS.map((id) =>
-        withPackageArchiveSha(
-          run(id, id === "revision_regeneration" ? "failed" : "passed"),
-          invalidPackageSha,
-        ),
-      ),
-    });
-
-    // When
-    const result = evaluateLiveBenchmarkEvidence(bundle);
-
-    // Then
-    expect(result.kind).toBe("blocked");
-    if (result.kind !== "blocked") return;
-    expect(result.issues.map((issue) => issue.code)).toEqual(["invalid_benchmark_package_hash"]);
-  });
 });
 
 function completeBundle(
@@ -266,11 +244,19 @@ function run(
       sourceCount: status === "passed" ? 3 : 0,
       sourceArtifactIds:
         status === "passed" ? [`${id}_source_1`, `${id}_source_2`, `${id}_source_3`] : [],
-      imageArtifactCount: status === "passed" ? 5 : 0,
+      imageArtifactCount: status === "passed" ? 6 : 0,
       liveImageArtifactIds:
         status === "passed"
-          ? [`${id}_image_1`, `${id}_image_2`, `${id}_image_3`, `${id}_image_4`, `${id}_image_5`]
+          ? [
+              `${id}_image_1`,
+              `${id}_image_2`,
+              `${id}_image_3`,
+              `${id}_image_4`,
+              `${id}_image_5`,
+              `${id}_image_regenerated`,
+            ]
           : [],
+      regeneratedLiveImageArtifactIds: status === "passed" ? [`${id}_image_regenerated`] : [],
       liveImageRequestIds:
         status === "passed"
           ? Array.from({ length: 5 }, (_, index) => `${id}_img_req_${index + 1}`)
@@ -288,15 +274,5 @@ function withOutputBundlePath(run: LiveBenchmarkRun, path: string): LiveBenchmar
     ...run,
     outputBundlePath: path,
     outputBundle: { ...run.outputBundle, path },
-  };
-}
-
-function withPackageArchiveSha(
-  run: LiveBenchmarkRun,
-  packageArchiveSha256: string,
-): LiveBenchmarkRun {
-  return {
-    ...run,
-    outputBundle: { ...run.outputBundle, packageArchiveSha256 },
   };
 }

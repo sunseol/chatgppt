@@ -18,6 +18,7 @@ describe("live benchmark cross-run artifact uniqueness", () => {
       "shared_image_3",
       "shared_image_4",
       "shared_image_5",
+      "shared_image_regenerated",
     ];
     const reusedRequestIds = [
       "shared_request_1",
@@ -81,6 +82,7 @@ function run(
     `${id}_image_3`,
     `${id}_image_4`,
     `${id}_image_5`,
+    `${id}_image_regenerated`,
   ],
   liveImageRequestIds: readonly string[] = LIVE_BENCHMARK_IDS.map(
     (_, index) => `${id}_request_${index + 1}`,
@@ -106,11 +108,17 @@ function run(
       screenshotPaths: status === "passed" ? screenshotPaths(id) : [],
       sourceCount: status === "passed" ? 3 : 0,
       sourceArtifactIds: status === "passed" ? sourceArtifactIds : [],
-      imageArtifactCount: status === "passed" ? 5 : 0,
+      imageArtifactCount: status === "passed" ? 6 : 0,
       liveImageArtifactIds: status === "passed" ? liveImageArtifactIds : [],
+      regeneratedLiveImageArtifactIds:
+        status === "passed" ? [regeneratedImageArtifactId(liveImageArtifactIds)] : [],
       liveImageRequestIds: status === "passed" ? liveImageRequestIds : [],
     },
   };
+}
+
+function regeneratedImageArtifactId(liveImageArtifactIds: readonly string[]): string {
+  return liveImageArtifactIds[liveImageArtifactIds.length - 1] ?? "";
 }
 
 function screenshotPaths(id: string): readonly string[] {

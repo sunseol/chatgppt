@@ -68,8 +68,12 @@ function run(
       screenshotPaths: screenshotPaths(id),
       sourceCount: 3,
       sourceArtifactIds: [`${id}_src_1`, `${id}_src_2`, `${id}_src_3`],
-      imageArtifactCount: 5,
-      liveImageArtifactIds: Array.from({ length: 5 }, (_, index) => `${id}_image_${index + 1}`),
+      imageArtifactCount: 6,
+      liveImageArtifactIds: [
+        ...Array.from({ length: 5 }, (_, index) => `${id}_image_${index + 1}`),
+        `${id}_image_regenerated`,
+      ],
+      regeneratedLiveImageArtifactIds: [`${id}_image_regenerated`],
       liveImageRequestIds: Array.from({ length: 5 }, (_, index) => `${id}_req_${index + 1}`),
     },
   };

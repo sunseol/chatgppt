@@ -36,6 +36,7 @@ export type LiveBenchmarkOutputBundleManifest = {
   readonly sourceArtifactIds: readonly string[];
   readonly imageArtifactCount: number;
   readonly liveImageArtifactIds: readonly string[];
+  readonly regeneratedLiveImageArtifactIds?: readonly string[];
   readonly liveImageRequestIds: readonly string[];
 };
 
@@ -77,6 +78,7 @@ export type LiveBenchmarkEvidenceIssueCode =
   | "duplicate_output_bundle_image_request"
   | "duplicate_output_bundle_golden_path_report"
   | "output_bundle_golden_path_evidence_missing"
+  | "output_bundle_regeneration_image_missing"
   | "mock_score_contamination"
   | "invalid_failure_domain"
   | "missing_failure_domain"

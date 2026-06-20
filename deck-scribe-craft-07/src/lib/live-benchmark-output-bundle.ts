@@ -1,19 +1,16 @@
 import type {
   LiveBenchmarkEvidenceIssue,
   LiveBenchmarkEvidenceIssueCode,
-  LiveBenchmarkOutputBundleManifest,
   LiveBenchmarkRun,
 } from "./live-benchmark-evidence";
+import { goldenPathEvidenceIssues } from "./live-benchmark-golden-path-evidence";
 import { duplicatePassedArtifactRefs } from "./live-benchmark-output-artifact-duplicates";
 import {
   duplicateOutputBundleRefs,
   duplicateOutputBundleReports,
   duplicatePassedExportArtifacts,
 } from "./live-benchmark-output-bundle-duplicates";
-import {
-  duplicateScreenshotEvidenceIssues,
-  hasDistinctScreenshotEvidence,
-} from "./live-benchmark-screenshot-evidence";
+import { duplicateScreenshotEvidenceIssues } from "./live-benchmark-screenshot-evidence";
 import { hasNonSyntheticEvidencePath } from "./live-evidence-path";
 
 export function outputBundleIssues(
@@ -72,10 +69,6 @@ export function outputBundleIssues(
       ? [run.outputBundle.goldenPathReportPath]
       : [],
   );
-  const missingGoldenPathEvidence = runs
-    .filter((run) => run.status === "passed" && !hasGoldenPathEvidence(run.outputBundle))
-    .map((run) => run.id);
-
   return [
     ...(missing.length === 0
       ? []
@@ -191,37 +184,8 @@ export function outputBundleIssues(
             duplicateGoldenPathReports,
           ),
         ]),
-    ...(missingGoldenPathEvidence.length === 0
-      ? []
-      : [
-          issue(
-            "output_bundle_golden_path_evidence_missing",
-            "Passed Live benchmark bundles must include Golden Path report, screenshots, sources, images, and image requests.",
-            missingGoldenPathEvidence,
-          ),
-        ]),
+    ...goldenPathEvidenceIssues(runs),
   ];
-}
-
-function hasGoldenPathEvidence(bundle: LiveBenchmarkOutputBundleManifest): boolean {
-  return (
-    validEvidenceReportPath(bundle.goldenPathReportPath, "live_e2e_report.md") &&
-    bundle.screenshotCount >= 10 &&
-    hasDistinctScreenshotEvidence(bundle.screenshotPaths ?? [], 10) &&
-    bundle.sourceCount >= 3 &&
-    bundle.imageArtifactCount >= 5 &&
-    hasDistinctArtifactEvidence(bundle.sourceArtifactIds, 3) &&
-    hasDistinctArtifactEvidence(bundle.liveImageArtifactIds, 5) &&
-    hasDistinctArtifactEvidence(bundle.liveImageRequestIds, 5)
-  );
-}
-
-function hasDistinctArtifactEvidence(
-  artifactIds: readonly string[],
-  minimumCount: number,
-): boolean {
-  const normalized = artifactIds.map((artifactId) => artifactId.trim()).filter(Boolean);
-  return normalized.length >= minimumCount && new Set(normalized).size >= minimumCount;
 }
 
 function validOutputBundlePath(value: string): boolean {

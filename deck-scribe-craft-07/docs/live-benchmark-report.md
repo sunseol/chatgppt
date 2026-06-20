@@ -37,7 +37,7 @@ Release requirement: at least 4 of 5 live benchmarks must pass without counting 
 - the 64-character package archive SHA-256 for the release candidate under benchmark
 - output bundle 5 sets, one distinct non-synthetic, non-local `.zip` or `.json` bundle per benchmark
 - output bundle manifests matching their benchmark id, bundle path, and package archive SHA-256
-- passed benchmark bundle manifests with a distinct non-synthetic, non-local scenario report path, distinct final export artifact id, distinct non-synthetic, non-local `live_e2e_report.md` path, at least 10 distinct non-synthetic, non-local step screenshot `.png` paths, at least 3 distinct source artifact ids, at least 5 distinct live image artifact ids, and at least 5 distinct live image request ids
+- passed benchmark bundle manifests with a distinct non-synthetic, non-local scenario report path, distinct final export artifact id, distinct non-synthetic, non-local `live_e2e_report.md` path, at least 10 distinct non-synthetic, non-local step screenshot `.png` paths, at least 3 distinct source artifact ids, at least 5 distinct initial live image artifact ids, one separate approved regenerated live image artifact id, and at least 5 distinct live image request ids
 - passed benchmark runs must not reuse Golden Path report paths, screenshot paths, source artifact ids, live image artifact ids, or live image request ids from another passed benchmark run
 - at least four `live` runs whose Live Golden Path completed
 - no mock scores counted in Live pass totals
@@ -64,7 +64,8 @@ Blocking issue codes:
 - `duplicate_output_bundle_image_artifact`
 - `duplicate_output_bundle_image_request`
 - `duplicate_output_bundle_golden_path_report`
-- `output_bundle_golden_path_evidence_missing` - missing screenshot paths, sources, images, image requests, or non-synthetic, non-local Golden Path report evidence
+- `output_bundle_golden_path_evidence_missing` - missing screenshot paths, sources, initial images, image requests, or non-synthetic, non-local Golden Path report evidence
+- `output_bundle_regeneration_image_missing` - missing approved full-slide regeneration image artifact evidence from a passed benchmark output bundle
 - `mock_score_contamination`
 - `invalid_failure_domain`
 - `missing_failure_domain`
@@ -73,4 +74,4 @@ Blocking issue codes:
 - `live_benchmark_shortfall`
 - `missing_live_benchmark_report`
 
-Current local status: the validator is implemented and tested, including rejection of unsupported failure domains, `mock`, `fixture`, `test`, `fake`, developer-local absolute, and `file://` output bundle paths and report paths, duplicate scenario report reuse, missing or reused screenshot path evidence, plus cross-run source/image/request evidence reuse, but no real provider output bundle 5 sets have been produced.
+Current local status: the validator is implemented and tested, including rejection of unsupported failure domains, `mock`, `fixture`, `test`, `fake`, developer-local absolute, and `file://` output bundle paths and report paths, duplicate scenario report reuse, missing or reused screenshot path evidence, missing regenerated image artifact evidence, regenerated images counted toward the initial five-image floor, plus cross-run source/image/request evidence reuse, but no real provider output bundle 5 sets have been produced.

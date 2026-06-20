@@ -1,47 +1,39 @@
 import { describe, expect, test } from "bun:test";
 import {
+  LIVE_BENCHMARK_IDS,
   evaluateLiveBenchmarkEvidence,
   type LiveBenchmarkId,
   type LiveBenchmarkRun,
 } from "./live-benchmark-evidence";
 
-const PACKAGE_SHA = "83032811d035f19bc7ac6d1837f137d535e011334197e6b18ae8f9477e342df7";
-
-describe("live benchmark scenario report uniqueness", () => {
-  test("blocks benchmark runs that reuse one scenario report", () => {
+describe("live benchmark package hash", () => {
+  test("blocks benchmark package hashes that are not SHA-256 digests", () => {
     // Given
+    const invalidPackageSha = "not-a-sha";
     const result = evaluateLiveBenchmarkEvidence({
       reportPath: "docs/live-benchmark-report.md",
-      packageArchiveSha256: PACKAGE_SHA,
-      runs: [
-        withScenarioReport(passedRun("korean_business"), "reports/shared-scenario.md"),
-        withScenarioReport(passedRun("market_research"), "reports/shared-scenario.md"),
-        passedRun("chart_report"),
-        passedRun("image_intro"),
-        failedRun("revision_regeneration"),
-      ],
+      packageArchiveSha256: invalidPackageSha,
+      runs: LIVE_BENCHMARK_IDS.map((id) =>
+        run(id, id === "revision_regeneration" ? "failed" : "passed", invalidPackageSha),
+      ),
     });
 
     // When / Then
     expect(result.kind).toBe("blocked");
     if (result.kind !== "blocked") return;
-    expect(result.issues.map((issue) => issue.code)).toEqual(["duplicate_output_bundle_report"]);
+    expect(result.issues.map((issue) => issue.code)).toEqual(["invalid_benchmark_package_hash"]);
   });
 });
 
-function passedRun(id: LiveBenchmarkId): LiveBenchmarkRun {
-  return run(id, "passed");
-}
-
-function failedRun(id: LiveBenchmarkId): LiveBenchmarkRun {
-  return run(id, "failed");
-}
-
-function run(id: LiveBenchmarkId, status: "passed" | "failed"): LiveBenchmarkRun {
+function run(
+  id: LiveBenchmarkId,
+  status: "passed" | "failed",
+  packageArchiveSha256: string,
+): LiveBenchmarkRun {
   return {
     id,
     status,
-    failureDomain: status === "passed" ? "none" : "editor",
+    failureDomain: status === "passed" ? "none" : "provider",
     source: "live",
     score: status === "passed" ? 92 : 0,
     mockScore: 0,
@@ -50,7 +42,7 @@ function run(id: LiveBenchmarkId, status: "passed" | "failed"): LiveBenchmarkRun
     outputBundle: {
       path: `bundles/${id}.zip`,
       benchmarkId: id,
-      packageArchiveSha256: PACKAGE_SHA,
+      packageArchiveSha256,
       reportPath: `reports/${id}.md`,
       goldenPathReportPath: `golden-path/${id}/live_e2e_report.md`,
       exportArtifactId: status === "passed" ? `${id}_export` : "",
@@ -82,11 +74,4 @@ function run(id: LiveBenchmarkId, status: "passed" | "failed"): LiveBenchmarkRun
 
 function screenshotPaths(id: string): readonly string[] {
   return Array.from({ length: 10 }, (_, index) => `screenshots/${id}/step_${index + 1}.png`);
-}
-
-function withScenarioReport(run: LiveBenchmarkRun, reportPath: string): LiveBenchmarkRun {
-  return {
-    ...run,
-    outputBundle: { ...run.outputBundle, reportPath },
-  };
 }

@@ -64,11 +64,19 @@ function run(id: LiveBenchmarkId, status: "passed" | "failed"): LiveBenchmarkRun
       sourceCount: status === "passed" ? 3 : 0,
       sourceArtifactIds:
         status === "passed" ? [`${id}_source_1`, `${id}_source_2`, `${id}_source_3`] : [],
-      imageArtifactCount: status === "passed" ? 5 : 0,
+      imageArtifactCount: status === "passed" ? 6 : 0,
       liveImageArtifactIds:
         status === "passed"
-          ? [`${id}_image_1`, `${id}_image_2`, `${id}_image_3`, `${id}_image_4`, `${id}_image_5`]
+          ? [
+              `${id}_image_1`,
+              `${id}_image_2`,
+              `${id}_image_3`,
+              `${id}_image_4`,
+              `${id}_image_5`,
+              `${id}_image_regenerated`,
+            ]
           : [],
+      regeneratedLiveImageArtifactIds: status === "passed" ? [`${id}_image_regenerated`] : [],
       liveImageRequestIds:
         status === "passed"
           ? Array.from({ length: 5 }, (_, index) => `${id}_img_req_${index + 1}`)
