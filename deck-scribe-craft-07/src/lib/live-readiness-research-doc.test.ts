@@ -65,6 +65,7 @@ describe("live readiness research documentation", () => {
     expect(researchEvidence.includes("summary_without_original")).toBe(true);
     expect(researchEvidence.includes("missing_source_artifact")).toBe(true);
     expect(researchEvidence.includes("source_artifact_mismatch")).toBe(true);
+    expect(researchEvidence.includes("duplicate_evidence_reference")).toBe(true);
     expect(researchEvidence.includes("whitespace-padded path matches")).toBe(true);
     expect(researchEvidence.includes("missing_dataset_or_numeric_evidence")).toBe(true);
     expect(researchEvidence.includes("missing_number_dataset")).toBe(true);

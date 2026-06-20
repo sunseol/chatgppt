@@ -21,6 +21,7 @@ Status: partial local contract
   either side only becomes the same path after trimming whitespace.
 - `missing_dataset_or_numeric_evidence` is fatal when a Research Pack has no real dataset and no numeric evidence item at all.
 - `major_number_metadata` also validates dataset-backed major numbers, so a claim cannot rely on a dataset whose unit, period, geography, or definition is missing.
+- `duplicate_evidence_reference` is fatal when persisted evidence refs reuse the same id across the Research Pack.
 - `unknown_reference` is fatal when a persisted evidence ref targets a claim that is absent from the Research Pack, when an evidence ref names a dataset outside the claim's dataset lineage, when numeric evidence points to a source or dataset that is absent from the Research Pack or not linked by the claim lineage, or when a dataset-backed major number uses a dataset whose `sourceIds` do not include any of the claim's source artifact ids.
 - `getDeckPlanEligibleClaims` removes claims with fatal live evidence issues before they can be forwarded to deck planning.
 - `buildDeckPlanPrompt` also excludes claims with fatal live evidence issues whenever `ResearchPack.liveEvidenceRefs` is present, so a direct Deck Plan prompt build cannot admit source-summary/no-original claims into Usable Research Claims.
@@ -39,6 +40,7 @@ Status: partial local contract
 | Numeric evidence must roundtrip through the claim's source/dataset lineage.    | `unknown_reference` is fatal when persisted evidence targets an unknown claim, evidence refs name datasets outside the claim's linked dataset ids, numeric evidence uses a source or dataset outside the claim's linked ids, or a dataset-backed major number uses a dataset whose `sourceIds` do not include the claim source artifact ids. |
 | Saved evidence refs must point at the captured source artifact.                | `source_artifact_mismatch` is fatal when a persisted evidence ref path does not exactly match the canonical `ResearchPack.sources[].capture.rawArchivePath`, including whitespace-padded paths that only match after trimming. |
 | Saved evidence refs cannot invent source artifact paths.                       | `missing_source_artifact` is fatal when a persisted evidence ref names a source whose `ResearchPack.sources[].capture.rawArchivePath` is missing.                                                                   |
+| Saved evidence refs must have unique identities.                               | `duplicate_evidence_reference` is fatal when two persisted evidence refs reuse one id.                                                                                                                              |
 
 ## Claim-to-source roundtrip
 
@@ -54,6 +56,7 @@ The local claim-to-source roundtrip is covered by `src/lib/live-research-evidenc
 - table references are accepted as an alternative to quote spans.
 - evidence refs for sources without captured artifact metadata fail with `missing_source_artifact`.
 - captured source artifact path mismatches and whitespace-padded path matches fail with `source_artifact_mismatch`.
+- duplicate persisted evidence ref ids fail with `duplicate_evidence_reference`.
 - direct Deck Plan prompt construction excludes live claims that lack original quote/table evidence refs.
 
 ## Verification

@@ -28,6 +28,28 @@ describe("live research evidence reference targets", () => {
       },
     ]);
   });
+
+  test("rejects duplicate persisted evidence ref ids", () => {
+    // Given
+    const pack = researchPack();
+    const evidenceRefs: LiveResearchEvidenceReference[] = [
+      quoteEvidenceRef("ev_duplicate", "claim_001"),
+      quoteEvidenceRef("ev_duplicate", "claim_001"),
+    ];
+
+    // When
+    const report = validateLiveResearchEvidence({ pack, evidenceRefs });
+
+    // Then
+    expect(report.valid).toBe(false);
+    expect(report.fatalIssues).toEqual([
+      {
+        code: "duplicate_evidence_reference",
+        severity: "fatal",
+        message: "Duplicate evidence reference id: ev_duplicate",
+      },
+    ]);
+  });
 });
 
 function quoteEvidenceRef(id: string, claimId: string): LiveResearchEvidenceReference {

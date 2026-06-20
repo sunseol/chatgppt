@@ -13,6 +13,7 @@ export type LiveResearchEvidenceIssueCode =
   | "missing_number_dataset"
   | "missing_dataset_or_numeric_evidence"
   | "major_number_metadata"
+  | "duplicate_evidence_reference"
   | "unknown_reference";
 
 export type LiveResearchEvidenceIssue = {
