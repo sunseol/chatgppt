@@ -1,8 +1,8 @@
 import type { ProviderImageBillingDisclosure, ProviderUsageSummary } from "./provider-job-manager";
 import type { ProviderKind } from "./provider-types";
-import { redactSensitiveText } from "./redaction";
 import { usageStageIdentityIssues } from "./live-usage-stage-identity";
 import { hasBillingConfirmationEvidencePath } from "./live-usage-billing-evidence";
+export { formatLiveUsageSummary } from "./live-usage-summary-format";
 
 export type LiveCostLabel = "actual" | "estimate" | "hidden";
 
@@ -62,16 +62,6 @@ export function evaluateLiveUsageSummary(
     ]),
   ];
   return issues.length === 0 ? { kind: "ready" } : { kind: "blocked", issues };
-}
-
-export function formatLiveUsageSummary(stages: readonly LiveUsageStageSummary[]): string {
-  return [
-    "# DF-244 Live Usage Summary",
-    ...stages.map(
-      (stage) =>
-        `${stage.stageId} · ${stage.providerKind} · ${stage.durationMs}ms · retries ${stage.retryCount}${usageText(stage)}${billingText(stage)}`,
-    ),
-  ].join("\n");
 }
 
 function providerUsageIssues(stage: LiveUsageStageSummary): readonly LiveUsageSummaryIssue[] {
@@ -212,36 +202,8 @@ function isImageGenerationStage(stage: LiveUsageStageSummary): boolean {
   );
 }
 
-function usageText(stage: LiveUsageStageSummary): string {
-  const usage = stage.usage;
-  if (usage === undefined) return "";
-  const parts = [
-    usage.inputTokens === undefined ? "" : `input ${usage.inputTokens}`,
-    usage.outputTokens === undefined ? "" : `output ${usage.outputTokens}`,
-    usage.imageCount === undefined ? "" : `images ${usage.imageCount}`,
-    costText(stage),
-  ].filter((part) => part.length > 0);
-  return parts.length === 0 ? "" : ` · ${parts.join(" · ")}`;
-}
-
-function costText(stage: LiveUsageStageSummary): string {
-  const cost = stage.usage?.estimatedCostUsd;
-  if (cost === undefined || !isLiveCostLabel(stage.costLabel) || stage.costLabel === "hidden") {
-    return "";
-  }
-  const label = stage.costLabel === "actual" ? "cost" : "cost estimate";
-  return `${label} $${cost.toFixed(4)}`;
-}
-
 function isLiveCostLabel(value: unknown): value is LiveCostLabel {
   return value === "actual" || value === "estimate" || value === "hidden";
-}
-
-function billingText(stage: LiveUsageStageSummary): string {
-  const label = imageBillingDisclosure(stage)?.label;
-  return label === undefined || label.trim().length === 0
-    ? ""
-    : ` · ${redactSensitiveText(label.trim())}`;
 }
 
 function imageBillingDisclosure(

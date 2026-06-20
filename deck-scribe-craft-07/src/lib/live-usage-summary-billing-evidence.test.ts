@@ -1,7 +1,11 @@
 import { describe, expect, test } from "bun:test";
 import type { ProviderJob } from "./provider-job-manager";
 import { createProviderJobProgressView } from "./provider-job-progress-view";
-import { evaluateLiveUsageSummary, type LiveUsageStageSummary } from "./live-usage-summary";
+import {
+  evaluateLiveUsageSummary,
+  formatLiveUsageSummary,
+  type LiveUsageStageSummary,
+} from "./live-usage-summary";
 
 describe("live usage summary billing evidence", () => {
   test("blocks confirmed-looking image billing when confirmation evidence is missing", () => {
@@ -132,5 +136,32 @@ describe("live usage summary billing evidence", () => {
 
     // Then
     expect(view.usageItems).toEqual(["images 1", "API key billing not confirmed"]);
+  });
+
+  test("does not format confirmed-looking image billing without persisted evidence", () => {
+    // Given
+    const stages: readonly LiveUsageStageSummary[] = [
+      {
+        stageId: "generate",
+        providerKind: "openaiImage",
+        durationMs: 1200,
+        retryCount: 0,
+        providerUsageProvided: true,
+        usage: { imageCount: 1 },
+        costLabel: "hidden",
+        imageBillingDisclosure: {
+          apiKeyRequired: true,
+          userConfirmed: true,
+          label: "API key billing confirmed",
+        },
+      },
+    ];
+
+    // When
+    const summary = formatLiveUsageSummary(stages);
+
+    // Then
+    expect(summary.includes("API key billing not confirmed")).toBe(true);
+    expect(summary.includes("API key billing confirmed")).toBe(false);
   });
 });

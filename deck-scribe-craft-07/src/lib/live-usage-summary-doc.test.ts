@@ -22,9 +22,10 @@ describe("live usage summary documentation", () => {
     expect(usageSummary.includes("confirmationEvidencePath")).toBe(true);
     expect(usageSummary.includes("template/sample/example/placeholder")).toBe(true);
     expect(usageSummary.includes("live-usage-billing-evidence.ts")).toBe(true);
+    expect(usageSummary.includes("formatted summaries")).toBe(true);
     expect(
       usageSummary.includes(
-        "report usage lines only when persisted confirmation evidence is valid",
+        "confirmed image billing disclosure labels only when persisted confirmation evidence is valid",
       ),
     ).toBe(true);
     expect(
@@ -60,6 +61,7 @@ describe("live usage summary documentation", () => {
     expect(
       decision.includes("evidence-less confirmed-looking image billing as not confirmed"),
     ).toBe(true);
+    expect(decision.includes("formatted summaries")).toBe(true);
     expect(decision.includes("duplicated usage stage ids")).toBe(true);
     expect(decision.includes("unsupported runtime provider kinds")).toBe(true);
     expect(decision.includes("developer-local")).toBe(true);
