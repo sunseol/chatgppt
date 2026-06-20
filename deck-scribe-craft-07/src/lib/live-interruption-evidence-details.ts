@@ -3,7 +3,7 @@ import type {
   LiveInterruptionIssueCode,
   LiveInterruptionScenarioEvidence,
 } from "./live-interruption-matrix";
-import { hasNonSyntheticJsonEvidencePath } from "./live-evidence-path";
+import { hasObservedInterruptionEvidencePath } from "./live-interruption-evidence-path";
 
 export function scenarioEvidenceDetailIssues(
   scenarios: readonly LiveInterruptionScenarioEvidence[],
@@ -194,7 +194,7 @@ function duplicateValues(values: readonly string[]): readonly string[] {
 }
 
 function isPersistedJsonEvidencePath(value: string | undefined): boolean {
-  return hasNonSyntheticJsonEvidencePath(value);
+  return hasObservedInterruptionEvidencePath(value);
 }
 
 function hasSyntheticEvidenceMarker(value: string): boolean {
