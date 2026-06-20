@@ -79,3 +79,7 @@ The local gate returns these issue codes:
 ## Remaining Live Evidence
 
 This local contract does not execute the providers. DF-241 still needs a real production run and stored `live_e2e_report.md`, screenshots/recording, and final validation bundle before the GitHub issue can close.
+
+## 2026-06-21 Runtime/Text Lane Status
+
+Runtime/Text produced production app-surface live interview evidence for project `p_live_runtime_text_20260621`, but the Plan/Design/Layout path remains blocked before Deck Plan launch because `createLiveResearchDeckPlanInput` rejects Research Packs without live Research approval provenance, live evidence refs, and source capture metadata. DF-241 is therefore hard-blocked from this lane until Research provides an approved live Research Pack and Image/Compositor provides five initial live image artifacts plus regeneration evidence. The current lane evidence is insufficient for a Golden Path report because it stops at `INTERVIEW_APPROVAL_PENDING`.

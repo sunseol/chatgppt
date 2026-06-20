@@ -76,3 +76,14 @@ DF-205 should remain open until the missing Live evidence is produced:
 - Fresh login manual QA from an unauthenticated account or clean macOS account.
 - Logout/relogin QA that proves live jobs cancel and provider actions stay locked until login is restored.
 - Packaged app image credential setup through the OS keychain or equivalent desktop secret store.
+
+## 2026-06-21 Runtime Recheck
+
+Current local runtime evidence:
+
+- `codex --version`: `codex-cli 0.141.0`
+- `codex login status`: `Logged in using ChatGPT`
+- `codex app-server daemon version`: `status: "running"`, `cliVersion: "0.141.0"`, `appServerVersion: "0.141.0"`
+- The production app-surface interview run completed live App Server structured turns through the authenticated ChatGPT session without exposing token material.
+
+The logout/relogin acceptance item remains externally blocked. Running `codex logout` in this shared lane would remove the only active ChatGPT session, and non-interactive restoration requires user-controlled device auth or access-token input. No raw token or device-login credential was available to this worker, so logout/relogin QA must be performed by a human or clean-machine owner.

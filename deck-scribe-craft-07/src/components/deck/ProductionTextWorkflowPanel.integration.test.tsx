@@ -1,7 +1,8 @@
 import { describe, expect, test } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
 import { ProductionWorkflowStage } from "@/components/deck/ProductionWorkflowStage";
-import type { DeckProject, InterviewBrief, ResearchPack } from "@/lib/deck-types";
+import type { DeckProject, InterviewBrief } from "@/lib/deck-types";
+import { liveApprovedResearchPackFixture } from "@/lib/live-research-approval-test-fixtures";
 
 describe("production text workflow panel", () => {
   test("shows the App Server interview workflow gate on the production interview step", () => {
@@ -60,7 +61,7 @@ describe("production text workflow panel", () => {
     // Given
     const project = projectFixture({
       brief: briefFixture(),
-      research: researchFixture(),
+      research: liveApprovedResearchPackFixture(),
       stage: "PLANNING",
     });
 
@@ -110,23 +111,5 @@ function briefFixture(): InterviewBrief {
     successCriteria: ["의사결정 가능"],
     openQuestions: [],
     approvedHash: "hash_brief_live",
-  };
-}
-
-function researchFixture(): ResearchPack {
-  return {
-    id: "research_live_panel",
-    sources: [],
-    claims: [],
-    datasets: [],
-    charts: [],
-    approvedHash: "hash_research_live",
-    factCheckReport: {
-      summary: "Ready for planning.",
-      generatedAt: 1_789_300_010,
-      fatalIssueCount: 0,
-      issues: [],
-      uncertainItems: [],
-    },
   };
 }

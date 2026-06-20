@@ -79,3 +79,9 @@ The current worktree has stronger Live-readiness contracts than the previous moc
 9. Run clean-machine package validation from a fresh macOS account.
 10. Run the Live manual QA checklist.
 11. Re-run the DF-247 release gate and update this decision plus known limits.
+
+## 2026-06-21 Runtime/Text App-Surface Recheck
+
+The Runtime/Text lane ran the production browser app surface against authenticated `codex app-server --stdio` through a Tauri-compatible bridge helper. The interview route completed live `questions` and `brief` App Server turns and persisted app records for project `p_live_runtime_text_20260621`; the ready records were `interview_questions` hash `sha256:29b8b76d` on thread `019ee652-f5e8-7eb2-b61b-6eadaba4307e`, turn `019ee652-f878-73c3-ae5d-80a212086a04`, and `interview_brief` hash `sha256:bd4566a1` on thread `019ee653-1eea-7e83-8a5c-5a0e786b8b4b`, turn `019ee653-2126-7b51-bc89-f0d16497dc2c`.
+
+The Plan route remained blocked before any Deck Plan turn launched because no real approved live Research Pack exists. A synthetic Research Pack with canonical local hash `sha256:fc483c37` still failed the handoff because it lacked live Research approval provenance, live evidence refs, and live source capture metadata. The production text gate has been fixed to block that state before launch. Release remains `Blocked`; this recheck improves DF-213 evidence but does not unblock DF-214, DF-215, DF-241, DF-243, or DF-247.

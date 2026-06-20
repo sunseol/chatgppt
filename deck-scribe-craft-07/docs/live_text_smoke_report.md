@@ -278,6 +278,23 @@ Latest local DF-215 contract update: `evaluateLiveTextSmokeGate` now also blocks
 
 Latest local DF-215 contract update: `evaluateLiveTextSmokeGate` now also blocks `text_smoke_noncanonical_input_identity` when a text artifact input id only becomes usable after trimming boundary whitespace. This prevents packaged smoke bundles from passing with padded project, answer, Research Pack, or stage handoff inputs.
 
+## Production App-Surface Text Recheck
+
+Using the production build at `http://127.0.0.1:4173/` plus a local Tauri-compatible bridge helper on 2026-06-21 KST, the production interview UI completed live Codex App Server turns and persisted app project state:
+
+- Runtime: `codex-cli 0.141.0`, ChatGPT login, App Server daemon `0.141.0`, structured turns forwarded through `deckforge_codex_app_server_structured_turn`.
+- Project: `p_live_runtime_text_20260621`.
+- Follow-up question turn: thread `019ee651-ecb8-70b0-b7a7-db93d9807c67`, turn `019ee651-ef5c-74c0-8608-acc5a0b9db1a`, 446 protocol frames.
+- Ready question turn: thread `019ee652-f5e8-7eb2-b61b-6eadaba4307e`, turn `019ee652-f878-73c3-ae5d-80a212086a04`, 307 protocol frames.
+- Ready Brief turn: thread `019ee653-1eea-7e83-8a5c-5a0e786b8b4b`, turn `019ee653-2126-7b51-bc89-f0d16497dc2c`, 263 protocol frames.
+- Persisted app records after the ready run: `interview_questions` hash `sha256:29b8b76d` and `interview_brief` hash `sha256:bd4566a1`.
+- App stage after ready interview: `INTERVIEW_APPROVAL_PENDING`.
+- Screenshot: `docs/live-evidence/runtime-text-interview-live-ready-2026-06-21.png`.
+
+The same production Plan route reproduced the current DF-215 blocker before any Deck Plan turn launched. A seeded synthetic Research Pack, even after its canonical local approval hash was computed as `sha256:fc483c37`, failed the real deck-plan handoff because it lacked live Research approval provenance, evidence refs, and source capture metadata. The visible app failure was `Desktop live text pipeline requires approved research.` The production gate now uses `createLiveResearchDeckPlanInput` so this state is blocked before launch; the fixed build shows `missing_approved_research`, omits `Ready to launch`, and disables `Run live text pipeline`. Fixed screenshot: `docs/live-evidence/runtime-text-plan-blocked-research-fixed-2026-06-21.png`.
+
+DF-215 remains partial. The production app surface has now produced live interview `questions` and `brief` records, but it still lacks a real approved Research Pack, Plan/Design/Layout app-surface records, packaged native Tauri evidence, restart/reopen post-resume evidence, and a complete smoke bundle through Layout IR.
+
 ## Crash/Restart Evidence
 
 The standalone App Server daemon process was forced down to verify the restart path:
