@@ -71,6 +71,29 @@ describe("live full-slide regeneration approval evidence", () => {
       }).map((issue) => issue.code),
     ).toEqual(["regeneration_comparison_mismatch"]);
   });
+
+  test("preserves the approved original when comparison targets drift from the request", async () => {
+    // Given
+    const candidate = await readyCandidate();
+    const originalSlides = [approvedSlideFixture()];
+    const comparison = {
+      ...matchingComparison(candidate),
+      requestedChanges: ["unrelated logo placement"],
+    };
+
+    // When
+    const approved = approveLiveSlideRegenerationCandidate(originalSlides, candidate, comparison);
+
+    // Then
+    expect(approved).toEqual(originalSlides);
+    expect(
+      liveSlideRegenerationApprovalIssues({
+        slides: originalSlides,
+        candidate,
+        comparison,
+      }).map((issue) => issue.code),
+    ).toEqual(["regeneration_comparison_mismatch"]);
+  });
 });
 
 async function readyCandidate() {

@@ -64,6 +64,21 @@ function comparisonMatchesCandidate(
     comparison.beforeImageDescriptor === candidate.beforeImageDescriptor &&
     comparison.afterImageDescriptor === candidate.afterImageDescriptor &&
     comparison.afterImageDescriptor === candidate.slide.imageDescriptor &&
-    comparison.afterImageDescriptor.includes(candidate.backgroundArtifactId)
+    comparison.afterImageDescriptor.includes(candidate.backgroundArtifactId) &&
+    targetsMatch(candidate.mustChange, comparison.requestedChanges) &&
+    targetsMatch(candidate.mustKeep, comparison.preservedTargets)
   );
+}
+
+function targetsMatch(expected: readonly string[], actual: readonly string[]): boolean {
+  const expectedTargets = normalizedTargets(expected);
+  const actualTargets = normalizedTargets(actual);
+  return (
+    expectedTargets.length === actualTargets.length &&
+    expectedTargets.every((target, index) => target === actualTargets[index])
+  );
+}
+
+function normalizedTargets(values: readonly string[]): readonly string[] {
+  return values.map((value) => value.trim()).sort();
 }

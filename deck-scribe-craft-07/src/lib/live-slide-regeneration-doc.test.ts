@@ -36,6 +36,8 @@ describe("live full-slide regeneration documentation", () => {
     expect(slideRegeneration.includes("candidate_not_ready_for_approval")).toBe(true);
     expect(slideRegeneration.includes("regeneration_comparison_mismatch")).toBe(true);
     expect(slideRegeneration.includes("before/after comparison evidence")).toBe(true);
+    expect(slideRegeneration.includes("requestedChanges")).toBe(true);
+    expect(slideRegeneration.includes("preservedTargets")).toBe(true);
     expect(slideRegeneration.includes("preserved approved slide")).toBe(true);
   });
 });
