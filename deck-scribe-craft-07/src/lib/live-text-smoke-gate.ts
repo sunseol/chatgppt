@@ -37,6 +37,7 @@ export type LiveTextSmokeIssueCode =
   | "non_codex_text_artifact"
   | "non_codex_session_auth"
   | "non_production_text_artifact"
+  | "text_artifact_noncanonical_identity"
   | "text_artifact_missing_turn_id"
   | "text_artifact_missing_thread_id"
   | "missing_resume_evidence"

@@ -134,6 +134,7 @@ function liveCodexIssues(artifact: LiveTextSmokeArtifact): readonly LiveTextSmok
 
 function artifactIdentityIssues(artifact: LiveTextSmokeArtifact): readonly LiveTextSmokeIssue[] {
   return [
+    ...canonicalIdentityIssues(artifact),
     ...(hasText(artifact.provenance.turnId)
       ? []
       : [
@@ -153,6 +154,20 @@ function artifactIdentityIssues(artifact: LiveTextSmokeArtifact): readonly LiveT
           ),
         ]),
   ];
+}
+
+function canonicalIdentityIssues(artifact: LiveTextSmokeArtifact): readonly LiveTextSmokeIssue[] {
+  const provenance = artifact.provenance;
+  const identities = [provenance.artifactId, provenance.turnId, provenance.threadId];
+  return identities.every((identity) => identity === undefined || identity === identity.trim())
+    ? []
+    : [
+        artifactIssue(
+          "text_artifact_noncanonical_identity",
+          artifact,
+          "Live text smoke artifact, turn, and thread ids must be canonical.",
+        ),
+      ];
 }
 
 function providerIssue(
