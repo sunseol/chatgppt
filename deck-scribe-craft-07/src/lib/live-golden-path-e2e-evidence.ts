@@ -7,11 +7,11 @@ import {
   type LiveGoldenPathSource,
 } from "./live-golden-path-e2e-contract";
 import { hasObservedGoldenPathEvidencePath } from "./live-golden-path-evidence-path";
-import { isRealHttpSourceUrl } from "./live-real-source-url";
+import { isRealHttpSourceUrl, normalizedHttpUrl } from "./live-real-source-url";
 import type { ProviderArtifactProvenance } from "./provider-provenance";
 
 export function countValidLiveSources(sources: readonly LiveGoldenPathSource[]): number {
-  return new Set(validSources(sources).map((source) => source.url.trim())).size;
+  return new Set(validSources(sources).flatMap((source) => normalizedHttpUrl(source.url))).size;
 }
 
 export function countLiveImageArtifacts(

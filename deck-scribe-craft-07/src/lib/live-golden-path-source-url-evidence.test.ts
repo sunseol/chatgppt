@@ -23,6 +23,34 @@ describe("live golden path source URL evidence", () => {
     expect(codes.includes("insufficient_live_sources")).toBe(true);
     expect(codes.includes("missing_primary_source")).toBe(true);
   });
+
+  test("blocks URL variants of one source from satisfying the three-source requirement", () => {
+    const result = evaluateLiveGoldenPathE2EBundle(
+      completeBundle([
+        {
+          url: "https://www.sec.gov/ixviewer/doc/action/",
+          role: "official",
+          artifactId: "src_sec_a",
+        },
+        {
+          url: "https://www.sec.gov/ixviewer/doc/action#financials",
+          role: "primary",
+          artifactId: "src_sec_b",
+        },
+        {
+          url: "https://www.sec.gov/ixviewer/doc/action///",
+          role: "supporting",
+          artifactId: "src_sec_c",
+        },
+      ]),
+    );
+
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    const codes = result.issues.map((issue) => issue.code);
+    expect(codes.includes("duplicate_live_source")).toBe(true);
+    expect(codes.includes("insufficient_live_sources")).toBe(true);
+  });
 });
 
 function completeBundle(sources: LiveGoldenPathE2EBundle["sources"]): LiveGoldenPathE2EBundle {

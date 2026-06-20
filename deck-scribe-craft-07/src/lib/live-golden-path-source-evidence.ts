@@ -4,13 +4,14 @@ import {
   type LiveGoldenPathE2EIssue,
   type LiveGoldenPathSource,
 } from "./live-golden-path-e2e-contract";
+import { normalizedHttpUrl } from "./live-real-source-url";
 
 export function sourceIssues(
   sources: readonly LiveGoldenPathSource[],
 ): readonly LiveGoldenPathE2EIssue[] {
   const valid = validSources(sources);
   const duplicateRefs = duplicateSourceRefs(valid);
-  const distinctUrls = new Set(valid.map((source) => source.url.trim()));
+  const distinctUrls = new Set(valid.flatMap((source) => normalizedHttpUrl(source.url)));
   return [
     ...(duplicateRefs.length === 0
       ? []
@@ -44,7 +45,9 @@ export function sourceIssues(
 
 function duplicateSourceRefs(sources: readonly LiveGoldenPathSource[]): readonly string[] {
   return [
-    ...duplicateValues(sources.map((source) => source.url.trim())).map((url) => `url:${url}`),
+    ...duplicateValues(sources.flatMap((source) => normalizedHttpUrl(source.url))).map(
+      (url) => `url:${url}`,
+    ),
     ...duplicateValues(sources.map((source) => source.artifactId.trim())).map(
       (artifactId) => `artifact:${artifactId}`,
     ),
