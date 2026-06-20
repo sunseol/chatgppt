@@ -20,6 +20,7 @@ export function usageStageIdentityIssues(
           "Usage summary stages require a displayable stage id.",
         ),
       ),
+    ...duplicateStageIssues(stages),
     ...stages
       .filter((stage) => !isProviderKind(stage.providerKind))
       .map((stage) =>
@@ -30,6 +31,24 @@ export function usageStageIdentityIssues(
         ),
       ),
   ];
+}
+
+function duplicateStageIssues(
+  stages: readonly LiveUsageStageSummary[],
+): readonly LiveUsageSummaryIssue[] {
+  const seen = new Set<string>();
+  const duplicates = new Set<string>();
+  for (const stage of stages) {
+    const stageId = stage.stageId.trim();
+    if (stageId.length === 0) continue;
+    if (seen.has(stageId)) duplicates.add(stageId);
+    seen.add(stageId);
+  }
+  return Array.from(duplicates).map((stageId) => ({
+    code: "duplicate_usage_stage_identity",
+    stageId,
+    message: "Usage summary stages must not repeat a stage id.",
+  }));
 }
 
 function isProviderKind(value: unknown): value is ProviderKind {
