@@ -47,6 +47,21 @@ describe("live initial release gate", () => {
     ]);
   });
 
+  test("blocks contradictory P0 ticket status evidence", () => {
+    // Given
+    const input = readyInput();
+    const result = evaluateLiveInitialReleaseGate({
+      ...input,
+      p0Tickets: [...input.p0Tickets, { id: "DF-246", status: "live_partial" }],
+    });
+
+    // When / Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.blockers.map((blocker) => blocker.code)).toEqual(["p0_ticket_status_conflict"]);
+    expect(result.blockers[0]?.refs).toEqual(["DF-246"]);
+  });
+
   test("requires the release decision and known limits to be recorded in the decision doc", () => {
     const result = evaluateLiveInitialReleaseGate({
       ...readyInput(),

@@ -3,48 +3,15 @@ import {
   distinctCleanPassedBenchmarkCount,
 } from "./live-release-benchmark-gate";
 import { decisionBlockers } from "./live-release-decision-gate";
+import { p0Blockers } from "./live-release-p0-gate";
+import type { LiveTicketEvidence } from "./live-release-p0-gate";
 import {
   collectLineageContamination,
   type ProviderArtifactProvenance,
 } from "./provider-provenance";
 
-export const LIVE_P0_TICKET_IDS = [
-  "DF-200",
-  "DF-201",
-  "DF-202",
-  "DF-203",
-  "DF-204",
-  "DF-205",
-  "DF-206",
-  "DF-210",
-  "DF-211",
-  "DF-212",
-  "DF-213",
-  "DF-214",
-  "DF-215",
-  "DF-220",
-  "DF-221",
-  "DF-222",
-  "DF-223",
-  "DF-224",
-  "DF-230",
-  "DF-231",
-  "DF-232",
-  "DF-233",
-  "DF-234",
-  "DF-235",
-  "DF-240",
-  "DF-241",
-  "DF-242",
-  "DF-243",
-  "DF-245",
-  "DF-246",
-  "DF-247",
-] as const;
-
-export type LiveP0TicketId = (typeof LIVE_P0_TICKET_IDS)[number];
-
-export type LiveTicketStatus = "not_started" | "verified_mock" | "live_partial" | "verified_live";
+export { LIVE_P0_TICKET_IDS } from "./live-release-p0-gate";
+export type { LiveP0TicketId, LiveTicketEvidence, LiveTicketStatus } from "./live-release-p0-gate";
 
 export type LiveBenchmarkStatus = "passed" | "failed" | "blocked";
 export type LiveBenchmarkFailureDomain =
@@ -62,11 +29,6 @@ export type ReleaseBlockingP1Category =
   | "billing_misrepresentation"
   | "source_error"
   | "other";
-
-export type LiveTicketEvidence = {
-  readonly id: LiveP0TicketId;
-  readonly status: LiveTicketStatus;
-};
 
 export type LiveBenchmarkEvidence = {
   readonly id: string;
@@ -106,6 +68,7 @@ export type LiveReleaseGateInput = {
 };
 
 export type LiveReleaseBlockerCode =
+  | "p0_ticket_status_conflict"
   | "p0_not_live_verified"
   | "production_mock_enabled"
   | "production_package_contaminated"
@@ -162,22 +125,6 @@ export function evaluateLiveInitialReleaseGate(input: LiveReleaseGateInput): Liv
     passedBenchmarkCount,
     decisionDocumentPath: input.releaseDecision.documentPath,
   };
-}
-
-function p0Blockers(tickets: readonly LiveTicketEvidence[]): readonly LiveReleaseBlocker[] {
-  const liveIds = new Set(
-    tickets.filter((ticket) => ticket.status === "verified_live").map((ticket) => ticket.id),
-  );
-  const missing = LIVE_P0_TICKET_IDS.filter((ticketId) => !liveIds.has(ticketId));
-  return missing.length === 0
-    ? []
-    : [
-        {
-          code: "p0_not_live_verified",
-          message: "Every P0 Live ticket must be Verified Live before release.",
-          refs: missing,
-        },
-      ];
 }
 
 function productionPackageBlockers(
