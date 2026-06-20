@@ -114,3 +114,13 @@ failed `codesign --verify --deep --strict --verbose=2` and `spctl --assess
 they must be present`. This lane also has no persisted real image usage
 confirmation JSON artifact in `release-artifacts`. See
 `docs/live-research-lane-blockers-2026-06-21.md`.
+
+## Lane G Closure Recheck
+
+2026-06-21 KST Lane G rechecked #154 and preserved the blocker in
+`docs/live-evidence/codex-image/lane-g-closure-recheck-20260621/issue-closure-evidence.json`.
+The Lane D usage summary proves `5` actual Codex image generations and
+`197953ms` total measured image latency in the display evidence, with hash
+`sha256:01b6043d35d12a744ffd898486a8ae7157110fd7561ce2c1c5e96587688dd4a9`.
+The issue remains open because no persisted, non-synthetic pre-generation
+confirmation JSON from the packaged app surface exists.

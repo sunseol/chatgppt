@@ -121,3 +121,31 @@ and `spctl --assess` with `code has no resources but signature indicates they
 must be present`, so packaged report/export review cannot run from this
 artifact.
 See `docs/live-research-lane-blockers-2026-06-21.md`.
+
+## Lane G Closure Recheck
+
+2026-06-21 KST Lane G attempted the #150 closure path by combining Lane E
+text/research evidence with Lane D image/compositor evidence. The result remains
+blocked and is persisted at
+`docs/live-evidence/codex-image/lane-g-closure-recheck-20260621/issue-closure-evidence.json`.
+
+Positive evidence now verified by hash:
+
+- Lane E text pipeline summary:
+  `docs/live-evidence/lane-e-20260621/text-pipeline-summary.json`,
+  `sha256:78c08cc5e49f05587279a7258772c63791545813e0f11fee1f0dc4c6ab903286`
+- Lane D manifest:
+  `docs/live-evidence/codex-image/lane-d-live-app-surface-20260621/manifest.json`,
+  `sha256:caa4036a28a40886a953a1b547059fd1073cabe35e67f73dc56418b02c02676f`
+- Lane D image/compositor partial lineage:
+  `docs/live-evidence/codex-image/lane-d-live-app-surface-20260621/df240-image-compositor-export-lineage.json`,
+  `sha256:ad313eca0ac30db6e6f9fef609899281cf477f6062909b0ecdc27c9eda86b716`
+
+This still cannot close DF-240. Lane E records real `deck_plan`,
+`design_system`, and `layout_ir` Codex thread/turn ids, but it does not persist
+slide-level text artifact ids with provider provenance sidecars that
+`liveReportProviderLinkIssues` can authenticate. Lane D records image and
+compositor SVG hashes, but the workspace still has only
+`projects/df232_live_codex_batch/exports/svg/slide_01.svg` under project exports;
+there is no final PNG export bundle or project export JSON whose hashes can be
+matched to compositor output by `evaluateFinalExportGate`.

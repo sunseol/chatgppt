@@ -50,5 +50,13 @@ describe("live generation report lineage documentation", () => {
     expect(generationReportLineage.includes("sidecar lineage")).toBe(true);
     expect(generationReportLineage.includes("final-export-report-gate.ts")).toBe(true);
     expect(generationReportLineage.includes("secret_leak")).toBe(true);
+    expect(generationReportLineage.includes("Lane G Closure Recheck")).toBe(true);
+    expect(
+      generationReportLineage.includes(
+        "lane-g-closure-recheck-20260621/issue-closure-evidence.json",
+      ),
+    ).toBe(true);
+    expect(generationReportLineage.includes("liveReportProviderLinkIssues")).toBe(true);
+    expect(generationReportLineage.includes("no final PNG export bundle")).toBe(true);
   });
 });

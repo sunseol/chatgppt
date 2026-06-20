@@ -41,3 +41,10 @@ DF-233 remains open for true queue-control evidence: actual rate-limit or 5xx re
 ## Lane D App-Surface Recheck
 
 2026-06-21 KST Lane D produced the image UI evidence bundle at `docs/live-evidence/codex-image/lane-d-live-app-surface-20260621/manifest.json` (`sha256:caa4036a28a40886a953a1b547059fd1073cabe35e67f73dc56418b02c02676f`). The bundle confirms the five stored successful image turns can feed review/compositor/usage surfaces, but it does not contain a genuine live `429`/`5xx` retry event, user cancellation event, or packaged restart-resume trace. DF-233 remains open until those three events are produced against real provider jobs.
+
+## Lane G Closure Recheck
+
+2026-06-21 KST Lane G rechecked #147 and preserved the blocker in
+`docs/live-evidence/codex-image/lane-g-closure-recheck-20260621/issue-closure-evidence.json`.
+No new real provider 429/5xx, in-flight cancellation, or packaged restart-resume
+artifact was found. The issue remains blocked on those live queue-control events.

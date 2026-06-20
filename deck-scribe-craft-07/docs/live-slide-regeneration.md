@@ -66,3 +66,12 @@ DF-235 still needs packaged app before/after approval QA before closure: the liv
 - Preservation hash: `sha256:f3b3d5c3cf28f4ef7e49d31545f67e28ec7e724edcd1e0d51e65107360eb57f2`
 
 This evidence ties the v2 candidate to regeneration thread `019ee690-9595-7323-86d7-e188639cd355`, turn `019ee690-9801-71b0-9062-cc72a74d2f97`, and regenerated hash `sha256:fec63060405bbe50246c9216447c8759fc5426eed8f14d5c1dfb7b8df5d0d202`. DF-235 remains open because the packaged review UI still has not been manually driven through candidate approval and failed-regeneration preservation.
+
+## Lane G Closure Recheck
+
+2026-06-21 KST Lane G rechecked #149 and preserved the blocker in
+`docs/live-evidence/codex-image/lane-g-closure-recheck-20260621/issue-closure-evidence.json`.
+The real regenerated v2 image, before/after HTML, and preservation JSON are
+present and hashed, but there is still no packaged review UI run proving the v2
+candidate was approved from the app surface or that a failed live regeneration
+kept the approved original selected/exportable.
