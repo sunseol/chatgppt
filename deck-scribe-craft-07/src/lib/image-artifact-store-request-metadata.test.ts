@@ -37,6 +37,38 @@ describe("image artifact store request metadata", () => {
     expect((await rejectionMessage(result)).includes("canonical request metadata")).toBe(true);
     expect(writes.length).toBe(0);
   });
+
+  test("rejects padded or blank optional response metadata before writing image artifacts", async () => {
+    // Given
+    const writes: ImageArtifactStoreWrite[] = [];
+    const store = createImageArtifactStore({
+      write: async (entry) => {
+        writes.push(entry);
+      },
+    });
+
+    // When
+    const result = storeSlideImageArtifact({
+      store,
+      projectId: "project_001",
+      artifact: {
+        ...realImageArtifact(),
+        request: {
+          model: "gpt-image-2",
+          requestId: "img_req_001",
+          size: " 1600x900 ",
+          quality: " ",
+          latencyMs: 2_400,
+        },
+      },
+      version: 1,
+      createdAt: 1_789_800_012,
+    });
+
+    // Then
+    expect((await rejectionMessage(result)).includes("canonical request metadata")).toBe(true);
+    expect(writes.length).toBe(0);
+  });
 });
 
 async function rejectionMessage(promise: Promise<unknown>): Promise<string> {

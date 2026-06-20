@@ -182,9 +182,16 @@ function requireRequestMetadata(artifact: SlideImageArtifact): SlideImageRequest
 
 function hasCanonicalRequestMetadata(request: SlideImageRequestMetadata): boolean {
   return (
-    request.model === request.model.trim() &&
-    (request.requestId === undefined || request.requestId === request.requestId.trim())
+    optionalCanonicalText(request.model) &&
+    optionalCanonicalText(request.requestId) &&
+    optionalCanonicalText(request.size) &&
+    optionalCanonicalText(request.quality)
   );
+}
+
+function optionalCanonicalText(value: string | undefined): boolean {
+  if (value === undefined) return true;
+  return value.length > 0 && value === value.trim();
 }
 
 function validLatencyMs(value: number | undefined): boolean {

@@ -20,7 +20,7 @@ Status: partial local contract
 - Records a real 64-character SHA-256 digest for the stored binary.
 - Rejects blank prompt version/hash and blank layout screenshot references before writing, so stored provenance `inputArtifactIds` cannot be built from missing prompt or layout lineage.
 - Preserves request metadata when available: `requestId`, model, size, quality, latency, and usage.
-- Rejects whitespace-padded request ids or request models before writing, so stored metadata and provenance keep canonical provider request metadata rather than trim-only evidence.
+- Rejects whitespace-padded request ids, request models, size values, or quality values before writing, so stored metadata and provenance keep canonical provider request metadata rather than trim-only evidence.
 - Rejects blank request models, missing/invalid latency, fractional or negative usage counts, and negative or non-finite usage/cost values before writing image bytes or metadata.
 - Measures provider-call latency in the OpenAI image adapter when the provider response omits `latencyMs`, so stored provenance duration does not silently fall back to `0`.
 - Produces and stores provider provenance for the stored binary artifact, including prompt version, prompt hash, layout reference, request id, model/runtime, duration, auth mode, and fixture flag.
@@ -40,7 +40,7 @@ Existing provider tests plus `src/lib/image-provider-errors.test.ts` cover the D
 
 ## Verification
 
-- `bun test src/lib/image-artifact-store.test.ts src/lib/image-artifact-store-usage.test.ts src/lib/image-artifact-store-live-provider.test.ts src/lib/image-artifact-store-lineage.test.ts src/lib/image-artifact-store-request-metadata.test.ts src/lib/image-artifact-storage-doc.test.ts` passes: 11 tests.
+- `bun test src/lib/image-artifact-store.test.ts src/lib/image-artifact-store-usage.test.ts src/lib/image-artifact-store-live-provider.test.ts src/lib/image-artifact-store-lineage.test.ts src/lib/image-artifact-store-request-metadata.test.ts src/lib/image-artifact-storage-doc.test.ts` passes: 12 tests.
 - `bun test src/lib/image-provider-errors.test.ts` passes: 1 test.
 - `bun test src/lib/live-image-provider-adapter.test.ts src/lib/live-image-provider-adapter-live-provider.test.ts` passes: 5 tests.
 - `bun test src/lib/live-image-provider-adapter.test.ts src/lib/image-artifact-store.test.ts src/lib/image-provider-errors.test.ts src/lib/slide-image-provider.test.ts src/lib/image-path-decision.test.ts` passes: 24 tests.
