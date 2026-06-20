@@ -251,6 +251,7 @@ The App Server smoke path and reusable structured-turn path are now represented 
   turns, `missing_resume_next_turn`, `resume_non_codex_turn`,
   `resume_non_codex_session_auth`, `resume_non_production_turn`, resume turns
   that do not continue from an already produced text artifact,
+  non-canonical resume next-turn ids (`resume_next_turn_not_canonical`),
   whitespace-padded resume next-turn reuse (`resume_reused_existing_turn`), and
   resume evidence whose thread does not match the previous text-artifact turn
   (`resume_thread_mismatch`).
@@ -319,7 +320,7 @@ The local restart smoke evaluator rejects same-pid restart evidence, blank crash
 
 Using the current authenticated `codex app-server --stdio` binary and generated `ThreadResumeParams` schema on 2026-06-19, a library-level DF-212 recheck created worker thread `019edc28-bf27-7380-b7d2-65405e6c6758`, completed pre-restart turn `019edc28-c179-7453-a5a5-c87e29096422`, recreated the App Server process, called `thread/resume` for the same worker thread, and completed resumed turn `019edc28-f9ec-72e1-9695-1a9a2c2ca61d`.
 
-The persisted recovery manifest used project `project_df212_live_resume`, deck context `deckctx_df212_live_resume`, context hash `sha256:context_df212_live_resume`, approved artifacts `brief_df212_live`, `research_df212_live`, `plan_df212_live`, `design_df212_live`, and `layout_df212_live`, and worker `lastCompletedTurnId` `019edc28-c179-7453-a5a5-c87e29096422`. `evaluateProjectThreadResumeEvidence` returned `ready` for that recovered worker thread and now blocks mismatched previous-turn claims with `resume_previous_turn_not_recovered`. This proves protocol-level project worker resume after App Server process recreation; it is still not packaged desktop restart/reopen evidence from the production UI.
+The persisted recovery manifest used project `project_df212_live_resume`, deck context `deckctx_df212_live_resume`, context hash `sha256:context_df212_live_resume`, approved artifacts `brief_df212_live`, `research_df212_live`, `plan_df212_live`, `design_df212_live`, and `layout_df212_live`, and worker `lastCompletedTurnId` `019edc28-c179-7453-a5a5-c87e29096422`. `evaluateProjectThreadResumeEvidence` returned `ready` for that recovered worker thread and now blocks mismatched previous-turn claims with `resume_previous_turn_not_recovered` plus non-canonical resumed turn ids with `resume_next_turn_not_canonical`. This proves protocol-level project worker resume after App Server process recreation; it is still not packaged desktop restart/reopen evidence from the production UI.
 
 The local manifest validator now also rejects raw conversation source-of-truth contamination, including persisted conversation transcripts or `sourceOfTruth: "raw_conversation"` fields on the manifest or worker records. DF-212 worker recovery must remain anchored to canonical coordinator thread ids, worker thread ids, retained turn ids, approved artifact ids, and deck context hash; blank, duplicated, or whitespace-padded approved artifact ids and whitespace-padded thread/turn ids are rejected before workers can treat the bundle as approved.
 

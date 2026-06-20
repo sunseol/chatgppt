@@ -22,7 +22,7 @@ Scope: DF-212 Project Thread and Context lifecycle.
 - the resumed turn must complete
 - the resumed turn must be live Codex production evidence using the authenticated Codex session
 - the evidence `previousTurnId` must match the recovered worker thread's persisted `lastCompletedTurnId`; mismatches block with `resume_previous_turn_not_recovered`
-- the resumed turn must be a new turn, not the pre-restart turn id; whitespace-padded reuse also blocks as `resume_reused_existing_turn`
+- the resumed turn must be a new canonical turn id, not the pre-restart turn id; whitespace-padded next-turn ids block as `resume_next_turn_not_canonical`, and whitespace-padded reuse also blocks as `resume_reused_existing_turn`
 - the evidence must be collected after recreating the App Server process
 
 ## Verified Locally
@@ -33,6 +33,7 @@ Scope: DF-212 Project Thread and Context lifecycle.
 - `src/lib/project-thread-raw-source.test.ts` verifies nested worker resume/source metadata cannot persist raw conversation as a worker source of truth, including case-insensitive `sourceOfTruth` values.
 - `src/lib/project-thread-worker-identity.test.ts` verifies coordinator thread ids, worker thread ids, and recovered turn ids must be canonical; worker thread ids must also be nonblank, unique across worker stages, and distinct from the coordinator thread id.
 - `src/lib/project-thread-resume-evidence.test.ts` verifies the DF-212 resume evidence gate accepts a completed post-restart App Server turn and rejects stale context, incomplete turns, unknown threads, reused turns including whitespace-padded turn id reuse, non-restart evidence, and non-live resumed worker turns such as `resume_non_codex_turn`.
+- `src/lib/project-thread-resume-turn-identity.test.ts` verifies non-canonical resumed turn ids block with `resume_next_turn_not_canonical`.
 - `src/lib/project-thread-resume-lineage.test.ts` verifies the gate rejects a claimed previous turn that does not match the recovered worker thread's last completed turn.
 
 ## Verified Live Recheck
@@ -55,4 +56,4 @@ Observed second-process event methods included `thread/status/changed`, `thread/
 
 ## Remaining Live Evidence
 
-DF-212 is still not fully Verified Live. The library-level protocol recheck proves App Server can resume a recovered project worker thread after the App Server process is recreated, and the local evidence gate now rejects stale, fake, duplicate-stage, duplicate-worker-thread, coordinator-reused-worker-thread, non-canonical coordinator/worker/turn ids, blank, duplicated, or non-canonical approved artifact bundles, raw-conversation-sourced including nested worker resume/source metadata or case-variant `sourceOfTruth`, missing-coordinator, blank-worker-thread, reused-turn including whitespace-padded reuse, same-context-id context-hash drift, or turn-lineage-mismatched resume evidence. The remaining gap is a packaged desktop restart/reopen run that persists the manifest through the app storage boundary and then invokes the resumed worker thread from the production UI.
+DF-212 is still not fully Verified Live. The library-level protocol recheck proves App Server can resume a recovered project worker thread after the App Server process is recreated, and the local evidence gate now rejects stale, fake, duplicate-stage, duplicate-worker-thread, coordinator-reused-worker-thread, non-canonical coordinator/worker/turn ids, non-canonical resumed turn ids, blank, duplicated, or non-canonical approved artifact bundles, raw-conversation-sourced including nested worker resume/source metadata or case-variant `sourceOfTruth`, missing-coordinator, blank-worker-thread, reused-turn including whitespace-padded reuse, same-context-id context-hash drift, or turn-lineage-mismatched resume evidence. The remaining gap is a packaged desktop restart/reopen run that persists the manifest through the app storage boundary and then invokes the resumed worker thread from the production UI.

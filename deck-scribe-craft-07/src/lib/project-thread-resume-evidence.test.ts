@@ -149,7 +149,10 @@ describe("project thread resume evidence", () => {
     // Then
     expect(result.kind).toBe("blocked");
     if (result.kind !== "blocked") return;
-    expect(result.issues.map((issue) => issue.code)).toEqual(["resume_reused_existing_turn"]);
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "resume_next_turn_not_canonical",
+      "resume_reused_existing_turn",
+    ]);
   });
 
   test("requires resumed worker turns to be live Codex production evidence", () => {

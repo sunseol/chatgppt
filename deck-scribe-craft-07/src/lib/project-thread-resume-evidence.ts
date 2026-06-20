@@ -33,6 +33,7 @@ export type ProjectThreadResumeEvidenceIssueCode =
   | "resume_turn_not_completed"
   | "missing_resume_previous_turn"
   | "missing_resume_next_turn"
+  | "resume_next_turn_not_canonical"
   | "resume_previous_turn_not_recovered"
   | "resume_reused_existing_turn"
   | "resume_not_after_restart"
@@ -135,6 +136,14 @@ function resumeEvidenceIssues(
     ...(evidence.resumedTurnId.trim()
       ? []
       : [issue("missing_resume_next_turn", "Resume evidence must include the resumed turn id.")]),
+    ...(isNonCanonicalNonBlank(evidence.resumedTurnId)
+      ? [
+          issue(
+            "resume_next_turn_not_canonical",
+            "Resume evidence must include a canonical resumed turn id.",
+          ),
+        ]
+      : []),
     ...(resumedThread !== undefined &&
     evidence.previousTurnId.trim() &&
     evidence.previousTurnId !== resumedThread.lastCompletedTurnId
@@ -197,4 +206,8 @@ function issue(
   message: string,
 ): ProjectThreadResumeEvidenceIssue {
   return { code, message };
+}
+
+function isNonCanonicalNonBlank(value: string): boolean {
+  return value.trim() !== "" && value !== value.trim();
 }
