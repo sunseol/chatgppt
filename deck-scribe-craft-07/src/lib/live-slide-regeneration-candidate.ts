@@ -196,8 +196,10 @@ function backgroundStoragePathsMatchCandidate(
   if (identity.slideNumber !== slideNumber || identity.version !== candidateVersion) return false;
   const basePath = `projects/${identity.projectId}/slides/images/slide_${identity.slideToken}`;
   return (
+    candidateBackground.provenance.artifactId === candidateBackground.binary.artifactId &&
     candidateBackground.binary.path === `${basePath}.v${candidateVersion}.png` &&
-    candidateBackground.metadata.path === `${basePath}.v${candidateVersion}.metadata.json`
+    candidateBackground.metadata.path === `${basePath}.v${candidateVersion}.metadata.json` &&
+    candidateBackground.provenance.path === `${basePath}.v${candidateVersion}.provenance.json`
   );
 }
 

@@ -8,7 +8,7 @@ Status: Partial, external evidence required
 
 ## Contract Summary
 
-DF-235 requires selected-slide regeneration to create a full new slide background from the approved original context instead of local inpainting. The local contract now requires the selected original slide to already be approved, preserves the selected slide spec hash, `deckContextId`, and `designSystemId`, requires a non-blank edit instruction plus non-empty, non-blank, non-duplicated, and non-overlapping `must_keep` and `must_change`, stores the regenerated background as a newer versioned production OpenAI image artifact with matching API-key provenance, exact storage paths, and metadata/provenance provider request id evidence that differs from the original request, and keeps the already approved slide unchanged until the user approves the candidate.
+DF-235 requires selected-slide regeneration to create a full new slide background from the approved original context instead of local inpainting. The local contract now requires the selected original slide to already be approved, preserves the selected slide spec hash, `deckContextId`, and `designSystemId`, requires a non-blank edit instruction plus non-empty, non-blank, non-duplicated, and non-overlapping `must_keep` and `must_change`, stores the regenerated background as a newer versioned production OpenAI image artifact with matching API-key provenance, exact storage paths, matching provenance sidecar identity, and metadata/provenance provider request id evidence that differs from the original request, and keeps the already approved slide unchanged until the user approves the candidate.
 
 ## Local Evidence
 
@@ -20,7 +20,7 @@ DF-235 requires selected-slide regeneration to create a full new slide backgroun
 - `slide_spec_mismatch` blocks candidates produced from a stale or different slide spec even when the slide number, deck context, and design system still match.
 - `original_slide_mismatch` and `original_slide_version_mismatch` block candidates built from a different selected slide or from a stale approved-original version.
 - `background_artifact_version_mismatch` blocks a candidate when the stored binary id/path/metadata path version does not match the candidate slide version.
-- `background_artifact_storage_path_mismatch` blocks a candidate when the stored binary and metadata paths do not exactly match the project, slide, and version implied by the regenerated artifact id.
+- `background_artifact_storage_path_mismatch` blocks a candidate when the stored binary path, metadata path, provenance sidecar path, or provenance artifact id does not exactly match the project, slide, and version implied by the regenerated artifact id.
 - `invalid_regeneration_background_hash` blocks a candidate when the regenerated stored binary hash is not a full SHA-256 digest.
 - `missing_regeneration_request_id` blocks a candidate when the regenerated stored background lacks provider request id evidence.
 - `regeneration_request_provenance_mismatch` blocks a candidate when stored request metadata and provider provenance disagree.
