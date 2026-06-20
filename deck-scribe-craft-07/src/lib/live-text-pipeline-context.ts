@@ -10,7 +10,10 @@ export function contextConsistencyIssues(
   return [
     ...artifactContextIssues(input),
     ...slideContextIssues(input),
-    ...(input.layoutIr.artifact.designSystemId === input.designSystem.artifact.id
+    ...(matchesCanonicalIdentity(
+      input.layoutIr.artifact.designSystemId,
+      input.designSystem.artifact.id,
+    )
       ? []
       : [
           {
@@ -64,7 +67,7 @@ function slideContextIssues(input: LiveTextPipelineCutoverInput): readonly LiveT
               message: `Slide context reference ${ref.slideNumber} is not in the Deck Plan.`,
             },
           ]),
-      ...(ref.deckContextId === input.deckContextId
+      ...(matchesCanonicalIdentity(ref.deckContextId, input.deckContextId)
         ? []
         : [
             {
@@ -73,7 +76,7 @@ function slideContextIssues(input: LiveTextPipelineCutoverInput): readonly LiveT
               message: "Every slide context reference must share the same deckContextId.",
             },
           ]),
-      ...(ref.designSystemId === input.designSystem.artifact.id
+      ...(matchesCanonicalIdentity(ref.designSystemId, input.designSystem.artifact.id)
         ? []
         : [
             {
@@ -91,10 +94,14 @@ function contextIssue(
   expected: string,
   stage: LiveTextPipelineStage,
 ): LiveTextPipelineIssue | undefined {
-  if (actual === expected) return undefined;
+  if (matchesCanonicalIdentity(actual, expected)) return undefined;
   return {
     code: "deck_context_mismatch",
     stage,
     message: "Every text pipeline artifact must share the same deckContextId.",
   };
+}
+
+function matchesCanonicalIdentity(actual: string, expected: string): boolean {
+  return actual === actual.trim() && expected === expected.trim() && actual === expected;
 }
