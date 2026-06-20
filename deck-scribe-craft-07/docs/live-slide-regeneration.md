@@ -55,3 +55,14 @@ DF-235 requires selected-slide regeneration to create a full new slide backgroun
 - Evidence summary: `docs/live-evidence/codex-image/df235-selected-slide-regeneration-summary.json`
 
 DF-235 still needs packaged app before/after approval QA before closure: the live regenerated background exists, but the review-gallery approval surface was not manually driven to approve the v2 candidate or verify failed-regeneration preservation in the UI.
+
+## Lane D App-Surface Recheck
+
+2026-06-21 KST Lane D packaged the approved v1 slide 3 and regenerated v2 slide 3 into before/after review evidence:
+
+- Before/after review: `docs/live-evidence/codex-image/lane-d-live-app-surface-20260621/df235-before-after-review.html`
+- Before/after hash: `sha256:8c170b78a077345816d39ec244711569082bb91152d09fa0b412a59403862a1b`
+- Preservation record: `docs/live-evidence/codex-image/lane-d-live-app-surface-20260621/df235-preservation-record.json`
+- Preservation hash: `sha256:f3b3d5c3cf28f4ef7e49d31545f67e28ec7e724edcd1e0d51e65107360eb57f2`
+
+This evidence ties the v2 candidate to regeneration thread `019ee690-9595-7323-86d7-e188639cd355`, turn `019ee690-9801-71b0-9062-cc72a74d2f97`, and regenerated hash `sha256:fec63060405bbe50246c9216447c8759fc5426eed8f14d5c1dfb7b8df5d0d202`. DF-235 remains open because the packaged review UI still has not been manually driven through candidate approval and failed-regeneration preservation.

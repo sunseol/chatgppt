@@ -79,6 +79,19 @@ The same integration surface now blocks misleading confirmation copy when the im
 
 The local contract, one live Codex text usage probe, app progress-panel usage display with invalid provider payload omission, blank or duplicated stage-id and unsupported provider-kind blockers, incomplete text/image usage blockers, invalid usage/cost amount and cost-label blockers, persisted Codex image usage confirmation evidence blockers, developer-local and template confirmation evidence path blockers, and secret-redacted formatted-summary/progress/report image usage disclosure display are ready, but DF-244 still needs manual QA against the packaged app surface with real provider image Codex usage disclosure payloads.
 
+## Lane D Image Usage Recheck
+
+2026-06-21 KST Lane D packaged actual Codex image latency/count display evidence:
+
+- Usage display: `docs/live-evidence/codex-image/lane-d-live-app-surface-20260621/df244-usage-display.html`
+- Usage display hash: `sha256:d8d136e45e91916f30908b7e66b336359596d1a25a596aff3de5ecfcb292cffc`
+- Usage summary: `docs/live-evidence/codex-image/lane-d-live-app-surface-20260621/df244-usage-summary.json`
+- Usage summary hash: `sha256:01b6043d35d12a744ffd898486a8ae7157110fd7561ce2c1c5e96587688dd4a9`
+- Image count: `5`
+- Total measured image latency: `197953ms`
+
+The display intentionally keeps cost hidden because the Codex image sidecars do not supply a billable cost value. DF-244 remains open because no persisted pre-generation user-confirmation record from the packaged app surface exists.
+
 ## Live Image Usage Update
 
 2026-06-21 KST Lane B captured real Codex image usage evidence from the authenticated image route:
