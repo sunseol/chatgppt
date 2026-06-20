@@ -16,6 +16,7 @@ export type FinalExportGateIssueCode =
   | "missing_svg_export"
   | "missing_hybrid_svg_export"
   | "missing_project_file"
+  | "invalid_export_artifact_hash"
   | "missing_generation_report"
   | "fatal_workflow_error"
   | "mock_lineage_contamination"
@@ -74,7 +75,7 @@ export function evaluateFinalExportGate(input: {
   const issues = [
     ...invalidatedIssues(input.project),
     ...workflowErrorIssues(input.project),
-    ...exportPackageIssues(summary),
+    ...exportPackageIssues(summary, input.executionMode),
     ...finalExportReportIssues({
       executionMode: input.executionMode,
       reportMarkdown,
@@ -196,6 +197,7 @@ function invalidatedIssues(project: DeckProject): readonly FinalExportGateIssue[
 
 function exportPackageIssues(
   summary: ProjectExportSummary | undefined,
+  executionMode: ExecutionMode | undefined,
 ): readonly FinalExportGateIssue[] {
   if (!summary) {
     return [{ code: "missing_export_package", message: "내보내기 파일을 먼저 준비해야 합니다." }];
@@ -216,5 +218,15 @@ function exportPackageIssues(
   if (summary.projectFilePath.trim().length === 0) {
     issues.push({ code: "missing_project_file", message: "프로젝트 파일이 필요합니다." });
   }
+  if (executionMode === "production" && !isSha256Digest(summary.artifactHash)) {
+    issues.push({
+      code: "invalid_export_artifact_hash",
+      message: "Production export artifact hash must be a full SHA-256 digest.",
+    });
+  }
   return issues;
+}
+
+function isSha256Digest(value: string): boolean {
+  return /^sha256:[a-f0-9]{64}$/.test(value);
 }

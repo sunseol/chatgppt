@@ -36,6 +36,8 @@ describe("live generation report lineage documentation", () => {
     expect(generationReportLineage.includes("buildGenerationReport")).toBe(true);
     expect(generationReportLineage.includes("invalid_compositor_hash")).toBe(true);
     expect(generationReportLineage.includes("invalid_export_hash")).toBe(true);
+    expect(generationReportLineage.includes("invalid_export_artifact_hash")).toBe(true);
+    expect(generationReportLineage.includes("full SHA-256 artifact digest")).toBe(true);
     expect(generationReportLineage.includes("export_compositor_mismatch")).toBe(true);
     expect(generationReportLineage.includes("mock_lineage_contamination")).toBe(true);
     expect(generationReportLineage.includes("exported project content")).toBe(true);

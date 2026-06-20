@@ -50,7 +50,7 @@ function projectFixture(): DeckProject {
 function exportSummaryFixture(): ProjectExportSummary {
   return {
     artifactId: "project_001_export_v1",
-    artifactHash: "sha256:export",
+    artifactHash: fullHash(),
     artifactPath: "projects/project_001/exports/export.v1.json",
     createdAt: 2_000,
     pngCount: 1,
@@ -67,7 +67,7 @@ function reportFixture(liveLineageSection: string): string {
     "## 9. 사용된 프롬프트 버전",
     "",
     "## 10. Export package",
-    "- Export: project_001_export_v1 · sha256:export",
+    `- Export: project_001_export_v1 · ${fullHash()}`,
     "",
     liveLineageSection,
   ].join("\n");

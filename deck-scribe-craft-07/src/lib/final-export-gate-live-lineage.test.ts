@@ -138,6 +138,26 @@ describe("final export gate live report lineage", () => {
 
     expect(result.kind).toBe("ready");
   });
+
+  test("blocks production export when the export artifact hash is not a full digest", () => {
+    // Given
+    const liveReportLineage = [liveReportLineageFixture()];
+
+    // When
+    const result = evaluateFinalExportGate({
+      project: projectFixture(),
+      exportPackage: { ...exportSummaryFixture(), artifactHash: "sha256:export" },
+      reportMarkdown: reportFixture(formatLiveGenerationReportLineage(liveReportLineage)),
+      executionMode: "production",
+      lineage: providerLineageFixture(),
+      liveReportLineage,
+    });
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual(["invalid_export_artifact_hash"]);
+  });
 });
 
 function projectFixture(patch: Partial<DeckProject> = {}): DeckProject {
@@ -160,7 +180,7 @@ function projectFixture(patch: Partial<DeckProject> = {}): DeckProject {
 function exportSummaryFixture(): ProjectExportSummary {
   return {
     artifactId: "project_001_export_v1",
-    artifactHash: "sha256:export",
+    artifactHash: fullHash(),
     artifactPath: "projects/project_001/exports/export.v1.json",
     createdAt: 2_000,
     pngCount: 1,
@@ -177,7 +197,7 @@ function reportFixture(liveLineageSection?: string): string {
     "## 9. 사용된 프롬프트 버전",
     "",
     "## 10. Export 패키지",
-    "- Export: project_001_export_v1 · sha256:export",
+    `- Export: project_001_export_v1 · ${fullHash()}`,
     ...(liveLineageSection ? ["", liveLineageSection] : []),
   ].join("\n");
 }

@@ -154,7 +154,7 @@ describe("final export gate", () => {
     expect(result.kind).toBe("ready");
     if (result.kind !== "ready") return;
     expect(result.exportArtifactId).toBe("project_001_export_v1");
-    expect(result.exportArtifactHash).toBe("sha256:export");
+    expect(result.exportArtifactHash).toBe(fullHash());
     expect(result.reportHash.startsWith("sha256:")).toBe(true);
   });
 });
@@ -184,7 +184,7 @@ function projectFixture(
 function exportSummaryFixture(): ProjectExportSummary {
   return {
     artifactId: "project_001_export_v1",
-    artifactHash: "sha256:export",
+    artifactHash: fullHash(),
     artifactPath: "projects/project_001/exports/export.v1.json",
     createdAt: 2_000,
     pngCount: 1,
@@ -201,6 +201,10 @@ function reportFixture(): string {
     "## 9. 사용된 프롬프트 버전",
     "",
     "## 10. Export 패키지",
-    "- Export: project_001_export_v1 · sha256:export",
+    `- Export: project_001_export_v1 · ${fullHash()}`,
   ].join("\n");
+}
+
+function fullHash(): string {
+  return `sha256:${"c".repeat(64)}`;
 }
