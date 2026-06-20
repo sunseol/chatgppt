@@ -77,7 +77,11 @@ function validateEvidenceRefSource(
   }
 
   const capturedArtifactPath = sourceArtifactPathsById.get(evidenceRef.sourceId);
-  if (!evidenceRef.sourceArtifactPath.trim() || !capturedArtifactPath?.trim()) {
+  if (
+    !evidenceRef.sourceArtifactPath.trim() ||
+    capturedArtifactPath === undefined ||
+    !capturedArtifactPath.trim()
+  ) {
     issues.push(
       issue({
         code: "missing_source_artifact",
@@ -89,7 +93,11 @@ function validateEvidenceRefSource(
     return;
   }
 
-  if (evidenceRef.sourceArtifactPath !== capturedArtifactPath) {
+  if (
+    evidenceRef.sourceArtifactPath !== evidenceRef.sourceArtifactPath.trim() ||
+    capturedArtifactPath !== capturedArtifactPath.trim() ||
+    evidenceRef.sourceArtifactPath !== capturedArtifactPath
+  ) {
     issues.push(
       issue({
         code: "source_artifact_mismatch",

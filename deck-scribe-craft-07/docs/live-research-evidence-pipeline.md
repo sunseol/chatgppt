@@ -16,7 +16,9 @@ Status: partial local contract
 - `ProductionWorkflowStage` forwards persisted `ResearchPack.liveEvidenceRefs` to `SourceReviewList`, so production review shows the saved quote/table evidence instead of recomputing from empty local state.
 - `validateLiveResearchEvidence` emits fatal issues for claim evidence that cannot be traced back to an original source artifact.
 - `missing_source_artifact` is fatal when a saved evidence ref has no source artifact path or the linked Research source lacks persisted `capture.rawArchivePath` metadata.
-- `source_artifact_mismatch` is fatal when a saved evidence ref points at a different artifact path than the source's captured `rawArchivePath`.
+- `source_artifact_mismatch` is fatal when a saved evidence ref points at a
+  different artifact path than the source's captured `rawArchivePath`, or when
+  either side only becomes the same path after trimming whitespace.
 - `missing_dataset_or_numeric_evidence` is fatal when a Research Pack has no real dataset and no numeric evidence item at all.
 - `major_number_metadata` also validates dataset-backed major numbers, so a claim cannot rely on a dataset whose unit, period, geography, or definition is missing.
 - `unknown_reference` is fatal when a persisted evidence ref targets a claim that is absent from the Research Pack, when an evidence ref names a dataset outside the claim's dataset lineage, when numeric evidence points to a source or dataset that is absent from the Research Pack or not linked by the claim lineage, or when a dataset-backed major number uses a dataset whose `sourceIds` do not include any of the claim's source artifact ids.
@@ -35,7 +37,7 @@ Status: partial local contract
 | Source-less claims are not passed to Deck Plan.                                | `getDeckPlanEligibleClaims` and `buildDeckPlanPrompt` exclude claims with fatal evidence issues.                                                                                                                    |
 | Search-summary-only claims without original source content cannot be approved. | `summary_without_original` is fatal when a factual claim has no original artifact quote/table reference.                                                                                                            |
 | Numeric evidence must roundtrip through the claim's source/dataset lineage.    | `unknown_reference` is fatal when persisted evidence targets an unknown claim, evidence refs name datasets outside the claim's linked dataset ids, numeric evidence uses a source or dataset outside the claim's linked ids, or a dataset-backed major number uses a dataset whose `sourceIds` do not include the claim source artifact ids. |
-| Saved evidence refs must point at the captured source artifact.                | `source_artifact_mismatch` is fatal when a persisted evidence ref path does not match `ResearchPack.sources[].capture.rawArchivePath`.                                                                              |
+| Saved evidence refs must point at the captured source artifact.                | `source_artifact_mismatch` is fatal when a persisted evidence ref path does not exactly match the canonical `ResearchPack.sources[].capture.rawArchivePath`, including whitespace-padded paths that only match after trimming. |
 | Saved evidence refs cannot invent source artifact paths.                       | `missing_source_artifact` is fatal when a persisted evidence ref names a source whose `ResearchPack.sources[].capture.rawArchivePath` is missing.                                                                   |
 
 ## Claim-to-source roundtrip
@@ -51,7 +53,7 @@ The local claim-to-source roundtrip is covered by `src/lib/live-research-evidenc
 - packs with no dataset and no numeric evidence fail with `missing_dataset_or_numeric_evidence`;
 - table references are accepted as an alternative to quote spans.
 - evidence refs for sources without captured artifact metadata fail with `missing_source_artifact`.
-- captured source artifact path mismatches fail with `source_artifact_mismatch`.
+- captured source artifact path mismatches and whitespace-padded path matches fail with `source_artifact_mismatch`.
 - direct Deck Plan prompt construction excludes live claims that lack original quote/table evidence refs.
 
 ## Verification

@@ -34,7 +34,61 @@ describe("live research source artifact evidence", () => {
       true,
     );
   });
+
+  test("rejects evidence refs when captured source artifact paths are only canonical after trimming", () => {
+    // Given
+    const paddedArtifactPath = " docs/live-source-capture-bundle/html_001/original.html ";
+    const pack = researchPackWithCapturedArtifactPath(paddedArtifactPath);
+    const evidenceRefs: LiveResearchEvidenceReference[] = [
+      {
+        id: "ev_001",
+        claimId: "claim_001",
+        sourceId: "src_001",
+        sourceArtifactPath: paddedArtifactPath,
+        kind: "quote_span",
+        quoteSpan: {
+          start: 10,
+          end: 18,
+          text: "67%",
+        },
+        datasetId: "dataset_001",
+      },
+    ];
+
+    // When
+    const report = validateLiveResearchEvidence({ pack, evidenceRefs });
+
+    // Then
+    expect(report.valid).toBe(false);
+    expect(report.fatalIssues.map((issue) => issue.code).includes("source_artifact_mismatch")).toBe(
+      true,
+    );
+  });
 });
+
+function researchPackWithCapturedArtifactPath(rawArchivePath: string): ResearchPack {
+  const pack = researchPackWithoutCapture();
+  return {
+    ...pack,
+    sources: [
+      {
+        ...pack.sources[0],
+        capture: {
+          originalUrl: "https://example.gov/report",
+          finalUrl: "https://example.gov/report",
+          fetchedAt: 1_789_400_001,
+          mimeType: "text/html",
+          statusCode: 200,
+          contentHash: "sha256:source-content",
+          rawArchivePath,
+          textArchivePath: "docs/live-source-capture-bundle/html_001/extracted.txt",
+          extractedTextHash: "sha256:source-text",
+          version: 1,
+        },
+      },
+    ],
+  };
+}
 
 function researchPackWithoutCapture(): ResearchPack {
   return {
