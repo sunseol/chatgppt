@@ -1,5 +1,4 @@
 import { hashContent } from "./artifacts";
-import { hasNonSyntheticEvidencePath } from "./live-evidence-path";
 import {
   liveGoldenPathIssue,
   type LiveFinalValidationBundle,
@@ -7,6 +6,7 @@ import {
   type LiveGoldenPathE2EIssue,
   type LiveGoldenPathSource,
 } from "./live-golden-path-e2e-contract";
+import { hasObservedGoldenPathEvidencePath } from "./live-golden-path-evidence-path";
 import { isRealHttpSourceUrl } from "./live-real-source-url";
 import type { ProviderArtifactProvenance } from "./provider-provenance";
 
@@ -226,7 +226,7 @@ function pathSet(paths: readonly string[]): ReadonlySet<string> {
 }
 
 function validValidationBundlePath(value: string): boolean {
-  return hasNonSyntheticEvidencePath(value, [".zip", ".json"]);
+  return hasObservedGoldenPathEvidencePath(value, [".zip", ".json"]);
 }
 
 function duplicateValues(values: readonly string[]): readonly string[] {

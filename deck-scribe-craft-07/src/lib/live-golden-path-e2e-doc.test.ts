@@ -25,10 +25,15 @@ describe("live golden path E2E documentation", () => {
     expect(
       goldenPathE2E.includes("live-golden-path-validation-bundle-extra-reference.test.ts"),
     ).toBe(true);
-    expect(goldenPathE2E.includes("non-synthetic, non-local `live_e2e_report.md`")).toBe(true);
-    expect(goldenPathE2E.includes("non-synthetic, non-local evidence paths")).toBe(true);
-    expect(goldenPathE2E.includes("non-synthetic, non-local `.zip` or `.json` path")).toBe(true);
-    expect(goldenPathE2E.includes("developer-local evidence path rejection")).toBe(true);
+    expect(goldenPathE2E.includes("observed, non-synthetic, non-local `live_e2e_report.md`")).toBe(
+      true,
+    );
+    expect(goldenPathE2E.includes("observed, non-synthetic, non-local evidence paths")).toBe(true);
+    expect(
+      goldenPathE2E.includes("observed, non-synthetic, non-local `.zip` or `.json` path"),
+    ).toBe(true);
+    expect(goldenPathE2E.includes("synthetic, developer-local, and template/sample")).toBe(true);
+    expect(goldenPathE2E.includes("live-golden-path-template-evidence.test.ts")).toBe(true);
     expect(goldenPathE2E.includes("insufficient_live_sources")).toBe(true);
     expect(goldenPathE2E.includes("placeholder/reserved/local/private source URL rejection")).toBe(
       true,
