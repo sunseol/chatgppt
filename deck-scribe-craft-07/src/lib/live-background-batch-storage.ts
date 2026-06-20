@@ -101,11 +101,29 @@ function storedRequestMatches(
   stored: StoredSlideImageArtifact,
 ): boolean {
   const request = artifact.request;
+  if (artifact.providerId === "codex") return storedCodexRequestMatches(request, stored);
   if (!request?.requestId) return true;
   return (
     stored.metadata.request.requestId === request.requestId &&
     stored.provenance.requestId === request.requestId &&
     stored.metadata.request.model === request.model &&
+    stored.provenance.modelOrRuntime === request.model &&
+    requestUsageMetadataMatches(request) &&
+    requestUsageMetadataMatches(stored.metadata.request)
+  );
+}
+
+function storedCodexRequestMatches(
+  request: SlideImageRequestMetadata | undefined,
+  stored: StoredSlideImageArtifact,
+): boolean {
+  if (!request?.threadId || !request.turnId) return false;
+  return (
+    stored.metadata.request.threadId === request.threadId &&
+    stored.metadata.request.turnId === request.turnId &&
+    stored.metadata.request.model === request.model &&
+    stored.provenance.threadId === request.threadId &&
+    stored.provenance.turnId === request.turnId &&
     stored.provenance.modelOrRuntime === request.model &&
     requestUsageMetadataMatches(request) &&
     requestUsageMetadataMatches(stored.metadata.request)

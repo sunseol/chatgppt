@@ -114,6 +114,8 @@ export function storedArtifact(artifact: SlideImageArtifact): StoredSlideImageAr
       inputArtifactIds: [artifact.prompt.hash, artifact.layoutReference.screenshot],
       fixture: false,
       ...(request.requestId === undefined ? {} : { requestId: request.requestId }),
+      ...(request.threadId === undefined ? {} : { threadId: request.threadId }),
+      ...(request.turnId === undefined ? {} : { turnId: request.turnId }),
     },
   };
 }

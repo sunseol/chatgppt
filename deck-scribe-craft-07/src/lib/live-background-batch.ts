@@ -172,13 +172,20 @@ function requestMetadataIssues(artifact: SlideImageArtifact): readonly LiveBackg
 
 function hasCanonicalRequestMetadata(artifact: SlideImageArtifact): boolean {
   const request = artifact.request;
-  if (!request?.requestId) return false;
-  return (
-    request.requestId.length > 0 &&
-    request.requestId === request.requestId.trim() &&
-    request.model.length > 0 &&
-    request.model === request.model.trim()
-  );
+  if (!request) return false;
+  if (artifact.providerId === "codex") {
+    return (
+      canonicalText(request.model) &&
+      canonicalText(request.threadId) &&
+      canonicalText(request.turnId)
+    );
+  }
+  if (!request.requestId) return false;
+  return canonicalText(request.requestId) && canonicalText(request.model);
+}
+
+function canonicalText(value: string | undefined): boolean {
+  return value !== undefined && value.length > 0 && value === value.trim();
 }
 
 function aspectIssues(artifact: SlideImageArtifact): readonly LiveBackgroundBatchIssue[] {

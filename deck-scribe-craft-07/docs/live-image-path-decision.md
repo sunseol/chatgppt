@@ -40,10 +40,24 @@ Status: partial local contract
 - `bun run typecheck` passes.
 - `bun run lint` passes with the existing six React Fast Refresh warnings only.
 
-## Remaining Live work
+## Live Evidence Update
 
-DF-230 is not ready to close. The local decision record and Generate-stage gate now prevent fixture fallback and unverified production choices, but the acceptance criteria still require one successful real image request plus stored binary and provenance sidecar artifacts from the selected route.
+2026-06-21 KST Lane B captured a real authenticated Codex App Server image-generation turn and stored the resulting PNG through the production image artifact store. This is not fixture, mock, placeholder, or API-key evidence.
 
-## Current blocker evidence
+- Runtime: `codex-cli 0.141.0 app-server --stdio`
+- Auth mode: `codex_session` from `codex login status` (`Logged in using ChatGPT`)
+- Provider route: Codex OAuth image generation, protocol item type `imageGeneration`
+- Thread id: `019ee685-f072-7a50-bf9b-d3ff849e6744`
+- Turn id: `019ee685-f31a-74a1-8e2b-6810ccdb209c`
+- Model: `gpt-image-2`
+- Latency: `33496ms`
+- Usage: `imageCount: 1`
+- Binary artifact: `projects/df230_live_codex_image/slides/images/slide_001.v1.png`
+- Binary hash: `sha256:ce4be415f1c550fc38017e4f8910fa4bcf57031aa17b3c0bfc3909ed8bf19532`
+- Binary bytes: `1161656`
+- Metadata sidecar: `projects/df230_live_codex_image/slides/images/slide_001.v1.metadata.json`
+- Provenance sidecar: `projects/df230_live_codex_image/slides/images/slide_001.v1.provenance.json`
+- Evidence summary: `docs/live-evidence/codex-image/df230-df231-live-artifact-summary.json`
+- Local pixel probe: `sips -g pixelWidth -g pixelHeight` returned `1672 x 941`.
 
-2026-06-21 KST Image/Packaging lane recheck from `/Users/jake/chatgppt-lane-image` on branch `jacobex/live-image-export-evidence` found the GitHub issue still open with `status:needs-live-evidence`. Codex CLI is installed and authenticated through ChatGPT, but no packaged-app Codex image generation turn was run from this lane. No real packaged-app image request was captured yet, so there is still no live binary artifact path, provider provenance sidecar, Codex turn/thread ids, account usage owner, permission, or model evidence from the selected route.
+The production route remains Codex OAuth only. The OpenAI API-key route is not used for production and remains excluded from the locked route decision.

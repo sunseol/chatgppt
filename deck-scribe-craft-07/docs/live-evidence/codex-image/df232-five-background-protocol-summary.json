@@ -1,0 +1,132 @@
+{
+  "capturedAt": "2026-06-20T19:40:16.143Z",
+  "runtime": "codex-cli 0.141.0 app-server --stdio",
+  "threadId": "019ee689-3814-73e3-bf80-3ff0fc6e1d44",
+  "validation": {
+    "kind": "ready"
+  },
+  "batchId": "df232_live_codex_batch_2026_06_21",
+  "deckContextId": "deck_context_df232_live_codex_batch",
+  "designSystemId": "design_df232_live_codex_batch",
+  "slides": [
+    {
+      "slideNumber": 1,
+      "turnId": "019ee689-3af0-7891-83f5-2f386f43c181",
+      "threadId": "019ee689-3814-73e3-bf80-3ff0fc6e1d44",
+      "latencyMs": 56466,
+      "binaryPath": "projects/df232_live_codex_batch/slides/images/slide_001.v1.png",
+      "binaryHash": "sha256:6f68ea1203e933f5eeb4ccde8c6ac50743359939db79ccedf25c9e56e0adb441",
+      "binaryBytes": 1705513,
+      "metadataPath": "projects/df232_live_codex_batch/slides/images/slide_001.v1.metadata.json",
+      "provenancePath": "projects/df232_live_codex_batch/slides/images/slide_001.v1.provenance.json"
+    },
+    {
+      "slideNumber": 2,
+      "turnId": "019ee68a-214d-7be2-8984-b3461b1cf8db",
+      "threadId": "019ee689-3814-73e3-bf80-3ff0fc6e1d44",
+      "latencyMs": 49422,
+      "binaryPath": "projects/df232_live_codex_batch/slides/images/slide_002.v1.png",
+      "binaryHash": "sha256:79e270f943bce87cff5873f6a39604b2dbbb5fdc70f79d46f597b685f44a9c67",
+      "binaryBytes": 1339051,
+      "metadataPath": "projects/df232_live_codex_batch/slides/images/slide_002.v1.metadata.json",
+      "provenancePath": "projects/df232_live_codex_batch/slides/images/slide_002.v1.provenance.json"
+    },
+    {
+      "slideNumber": 3,
+      "turnId": "019ee68a-e53e-71c0-814a-8d5da527c75a",
+      "threadId": "019ee689-3814-73e3-bf80-3ff0fc6e1d44",
+      "latencyMs": 30413,
+      "binaryPath": "projects/df232_live_codex_batch/slides/images/slide_003.v1.png",
+      "binaryHash": "sha256:d5a129265c0bfb05e85641606a7d1972842eb80ac0d3f230a9c8694fe96c15a8",
+      "binaryBytes": 1407928,
+      "metadataPath": "projects/df232_live_codex_batch/slides/images/slide_003.v1.metadata.json",
+      "provenancePath": "projects/df232_live_codex_batch/slides/images/slide_003.v1.provenance.json"
+    },
+    {
+      "slideNumber": 4,
+      "turnId": "019ee68b-5d5c-7a62-bf39-ae1c19bf4c41",
+      "threadId": "019ee689-3814-73e3-bf80-3ff0fc6e1d44",
+      "latencyMs": 28803,
+      "binaryPath": "projects/df232_live_codex_batch/slides/images/slide_004.v1.png",
+      "binaryHash": "sha256:98d28796887b9791065a041b205505327ac965946836a2bdb908a76c0550fb09",
+      "binaryBytes": 1262839,
+      "metadataPath": "projects/df232_live_codex_batch/slides/images/slide_004.v1.metadata.json",
+      "provenancePath": "projects/df232_live_codex_batch/slides/images/slide_004.v1.provenance.json"
+    },
+    {
+      "slideNumber": 5,
+      "turnId": "019ee68b-cf93-7dd3-9a6a-2a25cb63205a",
+      "threadId": "019ee689-3814-73e3-bf80-3ff0fc6e1d44",
+      "latencyMs": 32849,
+      "binaryPath": "projects/df232_live_codex_batch/slides/images/slide_005.v1.png",
+      "binaryHash": "sha256:6a0d38f03c2c805b6962cec0fff8b14667c0c2db10d8f8b8b9fe720cf76d8288",
+      "binaryBytes": 1318593,
+      "metadataPath": "projects/df232_live_codex_batch/slides/images/slide_005.v1.metadata.json",
+      "provenancePath": "projects/df232_live_codex_batch/slides/images/slide_005.v1.provenance.json"
+    }
+  ],
+  "protocolLineCount": 202,
+  "stderrLineCount": 92,
+  "writes": [
+    {
+      "path": "projects/df232_live_codex_batch/slides/images/slide_001.v1.png",
+      "bytes": 1705513
+    },
+    {
+      "path": "projects/df232_live_codex_batch/slides/images/slide_001.v1.metadata.json",
+      "bytes": 746
+    },
+    {
+      "path": "projects/df232_live_codex_batch/slides/images/slide_001.v1.provenance.json",
+      "bytes": 616
+    },
+    {
+      "path": "projects/df232_live_codex_batch/slides/images/slide_002.v1.png",
+      "bytes": 1339051
+    },
+    {
+      "path": "projects/df232_live_codex_batch/slides/images/slide_002.v1.metadata.json",
+      "bytes": 746
+    },
+    {
+      "path": "projects/df232_live_codex_batch/slides/images/slide_002.v1.provenance.json",
+      "bytes": 616
+    },
+    {
+      "path": "projects/df232_live_codex_batch/slides/images/slide_003.v1.png",
+      "bytes": 1407928
+    },
+    {
+      "path": "projects/df232_live_codex_batch/slides/images/slide_003.v1.metadata.json",
+      "bytes": 746
+    },
+    {
+      "path": "projects/df232_live_codex_batch/slides/images/slide_003.v1.provenance.json",
+      "bytes": 616
+    },
+    {
+      "path": "projects/df232_live_codex_batch/slides/images/slide_004.v1.png",
+      "bytes": 1262839
+    },
+    {
+      "path": "projects/df232_live_codex_batch/slides/images/slide_004.v1.metadata.json",
+      "bytes": 746
+    },
+    {
+      "path": "projects/df232_live_codex_batch/slides/images/slide_004.v1.provenance.json",
+      "bytes": 616
+    },
+    {
+      "path": "projects/df232_live_codex_batch/slides/images/slide_005.v1.png",
+      "bytes": 1318593
+    },
+    {
+      "path": "projects/df232_live_codex_batch/slides/images/slide_005.v1.metadata.json",
+      "bytes": 746
+    },
+    {
+      "path": "projects/df232_live_codex_batch/slides/images/slide_005.v1.provenance.json",
+      "bytes": 616
+    }
+  ]
+}
