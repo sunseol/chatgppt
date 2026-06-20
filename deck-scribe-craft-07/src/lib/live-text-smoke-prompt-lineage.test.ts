@@ -80,7 +80,7 @@ function defaultInputArtifactIds(stage: LiveTextProductionStage): readonly strin
     case "brief":
       return ["questions_artifact", "questions_artifact_answers"];
     case "deck_plan":
-      return ["brief_artifact"];
+      return ["brief_artifact", "research_pack_artifact"];
     case "design_system":
       return ["deck_plan_artifact"];
     case "layout_ir":

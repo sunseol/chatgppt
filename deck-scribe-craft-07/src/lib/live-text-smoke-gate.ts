@@ -49,6 +49,7 @@ export type LiveTextSmokeIssueCode =
   | "disconnected_text_stage_lineage"
   | "text_smoke_missing_initial_prompt_input"
   | "text_smoke_missing_answer_input"
+  | "text_smoke_missing_research_input"
   | "text_smoke_prompt_version_mismatch";
 
 export type LiveTextSmokeIssue = {

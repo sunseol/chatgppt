@@ -11,14 +11,21 @@ const REQUIRED_STAGES = [
   "layout_ir",
 ] as const satisfies readonly LiveTextProductionStage[];
 
-describe("live text smoke resume identity", () => {
-  test("blocks padded post-resume turn reuse from the text artifact lineage", () => {
+describe("live text smoke deck plan lineage", () => {
+  test("blocks smoke bundles that reuse the approved Brief as the Research Pack input", () => {
     const result = evaluateLiveTextSmokeGate({
-      artifacts: REQUIRED_STAGES.map((stage) => liveArtifact(stage)),
+      artifacts: REQUIRED_STAGES.map((stage) =>
+        liveArtifact(
+          stage,
+          stage === "deck_plan"
+            ? ["brief_artifact", " brief_artifact "]
+            : defaultInputArtifactIds(stage),
+        ),
+      ),
       resumeEvidence: {
         threadId: "thread_live_text",
         previousTurnId: "turn_layout_ir",
-        nextTurnId: " turn_layout_ir ",
+        nextTurnId: "turn_resume_after_layout",
         completed: true,
         providerKind: "codex",
         authMode: "codex_session",
@@ -28,13 +35,16 @@ describe("live text smoke resume identity", () => {
 
     expect(result.kind).toBe("blocked");
     if (result.kind !== "blocked") return;
-    expect(result.issues.map((issue) => issue.code).includes("resume_reused_existing_turn")).toBe(
-      true,
-    );
+    expect(
+      result.issues.map((issue) => issue.code).includes("text_smoke_missing_research_input"),
+    ).toBe(true);
   });
 });
 
-function liveArtifact(stage: LiveTextProductionStage): LiveTextSmokeArtifact {
+function liveArtifact(
+  stage: LiveTextProductionStage,
+  inputArtifactIds: readonly string[],
+): LiveTextSmokeArtifact {
   return {
     stage,
     provenance: createProviderArtifactProvenance({
@@ -45,7 +55,7 @@ function liveArtifact(stage: LiveTextProductionStage): LiveTextSmokeArtifact {
       modelOrRuntime: "codex-app-server 0.141.0",
       promptVersion: promptVersionFor(stage),
       durationMs: 2_400,
-      inputArtifactIds: defaultInputArtifactIds(stage),
+      inputArtifactIds,
       fixture: false,
       threadId: "thread_live_text",
       turnId: `turn_${stage}`,

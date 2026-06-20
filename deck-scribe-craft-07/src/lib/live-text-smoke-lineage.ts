@@ -19,6 +19,7 @@ export function textPathLineageIssues(
   return [
     ...initialPromptInputIssues(artifacts),
     ...answerInputIssues(artifacts),
+    ...researchInputIssues(artifacts),
     ...LINEAGE_REQUIREMENTS.flatMap((requirement) =>
       lineageIssueForRequirement(artifacts, requirement),
     ),
@@ -64,6 +65,30 @@ function answerInputIssues(
   ];
 }
 
+function researchInputIssues(
+  artifacts: readonly LiveTextSmokeArtifact[],
+): readonly LiveTextSmokeIssue[] {
+  const briefArtifact = artifactForStage(artifacts, "brief");
+  const deckPlanArtifact = artifactForStage(artifacts, "deck_plan");
+  if (briefArtifact === undefined || deckPlanArtifact === undefined) return [];
+
+  const briefArtifactId = normalizedIdentity(briefArtifact.provenance.artifactId);
+  const hasResearchInput = deckPlanArtifact.provenance.inputArtifactIds
+    .map(normalizedIdentity)
+    .some((inputId) => inputId !== undefined && inputId !== briefArtifactId);
+  if (hasResearchInput) return [];
+
+  return [
+    {
+      code: "text_smoke_missing_research_input",
+      stage: "deck_plan",
+      artifactId: deckPlanArtifact.provenance.artifactId,
+      message:
+        "Live text smoke Deck Plan artifact must cite the approved Research Pack input separately from Brief.",
+    },
+  ];
+}
+
 function lineageIssueForRequirement(
   artifacts: readonly LiveTextSmokeArtifact[],
   requirement: LineageRequirement,
@@ -102,4 +127,9 @@ function artifactForStage(
 
 function hasText(value: string): boolean {
   return value.trim().length > 0;
+}
+
+function normalizedIdentity(value: string): string | undefined {
+  const trimmed = value.trim();
+  return trimmed === "" ? undefined : trimmed;
 }
