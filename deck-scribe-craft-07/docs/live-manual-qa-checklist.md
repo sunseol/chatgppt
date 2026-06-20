@@ -70,3 +70,9 @@ Not run. This checklist and the local evidence validator are ready for execution
 ## Current blocker evidence
 
 2026-06-21 KST Release/Packaging lane recheck found GitHub issue #156 still open with `status:needs-live-evidence`. The current session is an autonomous developer worker running as user `jake` in `/Users/jake/chatgppt-lane-release-qa`, not a non-developer tester on a clean production candidate. DF-245 is still blocked by missing Developer ID signing/notarization, Gatekeeper acceptance, clean-machine execution, and image credentials, so DF-246 cannot honestly record a 10-minute non-developer manual QA session yet.
+
+## 2026-06-21 Lane F Recheck
+
+Lane F ran as developer user `jake` from `/Users/jake/chatgppt-lane-release-gates/deck-scribe-craft-07` and did not discover or produce a persisted non-developer manual QA session bundle. The current package is unsigned and Gatekeeper-rejected, and DF-245 clean-machine evidence is still missing.
+
+DF-246 remains open. Next evidence needed: a non-developer tester session on a signed/notarized or explicitly approved production candidate, with a persisted non-synthetic `manual-qa` session JSON bundle, under-10-minute completion, source-open proof linked to final report sources, one regeneration, one title edit, opened PNG/project/report outputs, and zero critical/mock/placeholder indicators.

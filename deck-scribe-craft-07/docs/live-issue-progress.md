@@ -4,6 +4,12 @@ Date: 2026-06-19
 
 Scope: tracked GitHub issues `#126` through `#157` (`DF-200` through `DF-247`).
 
+## 2026-06-21 Lane F Release Gates Update
+
+DF-245 live update: branch `jacobex/live-lane-release-gates` regenerated the unsigned dry-run archive `dist/deckforge-macos-dry-run.tgz` with SHA-256 `cec0077d117f8cc2d863db2075bbbd55cc812830e91233474a9f550ee6de427b`, 17 app files, and 287,894 bytes. The fresh DMG `release-artifacts/DeckForge_0.1.0_aarch64.dmg` has SHA-256 `232d0fd67eed137ff8b048848823d95cd71f2c8cd044a07ba279defd0a934108`; its `.sha256` file verifies. Fixed-string scans of the dry-run app bundle, native `.app`, and mounted DMG found 0 mock provider id, mock stage, fixture/test path, local workspace path, `.omx`, `.playwright-mcp`, or assigned secret hits. The app remains ad-hoc signed with no TeamIdentifier, no local Developer ID identities were found, `notarytool` has no credentials, and Gatekeeper rejects the DMG with `source=no usable signature`. Best available isolated smoke used a temporary HOME and served `/` from the unsigned dry-run package, but this is not clean-machine evidence. DF-245 remains blocked on Developer ID signing/notarization/stapling, release-trust evidence, Gatekeeper acceptance, and clean macOS account install/login/image credential/project launch/live interview evidence.
+
+DF-241, DF-242, DF-243, DF-246, and DF-247 remain open. Lane F found no signed Golden Path bundle, benchmark output bundles, completed interruption matrix, non-developer manual QA bundle, or final release-gate evidence that satisfies the live acceptance criteria.
+
 Status vocabulary:
 
 - Implemented contract: local code or documentation now enforces the acceptance-contract slice that can be verified without external Live credentials.

@@ -38,6 +38,8 @@ Dry-run package evidence:
 - Extracted app bundle: `dist/deckforge-macos-dry-run/DeckForge.app`
 - App bundle size: 1,076 KiB
 - App bundle files: 17
+
+Lane F package secret recheck on branch `jacobex/live-lane-release-gates` regenerated `dist/deckforge-macos-dry-run.tgz` with SHA-256 `cec0077d117f8cc2d863db2075bbbd55cc812830e91233474a9f550ee6de427b`. Fixed-string scans of the dry-run app bundle, native `.app`, and mounted DMG found 0 assigned `OPENAI_API_KEY`, long `Bearer` token, local workspace path, `.omx`, or `.playwright-mcp` hits. Broad `sk-*` regex matches were Tailwind/class-merge utility code, not credential evidence.
 - Archive members: 26
 
 Secret scan scope:

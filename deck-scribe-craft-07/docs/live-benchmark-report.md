@@ -92,3 +92,13 @@ The DMG checksum matches its committed `.sha256` file, but the mounted
 present`. The current benchmark result remains 0 of 5, below the required 4 of
 5 named packaged Live Golden Path completions. See
 `docs/live-research-lane-blockers-2026-06-21.md`.
+
+## 2026-06-21 Lane F Recheck
+
+Lane F regenerated the unsigned internal package and DMG on branch `jacobex/live-lane-release-gates`, but produced 0 benchmark scenario output bundles. Current package evidence:
+
+- Dry-run package SHA-256: `cec0077d117f8cc2d863db2075bbbd55cc812830e91233474a9f550ee6de427b`.
+- DMG SHA-256: `232d0fd67eed137ff8b048848823d95cd71f2c8cd044a07ba279defd0a934108`.
+- Package scan found no fixed-string mock/fixture/test/local-path contamination in the dry-run app bundle, native `.app`, or mounted DMG.
+
+Current benchmark result remains 0 of 5, below the required 4 of 5 passed live scenarios. Next evidence needed: five distinct non-synthetic benchmark output bundles, each tied to the current package hash and real Golden Path evidence, with at least four passing named live scenarios.

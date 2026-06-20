@@ -83,3 +83,9 @@ This local contract does not execute the providers. DF-241 still needs a real pr
 ## 2026-06-21 Runtime/Text Lane Status
 
 Runtime/Text produced production app-surface live interview evidence for project `p_live_runtime_text_20260621`, but the Plan/Design/Layout path remains blocked before Deck Plan launch because `createLiveResearchDeckPlanInput` rejects Research Packs without live Research approval provenance, live evidence refs, and source capture metadata. DF-241 is therefore hard-blocked from this lane until Research provides an approved live Research Pack and Image/Compositor provides five initial live image artifacts plus regeneration evidence. The current lane evidence is insufficient for a Golden Path report because it stops at `INTERVIEW_APPROVAL_PENDING`.
+
+## 2026-06-21 Lane F Recheck
+
+Lane F confirmed that `projects/df232_live_codex_batch` contains five real Codex OAuth image artifacts and `projects/df235_live_regeneration` contains one regenerated image artifact, but those image artifacts are not a complete Golden Path bundle by themselves. No signed `live_e2e_report.md`, per-step screenshot set, recording, final validation bundle, restart/reopen evidence, live-approved Research Pack, packaged export, or title-edit export evidence exists in this worktree.
+
+DF-241 remains open. Next evidence needed: a packaged production Golden Path run from login through export, with the signed report, per-step screenshots/recording, final validation bundle, production Codex text-stage lineage, at least three real sources with one primary/official source, five initial live images, one regenerated image, title edit, export, and restart/reopen evidence.
