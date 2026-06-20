@@ -220,6 +220,7 @@ describe("live readiness documentation", () => {
     expect(interruptionMatrix.includes("text_turn_shutdown")).toBe(true);
     expect(interruptionMatrix.includes("image_partial_resume")).toBe(true);
     expect(interruptionMatrix.includes("missing_live_job_evidence")).toBe(true);
+    expect(interruptionMatrix.includes("duplicate_interruption_scenario")).toBe(true);
     expect(interruptionMatrix.includes("missing_recovery_snapshot")).toBe(true);
     expect(interruptionMatrix.includes("duplicate_recovery_snapshot")).toBe(true);
     expect(interruptionMatrix.includes("missing_cancel_signal_evidence")).toBe(true);
