@@ -43,7 +43,7 @@ Within 10 minutes, the tester must:
 - `testerRole` set to `non_developer`
 - `sessionEvidencePath` pointing to a persisted non-synthetic `manual-qa` session JSON bundle for the observed QA session, not a generic notes JSON, developer-local absolute, or `file://` path
 - distinct approval target checks for `research_pack`, `slide_generation`, and `export`, with every target understood
-- at least one opened real HTTP(S) source URL that also appears in the final report sources, excluding placeholder, private-network, or local domains
+- at least one opened real HTTP(S) source URL that also appears in the final report sources, excluding placeholder, reserved documentation, private-network, or local domains/IPs
 - at least one regenerated slide id and one edited title slide id
 - opened export artifacts `png`, `project`, and `report`
 - non-negative integer counters for critical errors, mock indicators, and placeholder outputs
@@ -57,7 +57,7 @@ Blocker codes: `tester_not_non_developer`, `missing_manual_qa_session_evidence`,
 - Project task completes within 10 minutes.
 - Tester is not a developer or implementation contributor, and the session has a persisted non-local evidence bundle.
 - Tester explains the research, slide generation, and export approval gate targets with one distinct evidence event per target.
-- At least one non-placeholder real source from the final report is opened and understood.
+- At least one non-placeholder, non-reserved real source from the final report is opened and understood.
 - One slide is regenerated and accepted or rejected.
 - One title edit survives export.
 - PNG/project/report artifacts are found.

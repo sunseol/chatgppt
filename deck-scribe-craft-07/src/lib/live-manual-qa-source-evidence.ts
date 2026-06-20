@@ -45,7 +45,7 @@ export function realSourceOpenIssues(
       : [
           issue(
             "placeholder_real_source_url",
-            "Opened manual QA sources must not use placeholder or local domains.",
+            "Opened manual QA sources must not use placeholder, local, or reserved domains/addresses.",
             placeholder,
           ),
         ]),
@@ -96,14 +96,17 @@ function isLocalNetworkHost(hostname: string): boolean {
   if (hostname === "::1" || hostname === "0.0.0.0") return true;
   const octets = parseIpv4Octets(hostname);
   if (octets === undefined) return false;
-  const [first, second] = octets;
-  if (first === undefined || second === undefined) return false;
+  const [first, second, third] = octets;
+  if (first === undefined || second === undefined || third === undefined) return false;
   return (
     first === 10 ||
     first === 127 ||
     (first === 172 && second >= 16 && second <= 31) ||
     (first === 192 && second === 168) ||
-    (first === 169 && second === 254)
+    (first === 169 && second === 254) ||
+    (first === 192 && second === 0 && third === 2) ||
+    (first === 198 && second === 51 && third === 100) ||
+    (first === 203 && second === 0 && third === 113)
   );
 }
 
