@@ -2,13 +2,22 @@ import { describe, expect, test } from "bun:test";
 import type { FrozenDeckContext } from "./deck-context";
 import {
   createProjectThreadManifest,
+  recoverProjectThreadManifest,
   validateProjectThreadManifest,
 } from "./project-thread-lifecycle";
 
-describe("project thread raw source rejection", () => {
-  test("blocks nested raw conversation source metadata on worker manifests", () => {
+describe("project thread approved artifact bundle", () => {
+  test("blocks manifests whose approved artifact bundle is blank or duplicated", () => {
+    // Given
     const manifest = createProjectThreadManifest({
-      context: contextFixture(),
+      context: {
+        ...contextFixture(),
+        approvedArtifacts: {
+          ...contextFixture().approvedArtifacts,
+          briefId: " ",
+          designSystemId: "plan_001",
+        },
+      },
       coordinatorThreadId: "thread_coordinator_001",
       workers: [
         {
@@ -18,49 +27,53 @@ describe("project thread raw source rejection", () => {
         },
       ],
     });
-    const contaminatedManifest = {
-      ...manifest,
-      workers: [
-        {
-          ...manifest.workers[0],
-          resumeSource: { sourceOfTruth: "raw_conversation" },
-        },
-      ],
-    };
 
-    const validation = validateProjectThreadManifest(contaminatedManifest);
+    // When
+    const validation = validateProjectThreadManifest(manifest);
 
+    // Then
     expect(validation.kind).toBe("blocked");
     if (validation.kind !== "blocked") return;
     expect(validation.issues).toEqual([
-      "Worker thread thread_plan_001 cannot persist raw conversation source material.",
+      "Project thread manifest has a blank approved artifact id.",
+      "Project thread manifest duplicates approved artifact id plan_001.",
     ]);
   });
 
-  test("blocks case-insensitive raw conversation source-of-truth metadata", () => {
+  test("blocks restart recovery when the current context artifact bundle is invalid", () => {
+    // Given
+    const context = contextFixture();
     const manifest = createProjectThreadManifest({
-      context: contextFixture(),
+      context,
       coordinatorThreadId: "thread_coordinator_001",
       workers: [
         {
-          stage: "plan",
-          threadId: "thread_plan_001",
-          lastCompletedTurnId: "turn_plan_001",
+          stage: "layout",
+          threadId: "thread_layout_001",
+          lastCompletedTurnId: "turn_layout_001",
         },
       ],
     });
-    const contaminatedManifest = {
-      ...manifest,
-      sourceOfTruth: " RAW_CONVERSATION ",
+    const corruptedCurrentContext: FrozenDeckContext = {
+      ...context,
+      approvedArtifacts: {
+        ...context.approvedArtifacts,
+        layoutPrototypeId: "plan_001",
+      },
     };
 
-    const validation = validateProjectThreadManifest(contaminatedManifest);
+    // When
+    const recovery = recoverProjectThreadManifest({
+      context: corruptedCurrentContext,
+      snapshot: { manifest, persistedAt: 2_000 },
+    });
 
-    expect(validation.kind).toBe("blocked");
-    if (validation.kind !== "blocked") return;
-    expect(validation.issues).toEqual([
-      "Project thread manifest cannot use raw conversation as source of truth.",
-    ]);
+    // Then
+    expect(recovery.kind).toBe("blocked");
+    if (recovery.kind !== "blocked") return;
+    expect(
+      recovery.issues.includes("Current deck context duplicates approved artifact id plan_001."),
+    ).toBe(true);
   });
 });
 

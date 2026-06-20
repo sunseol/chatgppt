@@ -1,6 +1,11 @@
 import type { StepKey } from "./deck-types";
 import type { FrozenDeckContext } from "./deck-context";
 import type { ProviderJobStatus } from "./provider-job-manager";
+import {
+  approvedArtifactBundleIssues,
+  approvedArtifactIdsForContext,
+  sameApprovedArtifactIds,
+} from "./project-thread-artifact-bundle";
 import { hasRawConversationSource } from "./project-thread-raw-source";
 
 export type ProjectWorkerThreadStage = Extract<
@@ -63,7 +68,7 @@ export function createProjectThreadManifest(input: {
   readonly coordinatorThreadId: string;
   readonly workers: readonly ProjectWorkerThreadInput[];
 }): ProjectThreadManifest {
-  const approvedArtifactIds = approvedIds(input.context);
+  const approvedArtifactIds = approvedArtifactIdsForContext(input.context);
   return {
     projectId: input.context.projectId,
     coordinatorThreadId: input.coordinatorThreadId,
@@ -105,7 +110,7 @@ export function recoverProjectThreadManifest(input: {
   readonly context: FrozenDeckContext;
   readonly snapshot: ProjectThreadRecoverySnapshot;
 }): ProjectThreadRecoveryResult {
-  const expectedArtifactIds = approvedIds(input.context);
+  const expectedArtifactIds = approvedArtifactIdsForContext(input.context);
   const manifest = input.snapshot.manifest;
   const currentManifest: ProjectThreadManifest = {
     ...manifest,
@@ -124,7 +129,11 @@ export function recoverProjectThreadManifest(input: {
     ...(manifest.deckContextHash === input.context.hash
       ? []
       : ["Recovered coordinator thread uses a stale context hash."]),
-    ...(sameIds(manifest.approvedArtifactIds, expectedArtifactIds)
+    ...approvedArtifactBundleIssues({
+      artifactIds: expectedArtifactIds,
+      ownerLabel: "Current deck context",
+    }),
+    ...(sameApprovedArtifactIds(manifest.approvedArtifactIds, expectedArtifactIds)
       ? []
       : ["Recovered approved artifact bundle does not match the current deck context."]),
     ...manifest.workers.flatMap((worker) => workerIssues(currentManifest, worker)),
@@ -147,6 +156,10 @@ function manifestIssues(manifest: ProjectThreadManifest): readonly string[] {
     ...(manifest.coordinatorThreadId.trim()
       ? []
       : ["Project thread manifest is missing a coordinator thread id."]),
+    ...approvedArtifactBundleIssues({
+      artifactIds: manifest.approvedArtifactIds,
+      ownerLabel: "Project thread manifest",
+    }),
     ...duplicateWorkerStageIssues(manifest.workers),
     ...duplicateWorkerThreadIdIssues(manifest.workers),
     ...rawManifestSourceIssues(manifest),
@@ -203,7 +216,7 @@ function workerIssues(
     ...(worker.deckContextHash === manifest.deckContextHash
       ? []
       : [`Worker thread ${worker.threadId} does not use the coordinator context hash.`]),
-    ...(sameIds(worker.approvedArtifactIds, manifest.approvedArtifactIds)
+    ...(sameApprovedArtifactIds(worker.approvedArtifactIds, manifest.approvedArtifactIds)
       ? []
       : [`Worker thread ${worker.threadId} does not use the approved artifact bundle.`]),
     ...rawWorkerSourceIssues(worker),
@@ -220,20 +233,6 @@ function rawWorkerSourceIssues(worker: ProjectWorkerThreadManifest): readonly st
   return hasRawConversationSource(worker)
     ? [`Worker thread ${worker.threadId} cannot persist raw conversation source material.`]
     : [];
-}
-
-function approvedIds(context: FrozenDeckContext): readonly string[] {
-  return [
-    context.approvedArtifacts.briefId,
-    context.approvedArtifacts.researchPackId,
-    context.approvedArtifacts.deckPlanId,
-    context.approvedArtifacts.designSystemId,
-    context.approvedArtifacts.layoutPrototypeId,
-  ];
-}
-
-function sameIds(left: readonly string[], right: readonly string[]): boolean {
-  return left.length === right.length && left.every((value, index) => value === right[index]);
 }
 
 function isLiveProvider(providerId: string): boolean {

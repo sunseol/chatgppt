@@ -1,6 +1,10 @@
 import type { FrozenDeckContext } from "./deck-context";
 import type { ProviderArtifactProvenance } from "./provider-provenance";
 import {
+  approvedArtifactIdsForContext,
+  sameApprovedArtifactIds,
+} from "./project-thread-artifact-bundle";
+import {
   recoverProjectThreadManifest,
   type ProjectThreadRecoverySnapshot,
   type ResumableProjectWorkerThread,
@@ -106,7 +110,10 @@ function resumeEvidenceIssues(
     ...(evidence.deckContextHash === context.hash
       ? []
       : [issue("resume_context_hash_mismatch", "Resume evidence uses a stale deck context hash.")]),
-    ...(sameIds(evidence.approvedArtifactIds, approvedIds(context))
+    ...(sameApprovedArtifactIds(
+      evidence.approvedArtifactIds,
+      approvedArtifactIdsForContext(context),
+    )
       ? []
       : [
           issue(
@@ -183,20 +190,6 @@ function resumeLiveCodexIssues(
           ),
         ]),
   ];
-}
-
-function approvedIds(context: FrozenDeckContext): readonly string[] {
-  return [
-    context.approvedArtifacts.briefId,
-    context.approvedArtifacts.researchPackId,
-    context.approvedArtifacts.deckPlanId,
-    context.approvedArtifacts.designSystemId,
-    context.approvedArtifacts.layoutPrototypeId,
-  ];
-}
-
-function sameIds(left: readonly string[], right: readonly string[]): boolean {
-  return left.length === right.length && left.every((value, index) => value === right[index]);
 }
 
 function issue(

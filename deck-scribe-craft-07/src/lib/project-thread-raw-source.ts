@@ -9,7 +9,7 @@ const RAW_CONVERSATION_FIELDS = [
 
 const RAW_SOURCE_VALUES = new Set([
   "raw_conversation",
-  "rawConversation",
+  "rawconversation",
   "conversation",
   "conversation_history",
   "long_running_thread",
@@ -40,5 +40,5 @@ function hasMeaningfulValue(value: unknown): boolean {
 }
 
 function isRawConversationSource(value: unknown): boolean {
-  return typeof value === "string" && RAW_SOURCE_VALUES.has(value.trim());
+  return typeof value === "string" && RAW_SOURCE_VALUES.has(value.trim().toLowerCase());
 }
