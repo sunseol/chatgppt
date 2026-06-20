@@ -265,6 +265,8 @@ describe("live generation report lineage", () => {
           textTurnId: "turn_plan_001_retry",
           imageArtifactId: "project_001_image_slide_001_v2",
           imageRequestId: "img_req_002",
+          compositorHash: hashB(),
+          exportedPngHash: hashB(),
         },
         {
           ...base,
@@ -272,6 +274,8 @@ describe("live generation report lineage", () => {
           textArtifactId: "plan_live_002",
           textTurnId: "turn_plan_002",
           imageArtifactId: "project_001_image_slide_002_v1",
+          compositorHash: hashC(),
+          exportedPngHash: hashC(),
         },
       ],
     });
@@ -314,4 +318,8 @@ function hashA(): string {
 
 function hashB(): string {
   return `sha256:${"b".repeat(64)}`;
+}
+
+function hashC(): string {
+  return `sha256:${"c".repeat(64)}`;
 }

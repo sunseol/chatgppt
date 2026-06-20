@@ -20,6 +20,7 @@ export type LiveGenerationReportLineageIssueCode =
   | "image_artifact_slide_mismatch"
   | "missing_image_request"
   | "duplicate_image_request"
+  | "duplicate_export_hash"
   | "missing_prompt_version"
   | "invalid_compositor_hash"
   | "invalid_export_hash"

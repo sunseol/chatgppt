@@ -45,7 +45,7 @@ describe("live packaging documentation", () => {
     expect(decision.includes("developer-local persisted `releaseTrustEvidencePath`")).toBe(true);
     expect(decision.includes("generic release-trust paths without codesign")).toBe(true);
     expect(decision.includes("release-trust evidence paths")).toBe(true);
-    expect(decision.includes("958 tests")).toBe(true);
+    expect(decision.includes("975 tests")).toBe(true);
   });
 });
 

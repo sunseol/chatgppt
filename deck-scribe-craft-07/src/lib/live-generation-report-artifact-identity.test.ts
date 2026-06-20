@@ -41,6 +41,8 @@ describe("live generation report artifact identity", () => {
           ...base,
           slideNumber: 2,
           imageRequestId: "img_req_002",
+          compositorHash: hashB(),
+          exportedPngHash: hashB(),
         },
       ],
     });
@@ -83,6 +85,34 @@ describe("live generation report artifact identity", () => {
     expect(validation.kind).toBe("blocked");
     if (validation.kind !== "blocked") return;
     expect(validation.issues.map((issue) => issue.code)).toEqual(["duplicate_text_turn"]);
+  });
+
+  test("blocks reused exported PNG hashes across distinct slide artifacts", () => {
+    // Given
+    const base = liveSlideLineage();
+
+    // When
+    const validation = validateLiveGenerationReportLineage({
+      executionMode: "production",
+      expectedSlideCount: 2,
+      slides: [
+        base,
+        {
+          ...base,
+          slideNumber: 2,
+          sourceIds: ["src_002"],
+          textArtifactId: "deck_plan_live_artifact_002",
+          textTurnId: "turn_plan_002",
+          imageArtifactId: "project_001_image_slide_002_v1",
+          imageRequestId: "img_req_002",
+        },
+      ],
+    });
+
+    // Then
+    expect(validation.kind).toBe("blocked");
+    if (validation.kind !== "blocked") return;
+    expect(validation.issues.map((issue) => issue.code)).toEqual(["duplicate_export_hash"]);
   });
 });
 

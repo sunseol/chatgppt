@@ -69,6 +69,8 @@ describe("final export gate live report lineage", () => {
           textArtifactId: "text_artifact_002",
           textTurnId: "turn_text_002",
           imageArtifactId: "project_001_image_slide_002_v1",
+          compositorHash: otherHash(),
+          exportedPngHash: otherHash(),
         },
       ],
     });
@@ -255,4 +257,8 @@ function liveReportLineageFixture(): LiveSlideReportLineage {
 
 function fullHash(): string {
   return `sha256:${"c".repeat(64)}`;
+}
+
+function otherHash(): string {
+  return `sha256:${"d".repeat(64)}`;
 }

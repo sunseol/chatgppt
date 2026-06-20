@@ -14,6 +14,7 @@ export function lineageReferenceIssues(
     ...duplicateTextArtifactIssues(slides),
     ...duplicateImageArtifactIssues(slides),
     ...duplicateImageRequestIssues(slides),
+    ...duplicateExportHashIssues(slides),
   ];
 }
 
@@ -57,6 +58,15 @@ function duplicateImageRequestIssues(
   return duplicateValues(slides.map((slide) => slide.imageRequestId ?? "")).map((requestId) => ({
     code: "duplicate_image_request",
     message: `Image request ${requestId} cannot satisfy multiple slide lineage rows.`,
+  }));
+}
+
+function duplicateExportHashIssues(
+  slides: readonly LiveSlideReportLineage[],
+): readonly LiveGenerationReportLineageIssue[] {
+  return duplicateValues(slides.map((slide) => slide.exportedPngHash)).map((exportedPngHash) => ({
+    code: "duplicate_export_hash",
+    message: `Exported PNG hash ${exportedPngHash} cannot satisfy multiple slide lineage rows.`,
   }));
 }
 
