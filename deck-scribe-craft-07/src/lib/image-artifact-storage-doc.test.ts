@@ -1,0 +1,15 @@
+import { describe, expect, test } from "bun:test";
+import { readFileSync } from "node:fs";
+
+const DOC = new URL("../../docs/live-image-artifact-storage.md", import.meta.url);
+
+describe("image artifact storage documentation", () => {
+  test("records prompt and layout lineage requirements", () => {
+    const text = readFileSync(DOC, "utf8");
+
+    expect(text.includes("DF-231")).toBe(true);
+    expect(text.includes("prompt hash")).toBe(true);
+    expect(text.includes("layout reference")).toBe(true);
+    expect(text.includes("image-artifact-store-lineage.test.ts")).toBe(true);
+  });
+});

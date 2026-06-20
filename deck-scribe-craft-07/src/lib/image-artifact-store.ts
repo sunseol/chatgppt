@@ -54,6 +54,7 @@ export async function storeSlideImageArtifact(input: {
 }): Promise<StoredSlideImageArtifact> {
   assertLiveImageProviderArtifact(input.artifact);
   assertSafeStorageAddress(input);
+  assertImageInputLineage(input.artifact);
   const imageBytes = pngBytesFromDataUrl(input.artifact.imageDataUrl);
   const request = requireRequestMetadata(input.artifact);
   const binary = {
@@ -96,6 +97,15 @@ function assertSafeStorageAddress(input: {
   }
   if (!positiveInteger(input.version)) {
     throw new ImageArtifactStoreError("Artifact version must be a positive integer.");
+  }
+}
+
+function assertImageInputLineage(artifact: SlideImageArtifact): void {
+  if (!artifact.prompt.version.trim() || !artifact.prompt.hash.trim()) {
+    throw new ImageArtifactStoreError("Image artifact prompt lineage is required.");
+  }
+  if (!artifact.layoutReference.screenshot.trim()) {
+    throw new ImageArtifactStoreError("Image artifact layout reference is required.");
   }
 }
 
