@@ -102,7 +102,7 @@ Status: hard-blocked on image-lane compositor/export artifacts plus packaged
 export QA.
 
 The local report/export lineage gate validates slide-level source ids, text
-turns, prompt versions, image request ids, image artifacts, compositor hashes,
+turns, prompt versions, image provider turn ids, image artifacts, compositor hashes,
 export hashes, contamination, and secret leakage. The remaining acceptance
 requires real image provider artifacts and compositor/export outputs from the
 Image lane. No compositor/export artifact manifest or final export bundle is
@@ -111,14 +111,14 @@ be launch-assessed.
 
 ### DF-244 / #154
 
-Status: hard-blocked on packaged-app usage-summary QA with real image billing
+Status: hard-blocked on packaged-app usage-summary QA with real image usage
 disclosure.
 
 Local code maps Codex App Server token usage notifications into usage summaries
 and the app progress panel is covered by integration tests. The remaining
 acceptance requires packaged-app manual QA with real provider usage/cost
-payloads and real image billing/API-key disclosure evidence. The package fails
-launch assessment, and this lane has no real image billing confirmation JSON
+payloads and real image Codex usage disclosure evidence. The package fails
+launch assessment, and this lane has no real image usage confirmation JSON
 artifact in `release-artifacts`.
 
 ### DF-242 / #152

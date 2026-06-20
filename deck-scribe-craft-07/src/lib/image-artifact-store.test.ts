@@ -144,6 +144,37 @@ describe("image artifact store", () => {
     });
   });
 
+  test("creates complete Codex OAuth image provenance from turn metadata", async () => {
+    // Given
+    const store = createImageArtifactStore({ write: async () => undefined });
+
+    // When
+    const stored = await storeSlideImageArtifact({
+      store,
+      projectId: "project_001",
+      artifact: codexImageArtifact(),
+      version: 1,
+      createdAt: 1_789_800_011,
+    });
+    const provenance = createProviderArtifactProvenance(stored.provenance);
+
+    // Then
+    expect(validateProviderArtifactProvenance(provenance).kind).toBe("complete");
+    expect(provenance).toEqual({
+      artifactId: "project_001_image_slide_001_v1",
+      executionMode: "production",
+      providerKind: "codex",
+      authMode: "codex_session",
+      modelOrRuntime: "gpt-image-2",
+      promptVersion: "slide_generation@v1",
+      durationMs: 3_100,
+      inputArtifactIds: ["sha256:prompt", "slide_001_layout.png"],
+      fixture: false,
+      threadId: "thread_codex_image_001",
+      turnId: "turn_codex_image_001",
+    });
+  });
+
   test("rejects invalid image data and missing request ids for live providers", async () => {
     // Given
     const store = createImageArtifactStore({ write: async () => undefined });
@@ -267,5 +298,21 @@ function realImageArtifact(): SlideImageArtifact {
       usage: { imageCount: 1, estimatedCostUsd: 0.08 },
     },
     generatedAt: 1_789_800_000,
+  };
+}
+
+function codexImageArtifact(): SlideImageArtifact {
+  return {
+    ...realImageArtifact(),
+    providerId: "codex",
+    request: {
+      model: "gpt-image-2",
+      size: "1600x900",
+      quality: "high",
+      latencyMs: 3_100,
+      usage: { imageCount: 1 },
+      threadId: "thread_codex_image_001",
+      turnId: "turn_codex_image_001",
+    },
   };
 }

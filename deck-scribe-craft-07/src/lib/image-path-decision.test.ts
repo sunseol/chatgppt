@@ -15,7 +15,7 @@ describe("image path decision record", () => {
   test("locks a production image path only after a real binary artifact is stored", () => {
     // Given
     const feasibility = decideImageProviderFeasibility({
-      codexImageCapability: "unknown",
+      codexImageCapability: "confirmed",
       apiCredential: "available",
       organizationVerification: "verified",
     });
@@ -29,26 +29,26 @@ describe("image path decision record", () => {
       binaryArtifactPath: BINARY_ARTIFACT_PATH,
       provenanceArtifactPath: PROVENANCE_ARTIFACT_PATH,
       providerProvenance: imageDecisionProviderProvenance(),
-      billingOwner: "openai_api_project",
-      requiredPermissions: ["images.generate", "model:gpt-image-2"],
+      billingOwner: "codex_account",
+      requiredPermissions: ["codex.image_generation", "model:gpt-image-2"],
       organizationVerification: "verified",
     });
 
     // Then
     expect(record.status).toBe("locked");
-    expect(record.providerId).toBe("openaiImage");
-    expect(record.authMode).toBe("openaiApiKey");
+    expect(record.providerId).toBe("codex");
+    expect(record.authMode).toBe("codexOAuth");
     expect(record.model).toBe("gpt-image-2");
     expect(record.binaryArtifactPath).toBe(BINARY_ARTIFACT_PATH);
     expect(record.provenanceArtifactPath).toBe(PROVENANCE_ARTIFACT_PATH);
     expect(record.fixtureFallbackAllowed).toBe(false);
-    expect(getProductionImageProviderChoices(record)).toEqual(["openaiImage"]);
+    expect(getProductionImageProviderChoices(record)).toEqual(["codex"]);
   });
 
   test("blocks production selection and fixture fallback without a real image artifact", () => {
     // Given
     const feasibility = decideImageProviderFeasibility({
-      codexImageCapability: "notSupported",
+      codexImageCapability: "confirmed",
       apiCredential: "available",
       organizationVerification: "verified",
     });
@@ -58,8 +58,8 @@ describe("image path decision record", () => {
       decisionId: "image_path_blocked",
       decidedAt: 1_789_700_001,
       feasibility,
-      billingOwner: "openai_api_project",
-      requiredPermissions: ["images.generate", "model:gpt-image-2"],
+      billingOwner: "codex_account",
+      requiredPermissions: ["codex.image_generation", "model:gpt-image-2"],
       organizationVerification: "verified",
     });
 
@@ -83,15 +83,15 @@ describe("image path decision record", () => {
       decisionId: "image_path_setup_required",
       decidedAt: 1_789_700_002,
       feasibility,
-      billingOwner: "openai_api_project",
-      requiredPermissions: ["images.generate", "model:gpt-image-2"],
+      billingOwner: "codex_account",
+      requiredPermissions: ["codex.image_generation", "model:gpt-image-2"],
       organizationVerification: "unknown",
     });
 
     // Then
     expect(record.status).toBe("blocked");
     expect(record.blockers.map((blocker) => blocker.code)).toEqual([
-      "requiresApiCredential",
+      "requiresCodexImageCapability",
       "missing_real_image_artifact",
     ]);
     expect(getProductionImageProviderChoices(record)).toEqual([]);
@@ -100,7 +100,7 @@ describe("image path decision record", () => {
   test("rejects a stored artifact whose provider does not match the selected route", () => {
     // Given
     const feasibility = decideImageProviderFeasibility({
-      codexImageCapability: "unknown",
+      codexImageCapability: "confirmed",
       apiCredential: "available",
       organizationVerification: "verified",
     });
@@ -110,12 +110,12 @@ describe("image path decision record", () => {
       decisionId: "image_path_mismatch",
       decidedAt: 1_789_700_003,
       feasibility,
-      successfulArtifact: { ...imageDecisionRealImageArtifact(), providerId: "codex" },
+      successfulArtifact: { ...imageDecisionRealImageArtifact(), providerId: "mock" },
       binaryArtifactPath: BINARY_ARTIFACT_PATH,
       provenanceArtifactPath: PROVENANCE_ARTIFACT_PATH,
       providerProvenance: imageDecisionProviderProvenance(),
-      billingOwner: "openai_api_project",
-      requiredPermissions: ["images.generate", "model:gpt-image-2"],
+      billingOwner: "codex_account",
+      requiredPermissions: ["codex.image_generation", "model:gpt-image-2"],
       organizationVerification: "verified",
     });
 
@@ -128,7 +128,7 @@ describe("image path decision record", () => {
   test("rejects an image artifact whose data URL is not PNG binary output", () => {
     // Given
     const feasibility = decideImageProviderFeasibility({
-      codexImageCapability: "unknown",
+      codexImageCapability: "confirmed",
       apiCredential: "available",
       organizationVerification: "verified",
     });
@@ -145,8 +145,8 @@ describe("image path decision record", () => {
       binaryArtifactPath: BINARY_ARTIFACT_PATH,
       provenanceArtifactPath: PROVENANCE_ARTIFACT_PATH,
       providerProvenance: imageDecisionProviderProvenance(),
-      billingOwner: "openai_api_project",
-      requiredPermissions: ["images.generate", "model:gpt-image-2"],
+      billingOwner: "codex_account",
+      requiredPermissions: ["codex.image_generation", "model:gpt-image-2"],
       organizationVerification: "verified",
     });
 
@@ -159,7 +159,7 @@ describe("image path decision record", () => {
   test("rejects binary artifact paths outside versioned project image storage", () => {
     // Given
     const feasibility = decideImageProviderFeasibility({
-      codexImageCapability: "unknown",
+      codexImageCapability: "confirmed",
       apiCredential: "available",
       organizationVerification: "verified",
     });
@@ -173,8 +173,8 @@ describe("image path decision record", () => {
       binaryArtifactPath: "fixtures/mock-slide.png",
       provenanceArtifactPath: PROVENANCE_ARTIFACT_PATH,
       providerProvenance: imageDecisionProviderProvenance(),
-      billingOwner: "openai_api_project",
-      requiredPermissions: ["images.generate", "model:gpt-image-2"],
+      billingOwner: "codex_account",
+      requiredPermissions: ["codex.image_generation", "model:gpt-image-2"],
       organizationVerification: "verified",
     });
 
@@ -189,7 +189,7 @@ describe("image path decision record", () => {
   test("rejects a successful artifact whose request model differs from the locked route", () => {
     // Given
     const feasibility = decideImageProviderFeasibility({
-      codexImageCapability: "unknown",
+      codexImageCapability: "confirmed",
       apiCredential: "available",
       organizationVerification: "verified",
     });
@@ -209,8 +209,8 @@ describe("image path decision record", () => {
       binaryArtifactPath: BINARY_ARTIFACT_PATH,
       provenanceArtifactPath: PROVENANCE_ARTIFACT_PATH,
       providerProvenance: imageDecisionProviderProvenance(),
-      billingOwner: "openai_api_project",
-      requiredPermissions: ["images.generate", "model:gpt-image-2"],
+      billingOwner: "codex_account",
+      requiredPermissions: ["codex.image_generation", "model:gpt-image-2"],
       organizationVerification: "verified",
     });
 
@@ -223,7 +223,7 @@ describe("image path decision record", () => {
   test("blocks route locking when required decision metadata is incomplete", () => {
     // Given
     const feasibility = decideImageProviderFeasibility({
-      codexImageCapability: "unknown",
+      codexImageCapability: "confirmed",
       apiCredential: "available",
       organizationVerification: "verified",
     });
@@ -251,10 +251,10 @@ describe("image path decision record", () => {
     expect(getProductionImageProviderChoices(record)).toEqual([]);
   });
 
-  test("blocks route locking when OpenAI organization verification evidence drifts", () => {
+  test("keeps Codex route independent from OpenAI organization verification evidence", () => {
     // Given
     const feasibility = decideImageProviderFeasibility({
-      codexImageCapability: "unknown",
+      codexImageCapability: "confirmed",
       apiCredential: "available",
       organizationVerification: "verified",
     });
@@ -268,16 +268,14 @@ describe("image path decision record", () => {
       binaryArtifactPath: BINARY_ARTIFACT_PATH,
       provenanceArtifactPath: PROVENANCE_ARTIFACT_PATH,
       providerProvenance: imageDecisionProviderProvenance(),
-      billingOwner: "openai_api_project",
-      requiredPermissions: ["images.generate", "model:gpt-image-2"],
+      billingOwner: "codex_account",
+      requiredPermissions: ["codex.image_generation", "model:gpt-image-2"],
       organizationVerification: "unknown",
     });
 
     // Then
-    expect(record.status).toBe("blocked");
-    expect(record.blockers.map((blocker) => blocker.code)).toEqual([
-      "requiresOrganizationVerification",
-    ]);
-    expect(getProductionImageProviderChoices(record)).toEqual([]);
+    expect(record.status).toBe("locked");
+    expect(record.blockers).toEqual([]);
+    expect(getProductionImageProviderChoices(record)).toEqual(["codex"]);
   });
 });

@@ -93,7 +93,7 @@ describe("full audit log", () => {
     expect(report.includes("cost $0.0400")).toBe(false);
   });
 
-  test("preserves image API key billing disclosure in report usage", () => {
+  test("preserves Codex image usage disclosure in report usage", () => {
     const event = createAuditLogEvent({
       eventId: "evt_provider_image_billing",
       eventType: "provider.job.summary",
@@ -106,7 +106,7 @@ describe("full audit log", () => {
         imageBillingDisclosure: {
           apiKeyRequired: true,
           userConfirmed: true,
-          label: "API key billing confirmed",
+          label: "Codex image usage confirmed",
           confirmationEvidencePath: "usage/image-billing-confirmation.json",
         },
       },
@@ -117,14 +117,14 @@ describe("full audit log", () => {
     expect(event.usageSummary?.imageBillingDisclosure).toEqual({
       apiKeyRequired: true,
       userConfirmed: true,
-      label: "API key billing confirmed",
+      label: "Codex image usage confirmed",
       confirmationEvidencePath: "usage/image-billing-confirmation.json",
     });
     expect(report.includes("images 5")).toBe(true);
-    expect(report.includes("API key billing confirmed")).toBe(true);
+    expect(report.includes("Codex image usage confirmed")).toBe(true);
   });
 
-  test("does not render image billing confirmation without persisted evidence", () => {
+  test("does not render image usage confirmation without persisted evidence", () => {
     const event = createAuditLogEvent({
       eventId: "evt_provider_image_billing_missing_evidence",
       eventType: "provider.job.summary",
@@ -136,14 +136,14 @@ describe("full audit log", () => {
         imageBillingDisclosure: {
           apiKeyRequired: true,
           userConfirmed: true,
-          label: "API key billing confirmed",
+          label: "Codex image usage confirmed",
         },
       },
     });
 
     const report = formatAuditLogForReport([event]);
 
-    expect(report.includes("API key billing not confirmed")).toBe(true);
-    expect(report.includes("API key billing confirmed")).toBe(false);
+    expect(report.includes("Codex image usage not confirmed")).toBe(true);
+    expect(report.includes("Codex image usage confirmed")).toBe(false);
   });
 });

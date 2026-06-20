@@ -1,6 +1,7 @@
 import type { ProviderCapabilityMatrixInput } from "./provider-capability-view";
 import type { ExecutionMode } from "./provider-provenance";
 import { ProviderCapabilities } from "./provider-types";
+import type { SlideImageProviderId } from "./slide-image-provider";
 
 const PRODUCTION_CODEX_PROVIDER_MATRIX: ProviderCapabilityMatrixInput = {
   providerName: "Codex",
@@ -40,10 +41,10 @@ export function createNewProjectProviderMatrixInput(
 
 export function selectImageGenerationProviderId(
   executionMode: ExecutionMode,
-): "mock" | "openaiImage" {
+): Extract<SlideImageProviderId, "mock" | "codex"> {
   switch (executionMode) {
     case "production":
-      return "openaiImage";
+      return "codex";
     case "development":
     case "test":
       return "mock";

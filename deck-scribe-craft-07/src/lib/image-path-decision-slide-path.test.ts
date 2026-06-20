@@ -12,7 +12,7 @@ describe("image path decision slide path evidence", () => {
       decisionId: "image_path_slide_mismatch",
       decidedAt: 1_789_700_009,
       feasibility: decideImageProviderFeasibility({
-        codexImageCapability: "unknown",
+        codexImageCapability: "confirmed",
         apiCredential: "available",
         organizationVerification: "verified",
       }),
@@ -37,7 +37,7 @@ describe("image path decision slide path evidence", () => {
       decisionId: "image_path_provenance_mismatch",
       decidedAt: 1_789_700_010,
       feasibility: decideImageProviderFeasibility({
-        codexImageCapability: "unknown",
+        codexImageCapability: "confirmed",
         apiCredential: "available",
         organizationVerification: "verified",
       }),

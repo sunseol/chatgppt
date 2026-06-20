@@ -19,14 +19,15 @@ export function imageDecisionProviderProvenance(
   return {
     artifactId: `project_001_image_slide_${slideId}_v${version}`,
     executionMode: "production",
-    providerKind: "openaiImage",
-    authMode: "api_key",
+    providerKind: "codex",
+    authMode: "codex_session",
     modelOrRuntime: "gpt-image-2",
     promptVersion: "slide_generation@v1",
     durationMs: 2_400,
     inputArtifactIds: ["sha256:prompt", `slide_${slideId}_layout.png`],
     fixture: false,
-    requestId: "img_req_001",
+    threadId: "thread_codex_image_001",
+    turnId: "turn_codex_image_001",
   };
 }
 
@@ -38,7 +39,7 @@ export function imageDecisionRealImageArtifact(
   const slideNumber = input.slideNumber ?? 1;
   const slideId = paddedSlideNumber(slideNumber);
   return {
-    providerId: "openaiImage",
+    providerId: "codex",
     slideNumber,
     aspectRatio: "16:9",
     canvas: { width: 1600, height: 900 },
@@ -58,10 +59,11 @@ export function imageDecisionRealImageArtifact(
     },
     request: {
       model: "gpt-image-2",
-      requestId: "img_req_001",
       size: "1600x900",
       quality: "high",
       latencyMs: 2_400,
+      threadId: "thread_codex_image_001",
+      turnId: "turn_codex_image_001",
     },
     generatedAt: 1_789_700_000,
   };

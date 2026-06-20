@@ -91,7 +91,7 @@ describe("provider capability matrix view", () => {
         status: "locked",
         stateLabel: "잠김",
         reason: "Connected provider does not expose image generation.",
-        actionLabel: "OpenAI 이미지 fallback 설정",
+        actionLabel: "Codex 이미지 생성 확인",
       },
       {
         key: "revision_generation",
@@ -104,7 +104,7 @@ describe("provider capability matrix view", () => {
     ]);
   });
 
-  test("shows API key remediation for OpenAI image fallback without credentials", () => {
+  test("does not show API key remediation when Codex image generation is pending", () => {
     const view = createProviderCapabilityMatrixView({
       providerName: "Codex",
       authMode: "codex_session",
@@ -115,15 +115,15 @@ describe("provider capability matrix view", () => {
       },
       capabilities: ["deckPlan", "research", "editableLayers"],
       imageFallback: {
-        providerId: "openaiImage",
-        authMode: "openaiApiKey",
+        providerId: "codex",
+        authMode: "codexOAuth",
         targetModel: "gpt-image-2",
-        setup: "requiresApiCredential",
-        fallbackMode: true,
+        setup: "requiresCodexImageCapability",
+        fallbackMode: false,
         credentialState: "missing",
-        connectionCopy: "Image generation uses a separate OpenAI API credential.",
-        billingCopy: "Image usage may be billed to the API organization.",
-        permissionCopy: "Some image models may require organization verification.",
+        connectionCopy: "Image generation uses the connected Codex OAuth session.",
+        billingCopy: "Image usage follows the signed-in Codex account.",
+        permissionCopy: "Codex image generation must be enabled for this runtime.",
       },
     });
 
@@ -149,8 +149,8 @@ describe("provider capability matrix view", () => {
         label: "이미지 생성",
         status: "locked",
         stateLabel: "잠김",
-        reason: "OpenAI image fallback requires a session API key.",
-        actionLabel: "세션 API Key 입력",
+        reason: "Codex image generation must be confirmed for this runtime.",
+        actionLabel: "Codex 이미지 생성 확인",
       },
       {
         key: "revision_generation",

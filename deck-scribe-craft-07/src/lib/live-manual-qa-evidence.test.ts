@@ -130,7 +130,7 @@ describe("live manual QA evidence", () => {
         {
           severity: "P0",
           title: "Billing confusion",
-          description: "Tester thought image API-key billing was free.",
+          description: "Tester thought Codex image usage was free.",
         },
       ],
     });

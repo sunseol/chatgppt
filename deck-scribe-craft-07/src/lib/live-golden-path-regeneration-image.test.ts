@@ -88,14 +88,15 @@ function liveImage(index: number) {
   return createProviderArtifactProvenance({
     artifactId: `live_image_${index}`,
     executionMode: "production",
-    providerKind: "openaiImage",
-    authMode: "api_key",
-    modelOrRuntime: "gpt-image-1",
+    providerKind: "codex",
+    authMode: "codex_session",
+    modelOrRuntime: "gpt-image-2",
     promptVersion: "slide_background@v1",
     durationMs: 1_000,
     inputArtifactIds: ["live_layout_ir"],
     fixture: false,
-    requestId: `img_req_${index}`,
+    threadId: "thread_golden_path",
+    turnId: `turn_image_${index}`,
   });
 }
 
@@ -103,13 +104,14 @@ function regeneratedImage() {
   return createProviderArtifactProvenance({
     artifactId: "project_001_image_slide_003_v2",
     executionMode: "production",
-    providerKind: "openaiImage",
-    authMode: "api_key",
-    modelOrRuntime: "gpt-image-1",
+    providerKind: "codex",
+    authMode: "codex_session",
+    modelOrRuntime: "gpt-image-2",
     promptVersion: "slide_generation@v1",
     durationMs: 1_000,
     inputArtifactIds: ["live_image_3"],
     fixture: false,
-    requestId: "img_req_regenerated",
+    threadId: "thread_golden_path",
+    turnId: "turn_image_regenerated",
   });
 }

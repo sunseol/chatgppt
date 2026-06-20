@@ -21,7 +21,7 @@ describe("image path decision prompt provenance evidence", () => {
       decisionId: "image_path_prompt_provenance_mismatch",
       decidedAt: 1_789_700_014,
       feasibility: decideImageProviderFeasibility({
-        codexImageCapability: "unknown",
+        codexImageCapability: "confirmed",
         apiCredential: "available",
         organizationVerification: "verified",
       }),

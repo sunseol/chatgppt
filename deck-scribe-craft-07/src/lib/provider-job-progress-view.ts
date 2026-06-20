@@ -136,9 +136,9 @@ function costEstimateItem(cost: number | undefined): string {
 function imageBillingDisclosureItem(usageSummary: ProviderUsageSummary): string {
   const disclosure = usageSummary.imageBillingDisclosure;
   if (disclosure === undefined) return "";
-  if (!disclosure.userConfirmed) return "API key billing not confirmed";
+  if (!disclosure.userConfirmed) return "Codex image usage not confirmed";
   if (!hasBillingConfirmationEvidencePath(disclosure.confirmationEvidencePath)) {
-    return "API key billing not confirmed";
+    return "Codex image usage not confirmed";
   }
   return redactSensitiveText(disclosure.label.trim());
 }

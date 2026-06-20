@@ -7,8 +7,8 @@ import {
   type LiveUsageStageSummary,
 } from "./live-usage-summary";
 
-describe("live usage summary billing evidence", () => {
-  test("blocks confirmed-looking image billing when confirmation evidence is missing", () => {
+describe("live usage summary image usage evidence", () => {
+  test("blocks confirmed-looking image usage when confirmation evidence is missing", () => {
     // Given
     const stages: readonly LiveUsageStageSummary[] = [
       {
@@ -22,7 +22,7 @@ describe("live usage summary billing evidence", () => {
         imageBillingDisclosure: {
           apiKeyRequired: false,
           userConfirmed: true,
-          label: "API key billing confirmed",
+          label: "Codex image usage confirmed",
         },
       },
     ];
@@ -38,7 +38,7 @@ describe("live usage summary billing evidence", () => {
     ]);
   });
 
-  test("blocks template image billing confirmation evidence paths", () => {
+  test("blocks template image usage confirmation evidence paths", () => {
     // Given
     const stages: readonly LiveUsageStageSummary[] = [
       {
@@ -52,7 +52,7 @@ describe("live usage summary billing evidence", () => {
         imageBillingDisclosure: {
           apiKeyRequired: true,
           userConfirmed: true,
-          label: "API key billing confirmed",
+          label: "Codex image usage confirmed",
           confirmationEvidencePath: "usage/image-billing-template.json",
         },
       },
@@ -69,7 +69,7 @@ describe("live usage summary billing evidence", () => {
     ]);
   });
 
-  test("does not render confirmed-looking image billing without evidence", () => {
+  test("does not render confirmed-looking image usage without evidence", () => {
     // Given
     const job: ProviderJob = {
       id: "job_billing_evidence",
@@ -87,7 +87,7 @@ describe("live usage summary billing evidence", () => {
         imageBillingDisclosure: {
           apiKeyRequired: false,
           userConfirmed: true,
-          label: "API key billing confirmed",
+          label: "Codex image usage confirmed",
         },
       },
     };
@@ -100,10 +100,10 @@ describe("live usage summary billing evidence", () => {
     });
 
     // Then
-    expect(view.usageItems).toEqual(["images 1", "API key billing not confirmed"]);
+    expect(view.usageItems).toEqual(["images 1", "Codex image usage not confirmed"]);
   });
 
-  test("does not render template image billing evidence paths as confirmed", () => {
+  test("does not render template image usage evidence paths as confirmed", () => {
     // Given
     const job: ProviderJob = {
       id: "job_billing_template",
@@ -121,7 +121,7 @@ describe("live usage summary billing evidence", () => {
         imageBillingDisclosure: {
           apiKeyRequired: true,
           userConfirmed: true,
-          label: "API key billing confirmed",
+          label: "Codex image usage confirmed",
           confirmationEvidencePath: "usage/image-billing-template.json",
         },
       },
@@ -135,10 +135,10 @@ describe("live usage summary billing evidence", () => {
     });
 
     // Then
-    expect(view.usageItems).toEqual(["images 1", "API key billing not confirmed"]);
+    expect(view.usageItems).toEqual(["images 1", "Codex image usage not confirmed"]);
   });
 
-  test("does not format confirmed-looking image billing without persisted evidence", () => {
+  test("does not format confirmed-looking image usage without persisted evidence", () => {
     // Given
     const stages: readonly LiveUsageStageSummary[] = [
       {
@@ -152,7 +152,7 @@ describe("live usage summary billing evidence", () => {
         imageBillingDisclosure: {
           apiKeyRequired: true,
           userConfirmed: true,
-          label: "API key billing confirmed",
+          label: "Codex image usage confirmed",
         },
       },
     ];
@@ -161,7 +161,7 @@ describe("live usage summary billing evidence", () => {
     const summary = formatLiveUsageSummary(stages);
 
     // Then
-    expect(summary.includes("API key billing not confirmed")).toBe(true);
-    expect(summary.includes("API key billing confirmed")).toBe(false);
+    expect(summary.includes("Codex image usage not confirmed")).toBe(true);
+    expect(summary.includes("Codex image usage confirmed")).toBe(false);
   });
 });

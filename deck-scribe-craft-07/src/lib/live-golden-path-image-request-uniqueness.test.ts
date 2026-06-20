@@ -96,17 +96,18 @@ function completeBundle(
   };
 }
 
-function liveImageArtifact(artifactId: string, requestId = "img_req_reused") {
+function liveImageArtifact(artifactId: string, turnId = "turn_image_reused") {
   return createProviderArtifactProvenance({
     artifactId,
     executionMode: "production",
-    providerKind: "openaiImage",
-    authMode: "api_key",
-    modelOrRuntime: "gpt-image-1",
+    providerKind: "codex",
+    authMode: "codex_session",
+    modelOrRuntime: "gpt-image-2",
     promptVersion: "slide_background@v1",
     durationMs: 1_000,
     inputArtifactIds: ["live_layout_ir"],
     fixture: false,
-    requestId,
+    threadId: "thread_golden_path",
+    turnId,
   });
 }

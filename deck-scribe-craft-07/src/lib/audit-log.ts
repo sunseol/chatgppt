@@ -167,10 +167,10 @@ function formatUsageSummary(summary: ProviderUsageSummary): string {
 function imageBillingDisclosureText(summary: ProviderUsageSummary): string {
   const disclosure = summary.imageBillingDisclosure;
   if (disclosure === undefined) return "";
-  if (!disclosure.userConfirmed) return "API key billing not confirmed";
+  if (!disclosure.userConfirmed) return "Codex image usage not confirmed";
   if (!hasBillingConfirmationEvidencePath(disclosure.confirmationEvidencePath)) {
-    return "API key billing not confirmed";
+    return "Codex image usage not confirmed";
   }
   const label = disclosure.label.trim();
-  return label.length === 0 ? "API key billing not confirmed" : redactSensitiveText(label);
+  return label.length === 0 ? "Codex image usage not confirmed" : redactSensitiveText(label);
 }

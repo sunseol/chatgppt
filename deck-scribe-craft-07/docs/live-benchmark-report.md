@@ -11,12 +11,12 @@ This report defines the 5 live benchmark scenarios required by DF-242. It does n
 | korean_business       | Korean business proposal, 5 slides | Live text turns, 3 source URLs, 5 live images, export bundle | Blocked - text stages still use mock generation.                                                                                                                           |
 | market_research       | Fresh market research deck         | Live search across 3 domains, source capture, evidence map   | Blocked - DF-221 worker live web-search now has a completed six-domain App Server turn, but benchmark output still lacks packaged source capture and evidence-map bundles. |
 | chart_report          | Chart-heavy report                 | Dataset evidence, editable chart overlay, report provenance  | Blocked - source capture and live dataset evidence missing.                                                                                                                |
-| image_intro           | Image-centered introduction        | 5 binary live image artifacts with request ids               | Blocked - Generate stage still queues provider `mock`.                                                                                                                     |
+| image_intro           | Image-centered introduction        | 5 binary live image artifacts with Codex turn ids               | Blocked - Generate stage still queues provider `mock`.                                                                                                                     |
 | revision_regeneration | Edit and full-slide regeneration   | must_keep, must_change, before/after approval                | Blocked - review UI edits local descriptors.                                                                                                                               |
 
 ## Failure taxonomy
 
-- provider: Codex runtime, image API credential, quota, or auth failure.
+- provider: Codex runtime, Codex image auth, quota, or auth failure.
 - context: stale approved artifact bundle or deck_context_id mismatch.
 - research: source search, capture, evidence, or approval failure.
 - image: generation, rate limit, cancellation, or binary artifact failure.
@@ -37,9 +37,9 @@ Release requirement: at least 4 of 5 live benchmarks must pass without counting 
 - the 64-character package archive SHA-256 for the release candidate under benchmark
 - output bundle 5 sets, one distinct observed, non-synthetic, non-local `.zip` or `.json` bundle per benchmark
 - output bundle manifests matching their benchmark id, bundle path, and package archive SHA-256
-- passed benchmark bundle manifests with matching evidence counts, distinct observed scenario report and `live_e2e_report.md` paths, distinct non-synthetic final export artifact id, at least 10 distinct observed step screenshot `.png` paths that name every Golden Path step, at least 3 distinct non-synthetic source artifact ids, at least 5 distinct non-synthetic initial live image artifact ids, one separate approved non-synthetic regenerated live image artifact id, and at least 5 distinct non-synthetic live image request ids
-- observed benchmark evidence paths and artifact/request ids must not be marked `template`, `sample`, `example`, or `placeholder`
-- passed benchmark runs must not reuse Golden Path report paths, screenshot paths, source artifact ids, live image artifact ids, or live image request ids from another passed benchmark run
+- passed benchmark bundle manifests with matching evidence counts, distinct observed scenario report and `live_e2e_report.md` paths, distinct non-synthetic final export artifact id, at least 10 distinct observed step screenshot `.png` paths that name every Golden Path step, at least 3 distinct non-synthetic source artifact ids, at least 5 distinct non-synthetic initial live image artifact ids, one separate approved non-synthetic regenerated live image artifact id, and at least 5 distinct non-synthetic live image provider turn ids
+- observed benchmark evidence paths and artifact/provider turn ids must not be marked `template`, `sample`, `example`, or `placeholder`
+- passed benchmark runs must not reuse Golden Path report paths, screenshot paths, source artifact ids, live image artifact ids, or live image provider turn ids from another passed benchmark run
 - at least four of the five required `live` scenario runs whose Live Golden Path completed
 - no mock scores counted in Live pass totals
 - failure classification strictly limited to provider, context, research, image, renderer, or editor for every failed or blocked benchmark

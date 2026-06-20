@@ -42,7 +42,7 @@ function billingText(stage: LiveUsageStageSummary): string {
     !disclosure.userConfirmed ||
     !hasBillingConfirmationEvidencePath(disclosure.confirmationEvidencePath)
   ) {
-    return " · API key billing not confirmed";
+    return " · Codex image usage not confirmed";
   }
   const label = disclosure.label.trim();
   return label.length === 0 ? "" : ` · ${redactSensitiveText(label)}`;

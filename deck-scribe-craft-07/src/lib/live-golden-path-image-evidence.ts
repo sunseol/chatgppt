@@ -13,9 +13,7 @@ export function imageArtifactIssues(
   );
   const distinctInitialArtifactIds = new Set(initialArtifactIds);
   const duplicateArtifactIds = duplicateValues(artifactIds);
-  const duplicateRequestIds = duplicateValues(
-    liveImages.map((artifact) => artifact.requestId?.trim() ?? ""),
-  );
+  const duplicateRequestIds = duplicateValues(liveImages.map(imageProviderRunId));
   return [
     ...(duplicateArtifactIds.length === 0
       ? []
@@ -76,6 +74,12 @@ function regeneratedLiveImageArtifactIds(
 
 function hasRegenerationMarker(value: string): boolean {
   return /regenerat(?:e|ed|ion)/.test(value.toLowerCase());
+}
+
+function imageProviderRunId(artifact: ProviderArtifactProvenance): string {
+  return artifact.providerKind === "codex"
+    ? (artifact.turnId?.trim() ?? "")
+    : (artifact.requestId?.trim() ?? "");
 }
 
 function duplicateValues(values: readonly string[]): readonly string[] {

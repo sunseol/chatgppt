@@ -125,11 +125,11 @@ describe("live readiness documentation", () => {
     expect(imagePathDecision.includes("missing_request_model")).toBe(true);
     expect(imagePathDecision.includes("missing_billing_owner")).toBe(true);
     expect(imagePathDecision.includes("missing_required_permissions")).toBe(true);
-    expect(imagePathDecision.includes("canonical request id")).toBe(true);
+    expect(imagePathDecision.includes("canonical Codex turn/thread ids")).toBe(true);
     expect(imagePathDecision.includes("padded persisted binary/provenance artifact paths")).toBe(
       true,
     );
-    expect(imagePathDecision.includes("stale feasibility evidence")).toBe(true);
+    expect(imagePathDecision.includes("requiresCodexImageCapability")).toBe(true);
     expect(imagePathDecision.includes("fixtureFallbackAllowed: false")).toBe(true);
     expect(imagePathDecision.includes("fixture_fallback_enabled")).toBe(true);
     expect(imagePathDecision.includes("missing_image_path_decision")).toBe(true);
@@ -149,8 +149,8 @@ describe("live readiness documentation", () => {
     expect(imageArtifactStorage.includes("64-character SHA-256")).toBe(true);
     expect(imageArtifactStorage.includes("live-image-provider-adapter")).toBe(true);
     expect(imageArtifactStorage.includes("content_policy")).toBe(true);
-    expect(imageArtifactStorage.includes("requestId")).toBe(true);
-    expect(imageArtifactStorage.includes("canonical provider request metadata")).toBe(true);
+    expect(imageArtifactStorage.includes("turn id")).toBe(true);
+    expect(imageArtifactStorage.includes("canonical provider turn metadata")).toBe(true);
     expect(imageArtifactStorage.includes("trim-only prompt/layout lineage")).toBe(true);
     expect(imageArtifactStorage.includes("invalid latency")).toBe(true);
     expect(imageArtifactStorage.includes("non-finite usage")).toBe(true);

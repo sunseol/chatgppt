@@ -84,7 +84,7 @@ describe("provider job progress panel", () => {
     expect(markup.includes("cost $0.0400")).toBe(false);
   });
 
-  test("renders image API key billing disclosure with image usage", () => {
+  test("renders Codex image usage disclosure with image usage", () => {
     const markup = renderToStaticMarkup(
       <ProviderJobProgressPanel
         stageLabel="Live image generation"
@@ -101,7 +101,7 @@ describe("provider job progress panel", () => {
             imageBillingDisclosure: {
               apiKeyRequired: true,
               userConfirmed: true,
-              label: "API key billing confirmed",
+              label: "Codex image usage confirmed",
               confirmationEvidencePath: "usage/image-billing-confirmation.json",
             },
           },
@@ -114,10 +114,10 @@ describe("provider job progress panel", () => {
 
     expect(markup.includes("images 5")).toBe(true);
     expect(markup.includes("cost estimate $0.1800")).toBe(true);
-    expect(markup.includes("API key billing confirmed")).toBe(true);
+    expect(markup.includes("Codex image usage confirmed")).toBe(true);
   });
 
-  test("renders unconfirmed image API key billing as not confirmed", () => {
+  test("renders unconfirmed Codex image usage as not confirmed", () => {
     const markup = renderToStaticMarkup(
       <ProviderJobProgressPanel
         stageLabel="Live image generation"
@@ -131,7 +131,7 @@ describe("provider job progress panel", () => {
             imageBillingDisclosure: {
               apiKeyRequired: true,
               userConfirmed: false,
-              label: "API key billing confirmed",
+              label: "Codex image usage confirmed",
             },
           },
         }}
@@ -141,8 +141,8 @@ describe("provider job progress panel", () => {
       />,
     );
 
-    expect(markup.includes("API key billing not confirmed")).toBe(true);
-    expect(markup.includes("API key billing confirmed")).toBe(false);
+    expect(markup.includes("Codex image usage not confirmed")).toBe(true);
+    expect(markup.includes("Codex image usage confirmed")).toBe(false);
   });
 });
 

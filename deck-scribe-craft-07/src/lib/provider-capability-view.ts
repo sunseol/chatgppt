@@ -134,7 +134,7 @@ function createImageGenerationRow(input: ProviderCapabilityMatrixInput): Provide
     "image_generation",
     "이미지 생성",
     "Connected provider does not expose image generation.",
-    "OpenAI 이미지 fallback 설정",
+    "Codex 이미지 생성 확인",
   );
 }
 
@@ -175,6 +175,13 @@ function createRevisionGenerationRow(
 function imageFallbackRow(fallback: OpenAIImageFallbackPublicState): ProviderCapabilityRow {
   switch (fallback.setup) {
     case "ready":
+      if (fallback.providerId === "codex") {
+        return availableRow(
+          "image_generation",
+          "이미지 생성",
+          "Codex image generation is confirmed for this runtime.",
+        );
+      }
       if (fallback.credentialState === "sessionConfigured") {
         return availableRow(
           "image_generation",
@@ -201,6 +208,13 @@ function imageFallbackRow(fallback: OpenAIImageFallbackPublicState): ProviderCap
         "이미지 생성",
         "OpenAI organization verification is required for the selected image model.",
         "OpenAI 조직 인증 확인",
+      );
+    case "requiresCodexImageCapability":
+      return lockedRow(
+        "image_generation",
+        "이미지 생성",
+        "Codex image generation must be confirmed for this runtime.",
+        "Codex 이미지 생성 확인",
       );
     default:
       return assertNever(fallback.setup);

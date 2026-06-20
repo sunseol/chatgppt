@@ -4,6 +4,7 @@ import type {
   LiveSlideRegenerationIssue,
   LiveSlideRegenerationRequest,
 } from "./live-slide-regeneration";
+import { collectRegenerationProviderEvidence } from "./live-slide-regeneration-provider-evidence";
 
 export function candidateIssues(input: {
   readonly request: LiveSlideRegenerationRequest;
@@ -13,11 +14,10 @@ export function candidateIssues(input: {
   readonly candidateDesignSystemId: string;
   readonly candidateVersion: number;
 }): readonly LiveSlideRegenerationIssue[] {
-  const candidateRequestId = input.candidateBackground.metadata.request.requestId?.trim();
-  const candidateProvenanceRequestId = input.candidateBackground.provenance.requestId?.trim();
+  const providerEvidence = collectRegenerationProviderEvidence(input.candidateBackground);
   const originalRequestId = input.request.originalBackgroundRequestId.trim();
-  const hasRequestEvidence = Boolean(candidateRequestId && candidateProvenanceRequestId);
-  const requestEvidenceMatches = candidateRequestId === candidateProvenanceRequestId;
+  const hasRequestEvidence = Boolean(providerEvidence.metadataId && providerEvidence.provenanceId);
+  const requestEvidenceMatches = providerEvidence.metadataId === providerEvidence.provenanceId;
   const versionMatchesCandidate = backgroundVersionMatchesCandidate(
     input.candidateBackground,
     input.candidateVersion,
@@ -70,13 +70,13 @@ export function candidateIssues(input: {
       : []),
     ...(hasRequestEvidence &&
     input.candidateBackground.metadata.providerId !== "mock" &&
-    !isLiveOpenAiBackground(input.candidateBackground)
+    !providerEvidence.isLive
       ? [
           {
             code: "regeneration_background_not_live" as const,
             slideNumber: input.request.slideNumber,
             message:
-              "Regenerated background provenance must come from production OpenAI image API credentials.",
+              "Regenerated background provenance must come from production image provider credentials.",
           },
         ]
       : []),
@@ -100,7 +100,7 @@ export function candidateIssues(input: {
       : []),
     ...(hasRequestEvidence &&
     requestEvidenceMatches &&
-    candidateRequestId === originalRequestId &&
+    providerEvidence.metadataId === originalRequestId &&
     input.candidateBackground.binary.artifactId !== input.request.originalBackgroundArtifactId
       ? [
           {
@@ -223,17 +223,6 @@ function imageArtifactIdentity(artifactId: string):
     slideNumber: Number.parseInt(slideToken, 10),
     version: Number.parseInt(versionText, 10),
   };
-}
-
-function isLiveOpenAiBackground(candidateBackground: StoredSlideImageArtifact): boolean {
-  const provenance = candidateBackground.provenance;
-  return (
-    candidateBackground.metadata.providerId === "openaiImage" &&
-    provenance.providerKind === "openaiImage" &&
-    provenance.executionMode === "production" &&
-    provenance.authMode === "api_key" &&
-    !provenance.fixture
-  );
 }
 
 function isSha256Digest(value: string): boolean {

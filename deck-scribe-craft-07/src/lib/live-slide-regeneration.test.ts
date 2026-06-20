@@ -192,6 +192,7 @@ describe("live full-slide regeneration", () => {
     expect(candidateResult.failure.issues.map((issue) => issue.code)).toEqual([
       "deck_context_mismatch",
       "mock_background_artifact",
+      "missing_regeneration_request_id",
     ]);
   });
 

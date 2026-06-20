@@ -41,7 +41,11 @@ export type ImagePathBlockerCode =
   | "artifact_provider_mismatch"
   | "missing_request_model"
   | "artifact_model_mismatch"
-  | "missing_request_id";
+  | "missing_request_id"
+  | "missing_thread_id"
+  | "missing_turn_id"
+  | "provenance_thread_id_mismatch"
+  | "provenance_turn_id_mismatch";
 
 export type ImagePathBlocker = {
   readonly code: ImagePathBlockerCode;
@@ -186,6 +190,22 @@ function artifactBlockers(input: {
           {
             code: "missing_request_id" as const,
             message: "OpenAI image artifacts require a provider request id.",
+          },
+        ]
+      : []),
+    ...(artifact.providerId === "codex" && !artifact.request?.threadId?.trim()
+      ? [
+          {
+            code: "missing_thread_id" as const,
+            message: "Codex image artifacts require a thread id.",
+          },
+        ]
+      : []),
+    ...(artifact.providerId === "codex" && !artifact.request?.turnId?.trim()
+      ? [
+          {
+            code: "missing_turn_id" as const,
+            message: "Codex image artifacts require a turn id.",
           },
         ]
       : []),

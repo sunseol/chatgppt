@@ -19,6 +19,8 @@ export function storedProviderProvenanceBlockers(input: {
   }
 
   const requestId = input.successfulArtifact.request?.requestId;
+  const threadId = input.successfulArtifact.request?.threadId;
+  const turnId = input.successfulArtifact.request?.turnId;
   const expectedPromptVersion = `${input.successfulArtifact.prompt.id}@${input.successfulArtifact.prompt.version}`;
   return [
     ...(provenance.executionMode === "production"
@@ -77,6 +79,28 @@ export function storedProviderProvenanceBlockers(input: {
           {
             code: "provenance_request_id_mismatch" as const,
             message: "Image provider provenance request id must match the stored artifact.",
+          },
+        ]
+      : []),
+    ...(input.feasibility.providerId === "codex" &&
+    threadId !== undefined &&
+    threadId.trim().length > 0 &&
+    (threadId !== threadId.trim() || provenance.threadId !== threadId)
+      ? [
+          {
+            code: "provenance_thread_id_mismatch" as const,
+            message: "Codex image provider provenance thread id must match the stored artifact.",
+          },
+        ]
+      : []),
+    ...(input.feasibility.providerId === "codex" &&
+    turnId !== undefined &&
+    turnId.trim().length > 0 &&
+    (turnId !== turnId.trim() || provenance.turnId !== turnId)
+      ? [
+          {
+            code: "provenance_turn_id_mismatch" as const,
+            message: "Codex image provider provenance turn id must match the stored artifact.",
           },
         ]
       : []),

@@ -18,7 +18,7 @@ describe("image path decision metadata evidence", () => {
       decisionId: "image_path_placeholder_metadata",
       decidedAt: 1_789_700_011,
       feasibility: decideImageProviderFeasibility({
-        codexImageCapability: "unknown",
+        codexImageCapability: "confirmed",
         apiCredential: "available",
         organizationVerification: "verified",
       }),
@@ -49,7 +49,7 @@ describe("image path decision metadata evidence", () => {
       decisionId: "image_path_mixed_permission_metadata",
       decidedAt: 1_789_700_012,
       feasibility: decideImageProviderFeasibility({
-        codexImageCapability: "unknown",
+        codexImageCapability: "confirmed",
         apiCredential: "available",
         organizationVerification: "verified",
       }),

@@ -121,6 +121,12 @@ export function slideImageArtifactFixture(
       ...(options.omitRequestId === true
         ? {}
         : { requestId: options.requestId ?? "img_req_revised" }),
+      ...(options.providerId === "codex"
+        ? {
+            threadId: "thread_codex_image_003",
+            turnId: options.requestId ?? "turn_codex_image_revised",
+          }
+        : {}),
       size: "1600x900",
       quality: "high",
       latencyMs: 2_000,

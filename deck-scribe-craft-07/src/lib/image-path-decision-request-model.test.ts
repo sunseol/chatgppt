@@ -18,7 +18,7 @@ describe("image path decision request model evidence", () => {
       decisionId: "image_path_missing_request_model",
       decidedAt: 1_789_700_009,
       feasibility: decideImageProviderFeasibility({
-        codexImageCapability: "unknown",
+        codexImageCapability: "confirmed",
         apiCredential: "available",
         organizationVerification: "verified",
       }),
@@ -29,8 +29,8 @@ describe("image path decision request model evidence", () => {
       binaryArtifactPath: "projects/project_001/slides/images/slide_001.v1.png",
       provenanceArtifactPath: "projects/project_001/slides/images/slide_001.v1.provenance.json",
       providerProvenance: imageDecisionProviderProvenance(),
-      billingOwner: "openai_api_project",
-      requiredPermissions: ["images.generate", "model:gpt-image-2"],
+      billingOwner: "codex_account",
+      requiredPermissions: ["codex.image_generation", "model:gpt-image-2"],
       organizationVerification: "verified",
     });
 
@@ -39,7 +39,7 @@ describe("image path decision request model evidence", () => {
     expect(getProductionImageProviderChoices(record)).toEqual([]);
   });
 
-  test("blocks production choices when an OpenAI artifact has a blank request id", () => {
+  test("blocks production choices when a Codex artifact has a blank turn id", () => {
     const artifact = imageDecisionRealImageArtifact();
     const request = artifact.request;
     if (!request) throw new Error("Expected request metadata fixture.");
@@ -47,24 +47,24 @@ describe("image path decision request model evidence", () => {
       decisionId: "image_path_blank_request_id",
       decidedAt: 1_789_700_013,
       feasibility: decideImageProviderFeasibility({
-        codexImageCapability: "unknown",
+        codexImageCapability: "confirmed",
         apiCredential: "available",
         organizationVerification: "verified",
       }),
       successfulArtifact: {
         ...artifact,
-        request: { ...request, requestId: " " },
+        request: { ...request, turnId: " " },
       },
       binaryArtifactPath: "projects/project_001/slides/images/slide_001.v1.png",
       provenanceArtifactPath: "projects/project_001/slides/images/slide_001.v1.provenance.json",
       providerProvenance: imageDecisionProviderProvenance(),
-      billingOwner: "openai_api_project",
-      requiredPermissions: ["images.generate", "model:gpt-image-2"],
+      billingOwner: "codex_account",
+      requiredPermissions: ["codex.image_generation", "model:gpt-image-2"],
       organizationVerification: "verified",
     });
 
     expect(record.status).toBe("blocked");
-    expect(record.blockers.map((blocker) => blocker.code)).toEqual(["missing_request_id"]);
+    expect(record.blockers.map((blocker) => blocker.code)).toEqual(["missing_turn_id"]);
     expect(getProductionImageProviderChoices(record)).toEqual([]);
   });
 });

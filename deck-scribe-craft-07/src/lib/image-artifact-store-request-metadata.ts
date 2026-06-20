@@ -13,6 +13,12 @@ export function requireImageRequestMetadata(
   if (artifact.providerId === "openaiImage" && !artifact.request.requestId?.trim()) {
     throw new ImageArtifactStoreError("OpenAI image artifacts require a provider request id.");
   }
+  if (artifact.providerId === "codex" && !artifact.request.threadId?.trim()) {
+    throw new ImageArtifactStoreError("Codex image artifacts require a thread id.");
+  }
+  if (artifact.providerId === "codex" && !artifact.request.turnId?.trim()) {
+    throw new ImageArtifactStoreError("Codex image artifacts require a turn id.");
+  }
   if (!hasCanonicalRequestMetadata(artifact.request)) {
     throw new ImageArtifactStoreError("Image artifact canonical request metadata is required.");
   }
@@ -38,6 +44,8 @@ function hasCanonicalRequestMetadata(request: SlideImageRequestMetadata): boolea
   return (
     optionalCanonicalText(request.model) &&
     optionalCanonicalText(request.requestId) &&
+    optionalCanonicalText(request.threadId) &&
+    optionalCanonicalText(request.turnId) &&
     optionalCanonicalText(request.size) &&
     optionalCanonicalText(request.quality)
   );

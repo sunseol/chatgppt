@@ -185,7 +185,7 @@ function imageBillingIssues(stage: LiveUsageStageSummary): readonly LiveUsageSum
         issue(
           "missing_image_billing_confirmation",
           stage,
-          "Image generation requires visible billing/API key confirmation.",
+          "Image generation requires visible Codex usage confirmation.",
         ),
       ];
 }

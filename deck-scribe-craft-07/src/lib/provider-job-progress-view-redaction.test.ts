@@ -3,7 +3,7 @@ import type { ProviderJob } from "./provider-job-manager";
 import { createProviderJobProgressView } from "./provider-job-progress-view";
 
 describe("provider job progress view redaction", () => {
-  test("redacts secret-like text from image billing labels", () => {
+  test("redacts secret-like text from image usage labels", () => {
     // Given
     const job: ProviderJob = {
       id: "job_progress_redaction",
@@ -21,7 +21,7 @@ describe("provider job progress view redaction", () => {
         imageBillingDisclosure: {
           apiKeyRequired: true,
           userConfirmed: true,
-          label: "API key billing confirmed OPENAI_API_KEY=sk-live-secret123",
+          label: "Codex image usage confirmed OPENAI_API_KEY=sk-live-secret123",
           confirmationEvidencePath: "usage/image-billing-confirmation.json",
         },
       },
@@ -36,7 +36,7 @@ describe("provider job progress view redaction", () => {
 
     // Then
     expect(view.usageItems.join(" ").includes("sk-live-secret123")).toBe(false);
-    expect(view.usageItems.includes("API key billing confirmed OPENAI_API_KEY=[redacted]")).toBe(
+    expect(view.usageItems.includes("Codex image usage confirmed OPENAI_API_KEY=[redacted]")).toBe(
       true,
     );
   });

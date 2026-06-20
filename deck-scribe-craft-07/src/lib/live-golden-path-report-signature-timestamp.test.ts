@@ -51,14 +51,15 @@ function bundleFixture(reportContent: string) {
     createProviderArtifactProvenance({
       artifactId: `project_001_image_slide_00${index + 1}_v1`,
       executionMode: "production",
-      providerKind: "openaiImage",
-      authMode: "api_key",
+      providerKind: "codex",
+      authMode: "codex_session",
       modelOrRuntime: "gpt-image-2",
       promptVersion: "slide_generation@v1",
       durationMs: 1_000 + index,
       inputArtifactIds: ["layout_001"],
       fixture: false,
-      requestId: `img_req_00${index + 1}`,
+      threadId: "thread_golden_path",
+      turnId: `turn_image_00${index + 1}`,
     }),
   );
   const imageArtifacts = [
@@ -66,14 +67,15 @@ function bundleFixture(reportContent: string) {
     createProviderArtifactProvenance({
       artifactId: "project_001_image_slide_003_v2",
       executionMode: "production",
-      providerKind: "openaiImage",
-      authMode: "api_key",
+      providerKind: "codex",
+      authMode: "codex_session",
       modelOrRuntime: "gpt-image-2",
       promptVersion: "slide_generation@v1",
       durationMs: 1_200,
       inputArtifactIds: ["project_001_image_slide_003_v1"],
       fixture: false,
-      requestId: "img_req_003_regenerated",
+      threadId: "thread_golden_path",
+      turnId: "turn_image_003_regenerated",
     }),
   ];
   return {

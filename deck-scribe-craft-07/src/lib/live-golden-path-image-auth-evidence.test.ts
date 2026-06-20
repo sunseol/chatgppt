@@ -13,7 +13,7 @@ type ImageArtifactsPatch = {
 };
 
 describe("live golden path image auth evidence", () => {
-  test("blocks image artifacts that were not produced through API key auth", () => {
+  test("blocks image artifacts that were not produced through Codex OAuth image generation", () => {
     // Given
     const imageArtifacts = Array.from({ length: 5 }, (_, index) =>
       unauthenticatedLiveImageArtifact(index + 1),
@@ -82,8 +82,8 @@ function unauthenticatedLiveImageArtifact(index: number) {
     artifactId: `live_image_${index}`,
     executionMode: "production",
     providerKind: "openaiImage",
-    authMode: "none",
-    modelOrRuntime: "gpt-image-1",
+    authMode: "api_key",
+    modelOrRuntime: "gpt-image-2",
     promptVersion: "slide_background@v1",
     durationMs: 1_000,
     inputArtifactIds: ["live_layout_ir"],

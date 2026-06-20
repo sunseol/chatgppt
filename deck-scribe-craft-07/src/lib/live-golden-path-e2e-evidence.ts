@@ -69,12 +69,13 @@ export function liveImageArtifacts(
       artifact.executionMode === "production" &&
       artifact.artifactId.trim() === artifact.artifactId &&
       artifact.artifactId.length > 0 &&
-      artifact.providerKind === "openaiImage" &&
-      artifact.authMode === "api_key" &&
+      artifact.providerKind === "codex" &&
+      artifact.authMode === "codex_session" &&
       artifact.modelOrRuntime.trim().length > 0 &&
       artifact.promptVersion.trim().length > 0 &&
       !artifact.fixture &&
-      Boolean(artifact.requestId?.trim()),
+      Boolean(artifact.threadId?.trim()) &&
+      Boolean(artifact.turnId?.trim()),
   );
 }
 

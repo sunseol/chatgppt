@@ -99,21 +99,21 @@ function imageProviderLinkIssues(
       ),
     ];
   }
-  if (artifact.authMode !== "api_key") {
+  if (artifact.authMode !== "codex_session") {
     return [
       issue(
         "image_provider_auth_mismatch",
         slide,
         slide.imageArtifactId,
-        "Live report image lineage must come from API key image-provider auth.",
+        "Live report image lineage must come from Codex OAuth image generation.",
       ),
     ];
   }
   if (
     artifact.executionMode === "production" &&
     artifact.providerKind === slide.imageProviderKind &&
-    artifact.authMode === "api_key" &&
-    artifact.requestId === slide.imageRequestId &&
+    artifact.authMode === "codex_session" &&
+    artifact.turnId === slide.imageRequestId &&
     artifact.promptVersion === slide.promptVersion &&
     artifact.fixture === slide.fixture
   ) {
@@ -124,7 +124,7 @@ function imageProviderLinkIssues(
       "image_provider_lineage_mismatch",
       slide,
       slide.imageArtifactId,
-      "Live report image lineage must match provider request provenance.",
+      "Live report image lineage must match provider turn provenance.",
     ),
   ];
 }

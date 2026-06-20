@@ -33,4 +33,4 @@ The current repository has not yet executed live throttling against a real image
 
 ## Current blocker evidence
 
-2026-06-21 KST Image/Packaging lane recheck found GitHub issue #147 still open with `status:needs-live-evidence`. Because no image API credential is available in this worker environment, live rate-limit/5xx retry behavior, user cancellation against an in-flight real provider request, and app-restart partial resume with real stored artifacts could not be exercised. Existing queue tests are local contract evidence only.
+2026-06-21 KST Image/Packaging lane recheck found GitHub issue #147 still open with `status:needs-live-evidence`. Because no Codex image auth is available in this worker environment, live rate-limit/5xx retry behavior, user cancellation against an in-flight real provider request, and app-restart partial resume with real stored artifacts could not be exercised. Existing queue tests are local contract evidence only.

@@ -6,7 +6,7 @@ import {
 } from "./live-usage-summary";
 
 describe("live usage summary", () => {
-  test("passes stage-level provider, duration, retry, usage, and billing disclosure", () => {
+  test("passes stage-level provider, duration, retry, usage, and image usage disclosure", () => {
     // Given
     const stages = completeStages();
 
@@ -28,10 +28,10 @@ describe("live usage summary", () => {
     expect(summary.includes("DF-244 Live Usage Summary")).toBe(true);
     expect(summary.includes("generate · openaiImage · 1200ms · retries 1")).toBe(true);
     expect(summary.includes("cost estimate $0.1800")).toBe(true);
-    expect(summary.includes("API key billing confirmed")).toBe(true);
+    expect(summary.includes("Codex image usage confirmed")).toBe(true);
   });
 
-  test("blocks missing usage, unlabelled cost, invalid timings, and image billing ambiguity", () => {
+  test("blocks missing usage, unlabelled cost, invalid timings, and image usage ambiguity", () => {
     // Given
     const stages: readonly LiveUsageStageSummary[] = [
       {
@@ -67,7 +67,7 @@ describe("live usage summary", () => {
     ]);
   });
 
-  test("blocks API-key image billing confirmation without persisted evidence", () => {
+  test("blocks API-key image usage confirmation without persisted evidence", () => {
     // Given
     const stages = [
       stage("generate", {
@@ -76,7 +76,7 @@ describe("live usage summary", () => {
         imageBillingDisclosure: {
           apiKeyRequired: true,
           userConfirmed: true,
-          label: "API key billing confirmed",
+          label: "Codex image usage confirmed",
         },
       }),
     ];
@@ -92,7 +92,7 @@ describe("live usage summary", () => {
     ]);
   });
 
-  test("blocks API-key billing confirmation backed only by a developer-local path", () => {
+  test("blocks Codex image usage confirmation backed only by a developer-local path", () => {
     // Given
     const stages = [
       stage("generate", {
@@ -101,7 +101,7 @@ describe("live usage summary", () => {
         imageBillingDisclosure: {
           apiKeyRequired: true,
           userConfirmed: true,
-          label: "API key billing confirmed",
+          label: "Codex image usage confirmed",
           confirmationEvidencePath: "/Users/jake/chatgppt/manual-qa/image-billing.json",
         },
       }),
@@ -118,7 +118,7 @@ describe("live usage summary", () => {
     ]);
   });
 
-  test("blocks API-key billing confirmation backed by a Windows local path", () => {
+  test("blocks Codex image usage confirmation backed by a Windows local path", () => {
     // Given
     const stages = [
       stage("generate", {
@@ -127,7 +127,7 @@ describe("live usage summary", () => {
         imageBillingDisclosure: {
           apiKeyRequired: true,
           userConfirmed: true,
-          label: "API key billing confirmed",
+          label: "Codex image usage confirmed",
           confirmationEvidencePath: "C:\\Users\\jake\\manual-qa\\image-billing.json",
         },
       }),
@@ -177,7 +177,7 @@ describe("live usage summary", () => {
           imageBillingDisclosure: {
             apiKeyRequired: true,
             userConfirmed: true,
-            label: "API key billing confirmed",
+            label: "Codex image usage confirmed",
             confirmationEvidencePath: "usage/image-billing-confirmation.json",
           },
         },
@@ -207,7 +207,7 @@ describe("live usage summary", () => {
         imageBillingDisclosure: {
           apiKeyRequired: true,
           userConfirmed: true,
-          label: "API key billing confirmed",
+          label: "Codex image usage confirmed",
           confirmationEvidencePath: "usage/image-billing-confirmation.json",
         },
       }),
@@ -227,7 +227,7 @@ describe("live usage summary", () => {
     const disclosure = {
       apiKeyRequired: true,
       userConfirmed: true,
-      label: "API key billing confirmed",
+      label: "Codex image usage confirmed",
       confirmationEvidencePath: "usage/image-billing-confirmation.json",
     };
     const stages = [
@@ -274,7 +274,7 @@ function completeStages(): readonly LiveUsageStageSummary[] {
         imageBillingDisclosure: {
           apiKeyRequired: true,
           userConfirmed: true,
-          label: "API key billing confirmed",
+          label: "Codex image usage confirmed",
           confirmationEvidencePath: "usage/image-billing-confirmation.json",
         },
       },

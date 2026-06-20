@@ -88,6 +88,24 @@ describe("production image generation gate", () => {
     });
   });
 
+  test("uses locked Codex OAuth image artifacts without requiring an API request id", () => {
+    // Given / When
+    const gate = createProductionImageGenerationGate({
+      executionMode: "production",
+      imagePathDecision: codexLockedDecision(),
+    });
+
+    // Then
+    expect(gate).toEqual({
+      kind: "ready",
+      executionMode: "production",
+      providerId: "codex",
+      decisionId: "image_path_codex_oauth",
+      binaryArtifactPath: "projects/project_001/slides/images/slide_001.v1.png",
+      provenanceArtifactPath: "projects/project_001/slides/images/slide_001.v1.provenance.json",
+    });
+  });
+
   test("revalidates persisted locked decisions before production image generation", () => {
     const decision = {
       ...lockedDecision(),
@@ -217,5 +235,29 @@ function lockedDecision(): ImagePathDecisionRecord {
     binaryArtifactPath: "projects/project_001/slides/images/slide_001.v1.png",
     provenanceArtifactPath: "projects/project_001/slides/images/slide_001.v1.provenance.json",
     requestId: "img_req_001",
+  };
+}
+
+function codexLockedDecision(): ImagePathDecisionRecord {
+  return {
+    decisionId: "image_path_codex_oauth",
+    decidedAt: 1_789_700_000,
+    status: "locked",
+    providerId: "codex",
+    authMode: "codexOAuth",
+    model: "gpt-image-2",
+    billingOwner: "codex_account",
+    requiredPermissions: ["codex.image_generation", "model:gpt-image-2"],
+    organizationVerification: "unknown",
+    fixtureFallbackAllowed: false,
+    excludedRoutes: [
+      {
+        route: "openaiApiKey",
+        reason: "OpenAI API-key image generation is not the production route.",
+      },
+    ],
+    blockers: [],
+    binaryArtifactPath: "projects/project_001/slides/images/slide_001.v1.png",
+    provenanceArtifactPath: "projects/project_001/slides/images/slide_001.v1.provenance.json",
   };
 }

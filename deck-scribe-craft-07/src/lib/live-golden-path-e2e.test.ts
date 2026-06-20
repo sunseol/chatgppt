@@ -229,7 +229,11 @@ function completeBundle(patch: Partial<LiveGoldenPathE2EBundle> = {}): LiveGolde
     { url: "https://www.rfc-editor.org/rfc/rfc9110", role: "supporting", artifactId: "src_rfc" },
   ];
   const imageArtifacts =
-    patch.imageArtifacts ?? lineage.filter((artifact) => artifact.providerKind === "openaiImage");
+    patch.imageArtifacts ??
+    lineage.filter(
+      (artifact) =>
+        artifact.providerKind === "codex" && artifact.promptVersion === "slide_background@v1",
+    );
 
   return {
     projectId: "p_live",
@@ -285,13 +289,14 @@ function imageArtifact(index: number, artifactId = `live_image_${index}`) {
   return createProviderArtifactProvenance({
     artifactId,
     executionMode: "production",
-    providerKind: "openaiImage",
-    authMode: "api_key",
-    modelOrRuntime: "gpt-image-1",
+    providerKind: "codex",
+    authMode: "codex_session",
+    modelOrRuntime: "gpt-image-2",
     promptVersion: "slide_background@v1",
     durationMs: 1_000,
     inputArtifactIds: ["live_layout_ir"],
     fixture: false,
-    requestId: `img_req_${index}`,
+    threadId: "thread_live_project",
+    turnId: `turn_image_${index}`,
   });
 }

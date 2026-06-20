@@ -93,13 +93,14 @@ function liveImage(
   return createProviderArtifactProvenance({
     artifactId,
     executionMode: "production",
-    providerKind: "openaiImage",
-    authMode: "api_key",
-    modelOrRuntime: "gpt-image-1",
+    providerKind: "codex",
+    authMode: "codex_session",
+    modelOrRuntime: "gpt-image-2",
     promptVersion: "slide_background@v1",
     durationMs: 1_000,
     inputArtifactIds,
     fixture: false,
-    requestId: `img_req_${index}`,
+    threadId: "thread_golden_path",
+    turnId: `turn_image_${index}`,
   });
 }

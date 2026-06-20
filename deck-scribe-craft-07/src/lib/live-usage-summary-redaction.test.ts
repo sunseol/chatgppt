@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { formatLiveUsageSummary } from "./live-usage-summary";
 
 describe("live usage summary redaction", () => {
-  test("redacts secret-like text from image billing labels", () => {
+  test("redacts secret-like text from image usage labels", () => {
     // Given
     const stages = [
       {
@@ -16,7 +16,7 @@ describe("live usage summary redaction", () => {
           imageBillingDisclosure: {
             apiKeyRequired: true,
             userConfirmed: true,
-            label: "API key billing confirmed OPENAI_API_KEY=sk-live-secret123",
+            label: "Codex image usage confirmed OPENAI_API_KEY=sk-live-secret123",
             confirmationEvidencePath: "usage/image-billing-confirmation.json",
           },
         },

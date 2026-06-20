@@ -23,4 +23,4 @@ export const newProjectProviderMatrixInput: ProviderCapabilityMatrixInput = impo
       capabilities: ProviderCapabilities,
     };
 
-export const imageGenerationProviderId = import.meta.env.PROD ? "openaiImage" : "mock";
+export const imageGenerationProviderId = import.meta.env.PROD ? "codex" : "mock";

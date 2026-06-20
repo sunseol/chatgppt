@@ -90,7 +90,7 @@ function confirmedBillingDisclosure(): NonNullable<
   return {
     apiKeyRequired: true,
     userConfirmed: true,
-    label: "API key billing confirmed",
+    label: "Codex image usage confirmed",
     confirmationEvidencePath: "usage/image-billing-confirmation.json",
   };
 }

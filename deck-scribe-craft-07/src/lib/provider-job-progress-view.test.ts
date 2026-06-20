@@ -88,7 +88,7 @@ describe("provider job progress view", () => {
     expect(view.usageItems).toEqual(["images 5"]);
   });
 
-  test("does not render unconfirmed image billing disclosures as confirmed", () => {
+  test("does not render unconfirmed image usage disclosures as confirmed", () => {
     // Given
     const job: ProviderJob = {
       ...runningJob(),
@@ -97,7 +97,7 @@ describe("provider job progress view", () => {
         imageBillingDisclosure: {
           apiKeyRequired: true,
           userConfirmed: false,
-          label: "API key billing confirmed",
+          label: "Codex image usage confirmed",
         },
       },
     };
@@ -110,10 +110,10 @@ describe("provider job progress view", () => {
     });
 
     // Then
-    expect(view.usageItems).toEqual(["images 1", "API key billing not confirmed"]);
+    expect(view.usageItems).toEqual(["images 1", "Codex image usage not confirmed"]);
   });
 
-  test("does not render confirmed-looking image billing labels without user confirmation", () => {
+  test("does not render confirmed-looking image usage labels without user confirmation", () => {
     // Given
     const job: ProviderJob = {
       ...runningJob(),
@@ -122,7 +122,7 @@ describe("provider job progress view", () => {
         imageBillingDisclosure: {
           apiKeyRequired: false,
           userConfirmed: false,
-          label: "API key billing confirmed",
+          label: "Codex image usage confirmed",
         },
       },
     };
@@ -135,10 +135,10 @@ describe("provider job progress view", () => {
     });
 
     // Then
-    expect(view.usageItems).toEqual(["images 1", "API key billing not confirmed"]);
+    expect(view.usageItems).toEqual(["images 1", "Codex image usage not confirmed"]);
   });
 
-  test("does not render image billing confirmations without evidence as confirmed", () => {
+  test("does not render image usage confirmations without evidence as confirmed", () => {
     // Given
     const job: ProviderJob = {
       ...runningJob(),
@@ -147,7 +147,7 @@ describe("provider job progress view", () => {
         imageBillingDisclosure: {
           apiKeyRequired: true,
           userConfirmed: true,
-          label: "API key billing confirmed",
+          label: "Codex image usage confirmed",
         },
       },
     };
@@ -160,10 +160,10 @@ describe("provider job progress view", () => {
     });
 
     // Then
-    expect(view.usageItems).toEqual(["images 1", "API key billing not confirmed"]);
+    expect(view.usageItems).toEqual(["images 1", "Codex image usage not confirmed"]);
   });
 
-  test("does not render local image billing evidence paths as confirmed", () => {
+  test("does not render local image usage evidence paths as confirmed", () => {
     // Given
     const job: ProviderJob = {
       ...runningJob(),
@@ -172,7 +172,7 @@ describe("provider job progress view", () => {
         imageBillingDisclosure: {
           apiKeyRequired: true,
           userConfirmed: true,
-          label: "API key billing confirmed",
+          label: "Codex image usage confirmed",
           confirmationEvidencePath: "/Users/jake/chatgppt/manual-qa/image-billing.json",
         },
       },
@@ -186,7 +186,7 @@ describe("provider job progress view", () => {
     });
 
     // Then
-    expect(view.usageItems).toEqual(["images 1", "API key billing not confirmed"]);
+    expect(view.usageItems).toEqual(["images 1", "Codex image usage not confirmed"]);
   });
 });
 

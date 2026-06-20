@@ -29,7 +29,7 @@ describe("provider capability matrix UI", () => {
     expect(markup.includes("사용 가능")).toBe(true);
     expect(markup.includes("잠김")).toBe(true);
     expect(markup.includes("Connected provider does not expose image generation.")).toBe(true);
-    expect(markup.includes("OpenAI 이미지 fallback 설정")).toBe(true);
+    expect(markup.includes("Codex 이미지 생성 확인")).toBe(true);
   });
 
   test("renders unavailable provider state with locked remediation", () => {

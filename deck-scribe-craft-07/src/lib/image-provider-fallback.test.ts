@@ -9,7 +9,7 @@ import {
 } from "./image-provider-fallback";
 
 describe("OpenAI image fallback provider", () => {
-  test("keeps API key out of serializable fallback state", () => {
+  test("keeps API key out of serializable state when Codex OAuth is selected", () => {
     const credential = createEphemeralOpenAIImageCredential("sk-live-secret123");
     const decision = decideImageProviderFeasibility({
       codexImageCapability: "notSupported",
@@ -23,9 +23,9 @@ describe("OpenAI image fallback provider", () => {
       imageProvider: publicState,
     });
 
-    expect(publicState.providerId).toBe("openaiImage");
-    expect(publicState.fallbackMode).toBe(true);
-    expect(publicState.credentialState).toBe("sessionConfigured");
+    expect(publicState.providerId).toBe("codex");
+    expect(publicState.fallbackMode).toBe(false);
+    expect(publicState.credentialState).toBe("missing");
     expect(serialized.includes("sk-live-secret123")).toBe(false);
   });
 
@@ -57,7 +57,7 @@ describe("OpenAI image fallback provider", () => {
     expect(JSON.stringify(response).includes("sk-live-secret456")).toBe(false);
   });
 
-  test("shows billing and permission copy for API-key fallback", () => {
+  test("shows Codex OAuth billing and permission copy for image generation", () => {
     const decision = decideImageProviderFeasibility({
       codexImageCapability: "unknown",
       apiCredential: "missing",
@@ -67,9 +67,9 @@ describe("OpenAI image fallback provider", () => {
     const publicState = createOpenAIImageFallbackPublicState({ decision });
 
     expect(publicState.credentialState).toBe("missing");
-    expect(publicState.connectionCopy.includes("separate OpenAI API credential")).toBe(true);
-    expect(publicState.billingCopy.includes("API organization/project")).toBe(true);
-    expect(publicState.permissionCopy.includes("organization verification")).toBe(true);
+    expect(publicState.connectionCopy.includes("Codex OAuth session")).toBe(true);
+    expect(publicState.billingCopy.includes("Codex account")).toBe(true);
+    expect(publicState.permissionCopy.includes("Codex image generation")).toBe(true);
   });
 
   test("rejects blank API keys before creating a session credential", () => {

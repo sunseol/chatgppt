@@ -90,14 +90,15 @@ function unauthenticatedProviderLineageFixture() {
     createProviderArtifactProvenance({
       artifactId: "project_001_image_slide_001_v1",
       executionMode: "production",
-      providerKind: "openaiImage",
+      providerKind: "codex",
       authMode: "none",
       modelOrRuntime: "gpt-image-2",
       promptVersion: "slide_generation@v1",
       durationMs: 2_000,
       inputArtifactIds: ["layout_001"],
       fixture: false,
-      requestId: "img_req_001",
+      turnId: "turn_image_001",
+      threadId: "thread_project_001",
     }),
   ];
 }
@@ -112,8 +113,8 @@ function liveReportLineageFixture(): LiveSlideReportLineage {
     textThreadId: "thread_project_001",
     textPromptVersion: "deck_plan@v1",
     imageArtifactId: "project_001_image_slide_001_v1",
-    imageProviderKind: "openaiImage",
-    imageRequestId: "img_req_001",
+    imageProviderKind: "codex",
+    imageRequestId: "turn_image_001",
     promptVersion: "slide_generation@v1",
     fixture: false,
     compositorHash: fullHash(),

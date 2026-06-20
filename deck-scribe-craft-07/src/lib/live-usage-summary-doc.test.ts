@@ -16,20 +16,19 @@ describe("live usage summary documentation", () => {
     expect(usageSummary.includes("App Surface Usage Display")).toBe(true);
     expect(usageSummary.includes("ProviderJobProgressPanel.integration.test.tsx")).toBe(true);
     expect(usageSummary.includes("cost estimate $0.0400")).toBe(true);
-    expect(usageSummary.includes("API key billing confirmed")).toBe(true);
-    expect(usageSummary.includes("API key billing not confirmed")).toBe(true);
-    expect(usageSummary.includes("even when `apiKeyRequired: false`")).toBe(true);
+    expect(usageSummary.includes("Codex image usage confirmed")).toBe(true);
+    expect(usageSummary.includes("Codex image usage not confirmed")).toBe(true);
     expect(usageSummary.includes("confirmationEvidencePath")).toBe(true);
     expect(usageSummary.includes("template/sample/example/placeholder")).toBe(true);
     expect(usageSummary.includes("live-usage-billing-evidence.ts")).toBe(true);
     expect(usageSummary.includes("formatted summaries")).toBe(true);
     expect(
       usageSummary.includes(
-        "confirmed image billing disclosure labels only when persisted confirmation evidence is valid",
+        "confirmed image usage disclosure labels only when persisted confirmation evidence is valid",
       ),
     ).toBe(true);
     expect(
-      usageSummary.includes("secret-like text inside displayed image billing disclosure labels"),
+      usageSummary.includes("secret-like text inside displayed image usage disclosure labels"),
     ).toBe(true);
     expect(usageSummary.includes("live-usage-summary-redaction.test.ts")).toBe(true);
     expect(usageSummary.includes("provider-job-progress-view-redaction.test.ts")).toBe(true);
@@ -53,20 +52,20 @@ describe("live usage summary documentation", () => {
     expect(progress.includes("unsupported runtime cost labels")).toBe(true);
     expect(progress.includes("usage/image-billing-template.json")).toBe(true);
     expect(progress.includes("confirmed-looking audit payload without valid")).toBe(true);
-    expect(progress.includes("real provider image billing/API-key disclosure payloads")).toBe(true);
+    expect(progress.includes("real provider image Codex usage disclosure payloads")).toBe(true);
 
     expect(decision.includes("ProviderJobProgressPanel.tsx")).toBe(true);
     expect(decision.includes("confirmationEvidencePath")).toBe(true);
     expect(decision.includes("template/sample/example/placeholder")).toBe(true);
-    expect(
-      decision.includes("evidence-less confirmed-looking image billing as not confirmed"),
-    ).toBe(true);
+    expect(decision.includes("evidence-less confirmed-looking image usage as not confirmed")).toBe(
+      true,
+    );
     expect(decision.includes("formatted summaries")).toBe(true);
     expect(decision.includes("duplicated usage stage ids")).toBe(true);
     expect(decision.includes("unsupported runtime provider kinds")).toBe(true);
     expect(decision.includes("developer-local")).toBe(true);
     expect(decision.includes("packaged app-surface usage summary manual QA")).toBe(true);
-    expect(decision.includes("real provider image billing/API key payloads")).toBe(true);
+    expect(decision.includes("real provider image Codex usage payloads")).toBe(true);
   });
 });
 

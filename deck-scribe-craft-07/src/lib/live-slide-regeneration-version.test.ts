@@ -40,16 +40,24 @@ describe("live full-slide regeneration artifact version", () => {
     expect(result.preservedSlide).toEqual(approvedSlideFixture());
   });
 
-  test("blocks a regenerated background without provider request id evidence", async () => {
+  test("blocks a regenerated background without provider turn evidence", async () => {
     // Given
     const store = createImageArtifactStore({ write: async () => undefined });
-    const candidateBackground = await storeSlideImageArtifact({
+    const storedBackground = await storeSlideImageArtifact({
       store,
       projectId: "project_001",
-      artifact: slideImageArtifactFixture({ providerId: "codex", omitRequestId: true }),
+      artifact: slideImageArtifactFixture({ providerId: "codex" }),
       version: 2,
       createdAt: 1_789_900_011,
     });
+    const candidateBackground = {
+      ...storedBackground,
+      metadata: {
+        ...storedBackground.metadata,
+        request: { ...storedBackground.metadata.request, turnId: "" },
+      },
+      provenance: { ...storedBackground.provenance, turnId: "" },
+    };
 
     // When
     const result = createLiveSlideRegenerationCandidate({

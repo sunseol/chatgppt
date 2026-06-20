@@ -42,7 +42,7 @@ describe("live golden path E2E documentation", () => {
     );
     expect(goldenPathE2E.includes("normalized source URL duplicate rejection")).toBe(true);
     expect(goldenPathE2E.includes("live-golden-path-source-url-evidence.test.ts")).toBe(true);
-    expect(goldenPathE2E.includes("api_key")).toBe(true);
+    expect(goldenPathE2E.includes("codex_session")).toBe(true);
     expect(goldenPathE2E.includes("model/runtime")).toBe(true);
     expect(goldenPathE2E.includes("prompt version")).toBe(true);
     expect(goldenPathE2E.includes("nonblank live image artifact ids")).toBe(true);

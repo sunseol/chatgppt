@@ -23,7 +23,7 @@ describe("provider runtime selection", () => {
   });
 
   test("selects a live image provider for production generation jobs", () => {
-    expect(selectImageGenerationProviderId("production")).toBe("openaiImage");
+    expect(selectImageGenerationProviderId("production")).toBe("codex");
     expect(selectImageGenerationProviderId("development")).toBe("mock");
     expect(selectImageGenerationProviderId("test")).toBe("mock");
   });

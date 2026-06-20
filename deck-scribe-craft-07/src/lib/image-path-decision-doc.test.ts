@@ -11,8 +11,8 @@ describe("image path decision documentation", () => {
     expect(text.includes("binary_artifact_slide_mismatch")).toBe(true);
     expect(text.includes("provenance_auth_mode_mismatch")).toBe(true);
     expect(text.includes("provenance_prompt_version_mismatch")).toBe(true);
-    expect(text.includes("non-placeholder billing owner")).toBe(true);
-    expect(text.includes("canonical request id")).toBe(true);
+    expect(text.includes("non-placeholder account usage owner")).toBe(true);
+    expect(text.includes("canonical Codex turn/thread ids")).toBe(true);
     expect(text.includes("placeholder text such as `unknown` or `TBD`")).toBe(true);
     expect(text.includes("all required provider permissions as non-placeholder values")).toBe(true);
     expect(text.includes("images.generate` plus `TBD`")).toBe(true);

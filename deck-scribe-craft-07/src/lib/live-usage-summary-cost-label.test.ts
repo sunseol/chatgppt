@@ -17,7 +17,7 @@ describe("live usage summary cost label taxonomy", () => {
           imageBillingDisclosure: {
             apiKeyRequired: true,
             userConfirmed: true,
-            label: "API key billing confirmed",
+            label: "Codex image usage confirmed",
             confirmationEvidencePath: "usage/image-billing-confirmation.json",
           },
         },

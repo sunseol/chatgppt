@@ -74,7 +74,7 @@ The clean-machine checklist must include distinct evidence events for install, C
 2. Install Bun only for dry-run package testing. Final Tauri package should not require Bun.
 3. Install Codex CLI and confirm `codex --version`.
 4. Sign in through the official Codex login/session flow.
-5. Configure image API credentials in the approved secret store if required.
+5. Configure Codex image auths in the approved secret store if required.
 6. Launch DeckForge.
 7. Create a 5-slide project.
 8. Confirm provider capability UI shows connected text provider and unlocked image provider.
@@ -94,7 +94,7 @@ If Codex runtime is missing, the app must show:
 If image credentials are missing, the app must show:
 
 - `Needs API Key`
-- separate billing/API-key copy
+- separate Codex usage copy
 - locked image generation
 - no fixture PNG fallback
 

@@ -25,6 +25,8 @@ export interface SlideImageCanvas {
 export interface SlideImageRequestMetadata {
   readonly model: string;
   readonly requestId?: string;
+  readonly threadId?: string;
+  readonly turnId?: string;
   readonly size?: string;
   readonly quality?: string;
   readonly latencyMs?: number;
