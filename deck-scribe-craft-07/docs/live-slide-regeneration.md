@@ -40,3 +40,7 @@ DF-235 requires selected-slide regeneration to create a full new slide backgroun
 ## Remaining Live Work
 
 The current repository has not yet executed full-slide regeneration against a real provider. DF-235 remains open until a production run captures live before/after approval QA, stores a real regenerated background artifact version, and verifies that a failed regeneration preserves the approved original in the app surface.
+
+## Current blocker evidence
+
+2026-06-21 KST Image/Packaging lane recheck found GitHub issue #149 still open with `status:needs-live-evidence`. The worker has no image API credential and no approved live original slide artifact from the five-background run, so selected-slide full regeneration could not be submitted to a real provider. No before/after app-surface approval QA or failed-regeneration preservation evidence was produced.

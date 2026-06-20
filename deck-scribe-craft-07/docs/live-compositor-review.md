@@ -28,3 +28,7 @@ DF-234 requires the review gallery to show compositor output built from real gen
 ## Remaining Live Work
 
 The current repository still lacks live compositor screenshots from five real image artifacts. DF-234 remains open until a production run captures live compositor screenshots, verifies title edit and re-export against real backgrounds, and confirms the review gallery uses only stored live image artifacts.
+
+## Current blocker evidence
+
+2026-06-21 KST Image/Packaging lane recheck found GitHub issue #148 still open with `status:needs-live-evidence`. The review gallery/compositor code can validate stored live background artifacts, but this worktree has no five real generated backgrounds to drive the app-surface gallery. No live compositor screenshots or title edit/re-export evidence were produced in this run because the upstream real image artifacts are missing.

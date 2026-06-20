@@ -50,3 +50,7 @@ Existing provider tests plus `src/lib/image-provider-errors.test.ts` cover the D
 ## Remaining Live work
 
 DF-231 is not ready to close. The local adapter and artifact-store contract exists, but the acceptance criteria still require a real provider integration run that stores actual response bytes and request metadata from the live selected route.
+
+## Current blocker evidence
+
+2026-06-21 KST Image/Packaging lane recheck from `/Users/jake/chatgppt-lane-image` found GitHub issue #145 still open with `status:needs-live-evidence`. `OPENAI_API_KEY` is unset in the worker environment, so no real provider adapter call could be executed and no new PNG bytes, SHA-256 digest, request id, model/runtime metadata, usage metadata, or provenance sidecars were produced. The local contract remains verified by tests only; it is not a substitute for the required live provider artifact.

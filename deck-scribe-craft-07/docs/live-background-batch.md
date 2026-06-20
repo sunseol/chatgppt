@@ -30,3 +30,7 @@ The validator also requires each artifact to preserve its slide identity, use th
 ## Remaining Live Work
 
 The current repository does not yet contain the required five live background artifacts from a real provider. DF-232 remains open until a production run stores the five real artifacts, their unique versioned binary paths and hashes, matching versioned metadata/provenance sidecar paths, matching provider provenance sidecar identity fields, unique canonical request ids and model metadata, matching stored metadata/provenance request ids and model/runtime values, matching slide ids, shared `deckContextId`, shared `designSystemId`, layout screenshot composition references, and retry evidence for any failed slide.
+
+## Current blocker evidence
+
+2026-06-21 KST Image/Packaging lane recheck found GitHub issue #146 still open with `status:needs-live-evidence`. The worker environment has no `OPENAI_API_KEY`, and no real image provider credentials were available for a five-slide generation run. The repository contains no five-artifact live background bundle from one shared deck context/design system, so DF-232 remains blocked on real provider execution.

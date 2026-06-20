@@ -30,3 +30,7 @@ DF-233 requires the live image queue to throttle concurrent work, retry only tra
 ## Remaining Live Work
 
 The current repository has not yet executed live throttling against a real image provider. DF-233 remains open until a production image run captures actual rate limit or 5xx retry evidence, user cancellation manual QA, and partial resume after app restart with real stored image artifacts.
+
+## Current blocker evidence
+
+2026-06-21 KST Image/Packaging lane recheck found GitHub issue #147 still open with `status:needs-live-evidence`. Because no image API credential is available in this worker environment, live rate-limit/5xx retry behavior, user cancellation against an in-flight real provider request, and app-restart partial resume with real stored artifacts could not be exercised. Existing queue tests are local contract evidence only.
