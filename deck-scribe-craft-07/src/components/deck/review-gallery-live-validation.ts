@@ -21,6 +21,7 @@ export type ReviewGalleryLiveCompositionIssueCode =
   | "compositor_svg_artifact_mismatch"
   | "invalid_compositor_preview"
   | "missing_editable_overlay"
+  | "invalid_editable_overlay_bounds"
   | "text_overlay_collision";
 
 export interface ReviewGalleryLiveCompositionIssue {
@@ -159,15 +160,45 @@ function previewIssues(
 function overlayIssues(
   composition: FinalSlideComposition,
 ): readonly ReviewGalleryLiveCompositionIssue[] {
-  return REQUIRED_OVERLAY_ROLES.filter(
-    (role) =>
-      !composition.overlayRoles.includes(role) ||
-      !composition.overlayBounds.some((overlay) => overlay.role === role),
-  ).map((role) => ({
-    code: "missing_editable_overlay",
-    slideNumber: composition.slideNumber,
-    message: `Missing editable ${role} overlay.`,
-  }));
+  return REQUIRED_OVERLAY_ROLES.flatMap((role): readonly ReviewGalleryLiveCompositionIssue[] => {
+    const overlays = composition.overlayBounds.filter((overlay) => overlay.role === role);
+    if (!composition.overlayRoles.includes(role) || overlays.length === 0) {
+      return [
+        {
+          code: "missing_editable_overlay" as const,
+          slideNumber: composition.slideNumber,
+          message: `Missing editable ${role} overlay.`,
+        },
+      ];
+    }
+    if (overlays.some((overlay) => isVisibleCanvasBounds(overlay, composition))) return [];
+    return [
+      {
+        code: "invalid_editable_overlay_bounds" as const,
+        slideNumber: composition.slideNumber,
+        message: `Editable ${role} overlay must fit inside the compositor canvas.`,
+      },
+    ];
+  });
+}
+
+function isVisibleCanvasBounds(
+  overlay: FinalSlideOverlayBounds,
+  composition: FinalSlideComposition,
+): boolean {
+  const { x, y, w, h } = overlay.bounds;
+  return (
+    Number.isFinite(x) &&
+    Number.isFinite(y) &&
+    Number.isFinite(w) &&
+    Number.isFinite(h) &&
+    w > 0 &&
+    h > 0 &&
+    x >= 0 &&
+    y >= 0 &&
+    x + w <= composition.canvas.width &&
+    y + h <= composition.canvas.height
+  );
 }
 
 function collisionIssues(
