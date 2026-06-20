@@ -71,8 +71,8 @@ export function createProductionImageGenerationGate(input: {
     };
   }
 
-  const binaryArtifactPath = decision.binaryArtifactPath?.trim();
-  const provenanceArtifactPath = decision.provenanceArtifactPath?.trim();
+  const binaryArtifactPath = decision.binaryArtifactPath;
+  const provenanceArtifactPath = decision.provenanceArtifactPath;
   const persistedRequestId = decision.requestId;
   const requestId = persistedRequestId?.trim();
   const issues = decisionIssues(

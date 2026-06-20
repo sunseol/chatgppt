@@ -166,6 +166,33 @@ describe("production image generation gate", () => {
       ],
     });
   });
+
+  test("blocks persisted decisions whose artifact paths are only canonical after trimming", () => {
+    const gate = createProductionImageGenerationGate({
+      executionMode: "production",
+      imagePathDecision: {
+        ...lockedDecision(),
+        binaryArtifactPath: " projects/project_001/slides/images/slide_001.v1.png ",
+        provenanceArtifactPath: " projects/project_001/slides/images/slide_001.v1.provenance.json ",
+      },
+    });
+
+    expect(gate).toEqual({
+      kind: "blocked",
+      executionMode: "production",
+      providerId: "openaiImage",
+      issues: [
+        {
+          code: "invalid_binary_artifact_path",
+          message: "Production image generation requires versioned project image artifact storage.",
+        },
+        {
+          code: "invalid_provenance_artifact_path",
+          message: "Production image generation requires versioned provider provenance storage.",
+        },
+      ],
+    });
+  });
 });
 
 function lockedDecision(): ImagePathDecisionRecord {
