@@ -16,6 +16,7 @@ export function collectLiveTextPipelineProvenanceIssues(
     ...liveCodexProvenanceIssues("deck_plan", input.deckPlan.provenance),
     ...liveCodexProvenanceIssues("design_system", input.designSystem.provenance),
     ...liveCodexProvenanceIssues("layout_ir", input.layoutIr.provenance),
+    ...canonicalIdentityIssues(input),
     ...turnIdentityIssues(input),
     ...artifactIdentityIssues(input),
     ...lineageIssues(input),
@@ -105,6 +106,33 @@ function artifactIdentityIssues(
           code: "shared_live_artifact",
           message:
             "Deck plan, design system, and Layout IR must be persisted as separate artifacts.",
+        },
+      ];
+}
+
+function canonicalIdentityIssues(
+  input: LiveTextPipelineCutoverInput,
+): readonly LiveTextPipelineIssue[] {
+  return [
+    ...canonicalIdentityIssue("deck_plan", input.deckPlan.provenance),
+    ...canonicalIdentityIssue("design_system", input.designSystem.provenance),
+    ...canonicalIdentityIssue("layout_ir", input.layoutIr.provenance),
+  ];
+}
+
+function canonicalIdentityIssue(
+  stage: LiveTextPipelineStage,
+  provenance: ProviderArtifactProvenance,
+): readonly LiveTextPipelineIssue[] {
+  const identities = [provenance.artifactId, provenance.turnId, provenance.threadId];
+  return identities.every((identity) => identity === undefined || identity === identity.trim())
+    ? []
+    : [
+        {
+          code: "noncanonical_text_pipeline_identity",
+          stage,
+          artifactId: provenance.artifactId,
+          message: "Text pipeline artifact, turn, and thread ids must be canonical.",
         },
       ];
 }

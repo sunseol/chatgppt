@@ -35,10 +35,33 @@ describe("live text pipeline artifact identity", () => {
 
     expect(result.kind).toBe("blocked");
     if (result.kind !== "blocked") return;
-    expect(result.issues.map((issue) => issue.code)).toEqual([
-      "shared_live_turn",
-      "shared_live_artifact",
-    ]);
+    const issueCodes = result.issues.map((issue) => issue.code);
+    expect(issueCodes.includes("shared_live_turn")).toBe(true);
+    expect(issueCodes.includes("shared_live_artifact")).toBe(true);
+  });
+
+  test("blocks otherwise distinct artifacts with non-canonical persisted identities", () => {
+    const fixtures = completePipelineFixtures();
+    const input = completePipelineInput(fixtures);
+
+    const result = evaluateLiveTextPipelineCutover({
+      ...input,
+      designSystem: {
+        ...input.designSystem,
+        provenance: liveCodexProvenance(
+          " design_system_live_1 ",
+          " turn_design ",
+          "design_system@v1",
+          ["deck_plan_live_1"],
+        ),
+      },
+    });
+
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(
+      result.issues.map((issue) => issue.code).includes("noncanonical_text_pipeline_identity"),
+    ).toBe(true);
   });
 
   test("blocks approved brief and research inputs that reuse one artifact id", () => {
