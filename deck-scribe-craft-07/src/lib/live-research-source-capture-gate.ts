@@ -31,24 +31,25 @@ export function sourceCaptureApprovalIssues(
 
 function captureProblems(capture: ResearchSourceCaptureMetadata): readonly string[] {
   return [
-    ...(isHttpUrl(capture.originalUrl) ? [] : ["originalUrl"]),
-    ...(isHttpUrl(capture.finalUrl) ? [] : ["finalUrl"]),
+    ...(isCanonicalHttpUrl(capture.originalUrl) ? [] : ["originalUrl"]),
+    ...(isCanonicalHttpUrl(capture.finalUrl) ? [] : ["finalUrl"]),
     ...(Number.isFinite(capture.fetchedAt) && capture.fetchedAt > 0 ? [] : ["fetchedAt"]),
-    ...(capture.mimeType.trim() ? [] : ["mimeType"]),
+    ...(isCanonicalNonEmpty(capture.mimeType) ? [] : ["mimeType"]),
     ...(Number.isInteger(capture.statusCode) &&
     capture.statusCode >= 200 &&
     capture.statusCode < 400
       ? []
       : ["statusCode"]),
-    ...(isShaLabel(capture.contentHash) ? [] : ["contentHash"]),
-    ...(capture.rawArchivePath.trim() ? [] : ["rawArchivePath"]),
-    ...(capture.textArchivePath.trim() ? [] : ["textArchivePath"]),
-    ...(isShaLabel(capture.extractedTextHash) ? [] : ["extractedTextHash"]),
+    ...(isCanonicalShaLabel(capture.contentHash) ? [] : ["contentHash"]),
+    ...(isCanonicalNonEmpty(capture.rawArchivePath) ? [] : ["rawArchivePath"]),
+    ...(isCanonicalNonEmpty(capture.textArchivePath) ? [] : ["textArchivePath"]),
+    ...(isCanonicalShaLabel(capture.extractedTextHash) ? [] : ["extractedTextHash"]),
     ...(Number.isInteger(capture.version) && capture.version > 0 ? [] : ["version"]),
   ];
 }
 
-function isHttpUrl(value: string): boolean {
+function isCanonicalHttpUrl(value: string): boolean {
+  if (value !== value.trim()) return false;
   try {
     const url = new URL(value);
     return url.protocol === "https:" || url.protocol === "http:";
@@ -57,6 +58,12 @@ function isHttpUrl(value: string): boolean {
   }
 }
 
-function isShaLabel(value: string): boolean {
-  return value.startsWith("sha256:") && value.length > "sha256:".length;
+function isCanonicalNonEmpty(value: string): boolean {
+  return value === value.trim() && value.length > 0;
+}
+
+function isCanonicalShaLabel(value: string): boolean {
+  return (
+    isCanonicalNonEmpty(value) && value.startsWith("sha256:") && value.length > "sha256:".length
+  );
 }

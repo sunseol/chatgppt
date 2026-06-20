@@ -17,7 +17,8 @@ Status: partial local contract
   `research_pack_provenance_mismatch`.
 - Any reviewed source without persisted live capture metadata blocks approval with
   `source_missing_live_capture`.
-- Incomplete live capture metadata blocks approval with `source_capture_incomplete`.
+- Incomplete or trim-normalized live capture metadata blocks approval with
+  `source_capture_incomplete`.
 - Missing original source evidence blocks approval with DF-223 evidence issue codes such as `summary_without_original`.
 - Pending source-strengthening requests block approval with `pending_reinforcement_request`.
 - Complete evidence plus complete production Codex provenance returns `kind: "ready"`.
@@ -38,7 +39,7 @@ Status: partial local contract
 - claim confidence;
 - `출처 제외` action.
 
-Approval depends on complete `ResearchPack.sources[].capture`, so a source must carry HTTP(S) `originalUrl` and `finalUrl`, positive `fetchedAt`, successful status metadata, MIME metadata, archive paths, hashes, and version before it can be approved.
+Approval depends on complete `ResearchPack.sources[].capture`, so a source must carry canonical HTTP(S) `originalUrl` and `finalUrl`, positive `fetchedAt`, successful status metadata, canonical MIME metadata, canonical archive paths, canonical hashes, and version before it can be approved. URLs, MIME values, archive paths, or hashes that only become valid after trimming whitespace are incomplete capture metadata.
 
 `src/lib/research-review-actions.ts` records review decisions in `ResearchReviewState`: source exclusion removes dependent datasets, charts, numeric evidence, persisted live evidence refs, stale approval hashes, and stale provider provenance. Numeric evidence is removed when either its source is excluded or its dataset was removed by the exclusion, so a retained source cannot keep a number alive through a deleted dataset. Reinforcement request and resolution review mutations also clear prior provider provenance, so stale `ResearchPack.provenanceLineage` cannot unlock approval after the reviewed pack changes. The existing `ReinforcementRequest` surface remains available for source strengthening requests, and `ResearchStage` wires actual source-exclusion and reinforcement actions that reopen approval review.
 
@@ -62,4 +63,4 @@ When the ready-state approval action runs, it records the approved research arti
 
 ## Remaining Live work
 
-DF-224 is not ready to close. The review UI and approval gate contracts exist locally, and production can now display a persisted Research Pack, source exclusion/reinforcement controls, approval blockers, saved source capture metadata, saved evidence references, saved provider provenance, and a ready-state approval action that writes a current-content `approvedResearchPackHash` plus an approved research artifact record for DF-214. Source exclusion now also purges numeric evidence that survives only through a removed dataset, preventing stale numbers from appearing review-ready after the source decision, and review mutations clear stale provider provenance before any later approval attempt. Approval also requires saved provider provenance for the exact canonical current Research Pack artifact id and a `live_research_pack@...` prompt version, so provenance for a different artifact, whitespace-padded artifact, or another live stage prompt cannot unlock the DF-214 handoff. A non-simulated packaged-app live research approval manual QA run is still required.
+DF-224 is not ready to close. The review UI and approval gate contracts exist locally, and production can now display a persisted Research Pack, source exclusion/reinforcement controls, approval blockers, saved canonical source capture metadata, saved evidence references, saved provider provenance, and a ready-state approval action that writes a current-content `approvedResearchPackHash` plus an approved research artifact record for DF-214. Source exclusion now also purges numeric evidence that survives only through a removed dataset, preventing stale numbers from appearing review-ready after the source decision, and review mutations clear stale provider provenance before any later approval attempt. Approval also requires saved provider provenance for the exact canonical current Research Pack artifact id and a `live_research_pack@...` prompt version, so provenance for a different artifact, whitespace-padded artifact, or another live stage prompt cannot unlock the DF-214 handoff. A non-simulated packaged-app live research approval manual QA run is still required.

@@ -94,6 +94,7 @@ describe("live readiness research documentation", () => {
     expect(researchApproval.includes("another live stage prompt")).toBe(true);
     expect(researchApproval.includes("source_missing_live_capture")).toBe(true);
     expect(researchApproval.includes("source_capture_incomplete")).toBe(true);
+    expect(researchApproval.includes("trim-normalized live capture metadata")).toBe(true);
     expect(researchApproval.includes("approvedResearchPackHash")).toBe(true);
     expect(researchApproval.includes("current Research Pack content")).toBe(true);
     expect(researchApproval.includes("stale approved hashes")).toBe(true);

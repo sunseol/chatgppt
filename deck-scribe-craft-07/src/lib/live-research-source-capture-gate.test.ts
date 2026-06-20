@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { evaluateLiveResearchApprovalGate } from "./live-research-approval-gate";
 import type { LiveResearchEvidenceReference } from "./live-research-evidence";
 import { createProviderArtifactProvenance } from "./provider-provenance";
-import type { ResearchPack, Source } from "./research-types";
+import type { ResearchPack, ResearchSourceCaptureMetadata, Source } from "./research-types";
 
 describe("live research source capture approval gate", () => {
   test("blocks approval when capture metadata exists but is incomplete", () => {
@@ -42,6 +42,35 @@ describe("live research source capture approval gate", () => {
       "missing_source_artifact",
     ]);
     expect(gate.issues[0]?.sourceId).toBe("src_001");
+  });
+
+  test("blocks approval when capture metadata is only canonical after trimming", () => {
+    // Given
+    const pack = researchPack({
+      sources: [
+        {
+          ...source(),
+          capture: {
+            ...sourceCapture(),
+            finalUrl: " https://example.gov/report?download=1 ",
+            mimeType: " text/html ",
+            textArchivePath: " docs/live-source-capture-bundle/html_001/extracted.txt ",
+          },
+        },
+      ],
+    });
+
+    // When
+    const gate = evaluateLiveResearchApprovalGate({
+      pack,
+      evidenceRefs: validEvidenceRefs(),
+      provenanceLineage: [liveResearchProvenance()],
+    });
+
+    // Then
+    expect(gate.kind).toBe("blocked");
+    if (gate.kind !== "blocked") return;
+    expect(gate.issues.map((issue) => issue.code)).toEqual(["source_capture_incomplete"]);
   });
 });
 
@@ -128,17 +157,21 @@ function source(): Source {
     sourceType: "government",
     usePolicy: "priority",
     url: "https://example.gov/report",
-    capture: {
-      originalUrl: "https://example.gov/report",
-      finalUrl: "https://example.gov/report?download=1",
-      fetchedAt: 1_789_300_001,
-      mimeType: "text/html",
-      statusCode: 200,
-      contentHash: "sha256:source-content",
-      rawArchivePath: "docs/live-source-capture-bundle/html_001/original.html",
-      textArchivePath: "docs/live-source-capture-bundle/html_001/extracted.txt",
-      extractedTextHash: "sha256:source-text",
-      version: 1,
-    },
+    capture: sourceCapture(),
+  };
+}
+
+function sourceCapture(): ResearchSourceCaptureMetadata {
+  return {
+    originalUrl: "https://example.gov/report",
+    finalUrl: "https://example.gov/report?download=1",
+    fetchedAt: 1_789_300_001,
+    mimeType: "text/html",
+    statusCode: 200,
+    contentHash: "sha256:source-content",
+    rawArchivePath: "docs/live-source-capture-bundle/html_001/original.html",
+    textArchivePath: "docs/live-source-capture-bundle/html_001/extracted.txt",
+    extractedTextHash: "sha256:source-text",
+    version: 1,
   };
 }
