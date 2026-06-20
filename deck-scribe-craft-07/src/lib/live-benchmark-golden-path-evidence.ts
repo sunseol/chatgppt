@@ -3,10 +3,11 @@ import type {
   LiveBenchmarkOutputBundleManifest,
   LiveBenchmarkRun,
 } from "./live-benchmark-evidence";
+import {
+  hasInvalidBenchmarkArtifactMarker,
+  hasObservedBenchmarkEvidencePath,
+} from "./live-benchmark-evidence-path";
 import { hasDistinctScreenshotEvidence } from "./live-benchmark-screenshot-evidence";
-import { hasNonSyntheticEvidencePath } from "./live-evidence-path";
-
-const SYNTHETIC_ARTIFACT_MARKERS = ["mock", "fixture", "test", "fake"] as const;
 
 export function goldenPathEvidenceIssues(
   runs: readonly LiveBenchmarkRun[],
@@ -30,7 +31,7 @@ export function goldenPathEvidenceIssues(
           {
             code: "output_bundle_synthetic_artifact_reference" as const,
             message:
-              "Passed Live benchmark bundles must not cite mock, fixture, test, or fake artifact/request ids.",
+              "Passed Live benchmark bundles must not cite synthetic or observer-template artifact/request ids.",
             refs: syntheticArtifactRefs,
           },
         ]),
@@ -97,7 +98,7 @@ function hasDistinctArtifactEvidence(artifactIds: Iterable<string>, minimumCount
 function validEvidenceReportPath(value: string, expectedSuffix: string): boolean {
   const normalized = value.toLowerCase().trim();
   if (!normalized.endsWith(expectedSuffix)) return false;
-  return hasNonSyntheticEvidencePath(value, [".md"]);
+  return hasObservedBenchmarkEvidencePath(value, [".md"]);
 }
 
 function syntheticRefs(run: LiveBenchmarkRun): readonly string[] {
@@ -114,6 +115,5 @@ function syntheticRefs(run: LiveBenchmarkRun): readonly string[] {
 }
 
 function hasSyntheticMarker(value: string): boolean {
-  const normalized = value.toLowerCase();
-  return SYNTHETIC_ARTIFACT_MARKERS.some((marker) => normalized.includes(marker));
+  return hasInvalidBenchmarkArtifactMarker(value);
 }

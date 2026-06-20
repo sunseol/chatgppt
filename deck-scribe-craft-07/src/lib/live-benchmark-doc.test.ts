@@ -9,6 +9,7 @@ describe("live benchmark documentation", () => {
 
     expect(benchmark.includes("output_bundle_evidence_count_mismatch")).toBe(true);
     expect(benchmark.includes("output_bundle_synthetic_artifact_reference")).toBe(true);
+    expect(benchmark.includes("template`, `sample`, `example`, or `placeholder")).toBe(true);
     expect(benchmark.includes("matching evidence counts")).toBe(true);
     expect(benchmark.includes("output_bundle_regeneration_image_missing")).toBe(true);
     expect(

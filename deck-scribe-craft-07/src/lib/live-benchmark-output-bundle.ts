@@ -3,6 +3,7 @@ import type {
   LiveBenchmarkEvidenceIssueCode,
   LiveBenchmarkRun,
 } from "./live-benchmark-evidence";
+import { hasObservedBenchmarkEvidencePath } from "./live-benchmark-evidence-path";
 import { goldenPathEvidenceIssues } from "./live-benchmark-golden-path-evidence";
 import { duplicatePassedArtifactRefs } from "./live-benchmark-output-artifact-duplicates";
 import {
@@ -11,7 +12,6 @@ import {
   duplicatePassedExportArtifacts,
 } from "./live-benchmark-output-bundle-duplicates";
 import { duplicateScreenshotEvidenceIssues } from "./live-benchmark-screenshot-evidence";
-import { hasNonSyntheticEvidencePath } from "./live-evidence-path";
 
 export function outputBundleIssues(
   runs: readonly LiveBenchmarkRun[],
@@ -199,13 +199,13 @@ export function outputBundleIssues(
 }
 
 function validOutputBundlePath(value: string): boolean {
-  return hasNonSyntheticEvidencePath(value, [".zip", ".json"]);
+  return hasObservedBenchmarkEvidencePath(value, [".zip", ".json"]);
 }
 
 function validEvidenceReportPath(value: string, expectedSuffix: string): boolean {
   const normalized = value.toLowerCase().trim();
   if (!normalized.endsWith(expectedSuffix)) return false;
-  return hasNonSyntheticEvidencePath(value, [".md"]);
+  return hasObservedBenchmarkEvidencePath(value, [".md"]);
 }
 
 function evidenceCountMismatchRefs(runs: readonly LiveBenchmarkRun[]): readonly string[] {

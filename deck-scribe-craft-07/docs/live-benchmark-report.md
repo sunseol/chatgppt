@@ -35,9 +35,10 @@ Release requirement: at least 4 of 5 live benchmarks must pass without counting 
 
 - exactly the five required scenarios listed above
 - the 64-character package archive SHA-256 for the release candidate under benchmark
-- output bundle 5 sets, one distinct non-synthetic, non-local `.zip` or `.json` bundle per benchmark
+- output bundle 5 sets, one distinct observed, non-synthetic, non-local `.zip` or `.json` bundle per benchmark
 - output bundle manifests matching their benchmark id, bundle path, and package archive SHA-256
-- passed benchmark bundle manifests with matching evidence counts, a distinct non-synthetic, non-local scenario report path, distinct non-synthetic final export artifact id, distinct non-synthetic, non-local `live_e2e_report.md` path, at least 10 distinct non-synthetic, non-local step screenshot `.png` paths, at least 3 distinct non-synthetic source artifact ids, at least 5 distinct non-synthetic initial live image artifact ids, one separate approved non-synthetic regenerated live image artifact id, and at least 5 distinct non-synthetic live image request ids
+- passed benchmark bundle manifests with matching evidence counts, distinct observed scenario report and `live_e2e_report.md` paths, distinct non-synthetic final export artifact id, at least 10 distinct observed step screenshot `.png` paths, at least 3 distinct non-synthetic source artifact ids, at least 5 distinct non-synthetic initial live image artifact ids, one separate approved non-synthetic regenerated live image artifact id, and at least 5 distinct non-synthetic live image request ids
+- observed benchmark evidence paths and artifact/request ids must not be marked `template`, `sample`, `example`, or `placeholder`
 - passed benchmark runs must not reuse Golden Path report paths, screenshot paths, source artifact ids, live image artifact ids, or live image request ids from another passed benchmark run
 - at least four `live` runs whose Live Golden Path completed
 - no mock scores counted in Live pass totals
@@ -50,14 +51,14 @@ Blocking issue codes:
 - `duplicate_benchmark_scenario`
 - `missing_benchmark_package_hash`
 - `invalid_benchmark_package_hash`
-- `missing_output_bundle` - missing, synthetic, or developer-local output bundle path
+- `missing_output_bundle` - missing, synthetic, developer-local, or observer-template output bundle path
 - `missing_output_bundle_manifest`
 - `duplicate_output_bundle`
 - `duplicate_output_bundle_report`
 - `output_bundle_benchmark_mismatch`
 - `output_bundle_package_mismatch`
 - `output_bundle_evidence_count_mismatch`
-- `output_bundle_report_missing` - missing, synthetic, or developer-local scenario report path
+- `output_bundle_report_missing` - missing, synthetic, developer-local, or observer-template scenario report path
 - `output_bundle_export_missing`
 - `duplicate_output_bundle_artifact`
 - `duplicate_output_bundle_screenshot`
@@ -65,8 +66,8 @@ Blocking issue codes:
 - `duplicate_output_bundle_image_artifact`
 - `duplicate_output_bundle_image_request`
 - `duplicate_output_bundle_golden_path_report`
-- `output_bundle_synthetic_artifact_reference` - mock/fixture/test/fake source, image, request, regeneration, or export artifact ids in passed bundles
-- `output_bundle_golden_path_evidence_missing` - missing screenshot paths, sources, initial images, image requests, or non-synthetic, non-local Golden Path report evidence
+- `output_bundle_synthetic_artifact_reference` - mock/fixture/test/fake/template/sample/example/placeholder source, image, request, regeneration, or export artifact ids in passed bundles
+- `output_bundle_golden_path_evidence_missing` - missing screenshot paths, sources, initial images, image requests, or observed non-synthetic, non-local Golden Path report evidence
 - `output_bundle_regeneration_image_missing` - missing approved full-slide regeneration image artifact evidence from a passed benchmark output bundle
 - `mock_score_contamination`
 - `invalid_failure_domain`
@@ -76,4 +77,4 @@ Blocking issue codes:
 - `live_benchmark_shortfall`
 - `missing_live_benchmark_report`
 
-Current local status: the validator is implemented and tested, including rejection of unsupported failure domains, `mock`, `fixture`, `test`, `fake`, developer-local absolute, and `file://` output bundle paths and report paths, synthetic source/image/request/regeneration/export artifact ids, evidence count/list mismatches, duplicate scenario report reuse, missing or reused screenshot path evidence, missing regenerated image artifact evidence, regenerated images counted toward the initial five-image floor, plus cross-run source/image/request evidence reuse, but no real provider output bundle 5 sets have been produced.
+Current local status: the validator is implemented and tested, including rejection of unsupported failure domains, `mock`, `fixture`, `test`, `fake`, `template`, `sample`, `example`, `placeholder`, developer-local absolute, and `file://` output bundle paths and report paths, synthetic or observer-template source/image/request/regeneration/export artifact ids, evidence count/list mismatches, duplicate scenario report reuse, missing or reused screenshot path evidence, missing regenerated image artifact evidence, regenerated images counted toward the initial five-image floor, plus cross-run source/image/request evidence reuse, but no real provider output bundle 5 sets have been produced.

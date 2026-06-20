@@ -1,6 +1,6 @@
 import type { LiveBenchmarkEvidenceIssue, LiveBenchmarkRun } from "./live-benchmark-evidence";
+import { hasObservedBenchmarkEvidencePath } from "./live-benchmark-evidence-path";
 import { duplicatePassedArtifactRefs } from "./live-benchmark-output-artifact-duplicates";
-import { hasNonSyntheticEvidencePath } from "./live-evidence-path";
 
 export function duplicateScreenshotEvidenceIssues(
   runs: readonly LiveBenchmarkRun[],
@@ -31,5 +31,5 @@ export function hasDistinctScreenshotEvidence(
 }
 
 function validScreenshotPath(value: string): boolean {
-  return hasNonSyntheticEvidencePath(value, [".png"]);
+  return hasObservedBenchmarkEvidencePath(value, [".png"]);
 }

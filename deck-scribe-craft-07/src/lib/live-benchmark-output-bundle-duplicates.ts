@@ -1,5 +1,5 @@
 import type { LiveBenchmarkId, LiveBenchmarkRun } from "./live-benchmark-evidence";
-import { hasNonSyntheticEvidencePath } from "./live-evidence-path";
+import { hasObservedBenchmarkEvidencePath } from "./live-benchmark-evidence-path";
 
 export function duplicateOutputBundleRefs(runs: readonly LiveBenchmarkRun[]): readonly string[] {
   return duplicateRunRefs(runs, (run) =>
@@ -53,11 +53,11 @@ function duplicateRunRefs(
 }
 
 function validOutputBundlePath(value: string): boolean {
-  return hasNonSyntheticEvidencePath(value, [".zip", ".json"]);
+  return hasObservedBenchmarkEvidencePath(value, [".zip", ".json"]);
 }
 
 function validEvidenceReportPath(value: string, expectedSuffix: string): boolean {
   const normalized = value.toLowerCase().trim();
   if (!normalized.endsWith(expectedSuffix)) return false;
-  return hasNonSyntheticEvidencePath(value, [".md"]);
+  return hasObservedBenchmarkEvidencePath(value, [".md"]);
 }
