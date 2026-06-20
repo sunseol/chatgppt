@@ -159,7 +159,7 @@ function binaryIssues(artifact: SlideImageArtifact): readonly LiveBackgroundBatc
 }
 
 function requestMetadataIssues(artifact: SlideImageArtifact): readonly LiveBackgroundBatchIssue[] {
-  return artifact.request?.requestId?.trim() && artifact.request.model.trim()
+  return hasCanonicalRequestMetadata(artifact)
     ? []
     : [
         {
@@ -168,6 +168,17 @@ function requestMetadataIssues(artifact: SlideImageArtifact): readonly LiveBackg
           message: "Live background artifact must include provider request metadata.",
         },
       ];
+}
+
+function hasCanonicalRequestMetadata(artifact: SlideImageArtifact): boolean {
+  const request = artifact.request;
+  if (!request?.requestId) return false;
+  return (
+    request.requestId.length > 0 &&
+    request.requestId === request.requestId.trim() &&
+    request.model.length > 0 &&
+    request.model === request.model.trim()
+  );
 }
 
 function aspectIssues(artifact: SlideImageArtifact): readonly LiveBackgroundBatchIssue[] {

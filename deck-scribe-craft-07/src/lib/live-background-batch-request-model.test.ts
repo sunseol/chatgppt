@@ -7,6 +7,43 @@ import {
 } from "./live-background-batch-test-fixtures";
 
 describe("live background batch request model evidence", () => {
+  test("blocks padded live artifact request metadata before accepting stored evidence", () => {
+    // Given
+    const packages = slidePackages();
+    const artifacts = packages.map((pkg, index) => {
+      const artifact = imageArtifact(pkg);
+      return index === 0
+        ? {
+            ...artifact,
+            request: {
+              ...artifact.request,
+              requestId: " img_req_001 ",
+              model: " gpt-image-2 ",
+            },
+          }
+        : artifact;
+    });
+
+    // When
+    const validation = validateLiveBackgroundBatch(
+      buildLiveBackgroundBatch({
+        batchId: "live_bg_batch_padded_request_metadata",
+        deckContextId: "deck_context_001",
+        designSystemId: "design_001",
+        artifacts,
+        storedArtifacts: artifacts.map((artifact) => storedArtifact(artifact)),
+        promptPackages: packages,
+      }),
+    );
+
+    // Then
+    expect(validation.kind).toBe("blocked");
+    if (validation.kind !== "blocked") return;
+    expect(validation.issues.map((issue) => issue.code)).toEqual([
+      "missing_provider_request_metadata",
+    ]);
+  });
+
   test("blocks blank live artifact request models before accepting stored evidence", () => {
     // Given
     const packages = slidePackages();

@@ -183,6 +183,7 @@ describe("live readiness documentation", () => {
     expect(backgroundBatch.includes("structured text overlay strategy rules")).toBe(true);
     expect(backgroundBatch.includes("invalid_image_binary")).toBe(true);
     expect(backgroundBatch.includes("missing_provider_request_metadata")).toBe(true);
+    expect(backgroundBatch.includes("canonical unpadded provider request id")).toBe(true);
     expect(backgroundBatch.includes("retryable")).toBe(true);
   });
 
