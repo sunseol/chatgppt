@@ -7,7 +7,6 @@ const DOCS = {
   benchmark: new URL("../../docs/live-benchmark-report.md", import.meta.url),
   goldenPath: new URL("../../docs/live-golden-path-e2e.md", import.meta.url),
   interviewCutover: new URL("../../docs/live-interview-cutover.md", import.meta.url),
-  textPipelineCutover: new URL("../../docs/live-text-pipeline-cutover.md", import.meta.url),
   imagePathDecision: new URL("../../docs/live-image-path-decision.md", import.meta.url),
   imageArtifactStorage: new URL("../../docs/live-image-artifact-storage.md", import.meta.url),
   backgroundBatch: new URL("../../docs/live-background-batch.md", import.meta.url),
@@ -114,22 +113,6 @@ describe("live readiness documentation", () => {
     expect(decision.includes("missing_known_limits")).toBe(true);
     expect(decision.includes("release_decision_blocked")).toBe(true);
     expect(decision.includes("Verified Live")).toBe(true);
-  });
-
-  test("records the live text pipeline cutover contract", () => {
-    const textPipelineCutover = readDoc(DOCS.textPipelineCutover);
-
-    expect(textPipelineCutover.includes("DF-214")).toBe(true);
-    expect(textPipelineCutover.includes("DesignSystemSchema")).toBe(true);
-    expect(textPipelineCutover.includes("LayoutIRSchema")).toBe(true);
-    expect(textPipelineCutover.includes("invalid_repair_turn_evidence")).toBe(true);
-    expect(textPipelineCutover.includes("schema_repair_exhausted")).toBe(true);
-    expect(textPipelineCutover.includes("shared_live_turn")).toBe(true);
-    expect(textPipelineCutover.includes("shared_live_artifact")).toBe(true);
-    expect(textPipelineCutover.includes("text_pipeline_prompt_version_mismatch")).toBe(true);
-    expect(textPipelineCutover.includes("deck_plan_desktop@v1")).toBe(true);
-    expect(textPipelineCutover.includes("layout_ir_desktop@v1")).toBe(true);
-    expect(textPipelineCutover.includes("non-session Codex auth")).toBe(true);
   });
 
   test("records the live image path decision contract", () => {

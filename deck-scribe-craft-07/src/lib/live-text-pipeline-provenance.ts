@@ -3,6 +3,7 @@ import {
   type ProviderArtifactProvenance,
   type ProviderProvenanceIssue,
 } from "./provider-provenance";
+import { inputArtifactIdentityIssues } from "./live-text-pipeline-input-identity";
 import type {
   LiveTextPipelineCutoverInput,
   LiveTextPipelineIssue,
@@ -17,6 +18,7 @@ export function collectLiveTextPipelineProvenanceIssues(
     ...liveCodexProvenanceIssues("design_system", input.designSystem.provenance),
     ...liveCodexProvenanceIssues("layout_ir", input.layoutIr.provenance),
     ...canonicalIdentityIssues(input),
+    ...inputArtifactIdentityIssues(input),
     ...turnIdentityIssues(input),
     ...artifactIdentityIssues(input),
     ...lineageIssues(input),

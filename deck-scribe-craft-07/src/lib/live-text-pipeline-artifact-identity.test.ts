@@ -82,6 +82,9 @@ describe("live text pipeline artifact identity", () => {
 
     expect(result.kind).toBe("blocked");
     if (result.kind !== "blocked") return;
-    expect(result.issues.map((issue) => issue.code)).toEqual(["shared_brief_research_input"]);
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "noncanonical_text_pipeline_input_identity",
+      "shared_brief_research_input",
+    ]);
   });
 });
