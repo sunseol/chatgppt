@@ -76,6 +76,30 @@ describe("review gallery title edit re-export evidence", () => {
     expect(validation.issues.map((issue) => issue.code)).toEqual(["title_edit_reexport_mismatch"]);
   });
 
+  test("blocks title edit evidence that is not tied to the compositor background", () => {
+    // Given
+    const items = validItems();
+
+    // When
+    const validation = validateReviewGalleryLiveCompositions({
+      items,
+      expectedSlideCount: 1,
+      titleEditReexportEvidence: {
+        slideNumber: 1,
+        originalTitle: "시장",
+        editedTitle: "수정된 시장",
+        exportedSvgPath: "projects/project/exports/svg/slide_01.svg",
+        exportedSvgContent:
+          '<svg data-export-basis="compositor"><text data-role="title">수정된 시장</text></svg>',
+      },
+    });
+
+    // Then
+    expect(validation.kind).toBe("blocked");
+    if (validation.kind !== "blocked") return;
+    expect(validation.issues.map((issue) => issue.code)).toEqual(["title_edit_reexport_mismatch"]);
+  });
+
   test("allows live review when title edit evidence is present in the exported SVG", () => {
     // Given
     const items = validItems();
@@ -89,7 +113,7 @@ describe("review gallery title edit re-export evidence", () => {
         originalTitle: "시장",
         editedTitle: "수정된 시장",
         exportedSvgPath: "projects/project/exports/svg/slide_01.svg",
-        exportedSvgContent: '<svg><text data-role="title">수정된 시장</text></svg>',
+        exportedSvgContent: validExportedSvgContent("수정된 시장"),
       },
     });
 
@@ -107,12 +131,20 @@ function validItems() {
   });
 }
 
+function validExportedSvgContent(title: string): string {
+  const artifact = validBackgroundArtifact();
+  return [
+    '<svg data-export-basis="compositor"',
+    `data-background-artifact-id="${artifact.artifactId}"`,
+    `data-background-artifact-path="${artifact.path}"`,
+    `data-background-artifact-hash="${artifact.hash}">`,
+    `<text data-role="title">${title}</text>`,
+    "</svg>",
+  ].join(" ");
+}
+
 function validComposition(): FinalSlideComposition {
-  const artifact = {
-    artifactId: "project_image_slide_001_v1",
-    path: "projects/project/slides/images/slide_001.v1.png",
-    hash: "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-  };
+  const artifact = validBackgroundArtifact();
   return {
     slideNumber: 1,
     exportBasis: "compositor",
@@ -138,6 +170,14 @@ function validComposition(): FinalSlideComposition {
       height: 1,
       color: { r: 245, g: 246, b: 248, a: 255 },
     }),
+  };
+}
+
+function validBackgroundArtifact() {
+  return {
+    artifactId: "project_image_slide_001_v1",
+    path: "projects/project/slides/images/slide_001.v1.png",
+    hash: "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
   };
 }
 

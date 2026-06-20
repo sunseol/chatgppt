@@ -40,17 +40,35 @@ function titleEditEvidenceMatches(
   evidence: ReviewGalleryTitleEditReexportEvidence,
 ): boolean {
   const item = items.find((candidate) => candidate.slide.number === evidence.slideNumber);
+  const composition = item?.composition;
   const originalTitle = evidence.originalTitle.trim();
   const editedTitle = evidence.editedTitle.trim();
   return (
-    item?.composition?.overlayBounds.some((overlay) => overlay.role === "title") === true &&
+    composition !== undefined &&
+    composition.overlayBounds.some((overlay) => overlay.role === "title") &&
     originalTitle.length > 0 &&
     editedTitle.length > 0 &&
     originalTitle !== editedTitle &&
     isObservedTitleEditExportPath(evidence.exportedSvgPath, evidence.slideNumber) &&
+    exportedSvgReferencesComposition(evidence.exportedSvgContent, composition) &&
     evidence.exportedSvgContent.includes(editedTitle) &&
     !evidence.exportedSvgContent.includes(`>${originalTitle}<`)
   );
+}
+
+function exportedSvgReferencesComposition(
+  exportedSvgContent: string,
+  composition: NonNullable<ReviewGalleryItem["composition"]>,
+): boolean {
+  const artifact = composition.backgroundArtifact;
+  if (artifact === undefined) return false;
+  const requiredAttributes = [
+    `data-export-basis="${composition.exportBasis}"`,
+    `data-background-artifact-id="${artifact.artifactId}"`,
+    `data-background-artifact-path="${artifact.path}"`,
+    `data-background-artifact-hash="${artifact.hash}"`,
+  ];
+  return requiredAttributes.every((attribute) => exportedSvgContent.includes(attribute));
 }
 
 function isObservedTitleEditExportPath(value: string, slideNumber: number): boolean {
