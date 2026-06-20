@@ -1,11 +1,19 @@
 import type { GeneratedSlide } from "./deck-types";
+import type { ImageProviderFailureKind } from "./image-provider-errors";
 import type { PromptUsageRecord } from "./prompt-assets";
 import type { ProviderJob, ProviderJobManager } from "./provider-job-manager";
+import type {
+  SlideGenerationRetryEvent,
+  SlideGenerationRetryPolicy,
+} from "./slide-generation-retry-policy";
 import type { SlideContextBundle } from "./slide-context-bundle";
+
+export type SlideGenerationRetryProvenance = SlideGenerationRetryEvent;
 
 export interface SlideGenerationQueueContext {
   readonly deckContextId: string;
   readonly deckContextHash: string;
+  readonly designSystemId: string;
   readonly designTokenHash: string;
   readonly layoutPrototypeId: string;
   readonly slideCount: number;
@@ -15,9 +23,11 @@ export interface SlideGenerationWorkerInput {
   readonly bundle: SlideContextBundle;
   readonly deckContextId: string;
   readonly deckContextHash: string;
+  readonly designSystemId: string;
   readonly designTokenHash: string;
   readonly layoutPrototypeId: string;
   readonly promptUsage: PromptUsageRecord;
+  readonly attempt: number;
 }
 
 export interface SlideGenerationQueueProgress {
@@ -27,11 +37,20 @@ export interface SlideGenerationQueueProgress {
   readonly percent: number;
 }
 
+export interface SlideGenerationQueueConcurrencyEvidence {
+  readonly requestedMaxParallel: number;
+  readonly effectiveMaxParallel: number;
+  readonly observedMaxRunning: number;
+}
+
 export interface SlideGenerationFailure {
   readonly jobId: string;
   readonly bundleId: string;
   readonly slideNumber: number;
-  readonly retryable: true;
+  readonly retryable: boolean;
+  readonly attempts: number;
+  readonly failureKind: ImageProviderFailureKind | "cancelled";
+  readonly retryDelaysMs: readonly number[];
   readonly errorMessage: string;
   readonly userMessage: string;
 }
@@ -46,6 +65,8 @@ export type SlideGenerationQueueResult =
       readonly failures: readonly SlideGenerationFailure[];
       readonly jobs: readonly ProviderJob[];
       readonly promptUsages: readonly PromptUsageRecord[];
+      readonly retryProvenance: readonly SlideGenerationRetryProvenance[];
+      readonly concurrency?: SlideGenerationQueueConcurrencyEvidence;
       readonly progress: SlideGenerationQueueProgress;
     };
 
@@ -54,6 +75,10 @@ export interface RunSlideGenerationQueueInput {
   readonly manager?: ProviderJobManager;
   readonly maxParallel?: number;
   readonly providerId?: string;
+  readonly completedSlides?: readonly GeneratedSlide[];
+  readonly retryPolicy?: SlideGenerationRetryPolicy;
+  readonly waitForRetry?: (delayMs: number, event: SlideGenerationRetryEvent) => Promise<void>;
+  readonly isCancellationRequested?: () => boolean;
   readonly generateSlide: (input: SlideGenerationWorkerInput) => Promise<GeneratedSlide>;
   readonly onProgress?: (progress: SlideGenerationQueueProgress) => void;
 }

@@ -57,4 +57,16 @@ describe("image provider feasibility", () => {
     expect(decision.productCopy.billing.includes("API organization/project")).toBe(true);
     expect(decision.productCopy.permission.includes("organization verification")).toBe(true);
   });
+
+  test("keeps OpenAIImageProvider blocked while organization verification is unknown", () => {
+    const decision = decideImageProviderFeasibility({
+      codexImageCapability: "unknown",
+      apiCredential: "available",
+      organizationVerification: "unknown",
+    });
+
+    expect(decision.providerId).toBe("openaiImage");
+    expect(decision.setup).toBe("requiresOrganizationVerification");
+    expect(decision.productCopy.permission.includes("organization verification")).toBe(true);
+  });
 });

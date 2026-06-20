@@ -1,4 +1,6 @@
-import type { DeckProject, Stage } from "./deck-types";
+import type { DeckProject, ResearchPack, Stage } from "./deck-types";
+import { ResearchPackSchema } from "./research-pack-schema";
+import { redactSensitiveText } from "./redaction";
 
 const STAGES: readonly Stage[] = [
   "PROJECT_CREATED",
@@ -26,14 +28,14 @@ const ASPECT_RATIOS = ["16:9", "4:3"] as const;
 const LANGUAGES = ["ko", "en", "mixed"] as const;
 
 export function serializeProjectList(projects: readonly DeckProject[]): string {
-  return JSON.stringify(projects);
+  return redactSensitiveText(JSON.stringify(projects));
 }
 
 export function parseProjectList(raw: string | null): DeckProject[] {
   if (raw === null) return [];
   const parsed = parseJson(raw);
   if (!Array.isArray(parsed)) return [];
-  return parsed.filter(isDeckProject);
+  return parsed.flatMap(parseDeckProject);
 }
 
 function parseJson(raw: string): unknown {
@@ -60,6 +62,27 @@ function isDeckProject(value: unknown): value is DeckProject {
     isRecord(value["invalidated"]) &&
     Array.isArray(value["approvalLog"])
   );
+}
+
+function parseDeckProject(value: unknown): readonly DeckProject[] {
+  if (!isDeckProject(value)) return [];
+  return [normalizeDeckProject(value)];
+}
+
+function normalizeDeckProject(project: DeckProject): DeckProject {
+  const research = normalizeStoredResearchPack(project.research);
+  return research === undefined ? project : { ...project, research };
+}
+
+function normalizeStoredResearchPack(research: ResearchPack | undefined): ResearchPack | undefined {
+  if (research === undefined) return undefined;
+  const parsed = ResearchPackSchema.safeParse(research);
+  if (!parsed.success) return undefined;
+  return {
+    ...parsed.data,
+    liveEvidenceRefs: parsed.data.liveEvidenceRefs ?? [],
+    provenanceLineage: parsed.data.provenanceLineage ?? [],
+  };
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

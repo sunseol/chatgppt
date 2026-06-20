@@ -4,6 +4,7 @@ import { createFrozenDeckContext } from "./deck-context";
 import { mockBrief, mockDesign, mockLayout, mockPlan, mockResearch } from "./mock-ai";
 import { buildSlideContextBundles, type SlideContextBundle } from "./slide-context-bundle";
 import { buildSlidePromptPackage } from "./slide-prompt-package";
+import { ImageProviderRequestError } from "./image-provider-errors";
 import {
   createMockSlideImageProvider,
   createOpenAIImageProvider,
@@ -43,7 +44,14 @@ describe("slide image provider call", () => {
     const provider = createOpenAIImageProvider({
       async generate(request) {
         requests.push(request);
-        return { imageDataUrl: "data:image/png;base64,ZmFrZQ==" };
+        return {
+          imageDataUrl: "data:image/png;base64,ZmFrZQ==",
+          requestId: "img_req_001",
+          latencyMs: 2_400,
+          size: "1200x900",
+          quality: "high",
+          usage: { imageCount: 1, estimatedCostUsd: 0.08 },
+        };
       },
     });
     const pkg = buildSlidePromptPackage(chartSlideBundle());
@@ -61,6 +69,46 @@ describe("slide image provider call", () => {
         },
       },
     ]);
+    if (result.kind !== "ready") return;
+    expect(result.artifact.request).toEqual({
+      requestId: "img_req_001",
+      model: "gpt-image-2",
+      size: "1200x900",
+      quality: "high",
+      latencyMs: 2_400,
+      usage: { imageCount: 1, estimatedCostUsd: 0.08 },
+    });
+  });
+
+  test("OpenAI-style provider records measured latency when the response omits it", async () => {
+    // Given
+    const ticks = [1_000, 1_375, 1_376];
+    const provider = createOpenAIImageProvider(
+      {
+        async generate() {
+          return {
+            imageDataUrl: "data:image/png;base64,ZmFrZQ==",
+            requestId: "img_req_002",
+            size: "1600x900",
+            quality: "high",
+          };
+        },
+      },
+      { now: () => ticks.shift() ?? 1_376 },
+    );
+
+    // When
+    const result = await generateSlideImage({
+      provider,
+      package: buildSlidePromptPackage(chartSlideBundle()),
+      aspectRatio: "16:9",
+    });
+
+    // Then
+    expect(result.kind).toBe("ready");
+    if (result.kind !== "ready") return;
+    expect(result.artifact.request?.latencyMs).toBe(375);
+    expect(result.artifact.generatedAt).toBe(1_376);
   });
 
   test("provider failures return retryable user-facing metadata", async () => {
@@ -80,11 +128,44 @@ describe("slide image provider call", () => {
       failure: {
         providerId: "openaiImage",
         slideNumber: 3,
+        errorKind: "unknown",
         retryable: true,
         errorMessage: "image quota exceeded",
         userMessage: "Slide 3 image generation failed: image quota exceeded. Retry is available.",
       },
     });
+  });
+
+  test("provider request errors distinguish retryable rate limits from locked failures", async () => {
+    const rateLimitedProvider = createOpenAIImageProvider({
+      async generate() {
+        throw new ImageProviderRequestError("rate_limit", "429 rate limited");
+      },
+    });
+    const contentPolicyProvider = createOpenAIImageProvider({
+      async generate() {
+        throw new ImageProviderRequestError("content_policy", "content policy blocked");
+      },
+    });
+
+    const rateLimited = await generateSlideImage({
+      provider: rateLimitedProvider,
+      package: buildSlidePromptPackage(chartSlideBundle()),
+      aspectRatio: "16:9",
+    });
+    const contentPolicy = await generateSlideImage({
+      provider: contentPolicyProvider,
+      package: buildSlidePromptPackage(chartSlideBundle()),
+      aspectRatio: "16:9",
+    });
+
+    expect(rateLimited.kind).toBe("failed");
+    expect(contentPolicy.kind).toBe("failed");
+    if (rateLimited.kind !== "failed" || contentPolicy.kind !== "failed") return;
+    expect(rateLimited.failure.errorKind).toBe("rate_limit");
+    expect(rateLimited.failure.retryable).toBe(true);
+    expect(contentPolicy.failure.errorKind).toBe("content_policy");
+    expect(contentPolicy.failure.retryable).toBe(false);
   });
 });
 

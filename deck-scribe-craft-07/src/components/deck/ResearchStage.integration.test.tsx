@@ -62,4 +62,74 @@ describe("research review UI", () => {
     expect(markup.includes("src_003")).toBe(true);
     expect(markup.includes("dataset_001")).toBe(true);
   });
+
+  test("shows live source metadata, quote spans, confidence, and exclusion action", () => {
+    const pack = mockResearch(mockBrief("투자자 피치덱", 8, "16:9"));
+    const markup = renderToStaticMarkup(
+      <SourceReviewList
+        sources={[{ ...pack.sources[0], url: "https://example.gov/report" }]}
+        claims={[pack.claims[0]]}
+        liveEvidenceRefs={[
+          {
+            id: "ev_001",
+            claimId: pack.claims[0].id,
+            sourceId: pack.sources[0].id,
+            sourceArtifactPath: "docs/live-source-capture-bundle/html_001/original.html",
+            kind: "quote_span",
+            quoteSpan: {
+              start: 18,
+              end: 22,
+              text: "67%",
+            },
+          },
+        ]}
+        captureMetadata={[
+          {
+            sourceId: pack.sources[0].id,
+            fetchedAt: "2026-06-18T08:19:04Z",
+          },
+        ]}
+        onExcludeSource={() => undefined}
+      />,
+    );
+
+    expect(markup.includes("https://example.gov/report")).toBe(true);
+    expect(markup.includes("2026-06-18T08:19:04Z")).toBe(true);
+    expect(markup.includes("quote 18-22")).toBe(true);
+    expect(markup.includes("67%")).toBe(true);
+    expect(markup.includes(pack.claims[0].confidence)).toBe(true);
+    expect(markup.includes("출처 제외")).toBe(true);
+  });
+
+  test("shows persisted source capture metadata from research pack sources", () => {
+    const pack = mockResearch(mockBrief("투자자 피치덱", 8, "16:9"));
+    const markup = renderToStaticMarkup(
+      <SourceReviewList
+        sources={[
+          {
+            ...pack.sources[0],
+            url: "https://example.gov/report",
+            capture: {
+              originalUrl: "https://example.gov/report",
+              finalUrl: "https://example.gov/report?download=1",
+              fetchedAt: 1_789_300_001,
+              mimeType: "text/html",
+              statusCode: 200,
+              contentHash: "sha256:source-content",
+              rawArchivePath: "docs/live-source-capture-bundle/html_001/original.html",
+              textArchivePath: "docs/live-source-capture-bundle/html_001/extracted.txt",
+              extractedTextHash: "sha256:source-text",
+              version: 1,
+            },
+          },
+        ]}
+        claims={[pack.claims[0]]}
+      />,
+    );
+
+    expect(markup.includes("fetched_at 1789300001")).toBe(true);
+    expect(markup.includes("final_url https://example.gov/report?download=1")).toBe(true);
+    expect(markup.includes("text/html · 200")).toBe(true);
+    expect(markup.includes("sha256:source-content")).toBe(true);
+  });
 });

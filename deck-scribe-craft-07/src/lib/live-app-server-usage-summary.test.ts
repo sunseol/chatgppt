@@ -1,0 +1,80 @@
+import { describe, expect, test } from "bun:test";
+import { evaluateLiveUsageSummary, formatLiveUsageSummary } from "./live-usage-summary";
+import { createCodexAppServerUsageStageSummary } from "./live-app-server-usage-summary";
+
+describe("Codex App Server usage summary", () => {
+  test("records token usage notifications as DF-244 stage usage", () => {
+    // Given
+    const stage = createCodexAppServerUsageStageSummary({
+      stageId: "df244_usage_probe",
+      durationMs: 7_158,
+      retryCount: 0,
+      notifications: [
+        {
+          method: "thread/tokenUsage/updated",
+          params: {
+            threadId: "019edc53-3950-74e1-8287-36d66f29e87e",
+            turnId: "019edc53-3bfe-76d3-912d-31769ee3fd3f",
+            tokenUsage: {
+              total: {
+                totalTokens: 25_147,
+                inputTokens: 25_006,
+                cachedInputTokens: 2_432,
+                outputTokens: 141,
+                reasoningOutputTokens: 118,
+              },
+              last: {
+                totalTokens: 25_147,
+                inputTokens: 25_006,
+                cachedInputTokens: 2_432,
+                outputTokens: 141,
+                reasoningOutputTokens: 118,
+              },
+              modelContextWindow: 258_400,
+            },
+          },
+        },
+      ],
+    });
+
+    // When
+    const gate = evaluateLiveUsageSummary([stage]);
+    const summary = formatLiveUsageSummary([stage]);
+
+    // Then
+    expect(gate).toEqual({ kind: "ready" });
+    expect(stage.providerUsageProvided).toBe(true);
+    expect(stage.usage).toEqual({ inputTokens: 25_006, outputTokens: 141 });
+    expect(summary.includes("df244_usage_probe · codex · 7158ms · retries 0")).toBe(true);
+    expect(summary.includes("input 25006 · output 141")).toBe(true);
+  });
+
+  test("blocks malformed token usage notifications as supplied but unrecorded usage", () => {
+    // Given
+    const stage = createCodexAppServerUsageStageSummary({
+      stageId: "df244_usage_probe",
+      durationMs: 1_000,
+      retryCount: 0,
+      notifications: [
+        {
+          method: "thread/tokenUsage/updated",
+          params: {
+            tokenUsage: {
+              total: {
+                inputTokens: "not-a-number",
+              },
+            },
+          },
+        },
+      ],
+    });
+
+    // When
+    const gate = evaluateLiveUsageSummary([stage]);
+
+    // Then
+    expect(gate.kind).toBe("blocked");
+    if (gate.kind !== "blocked") return;
+    expect(gate.issues.map((issue) => issue.code)).toEqual(["missing_provider_usage_summary"]);
+  });
+});

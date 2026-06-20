@@ -1,5 +1,10 @@
 import type { StepKey } from "./deck-types";
-import type { ProviderJob, ProviderUsageSummary } from "./provider-job-manager";
+import type {
+  ProviderImageBillingDisclosure,
+  ProviderJob,
+  ProviderUsageSummary,
+} from "./provider-job-manager";
+import { hasBillingConfirmationEvidencePath } from "./live-usage-billing-evidence";
 import { redactSensitiveText } from "./redaction";
 
 export type AuditEventType =
@@ -127,6 +132,22 @@ function copyUsageSummary(summary: ProviderUsageSummary): ProviderUsageSummary {
     ...(summary.estimatedCostUsd === undefined
       ? {}
       : { estimatedCostUsd: summary.estimatedCostUsd }),
+    ...(summary.imageBillingDisclosure === undefined
+      ? {}
+      : { imageBillingDisclosure: copyImageBillingDisclosure(summary.imageBillingDisclosure) }),
+  };
+}
+
+function copyImageBillingDisclosure(
+  disclosure: ProviderImageBillingDisclosure,
+): ProviderImageBillingDisclosure {
+  return {
+    apiKeyRequired: disclosure.apiKeyRequired,
+    userConfirmed: disclosure.userConfirmed,
+    label: disclosure.label,
+    ...(disclosure.confirmationEvidencePath === undefined
+      ? {}
+      : { confirmationEvidencePath: disclosure.confirmationEvidencePath }),
   };
 }
 
@@ -135,7 +156,21 @@ function formatUsageSummary(summary: ProviderUsageSummary): string {
     summary.inputTokens === undefined ? "" : `input ${summary.inputTokens}`,
     summary.outputTokens === undefined ? "" : `output ${summary.outputTokens}`,
     summary.imageCount === undefined ? "" : `images ${summary.imageCount}`,
-    summary.estimatedCostUsd === undefined ? "" : `cost $${summary.estimatedCostUsd.toFixed(4)}`,
+    summary.estimatedCostUsd === undefined
+      ? ""
+      : `cost estimate $${summary.estimatedCostUsd.toFixed(4)}`,
+    imageBillingDisclosureText(summary),
   ].filter((part) => part.length > 0);
   return parts.length === 0 ? "none" : parts.join(" · ");
+}
+
+function imageBillingDisclosureText(summary: ProviderUsageSummary): string {
+  const disclosure = summary.imageBillingDisclosure;
+  if (disclosure === undefined) return "";
+  if (!disclosure.userConfirmed) return "API key billing not confirmed";
+  if (!hasBillingConfirmationEvidencePath(disclosure.confirmationEvidencePath)) {
+    return "API key billing not confirmed";
+  }
+  const label = disclosure.label.trim();
+  return label.length === 0 ? "API key billing not confirmed" : redactSensitiveText(label);
 }

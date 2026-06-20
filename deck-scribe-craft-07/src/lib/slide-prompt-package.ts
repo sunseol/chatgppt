@@ -13,6 +13,7 @@ export interface SlidePromptPackage {
   readonly bundleId: string;
   readonly deckContextId: string;
   readonly deckContextHash: string;
+  readonly designSystemId: string;
   readonly slideNumber: number;
   readonly layoutScreenshot: string;
   readonly sourceMapIds: readonly string[];
@@ -30,6 +31,7 @@ export function buildSlidePromptPackage(bundle: SlideContextBundle): SlidePrompt
     bundleId: bundle.bundleId,
     deckContextId: bundle.deckContextId,
     deckContextHash: bundle.deckContextHash,
+    designSystemId: bundle.designSystemId,
     slideNumber: bundle.slideSpec.slideNumber,
     layoutScreenshot: bundle.layoutPrototype.layoutScreenshot,
     sourceMapIds: bundle.sourceMap.sourceMapIds,
@@ -60,6 +62,7 @@ function buildPrompt(
     `- Language: ${bundle.globalSummary.language}`,
     "",
     "[APPROVED DESIGN SYSTEM]",
+    `- Design System ID: ${bundle.designSystemId}`,
     `- Colors: ${JSON.stringify(bundle.designTokens.colors)}`,
     `- Typography: ${JSON.stringify(bundle.designTokens.typography)}`,
     `- Layout rules: ${joinOrNone(bundle.designTokens.layoutRules)}`,

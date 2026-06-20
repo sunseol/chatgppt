@@ -48,6 +48,102 @@ describe("provider job progress panel", () => {
     expect(markup.includes("provider.ts")).toBe(false);
     expect(markup.includes("sk-secret")).toBe(false);
   });
+
+  test("renders provider duration retry count usage and cost estimate", () => {
+    const markup = renderToStaticMarkup(
+      <ProviderJobProgressPanel
+        stageLabel="Live text turn"
+        job={{
+          ...runningJob(),
+          providerId: "codex",
+          capability: "deckPlan",
+          status: "succeeded",
+          startedAt: 10,
+          finishedAt: 7_168,
+          attempt: 2,
+          usageSummary: {
+            inputTokens: 25_006,
+            outputTokens: 141,
+            estimatedCostUsd: 0.04,
+          },
+        }}
+        recovered={false}
+        onCancel={() => undefined}
+        onRetry={() => undefined}
+      />,
+    );
+
+    expect(markup.includes("제공자")).toBe(true);
+    expect(markup.includes("codex")).toBe(true);
+    expect(markup.includes("실행 시간")).toBe(true);
+    expect(markup.includes("7158ms")).toBe(true);
+    expect(markup.includes("retries 1")).toBe(true);
+    expect(markup.includes("input 25006")).toBe(true);
+    expect(markup.includes("output 141")).toBe(true);
+    expect(markup.includes("cost estimate $0.0400")).toBe(true);
+    expect(markup.includes("cost $0.0400")).toBe(false);
+  });
+
+  test("renders image API key billing disclosure with image usage", () => {
+    const markup = renderToStaticMarkup(
+      <ProviderJobProgressPanel
+        stageLabel="Live image generation"
+        job={{
+          ...runningJob(),
+          providerId: "openaiImage",
+          capability: "imageGeneration",
+          status: "succeeded",
+          startedAt: 10,
+          finishedAt: 1_210,
+          usageSummary: {
+            imageCount: 5,
+            estimatedCostUsd: 0.18,
+            imageBillingDisclosure: {
+              apiKeyRequired: true,
+              userConfirmed: true,
+              label: "API key billing confirmed",
+              confirmationEvidencePath: "usage/image-billing-confirmation.json",
+            },
+          },
+        }}
+        recovered={false}
+        onCancel={() => undefined}
+        onRetry={() => undefined}
+      />,
+    );
+
+    expect(markup.includes("images 5")).toBe(true);
+    expect(markup.includes("cost estimate $0.1800")).toBe(true);
+    expect(markup.includes("API key billing confirmed")).toBe(true);
+  });
+
+  test("renders unconfirmed image API key billing as not confirmed", () => {
+    const markup = renderToStaticMarkup(
+      <ProviderJobProgressPanel
+        stageLabel="Live image generation"
+        job={{
+          ...runningJob(),
+          providerId: "openaiImage",
+          capability: "imageGeneration",
+          status: "running",
+          usageSummary: {
+            imageCount: 1,
+            imageBillingDisclosure: {
+              apiKeyRequired: true,
+              userConfirmed: false,
+              label: "API key billing confirmed",
+            },
+          },
+        }}
+        recovered={false}
+        onCancel={() => undefined}
+        onRetry={() => undefined}
+      />,
+    );
+
+    expect(markup.includes("API key billing not confirmed")).toBe(true);
+    expect(markup.includes("API key billing confirmed")).toBe(false);
+  });
 });
 
 function runningJob(): ProviderJob {

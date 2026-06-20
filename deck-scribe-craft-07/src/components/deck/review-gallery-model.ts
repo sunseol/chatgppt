@@ -1,4 +1,12 @@
 import type { GeneratedSlide, SlideSpec } from "@/lib/deck-types";
+import type { FinalSlideComposition } from "@/lib/final-slide-compositor";
+export type {
+  BackgroundTextDetection,
+  ReviewGalleryLiveCompositionIssue,
+  ReviewGalleryLiveCompositionIssueCode,
+  ReviewGalleryLiveCompositionValidation,
+} from "./review-gallery-live-validation";
+export { validateReviewGalleryLiveCompositions } from "./review-gallery-live-validation";
 
 export type SlideQaStatus = "passed" | "failed" | "not_run";
 
@@ -7,6 +15,7 @@ export interface ReviewGalleryItem {
   readonly title: string;
   readonly qaStatus: SlideQaStatus;
   readonly selected: boolean;
+  readonly composition?: FinalSlideComposition;
 }
 
 export interface BuildReviewGalleryItemsInput {
@@ -14,6 +23,7 @@ export interface BuildReviewGalleryItemsInput {
   readonly specs: readonly SlideSpec[];
   readonly selectedSlideNumber: number | null;
   readonly qaBySlide?: Readonly<Record<number, SlideQaStatus>>;
+  readonly compositions?: readonly FinalSlideComposition[];
 }
 
 export const PARTIAL_EDIT_EXPERIMENT_LABEL = "부분 수정 (실험)";
@@ -21,13 +31,17 @@ export const PARTIAL_EDIT_EXPERIMENT_LABEL = "부분 수정 (실험)";
 export function buildReviewGalleryItems(
   input: BuildReviewGalleryItemsInput,
 ): readonly ReviewGalleryItem[] {
-  return input.slides.map((slide) => ({
-    slide,
-    title:
-      input.specs.find((spec) => spec.number === slide.number)?.title ?? `Slide ${slide.number}`,
-    qaStatus: input.qaBySlide?.[slide.number] ?? "not_run",
-    selected: input.selectedSlideNumber === slide.number,
-  }));
+  return input.slides.map((slide) => {
+    const composition = input.compositions?.find((item) => item.slideNumber === slide.number);
+    return {
+      slide,
+      title:
+        input.specs.find((spec) => spec.number === slide.number)?.title ?? `Slide ${slide.number}`,
+      qaStatus: input.qaBySlide?.[slide.number] ?? "not_run",
+      selected: input.selectedSlideNumber === slide.number,
+      ...(composition === undefined ? {} : { composition }),
+    };
+  });
 }
 
 export function canAdvanceToVectorize(items: readonly ReviewGalleryItem[]): boolean {

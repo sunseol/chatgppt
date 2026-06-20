@@ -1,5 +1,11 @@
 import type { OpenAIImageFallbackPublicState } from "./image-provider-fallback";
+import type { ProviderAuthMode } from "./provider-provenance";
 import type { ProviderCapability, ProviderStatus } from "./provider-types";
+import {
+  createProviderStatusLock,
+  providerAuthModeLabel,
+  providerStatusLabel,
+} from "./provider-status-view";
 
 export type ProviderFeatureKey =
   | "text_planning"
@@ -20,12 +26,16 @@ export type ProviderCapabilityRow = {
 
 export type ProviderCapabilityMatrixView = {
   readonly providerName: string;
+  readonly selectedProviderId: string;
+  readonly authModeLabel: string;
+  readonly statusLabel: string;
   readonly providerStatusMessage: string;
   readonly rows: readonly ProviderCapabilityRow[];
 };
 
 export type ProviderCapabilityMatrixInput = {
   readonly providerName: string;
+  readonly authMode: ProviderAuthMode;
   readonly status: ProviderStatus;
   readonly capabilities: readonly ProviderCapability[];
   readonly imageFallback?: OpenAIImageFallbackPublicState;
@@ -64,6 +74,9 @@ export function createProviderCapabilityMatrixView(
   const imageRow = createImageGenerationRow(input);
   return {
     providerName: input.providerName,
+    selectedProviderId: input.status.providerId,
+    authModeLabel: providerAuthModeLabel(input.authMode),
+    statusLabel: providerStatusLabel(input.status),
     providerStatusMessage: input.status.message,
     rows: [
       createProviderFeatureRow(input, TEXT_PLANNING),
@@ -78,7 +91,7 @@ function createProviderFeatureRow(
   input: ProviderCapabilityMatrixInput,
   definition: FeatureDefinition,
 ): ProviderCapabilityRow {
-  const statusLock = providerStatusLock(input);
+  const statusLock = createProviderStatusLock(input.providerName, input.status);
   if (statusLock !== undefined) {
     return lockedRow(definition.key, definition.label, statusLock.reason, statusLock.actionLabel);
   }
@@ -100,7 +113,7 @@ function createProviderFeatureRow(
 }
 
 function createImageGenerationRow(input: ProviderCapabilityMatrixInput): ProviderCapabilityRow {
-  const statusLock = providerStatusLock(input);
+  const statusLock = createProviderStatusLock(input.providerName, input.status);
   if (statusLock === undefined && input.capabilities.includes("imageGeneration")) {
     return availableRow(
       "image_generation",
@@ -138,7 +151,7 @@ function createRevisionGenerationRow(
     );
   }
 
-  const statusLock = providerStatusLock(input);
+  const statusLock = createProviderStatusLock(input.providerName, input.status);
   if (statusLock !== undefined) {
     return lockedRow("revision_generation", "수정 생성", statusLock.reason, statusLock.actionLabel);
   }
@@ -191,27 +204,6 @@ function imageFallbackRow(fallback: OpenAIImageFallbackPublicState): ProviderCap
       );
     default:
       return assertNever(fallback.setup);
-  }
-}
-
-function providerStatusLock(
-  input: ProviderCapabilityMatrixInput,
-): { readonly reason: string; readonly actionLabel: string } | undefined {
-  switch (input.status.kind) {
-    case "connected":
-      return undefined;
-    case "requiresAuth":
-      return {
-        reason: `${input.providerName} requires authentication: ${input.status.message}`,
-        actionLabel: "Provider 로그인",
-      };
-    case "unavailable":
-      return {
-        reason: `${input.providerName} is unavailable: ${input.status.message}`,
-        actionLabel: "Provider 상태 확인",
-      };
-    default:
-      return assertNever(input.status);
   }
 }
 

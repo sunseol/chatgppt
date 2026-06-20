@@ -43,6 +43,16 @@ describe("deck plan prompt", () => {
     expect(result.excludedClaims.map((claim) => claim.id)).toEqual(["claim_bad"]);
   });
 
+  test("excludes live claims that lack original source evidence refs", () => {
+    const research = researchFixture({ liveEvidenceRefs: [] });
+
+    const result = buildDeckPlanPrompt({ brief: briefFixture(8), research });
+
+    expect(result.prompt.includes("국내 기업의 67%가 AI 도구를 시범 도입 중이다.")).toBe(false);
+    expect(result.usableClaims).toEqual([]);
+    expect(result.excludedClaims.map((claim) => claim.id)).toEqual(["claim_001"]);
+  });
+
   test("supports 5 and 12 slide bounds", () => {
     expect(
       buildDeckPlanPrompt({ brief: briefFixture(2), research: researchFixture() }).slideCount,

@@ -79,6 +79,6 @@ export function decideImageProviderFeasibility(
 
 function getOpenAIImageSetup(input: ImageProviderFeasibilityInput): ImageProviderSetup {
   if (input.apiCredential === "missing") return "requiresApiCredential";
-  if (input.organizationVerification === "required") return "requiresOrganizationVerification";
+  if (input.organizationVerification !== "verified") return "requiresOrganizationVerification";
   return "ready";
 }

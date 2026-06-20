@@ -1,0 +1,257 @@
+import type { StoredSlideImageArtifact } from "./image-artifact-store";
+import type { SlideGenerationQueueResult } from "./slide-generation-queue-types";
+import type { SlideImageArtifact } from "./slide-image-provider";
+import type { SlidePromptPackage } from "./slide-prompt-package";
+import { batchIntegrityIssues } from "./live-background-batch-integrity";
+import { storedArtifactIssues } from "./live-background-batch-storage";
+import { textOverlayIssues } from "./live-background-batch-text-overlay";
+
+export type LiveBackgroundBatchIssueCode =
+  | "expected_five_artifacts"
+  | "prompt_package_count_mismatch"
+  | "stored_artifact_count_mismatch"
+  | "missing_prompt_package"
+  | "mock_provider_output"
+  | "deck_context_mismatch"
+  | "design_system_mismatch"
+  | "missing_text_overlay_rule"
+  | "missing_provider_request_metadata"
+  | "missing_stored_background_artifact"
+  | "stored_background_artifact_mismatch"
+  | "duplicate_provider_request_metadata"
+  | "duplicate_stored_background_artifact"
+  | "invalid_image_binary"
+  | "layout_reference_mismatch"
+  | "wrong_aspect_ratio"
+  | "slide_id_mismatch";
+
+export type LiveBackgroundBatchIssue = {
+  readonly code: LiveBackgroundBatchIssueCode;
+  readonly slideNumber?: number;
+  readonly message: string;
+};
+
+export type LiveBackgroundBatchValidation =
+  | { readonly kind: "ready" }
+  | { readonly kind: "blocked"; readonly issues: readonly LiveBackgroundBatchIssue[] };
+
+export type LiveBackgroundBatch = {
+  readonly batchId: string;
+  readonly deckContextId: string;
+  readonly designSystemId: string;
+  readonly artifacts: readonly SlideImageArtifact[];
+  readonly storedArtifacts?: readonly StoredSlideImageArtifact[];
+  readonly promptPackages: readonly SlidePromptPackage[];
+};
+
+export function buildLiveBackgroundBatch(input: LiveBackgroundBatch): LiveBackgroundBatch {
+  return input;
+}
+
+export function validateLiveBackgroundBatch(
+  batch: LiveBackgroundBatch,
+): LiveBackgroundBatchValidation {
+  const issues = [
+    ...batchIntegrityIssues(batch),
+    ...promptPackageCoverageIssues(batch),
+    ...batch.artifacts.flatMap((artifact) =>
+      artifactIssues(
+        artifact,
+        batch,
+        storedArtifactForSlide(batch, artifact.slideNumber),
+        promptPackageForSlide(batch, artifact.slideNumber),
+      ),
+    ),
+  ];
+  return issues.length === 0 ? { kind: "ready" } : { kind: "blocked", issues };
+}
+
+export function getRetryableBackgroundSlideNumbers(
+  result: SlideGenerationQueueResult,
+): readonly number[] {
+  if (result.kind === "blocked") return [];
+  return result.failures
+    .filter((failure) => failure.retryable)
+    .map((failure) => failure.slideNumber);
+}
+
+function artifactIssues(
+  artifact: SlideImageArtifact,
+  batch: LiveBackgroundBatch,
+  storedArtifact: StoredSlideImageArtifact | undefined,
+  pkg: SlidePromptPackage | undefined,
+): readonly LiveBackgroundBatchIssue[] {
+  if (!pkg) {
+    return [
+      {
+        code: "missing_prompt_package",
+        slideNumber: artifact.slideNumber,
+        message: `Missing prompt package for slide ${artifact.slideNumber}.`,
+      },
+    ];
+  }
+  return [
+    ...providerIssues(artifact),
+    ...storedArtifactIssues(artifact, storedArtifact),
+    ...binaryIssues(artifact),
+    ...requestMetadataIssues(artifact),
+    ...aspectIssues(artifact),
+    ...slideIdIssues(artifact, pkg),
+    ...layoutReferenceIssues(artifact, pkg),
+    ...contextIssues(pkg, batch),
+    ...textOverlayIssues(pkg),
+  ];
+}
+
+function storedArtifactForSlide(
+  batch: LiveBackgroundBatch,
+  slideNumber: number,
+): StoredSlideImageArtifact | undefined {
+  return batch.storedArtifacts?.find((stored) => stored.metadata.slideNumber === slideNumber);
+}
+
+function promptPackageCoverageIssues(
+  batch: LiveBackgroundBatch,
+): readonly LiveBackgroundBatchIssue[] {
+  const artifactSlideNumbers = new Set(batch.artifacts.map((artifact) => artifact.slideNumber));
+  return batch.promptPackages.flatMap((pkg) =>
+    artifactSlideNumbers.has(pkg.slideNumber)
+      ? []
+      : [
+          {
+            code: "slide_id_mismatch" as const,
+            slideNumber: pkg.slideNumber,
+            message: "Prompt package slide id must match a live image artifact slide id.",
+          },
+        ],
+  );
+}
+
+function promptPackageForSlide(
+  batch: LiveBackgroundBatch,
+  slideNumber: number,
+): SlidePromptPackage | undefined {
+  return batch.promptPackages.find((pkg) => pkg.slideNumber === slideNumber);
+}
+
+function providerIssues(artifact: SlideImageArtifact): readonly LiveBackgroundBatchIssue[] {
+  return artifact.providerId === "mock"
+    ? [
+        {
+          code: "mock_provider_output",
+          slideNumber: artifact.slideNumber,
+          message: "Live background artifacts must come from a real provider.",
+        },
+      ]
+    : [];
+}
+
+function binaryIssues(artifact: SlideImageArtifact): readonly LiveBackgroundBatchIssue[] {
+  return hasPngSignatureDataUrl(artifact.imageDataUrl)
+    ? []
+    : [
+        {
+          code: "invalid_image_binary",
+          slideNumber: artifact.slideNumber,
+          message: "Live background artifact must contain PNG binary output.",
+        },
+      ];
+}
+
+function requestMetadataIssues(artifact: SlideImageArtifact): readonly LiveBackgroundBatchIssue[] {
+  return hasCanonicalRequestMetadata(artifact)
+    ? []
+    : [
+        {
+          code: "missing_provider_request_metadata",
+          slideNumber: artifact.slideNumber,
+          message: "Live background artifact must include provider request metadata.",
+        },
+      ];
+}
+
+function hasCanonicalRequestMetadata(artifact: SlideImageArtifact): boolean {
+  const request = artifact.request;
+  if (!request?.requestId) return false;
+  return (
+    request.requestId.length > 0 &&
+    request.requestId === request.requestId.trim() &&
+    request.model.length > 0 &&
+    request.model === request.model.trim()
+  );
+}
+
+function aspectIssues(artifact: SlideImageArtifact): readonly LiveBackgroundBatchIssue[] {
+  return artifact.aspectRatio === "16:9" &&
+    artifact.canvas.width === 1600 &&
+    artifact.canvas.height === 900
+    ? []
+    : [
+        {
+          code: "wrong_aspect_ratio",
+          slideNumber: artifact.slideNumber,
+          message: "Live background artifact must be 16:9.",
+        },
+      ];
+}
+
+function hasPngSignatureDataUrl(dataUrl: string): boolean {
+  return dataUrl.startsWith("data:image/png;base64,iVBORw0KGgo");
+}
+
+function slideIdIssues(
+  artifact: SlideImageArtifact,
+  pkg: SlidePromptPackage,
+): readonly LiveBackgroundBatchIssue[] {
+  return artifact.slideNumber === pkg.slideNumber
+    ? []
+    : [
+        {
+          code: "slide_id_mismatch",
+          slideNumber: artifact.slideNumber,
+          message: "Image artifact slide id must match the prompt package slide id.",
+        },
+      ];
+}
+
+function layoutReferenceIssues(
+  artifact: SlideImageArtifact,
+  pkg: SlidePromptPackage,
+): readonly LiveBackgroundBatchIssue[] {
+  return artifact.layoutReference.mode === "composition-reference" &&
+    artifact.layoutReference.screenshot === pkg.layoutScreenshot
+    ? []
+    : [
+        {
+          code: "layout_reference_mismatch",
+          slideNumber: artifact.slideNumber,
+          message: "Layout screenshot must be passed as the composition reference.",
+        },
+      ];
+}
+
+function contextIssues(
+  pkg: SlidePromptPackage,
+  batch: LiveBackgroundBatch,
+): readonly LiveBackgroundBatchIssue[] {
+  return [
+    ...(pkg.deckContextId === batch.deckContextId
+      ? []
+      : [
+          {
+            code: "deck_context_mismatch" as const,
+            slideNumber: pkg.slideNumber,
+            message: "All live backgrounds must share one deck context id.",
+          },
+        ]),
+    ...(pkg.designSystemId === batch.designSystemId
+      ? []
+      : [
+          {
+            code: "design_system_mismatch" as const,
+            slideNumber: pkg.slideNumber,
+            message: "All live backgrounds must share one design system id.",
+          },
+        ]),
+  ];
+}

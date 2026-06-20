@@ -1,0 +1,82 @@
+# Live Benchmark Report
+
+Date: 2026-06-18
+
+This report defines the 5 live benchmark scenarios required by DF-242. It does not claim that the benchmarks have passed yet.
+
+## 5 live benchmark scenarios
+
+| ID                    | Scenario                           | Required evidence                                            | Current result                                                                                                                                                             |
+| --------------------- | ---------------------------------- | ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| korean_business       | Korean business proposal, 5 slides | Live text turns, 3 source URLs, 5 live images, export bundle | Blocked - text stages still use mock generation.                                                                                                                           |
+| market_research       | Fresh market research deck         | Live search across 3 domains, source capture, evidence map   | Blocked - DF-221 worker live web-search now has a completed six-domain App Server turn, but benchmark output still lacks packaged source capture and evidence-map bundles. |
+| chart_report          | Chart-heavy report                 | Dataset evidence, editable chart overlay, report provenance  | Blocked - source capture and live dataset evidence missing.                                                                                                                |
+| image_intro           | Image-centered introduction        | 5 binary live image artifacts with request ids               | Blocked - Generate stage still queues provider `mock`.                                                                                                                     |
+| revision_regeneration | Edit and full-slide regeneration   | must_keep, must_change, before/after approval                | Blocked - review UI edits local descriptors.                                                                                                                               |
+
+## Failure taxonomy
+
+- provider: Codex runtime, image API credential, quota, or auth failure.
+- context: stale approved artifact bundle or deck_context_id mismatch.
+- research: source search, capture, evidence, or approval failure.
+- image: generation, rate limit, cancellation, or binary artifact failure.
+- renderer: compositor, overlay, or export rendering failure.
+- editor: title edit, layer preservation, or regeneration comparison failure.
+
+## Current gate result
+
+Passed live benchmarks: 0 of 5.
+
+Release requirement: at least 4 of 5 live benchmarks must pass without counting mock benchmark scores.
+
+## Local evidence contract
+
+`src/lib/live-benchmark-evidence.ts` validates the DF-242 evidence bundle before benchmark results can count toward Live release. The bundle must include:
+
+- exactly the five required scenarios listed above, with no unknown scenario ids
+- the 64-character package archive SHA-256 for the release candidate under benchmark
+- output bundle 5 sets, one distinct observed, non-synthetic, non-local `.zip` or `.json` bundle per benchmark
+- output bundle manifests matching their benchmark id, bundle path, and package archive SHA-256
+- passed benchmark bundle manifests with matching evidence counts, distinct observed scenario report and `live_e2e_report.md` paths, distinct non-synthetic final export artifact id, at least 10 distinct observed step screenshot `.png` paths that name every Golden Path step, at least 3 distinct non-synthetic source artifact ids, at least 5 distinct non-synthetic initial live image artifact ids, one separate approved non-synthetic regenerated live image artifact id, and at least 5 distinct non-synthetic live image request ids
+- observed benchmark evidence paths and artifact/request ids must not be marked `template`, `sample`, `example`, or `placeholder`
+- passed benchmark runs must not reuse Golden Path report paths, screenshot paths, source artifact ids, live image artifact ids, or live image request ids from another passed benchmark run
+- at least four of the five required `live` scenario runs whose Live Golden Path completed
+- no mock scores counted in Live pass totals
+- failure classification strictly limited to provider, context, research, image, renderer, or editor for every failed or blocked benchmark
+- a `docs/live-benchmark-report.md` report path
+
+Blocking issue codes:
+
+- `missing_benchmark_scenario`
+- `duplicate_benchmark_scenario`
+- `unknown_benchmark_scenario`
+- `missing_benchmark_package_hash`
+- `invalid_benchmark_package_hash`
+- `missing_output_bundle` - missing, synthetic, developer-local, or observer-template output bundle path
+- `missing_output_bundle_manifest`
+- `duplicate_output_bundle`
+- `duplicate_output_bundle_report`
+- `output_bundle_benchmark_mismatch`
+- `output_bundle_package_mismatch`
+- `output_bundle_evidence_count_mismatch`
+- `output_bundle_report_missing` - missing, synthetic, developer-local, or observer-template scenario report path
+- `output_bundle_export_missing`
+- `duplicate_output_bundle_artifact`
+- `duplicate_output_bundle_screenshot`
+- `output_bundle_step_screenshot_missing` - passed benchmark screenshot evidence does not name every Golden Path step.
+- `duplicate_output_bundle_source_artifact`
+- `duplicate_output_bundle_image_artifact`
+- `duplicate_output_bundle_image_request`
+- `duplicate_output_bundle_golden_path_report`
+- `output_bundle_synthetic_artifact_reference` - mock/fixture/test/fake/template/sample/example/placeholder source, image, request, regeneration, or export artifact ids in passed bundles
+- `output_bundle_golden_path_evidence_missing` - missing screenshot paths, sources, initial images, image requests, or observed non-synthetic, non-local Golden Path report evidence
+- `output_bundle_regeneration_image_missing` - missing approved full-slide regeneration image artifact evidence from a passed benchmark output bundle
+- `mock_score_contamination`
+- `invalid_failure_domain`
+- `missing_failure_domain`
+- `passed_failure_domain_present`
+- `golden_path_not_completed`
+- `live_benchmark_shortfall`
+- `missing_live_benchmark_report`
+
+Current local status: the validator is implemented and tested, including rejection of unknown or duplicate benchmark scenarios, unsupported failure domains, `mock`, `fixture`, `test`, `fake`, `template`, `sample`, `example`, `placeholder`, developer-local absolute, and `file://` output bundle paths and report paths, synthetic or observer-template source/image/request/regeneration/export artifact ids, evidence count/list mismatches, duplicate scenario report reuse, missing, reused, or non-step-named screenshot path evidence, missing regenerated image artifact evidence, regenerated images counted toward the initial five-image floor, plus cross-run source/image/request evidence reuse, but no real provider output bundle 5 sets have been produced.
