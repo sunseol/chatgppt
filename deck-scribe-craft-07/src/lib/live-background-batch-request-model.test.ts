@@ -5,6 +5,7 @@ import {
   slidePackages,
   storedArtifact,
 } from "./live-background-batch-test-fixtures";
+import type { SlideImageArtifact } from "./slide-image-provider";
 
 describe("live background batch request model evidence", () => {
   test("blocks padded live artifact request metadata before accepting stored evidence", () => {
@@ -117,6 +118,36 @@ describe("live background batch request model evidence", () => {
         designSystemId: "design_001",
         artifacts,
         storedArtifacts,
+        promptPackages: packages,
+      }),
+    );
+
+    // Then
+    expect(validation.kind).toBe("blocked");
+    if (validation.kind !== "blocked") return;
+    expect(validation.issues.map((issue) => issue.code)).toEqual([
+      "stored_background_artifact_mismatch",
+    ]);
+  });
+
+  test("blocks empty provider usage metadata before accepting stored evidence", () => {
+    // Given
+    const packages = slidePackages();
+    const artifacts = packages.map((pkg, index): SlideImageArtifact => {
+      const artifact = imageArtifact(pkg);
+      if (index !== 0) return artifact;
+      if (!artifact.request) throw new Error("Expected request metadata.");
+      return { ...artifact, request: { ...artifact.request, usage: {} } };
+    });
+
+    // When
+    const validation = validateLiveBackgroundBatch(
+      buildLiveBackgroundBatch({
+        batchId: "live_bg_batch_empty_usage_metadata",
+        deckContextId: "deck_context_001",
+        designSystemId: "design_001",
+        artifacts,
+        storedArtifacts: artifacts.map((artifact) => storedArtifact(artifact)),
         promptPackages: packages,
       }),
     );

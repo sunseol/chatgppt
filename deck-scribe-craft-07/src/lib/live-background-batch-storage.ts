@@ -1,7 +1,7 @@
 import type { StoredSlideImageArtifact } from "./image-artifact-store";
 import { parseVersionedProjectImageArtifactPath } from "./image-artifact-path";
 import type { LiveBackgroundBatchIssue } from "./live-background-batch";
-import type { SlideImageArtifact } from "./slide-image-provider";
+import type { SlideImageArtifact, SlideImageRequestMetadata } from "./slide-image-provider";
 
 export function storedArtifactIssues(
   artifact: SlideImageArtifact,
@@ -72,6 +72,36 @@ function storedRequestMatches(
     stored.metadata.request.requestId === request.requestId &&
     stored.provenance.requestId === request.requestId &&
     stored.metadata.request.model === request.model &&
-    stored.provenance.modelOrRuntime === request.model
+    stored.provenance.modelOrRuntime === request.model &&
+    requestUsageMetadataMatches(request) &&
+    requestUsageMetadataMatches(stored.metadata.request)
   );
+}
+
+function requestUsageMetadataMatches(request: SlideImageRequestMetadata): boolean {
+  const usage = request.usage;
+  if (usage === undefined) return true;
+  return (
+    usageHasEvidence(usage) &&
+    [usage.inputTokens, usage.outputTokens, usage.imageCount].every(validOptionalCount) &&
+    validOptionalCost(usage.estimatedCostUsd)
+  );
+}
+
+function usageHasEvidence(usage: SlideImageRequestMetadata["usage"]): boolean {
+  if (usage === undefined) return true;
+  return (
+    usage.inputTokens !== undefined ||
+    usage.outputTokens !== undefined ||
+    usage.imageCount !== undefined ||
+    usage.estimatedCostUsd !== undefined
+  );
+}
+
+function validOptionalCount(value: number | undefined): boolean {
+  return value === undefined || (Number.isInteger(value) && value >= 0);
+}
+
+function validOptionalCost(value: number | undefined): boolean {
+  return value === undefined || (Number.isFinite(value) && value >= 0);
 }
