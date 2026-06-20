@@ -165,3 +165,38 @@ bun run typecheck
 bun run verify
 bun run lint
 ```
+
+## 2026-06-21 Lane E update
+
+Lane E produced new app-equivalent live Research Pack and approval-gate evidence
+under `docs/live-evidence/lane-e-20260621/`.
+
+- App Server Research Pack turn:
+  `docs/live-evidence/lane-e-20260621/app-server-research-pack-turn.json`
+  SHA-256 `097f320a258a8f60f491de1d03bdca51f42fead83dcb14731d8f6104fd49e014`,
+  thread `019ee6a8-4eeb-74d0-869d-b065fd6184a3`, turn
+  `019ee6a8-5136-70a3-b3aa-9ebc22f86286`.
+- Approved Research Pack:
+  `docs/live-evidence/lane-e-20260621/approved-research-pack.json`
+  SHA-256 `f55115bc0a82a2162cfbbae13258e1b137d6c963659b65702e7166928a892261`,
+  approved hash `sha256:440b17df`.
+- Research approval gate:
+  `docs/live-evidence/lane-e-20260621/research-approval-gate.json`
+  SHA-256 `a59fd0738a1c61a867ee1bb18eb38051dce4dcca6848adff0fa3e6020c8e0517`,
+  result `ready`.
+
+Captured source artifacts:
+
+- `docs/live-evidence/lane-e-20260621/raw/owid-installed-solar-pv-capacity.csv`
+  SHA-256 `6ae86f7c263a8fd4d0e42ce1d894d09f42bec3e7370b8a758087ea31ae5640e5`.
+- `docs/live-evidence/lane-e-20260621/raw/owid-solar-pv-prices.csv`
+  SHA-256 `24bde60f4ca3f802d390eeb13f54c1aa9e130aa67e6e97e608da450fab334518`.
+- `docs/live-evidence/lane-e-20260621/raw/worldbank-renewable-ex-hydro.json`
+  SHA-256 `85163fa043df74ef42384b9b65fc4b4feb646339324b334eb29d248cd056f3f6`.
+
+DF-223 / #142 and DF-224 / #143 are no longer blocked on missing Research Pack
+or approval-gate evidence in this lane. The remaining packaged-app signing
+blocker still applies to unrelated package/manual QA tickets, but the assigned
+Research Pack and approval-gate acceptance slice now has persisted live source
+capture metadata, quote/table refs, numeric/dataset evidence, provider
+provenance, and a ready approval-gate result.

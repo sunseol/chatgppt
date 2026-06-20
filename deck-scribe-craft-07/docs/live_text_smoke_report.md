@@ -392,6 +392,40 @@ Fresh lane evidence bundle:
 
 This strengthens DF-210 app-server evidence and confirms current authenticated
 runtime availability. DF-210 remains open because the assigned acceptance still
-requires clean macOS reproduction. DF-215 remains open because the packaged app
-has not produced a complete interview-through-Layout-IR smoke bundle with a
-real approved Research Pack and post-resume text turn.
+requires clean macOS reproduction.
+
+## 2026-06-21 Lane E Complete Text Smoke
+
+Lane E produced a complete authenticated app-equivalent text smoke bundle under
+`docs/live-evidence/lane-e-20260621/` using the approved live Research Pack
+`rp_lane_e_20260621_solar` (`approvedHash: sha256:440b17df`).
+
+- Smoke evidence:
+  `docs/live-evidence/lane-e-20260621/auth-bootstrap-smoke.json`,
+  SHA-256 `4803348fa684e1eaeb6662be04d7877e180ce8178340db2d92049e2d1a465dff`,
+  account `chatgpt`, thread `019ee6ab-9437-7520-9e6f-5bdd58b6bd41`,
+  turn `019ee6ab-96a4-7270-b6e9-829d5415721`.
+- Text smoke gate:
+  `docs/live-evidence/lane-e-20260621/live-text-smoke-gate.json`,
+  SHA-256 `cafc00f9318c4034a1fa073fe74cc2cd14ed4c00dc0e11ce29db36dac3ba8b61`,
+  result `ready`.
+
+Stage turns:
+
+- Questions: `019ee6ab-a74c-7ff3-b5ed-a67f668ab818` /
+  `019ee6ab-a9dd-7c10-809e-c1e5799ad8f4`.
+- Brief: `019ee6ab-d51e-7900-b905-daa95ff8ec70` /
+  `019ee6ab-d786-7aa3-b511-9102750b8c4c`.
+- Deck Plan: `019ee6ac-a94c-7381-a126-f78b449605d1` /
+  `019ee6ac-ab9b-79b1-84a0-7459ccc9f4e2`.
+- Design System: `019ee6ad-751b-7191-a5b8-0c2335f7e7b7` /
+  `019ee6ad-77b7-76d2-a2ab-8b6844e93623`.
+- Layout IR: `019ee6af-e51b-72d1-97b8-b4291523e4df` /
+  `019ee6af-e7a7-74a0-b469-074a261db193`.
+- Post-layout resume turn on the same Layout IR thread:
+  `019ee6b0-1a9c-7cf1-9a46-dada230836ff`.
+
+This satisfies the DF-215 live text smoke gate for the assigned lane: all
+required text stages are live Codex production artifacts with distinct
+artifact/turn identities, stage-correct prompt versions, Brief and Research
+input lineage, and a completed same-thread post-resume turn.

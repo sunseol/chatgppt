@@ -1,0 +1,9 @@
+{
+  "gate": {
+    "kind": "ready"
+  },
+  "approvedHash": "sha256:440b17df",
+  "threadId": "019ee6a8-4eeb-74d0-869d-b065fd6184a3",
+  "turnId": "019ee6a8-5136-70a3-b3aa-9ebc22f86286",
+  "normalizedEvidenceRefSourceArtifactPaths": true
+}

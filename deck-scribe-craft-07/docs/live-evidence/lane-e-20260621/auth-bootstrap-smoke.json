@@ -1,0 +1,26 @@
+{
+  "initOk": true,
+  "accountType": "chatgpt",
+  "threadId": "019ee6ab-9437-7520-9e6f-5bdd58b6bd41",
+  "turnId": "019ee6ab-96a4-7270-b6e9-829d5415721a",
+  "turnCompleted": true,
+  "protocolLineCount": 86,
+  "stderrLogLineCount": 40,
+  "eventMethods": [
+    "remoteControl/status/changed",
+    "thread/started",
+    "warning",
+    "mcpServer/startupStatus/updated",
+    "thread/status/changed",
+    "turn/started",
+    "hook/started",
+    "hook/completed",
+    "item/started",
+    "item/completed",
+    "item/agentMessage/delta",
+    "thread/tokenUsage/updated",
+    "account/rateLimits/updated",
+    "turn/completed"
+  ],
+  "finalText": "{\"artifact\":\"deckforge_live_current_smoke\",\"stage\":\"current_health\",\"mock\":false,\"fixture\":false,\"status\":\"ok\"}"
+}
