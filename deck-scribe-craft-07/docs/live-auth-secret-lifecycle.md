@@ -87,3 +87,26 @@ Current local runtime evidence:
 - The production app-surface interview run completed live App Server structured turns through the authenticated ChatGPT session without exposing token material.
 
 The logout/relogin acceptance item remains externally blocked. Running `codex logout` in this shared lane would remove the only active ChatGPT session, and non-interactive restoration requires user-controlled device auth or access-token input. No raw token or device-login credential was available to this worker, so logout/relogin QA must be performed by a human or clean-machine owner.
+
+## 2026-06-21 Lane A Evidence Recheck
+
+Fresh authenticated App Server evidence was collected at `2026-06-20T19:29:29Z`
+(`2026-06-21 04:29:29 KST`) and preserved in
+`docs/live-evidence/runtime-text-research-live-recheck-20260620T192929Z.json`.
+
+- Evidence digest:
+  `sha256:c3fe5790996607ff06ffbac3422c9e2f751b2a855d304a2c8775fe09fa082a3f`
+- `codex --version`: `codex-cli 0.141.0`
+- `codex app-server daemon version`: `status: "running"`,
+  `cliVersion: "0.141.0"`, `appServerVersion: "0.141.0"`
+- Authenticated smoke thread/turn:
+  `019ee682-75f6-7f63-a741-9ea51e0beba6` /
+  `019ee682-7888-74a0-a5e1-29223ff1dcbb`
+- Schema-constrained live structured thread/turn:
+  `019ee682-8819-74f3-8f5a-8e5864e54db1` /
+  `019ee682-8ab0-79d0-9068-b37e428faf04`
+
+This recheck proves the current lane can use the official authenticated Codex
+runtime without storing token material in the project. It does not close
+DF-205 because fresh unauthenticated login, logout/relogin, and packaged
+desktop keychain setup require a user-controlled clean account or clean machine.

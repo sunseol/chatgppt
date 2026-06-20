@@ -246,3 +246,51 @@ DF-215 local update: the live text smoke gate now blocks reused text artifact id
 DF-215 local update: the live text smoke gate now blocks non-canonical text artifact identities with `text_artifact_noncanonical_identity` when a text artifact id, turn id, or thread id only becomes valid after trimming boundary whitespace. This prevents padded durable ids from satisfying a packaged smoke bundle even when the stage lineage is otherwise connected. The issue still requires a packaged production UI run that completes interview through Layout IR with live Codex-only artifacts and post-resume turn evidence.
 
 DF-215 local update: the live text smoke gate now blocks non-canonical text artifact input ids with `text_smoke_noncanonical_input_identity` when any project, answer-bundle, Research Pack, or stage handoff input only becomes valid after trimming boundary whitespace. This prevents padded input lineage from satisfying the packaged smoke bundle. The issue still requires a packaged production UI run that completes interview through Layout IR with live Codex-only artifacts and post-resume turn evidence.
+
+## 2026-06-21 Lane A Runtime/Text/Research Recheck
+
+Fresh evidence produced in this lane:
+
+- App Server evidence bundle:
+  `docs/live-evidence/runtime-text-research-live-recheck-20260620T192929Z.json`
+  (`2026-06-20T19:29:29Z`,
+  `sha256:c3fe5790996607ff06ffbac3422c9e2f751b2a855d304a2c8775fe09fa082a3f`).
+  It records `codex-cli 0.141.0`, running App Server daemon `0.141.0`,
+  smoke thread/turn `019ee682-75f6-7f63-a741-9ea51e0beba6` /
+  `019ee682-7888-74a0-a5e1-29223ff1dcbb`, and structured thread/turn
+  `019ee682-8819-74f3-8f5a-8e5864e54db1` /
+  `019ee682-8ab0-79d0-9068-b37e428faf04`.
+- Package assessment evidence bundle:
+  `docs/live-evidence/runtime-text-research-package-assessment-20260620T193049Z.json`
+  (`2026-06-20T19:30:49Z`,
+  `sha256:74795a764c6aae6660a21bc160a65e59e725f45f7e9fba9c3aff4c6d71a4a44a`).
+  It records DMG SHA-256
+  `ad8b11dee61a15c193fabfc3a7bf85110b116db65098bd2a845c2533a25dae5d`,
+  the mounted bundle files, `codesign` exit `1`, `spctl` exit `1`, and detach
+  exit `0`.
+
+Assigned issue disposition from this recheck:
+
+- DF-205 / `#131`: remains open. Authenticated Codex runtime evidence is fresh,
+  but clean unauthenticated login, logout/relogin, and packaged keychain setup
+  require a user-controlled clean account or clean machine.
+- DF-210 / `#133`: remains open. The current App Server can run authenticated
+  smoke and structured turns, but clean macOS bootstrap reproduction is still
+  not present.
+- DF-212 / `#135`: remains open. Protocol-level worker resume evidence exists,
+  but packaged desktop restart/reopen recovery with a full approved artifact
+  bundle is still blocked by missing approved live Research.
+- DF-213 / `#136`: remains open. Live interview app-server turns exist, but
+  the complete packaged/manual interview artifact bundle remains unrecorded.
+- DF-214 / `#137`: remains open. App Server is available, but Plan/Design/Layout
+  must not launch without a real approved Research Pack; the production gate now
+  blocks this as `missing_approved_research`.
+- DF-215 / `#138`: remains open. The full text smoke cannot complete until the
+  production surface has live Research approval, Plan, Design System, Layout IR,
+  and post-resume evidence.
+- DF-223 / `#142`: remains open. No app-produced Research Pack with source
+  capture metadata, quote/table refs, numeric or dataset evidence, and live
+  provenance exists in this lane.
+- DF-224 / `#143`: remains open. Packaged research approval QA is blocked by
+  the current DMG failing both `codesign` and `spctl` with
+  `code has no resources but signature indicates they must be present`.
