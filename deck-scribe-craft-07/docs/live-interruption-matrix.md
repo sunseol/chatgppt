@@ -101,3 +101,9 @@ The local contract is ready and live text-turn, source-fetch interruption, and A
 ## 2026-06-21 Runtime/Text Lane Status
 
 The production app-surface text recheck did not reach Plan/Design/Layout jobs because approved Research evidence is missing. Runtime/Text can still report the existing direct live text-turn interruption evidence above, but DF-243 remains blocked on app-level persisted cancellation snapshots, interrupted approval/export gate evidence, and image partial-resume evidence from the image lane. No new app-level interruption matrix scenario was closed by the 2026-06-21 Runtime/Text run.
+
+## 2026-06-21 Lane F Recheck
+
+Lane F did not produce new live interruption matrix artifacts. The package and local test gates pass, but no packaged app-level persisted recovery snapshot set, cancel-signal JSON targeting the same live job id, image partial-resume evidence, or interrupted approval/export gate JSON evidence was generated.
+
+DF-243 remains open. Next evidence needed: the full five-scenario live matrix with distinct live job ids, distinct persisted recovery snapshots, app-storage cancel snapshot plus cancel signal, image partial-resume proof, and distinct interrupted approval/export gate evidence paths.

@@ -21,13 +21,33 @@ The current worktree has stronger Live-readiness contracts than the previous moc
 
 ## Latest local verification
 
-- `bun run verify` passes: typecheck, 988 tests, and production build.
+- `bun run verify` passes: typecheck, 991 tests, and production build.
 - `bun run lint` exits 0 with six pre-existing React Fast Refresh warnings in shared UI files.
 - `bun run package:dry-run` creates `dist/deckforge-macos-dry-run.tgz`.
-- Dry-run archive SHA-256: `a9d25b2840b2ae41b15db3ec7dace158748a467febd1643eb46a390028c97272`.
-- Current unsigned DMG SHA-256: `53428ab9cf805a85c41e775bc2107d9e58713e0b7234ede271c0ead9560f932b`.
+- Dry-run archive SHA-256: `cec0077d117f8cc2d863db2075bbbd55cc812830e91233474a9f550ee6de427b`.
+- Current unsigned DMG SHA-256: `232d0fd67eed137ff8b048848823d95cd71f2c8cd044a07ba279defd0a934108`.
 - Package content scan finds no hits for mock provider ids, mock provider labels, mock stage function names, `mock-provider`, `MOCK MODE`, fixture paths, test files, local developer absolute paths, `.omx/`, `.playwright-mcp/`, bundled `auth.json` or `.codex` payload files, long `Bearer` tokens, or OpenAI/Codex secret-like values in `dist/client`, `dist/server`, or the extracted dry-run app bundle. The regenerated archive contains 17 app files, 26 archive members, and 288,674 compressed bytes. The broader mock/fixture/research approval/secret matches are expected production guard-code literals, production status copy, secret-redaction regex definitions, sensitive-path guards, and Tailwind/class-merge CSS utility identifiers: `mock_lineage_contamination`, `fixture_lineage_contamination`, `pending_reinforcement_request`, `summary_without_original`, `missing_provenance`, `API_KEY_PATTERN`, `SECRET_ASSIGNMENT_PATTERN`, `.codex/auth.json`, `OPENAI_API_KEY` redaction regex text, and `sk-image-linear-from-pos`.
-- The current native package was regenerated with `bun run tauri:build`; mounted-DMG scan found 0 configured secret-like values and 0 mock/fixture/test/local-path contamination hits. The built app remains ad-hoc signed with no TeamIdentifier, `codesign --verify --deep --strict` fails with `code has no resources but signature indicates they must be present`, and Gatekeeper rejects the DMG with `source=no usable signature`.
+- Lane F regenerated the current native package with `bun run tauri:build`; the app binary SHA-256 is `dc927cc199e6456cbe12d5be42b9471cead63dafec58d77a699fa2f9c85d2c21`. Fixed-string scans of the dry-run app bundle, native `.app`, and mounted DMG found 0 mock provider id, mock stage, fixture/test path, local-path, `.omx`, `.playwright-mcp`, or assigned secret hits. `Bearer` and assigned `OPENAI_API_KEY` scans found 0 hits. A broad `sk-*` regex matches Tailwind/class-merge utility code, not a credential. The built app remains ad-hoc signed with no TeamIdentifier, `codesign --verify --deep --strict` fails with `code has no resources but signature indicates they must be present`, and Gatekeeper rejects the DMG with `source=no usable signature`. `security find-identity -v -p codesigning` found 0 valid identities, and `xcrun notarytool history` returned `Must provide credentials`.
+
+## 2026-06-21 Lane F Release-Gates Recheck
+
+Lane F ran the current branch `jacobex/live-lane-release-gates` from `/Users/jake/chatgppt-lane-release-gates/deck-scribe-craft-07`. This was a developer worktree run, not a clean macOS account or non-developer QA session.
+
+Evidence produced:
+
+- `bun install --frozen-lockfile` installed dependencies from `bun.lock`.
+- `bun test` passed: 991 tests, 0 failures, 3853 expect calls.
+- `bun run typecheck` passed.
+- `bun run lint` passed with the six pre-existing React Fast Refresh warnings in shared UI files.
+- `bun run build` passed for client, SSR, and prerendered `/`.
+- `bun run package:dry-run` produced `dist/deckforge-macos-dry-run.tgz`, SHA-256 `cec0077d117f8cc2d863db2075bbbd55cc812830e91233474a9f550ee6de427b`, 287,894 bytes, 17 app files.
+- `bun run tauri:build` produced `src-tauri/target/release/bundle/macos/DeckForge.app` and `src-tauri/target/release/bundle/dmg/DeckForge_0.1.0_aarch64.dmg`; the DMG was copied to `release-artifacts/DeckForge_0.1.0_aarch64.dmg`.
+- `shasum -a 256 -c release-artifacts/DeckForge_0.1.0_aarch64.dmg.sha256` passed for DMG SHA-256 `232d0fd67eed137ff8b048848823d95cd71f2c8cd044a07ba279defd0a934108`.
+- `bun run verify` passed: typecheck, 991 tests, production build.
+- `bun run rust:fmt && bun run rust:clippy && bun run rust:test` passed; Rust tests reported 5 passed, 0 failed.
+- Best available isolated smoke used a temporary HOME at `/tmp/deckforge-clean-home.Jlj63s`, started the internal dry-run package on port 4179, fetched `/`, and received a 12,596-byte HTML response. This is not clean-machine release evidence because it used the current developer account and unsigned dry-run package.
+
+Release remains `Blocked`. No ticket in the Lane F set can honestly close from this run because the required live Golden Path bundle, benchmark bundle set, complete interruption matrix, Developer ID signing/notarization/stapling/Gatekeeper acceptance, clean-machine run, non-developer manual QA session, and final release-gate evidence are still missing.
 
 ## Known limits
 
