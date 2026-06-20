@@ -169,6 +169,34 @@ describe("live initial release gate", () => {
     expect(result.blockers.map((blocker) => blocker.code)).toEqual(["golden_path_lineage_missing"]);
   });
 
+  test("blocks Golden Path lineage that omits the final export artifact", () => {
+    // Given
+    const result = evaluateLiveInitialReleaseGate({
+      ...readyInput(),
+      goldenPathLineage: [
+        createProviderArtifactProvenance({
+          artifactId: "live_interview_questions",
+          executionMode: "production",
+          providerKind: "codex",
+          authMode: "codex_session",
+          modelOrRuntime: "codex-cli 0.139.0",
+          promptVersion: "interview_questions@v1",
+          durationMs: 500,
+          inputArtifactIds: ["project_goal"],
+          turnId: "turn_questions",
+          threadId: "thread_project",
+          fixture: false,
+        }),
+      ],
+    });
+
+    // When / Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.blockers.map((blocker) => blocker.code)).toEqual(["golden_path_export_missing"]);
+    expect(result.blockers[0]?.refs).toEqual(["live_export_001"]);
+  });
+
   test("blocks invalid critical defect counters", () => {
     // Given
     const result = evaluateLiveInitialReleaseGate({
@@ -220,9 +248,10 @@ function readyInput(): LiveReleaseGateInput {
       { id: "image_intro", status: "passed", failureDomain: "none" },
       { id: "revision_regeneration", status: "failed", failureDomain: "editor" },
     ],
+    goldenPathFinalExportArtifactId: "live_export_001",
     goldenPathLineage: [
       createProviderArtifactProvenance({
-        artifactId: "live_export",
+        artifactId: "live_export_001",
         executionMode: "production",
         providerKind: "codex",
         authMode: "codex_session",

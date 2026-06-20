@@ -62,6 +62,7 @@ export type LiveReleaseGateInput = {
   readonly productionPackage: ProductionPackageEvidence;
   readonly liveBenchmarks: readonly LiveBenchmarkEvidence[];
   readonly goldenPathLineage: readonly ProviderArtifactProvenance[];
+  readonly goldenPathFinalExportArtifactId: string;
   readonly criticalDefectCount: number;
   readonly unresolvedP1Risks: readonly UnresolvedP1Risk[];
   readonly releaseDecision: LiveReleaseDecisionEvidence;
@@ -75,6 +76,7 @@ export type LiveReleaseBlockerCode =
   | "live_benchmark_status_conflict"
   | "live_benchmark_shortfall"
   | "golden_path_lineage_missing"
+  | "golden_path_export_missing"
   | "golden_path_contaminated"
   | "invalid_critical_defect_count"
   | "critical_defects_open"
@@ -114,7 +116,7 @@ export function evaluateLiveInitialReleaseGate(input: LiveReleaseGateInput): Liv
     ...p0Blockers(input.p0Tickets),
     ...productionPackageBlockers(input.productionPackage),
     ...benchmarkBlockers(input.liveBenchmarks, passedBenchmarkCount),
-    ...lineageBlockers(input.goldenPathLineage),
+    ...lineageBlockers(input.goldenPathLineage, input.goldenPathFinalExportArtifactId),
     ...defectBlockers(input.criticalDefectCount),
     ...p1RiskBlockers(input.unresolvedP1Risks),
     ...decisionBlockers(input.releaseDecision),
@@ -155,6 +157,7 @@ function productionPackageBlockers(
 
 function lineageBlockers(
   lineage: readonly ProviderArtifactProvenance[],
+  finalExportArtifactId: string,
 ): readonly LiveReleaseBlocker[] {
   if (lineage.length === 0) {
     return [
@@ -163,17 +166,33 @@ function lineageBlockers(
       ]),
     ];
   }
+  const expectedFinalExportId = finalExportArtifactId.trim();
+  const hasCanonicalFinalExportId =
+    expectedFinalExportId.length > 0 && expectedFinalExportId === finalExportArtifactId;
+  const includesFinalExport =
+    hasCanonicalFinalExportId && lineage.some((item) => item.artifactId === expectedFinalExportId);
   const contamination = collectLineageContamination(lineage);
   const refs = [...contamination.mockArtifactIds, ...contamination.fixtureArtifactIds];
-  return refs.length === 0
-    ? []
-    : [
-        blocker(
-          "golden_path_contaminated",
-          "Golden Path lineage must contain zero mock or fixture artifacts.",
-          refs,
-        ),
-      ];
+  return [
+    ...(includesFinalExport
+      ? []
+      : [
+          blocker(
+            "golden_path_export_missing",
+            "Golden Path lineage must include the final export artifact.",
+            [expectedFinalExportId || "final export artifact"],
+          ),
+        ]),
+    ...(refs.length === 0
+      ? []
+      : [
+          blocker(
+            "golden_path_contaminated",
+            "Golden Path lineage must contain zero mock or fixture artifacts.",
+            refs,
+          ),
+        ]),
+  ];
 }
 
 function defectBlockers(criticalDefectCount: number): readonly LiveReleaseBlocker[] {
