@@ -1,0 +1,129 @@
+import { describe, expect, test } from "bun:test";
+import { evaluateLiveResearchApprovalGate } from "./live-research-approval-gate";
+import type { LiveResearchEvidenceReference } from "./live-research-evidence";
+import { createProviderArtifactProvenance } from "./provider-provenance";
+import type { ResearchPack } from "./research-types";
+
+describe("live research approval provenance identity", () => {
+  test("blocks approval when provenance is for a different Research Pack artifact", () => {
+    // Given
+    const pack = readyResearchPack();
+
+    // When
+    const gate = evaluateLiveResearchApprovalGate({
+      pack,
+      evidenceRefs: pack.liveEvidenceRefs ?? [],
+      provenanceLineage: [
+        createProviderArtifactProvenance({
+          artifactId: "other_research_pack",
+          executionMode: "production",
+          providerKind: "codex",
+          authMode: "codex_session",
+          modelOrRuntime: "codex app-server --stdio",
+          promptVersion: "live_research_pack@v1",
+          durationMs: 2_200,
+          inputArtifactIds: ["source_capture_bundle_001"],
+          fixture: false,
+          turnId: "turn_research_001",
+          threadId: "thread_project_001",
+        }),
+      ],
+    });
+
+    // Then
+    expect(gate.kind).toBe("blocked");
+    if (gate.kind !== "blocked") return;
+    expect(
+      gate.issues.map((issue) => issue.code).includes("research_pack_provenance_mismatch"),
+    ).toBe(true);
+  });
+});
+
+function readyResearchPack(): ResearchPack {
+  return {
+    id: "research_approved",
+    sources: [
+      {
+        id: "src_001",
+        title: "Official source artifact",
+        publisher: "Statistics Office",
+        year: 2026,
+        grade: "A",
+        sourceType: "government",
+        usePolicy: "priority",
+        url: "https://example.gov/report",
+        capture: {
+          originalUrl: "https://example.gov/report",
+          finalUrl: "https://example.gov/report?download=1",
+          fetchedAt: 1_789_300_001,
+          mimeType: "text/html",
+          statusCode: 200,
+          contentHash: "sha256:source-content",
+          rawArchivePath: "docs/live-source-capture-bundle/html_001/original.html",
+          textArchivePath: "docs/live-source-capture-bundle/html_001/extracted.txt",
+          extractedTextHash: "sha256:source-text",
+          version: 1,
+        },
+      },
+    ],
+    claims: [
+      {
+        id: "claim_001",
+        statement: "국내 기업의 67%가 AI 도구를 시범 도입 중이다.",
+        sourceIds: ["src_001"],
+        datasetIds: ["dataset_001"],
+        confidence: "high",
+        hasNumber: true,
+        needsUserReview: false,
+        status: "supported",
+        slideCandidates: [1],
+        numericEvidence: [
+          {
+            id: "num_001",
+            value: "67",
+            unit: "%",
+            baseYear: 2025,
+            geography: "KR",
+            definition: "국내 기업 AI 도구 시범 도입 비율",
+            sourceId: "src_001",
+            datasetId: "dataset_001",
+          },
+        ],
+      },
+    ],
+    datasets: [
+      {
+        id: "dataset_001",
+        title: "AI adoption",
+        sourceIds: ["src_001"],
+        unit: "%",
+        period: "2025",
+        geography: "KR",
+        definition: "국내 기업 AI 도구 시범 도입 비율",
+        rows: [{ label: "2025", value: 67, year: 2025 }],
+        uncertain: false,
+      },
+    ],
+    charts: [],
+    factCheckReport: {
+      summary: "Ready live research pack.",
+      generatedAt: 1_789_300_010,
+      fatalIssueCount: 0,
+      issues: [],
+      uncertainItems: [],
+    },
+    liveEvidenceRefs: [validEvidenceRef()],
+  };
+}
+
+function validEvidenceRef(): LiveResearchEvidenceReference {
+  return {
+    id: "ev_001",
+    claimId: "claim_001",
+    sourceId: "src_001",
+    sourceArtifactPath: "docs/live-source-capture-bundle/html_001/original.html",
+    kind: "quote_span",
+    quoteSpan: { start: 0, end: 3, text: "67%" },
+    datasetId: "dataset_001",
+  };
+}

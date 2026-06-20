@@ -15,6 +15,7 @@ import type { ResearchPack } from "./research-types";
 
 type LiveResearchReviewIssueCode =
   | "pending_reinforcement_request"
+  | "research_pack_provenance_mismatch"
   | "source_missing_live_capture"
   | "source_capture_incomplete";
 
@@ -53,13 +54,20 @@ export function evaluateLiveResearchApprovalGate(input: {
   const evidenceIssues = evidenceReport.fatalIssues.map(evidenceIssue);
   const provenanceIssues =
     provenanceGate.kind === "blocked" ? provenanceGate.issues.map(providerIssue) : [];
+  const packProvenanceIssues = researchPackProvenanceIssues(input.pack, input.provenanceLineage);
   const sourceIssues = sourceCaptureApprovalIssues(input.pack.sources);
   const reviewIssues = getPendingResearchReinforcementRequests(input.pack).map((request) => ({
     code: "pending_reinforcement_request" as const,
     message: `Pending research reinforcement request must be resolved before approval: ${request.prompt}`,
     requestId: request.id,
   }));
-  const issues = [...provenanceIssues, ...sourceIssues, ...evidenceIssues, ...reviewIssues];
+  const issues = [
+    ...provenanceIssues,
+    ...packProvenanceIssues,
+    ...sourceIssues,
+    ...evidenceIssues,
+    ...reviewIssues,
+  ];
 
   return issues.length === 0 ? { kind: "ready" } : { kind: "blocked", issues };
 }
@@ -101,4 +109,23 @@ function providerIssue(issue: ProviderProvenanceIssue): LiveResearchApprovalIssu
     message: issue.message,
     ...(issue.artifactId === undefined ? {} : { artifactId: issue.artifactId }),
   };
+}
+
+function researchPackProvenanceIssues(
+  pack: ResearchPack,
+  lineage: readonly ProviderArtifactProvenance[],
+): readonly LiveResearchApprovalIssue[] {
+  if (lineage.length === 0) return [];
+  const packArtifactId = pack.id.trim();
+  const hasPackProvenance = lineage.some(
+    (provenance) => provenance.artifactId.trim() === packArtifactId,
+  );
+  if (hasPackProvenance) return [];
+  return [
+    {
+      code: "research_pack_provenance_mismatch",
+      artifactId: pack.id,
+      message: "Research approval requires provider provenance for the current Research Pack.",
+    },
+  ];
 }

@@ -82,6 +82,8 @@ describe("live readiness research documentation", () => {
 
     expect(researchApproval.includes("DF-224")).toBe(true);
     expect(researchApproval.includes("missing_provenance")).toBe(true);
+    expect(researchApproval.includes("research_pack_provenance_mismatch")).toBe(true);
+    expect(researchApproval.includes("current Research Pack artifact id")).toBe(true);
     expect(researchApproval.includes("source_missing_live_capture")).toBe(true);
     expect(researchApproval.includes("source_capture_incomplete")).toBe(true);
     expect(researchApproval.includes("approvedResearchPackHash")).toBe(true);
