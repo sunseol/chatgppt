@@ -6,6 +6,10 @@ import {
   approvedArtifactIdsForContext,
   sameApprovedArtifactIds,
 } from "./project-thread-artifact-bundle";
+import {
+  canonicalCoordinatorThreadIdentityIssues,
+  canonicalWorkerThreadIdentityIssues,
+} from "./project-thread-identity";
 import { hasRawConversationSource } from "./project-thread-raw-source";
 
 export type ProjectWorkerThreadStage = Extract<
@@ -156,6 +160,7 @@ function manifestIssues(manifest: ProjectThreadManifest): readonly string[] {
     ...(manifest.coordinatorThreadId.trim()
       ? []
       : ["Project thread manifest is missing a coordinator thread id."]),
+    ...canonicalCoordinatorThreadIdentityIssues(manifest),
     ...approvedArtifactBundleIssues({
       artifactIds: manifest.approvedArtifactIds,
       ownerLabel: "Project thread manifest",
@@ -210,6 +215,7 @@ function workerIssues(
     ...(worker.lastCompletedTurnId.trim()
       ? []
       : [`Worker thread ${worker.threadId} is missing the last completed turn id.`]),
+    ...canonicalWorkerThreadIdentityIssues(worker),
     ...(worker.deckContextId === manifest.deckContextId
       ? []
       : [`Worker thread ${worker.threadId} does not use the coordinator deck context.`]),
