@@ -14,7 +14,7 @@ Required scenarios:
 
 - `text_turn_shutdown`: app exits during a live Codex text turn and recovers to interrupted, failed, or cancelled.
 - `fetch_shutdown`: app exits during live source fetch and recovers to interrupted, failed, or cancelled.
-- `image_partial_resume`: completed image artifacts remain complete and resume retries only unfinished images listed in the pending set.
+- `image_partial_resume`: completed image artifacts remain complete and resume retries only nonblank, non-duplicated unfinished images listed in the pending set.
 - `cancel_job`: cancellation does not leave a background job running.
 - `interrupted_artifact_gate`: interrupted artifacts cannot be approved or exported.
 
@@ -33,7 +33,7 @@ Required scenarios:
 - `cancel_signal_job_mismatch`: cancel signal evidence targets a different or missing live job id.
 - `unsafe_recovered_job_state`: interrupted text/fetch job recovered as queued, running, or succeeded.
 - `completed_artifact_lost`: an artifact completed before interruption is missing after recovery.
-- `unsafe_partial_image_resume`: image resume retries a completed artifact, skips a pending artifact, or resumes an image artifact that was not pending.
+- `unsafe_partial_image_resume`: image resume uses blank or duplicated image artifact ids, retries a completed artifact, skips a pending artifact, or resumes an image artifact that was not pending.
 - `cancelled_job_still_running`: cancelled job still appears to run in the background.
 - `cancelled_job_completed_after_cancel`: cancelled job produced new completed artifacts or recovered as succeeded after cancellation.
 - `missing_interrupted_approval_gate_evidence`: interrupted artifact evidence did not exercise the approval gate with a persisted JSON evidence path.
@@ -44,7 +44,7 @@ Required scenarios:
 
 ## Local Evidence
 
-- `src/lib/live-interruption-matrix.test.ts`, `src/lib/live-interruption-image-resume.test.ts`, `src/lib/live-interruption-state-taxonomy.test.ts`, `src/lib/live-interruption-gate-evidence-uniqueness.test.ts`, and `src/lib/live-interruption-report-path.test.ts` verify safe recovery, recovered job state taxonomy, summary formatting, distinct live job/snapshot/app-storage cancel snapshot/cancel signal path and job-id matching requirements, distinct persisted interrupted approval/export gate JSON paths, fixture/test/fake interruption evidence rejection, synthetic and developer-local matrix report/evidence path rejection, unsafe restart/resume/cancel/approval/export blockers, untracked image resume rejection, and cancellation attempts that still complete artifacts after cancellation.
+- `src/lib/live-interruption-matrix.test.ts`, `src/lib/live-interruption-image-resume.test.ts`, `src/lib/live-interruption-image-artifact-identity.test.ts`, `src/lib/live-interruption-state-taxonomy.test.ts`, `src/lib/live-interruption-gate-evidence-uniqueness.test.ts`, and `src/lib/live-interruption-report-path.test.ts` verify safe recovery, recovered job state taxonomy, summary formatting, distinct live job/snapshot/app-storage cancel snapshot/cancel signal path and job-id matching requirements, distinct persisted interrupted approval/export gate JSON paths, fixture/test/fake interruption evidence rejection, synthetic and developer-local matrix report/evidence path rejection, unsafe restart/resume/cancel/approval/export blockers, blank/duplicate/untracked image resume rejection, and cancellation attempts that still complete artifacts after cancellation.
 - `src/lib/provider-job-recovery.ts` preserves job snapshots for restart recovery.
 - `src/lib/slide-generation-queue-live-controls.test.ts` already covers retry, partial image resume, and cancellation behavior at the queue level.
 
