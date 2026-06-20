@@ -175,6 +175,49 @@ describe("live interview artifact identity", () => {
     if (result.kind !== "blocked") return;
     expect(result.issues.map((issue) => issue.code)).toEqual(["brief_reused_question_answer"]);
   });
+
+  test("blocks non-canonical answer bundle input ids", () => {
+    const questionArtifactId = "interview_questions_live_1";
+
+    const result = evaluateLiveInterviewCutover({
+      questionInputArtifactId: "project_live_interview",
+      questionPlan: {
+        artifact: planInterviewQuestions({
+          initialPrompt: "한국어 제품 소개 덱을 5장으로 만들어줘.",
+          slideCount: 5,
+          aspectRatio: "16:9",
+          language: "ko",
+        }),
+        provenance: liveCodexProvenance(questionArtifactId, "turn_questions", [
+          "project_live_interview",
+        ]),
+      },
+      answers: {
+        goal: "제품 소개",
+        audience: "도입 검토자",
+        coreMessage: "제품 가치를 명확히 전달한다.",
+        desiredOutcome: "도입 검토",
+        mustInclude: "주요 기능과 도입 효과",
+        mustAvoid: "출처 없는 주장",
+        successCriteria: "이해 가능한 메시지",
+        tone: "명료한",
+      },
+      answerArtifactId: " interview_answers_live_1 ",
+      brief: {
+        artifact: completeBrief(),
+        provenance: liveCodexProvenance("interview_brief_live_1", "turn_brief", [
+          questionArtifactId,
+          "interview_answers_live_1",
+        ]),
+      },
+    });
+
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "noncanonical_interview_input_identity",
+    ]);
+  });
 });
 
 function liveCodexProvenance(

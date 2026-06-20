@@ -13,6 +13,7 @@ Scope: DF-213 interview question and Interview Brief Live cutover contract.
 - Brief artifacts must persist under a different artifact id than the question artifact; otherwise `brief_reused_question_artifact` blocks approval
 - question/Brief artifact ids and turn ids are compared after trimming boundary whitespace, so padding cannot disguise reused question evidence; padded reuse blocks with `brief_reused_question_turn` and `brief_reused_question_artifact`
 - question/Brief artifact ids, turn ids, and thread ids must already be canonical; ids that only become valid after trimming block with `noncanonical_interview_identity`
+- question and user-answer input artifact ids supplied to the interview gate must also be canonical; padded input ids block with `noncanonical_interview_input_identity` before they can be normalized into follow-up or Brief lineage
 - question artifacts must use `interview_questions@v1` or `interview_questions_desktop@v1`, and Brief artifacts must use `interview_brief@v1`; otherwise `interview_prompt_version_mismatch` blocks approval
 - question provenance must cite the project or initial prompt input artifact id supplied as `questionInputArtifactId`; otherwise `question_missing_project_input` blocks approval
 - Brief provenance must cite the question artifact id in `inputArtifactIds`; otherwise `brief_missing_question_input` blocks approval
@@ -33,7 +34,7 @@ Scope: DF-213 interview question and Interview Brief Live cutover contract.
 ## Verified Locally
 
 - `src/lib/live-interview-cutover.test.ts` accepts separate live question/Brief turns with thread and turn provenance.
-- `src/lib/live-interview-artifact-identity.test.ts` rejects Brief artifacts that reuse the question artifact id with `brief_reused_question_artifact`, rejects answer bundles that reuse the question artifact id with `brief_reused_question_answer`, blocks whitespace-padded reuse of both question artifact and turn ids, and rejects non-canonical question/Brief artifact identities with `noncanonical_interview_identity`.
+- `src/lib/live-interview-artifact-identity.test.ts` rejects Brief artifacts that reuse the question artifact id with `brief_reused_question_artifact`, rejects answer bundles that reuse the question artifact id with `brief_reused_question_answer`, blocks whitespace-padded reuse of both question artifact and turn ids, rejects non-canonical question/Brief artifact identities with `noncanonical_interview_identity`, and rejects padded answer bundle input ids with `noncanonical_interview_input_identity`.
 - It blocks Brief acceptance when required fields are unanswered, returns a follow-up turn input bundle, and rejects Brief provenance that omits the user answer bundle.
 - `src/lib/live-interview-follow-up-question.test.ts` rejects required follow-up evidence whose question text is blank, blocking `invalid_follow_up_question`.
 - `src/lib/live-interview-question-input.test.ts` blocks question turns that omit the project/initial prompt artifact from `inputArtifactIds`.
@@ -63,7 +64,7 @@ DF-213 is not Verified Live yet. The app now exposes the production interview wo
 
 - live question artifact bundle
 - question artifact input ids that cite the project or initial prompt input artifact
-- user answer bundle distinct from the live question artifact
+- canonical user answer bundle distinct from the live question artifact
 - live follow-up turn evidence when required fields are missing
 - live Interview Brief artifact bundle from the packaged app surface
 - normalized-distinct thread id, turn id, prompt version, runtime, duration, and input artifact ids for each artifact

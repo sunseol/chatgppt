@@ -28,6 +28,7 @@ export type LiveInterviewIssueCode =
   | "non_codex_interview_turn"
   | "non_production_interview_turn"
   | "noncanonical_interview_identity"
+  | "noncanonical_interview_input_identity"
   | "question_missing_project_input"
   | "missing_brief_artifact"
   | "brief_missing_question_input"
@@ -84,10 +85,14 @@ export function evaluateLiveInterviewCutover(
   input: LiveInterviewCutoverInput,
 ): LiveInterviewCutoverResult {
   const questionIssues = [
+    ...inputIdentityIssues("questions", [input.questionInputArtifactId]),
     ...liveCodexProvenanceIssues("questions", [input.questionPlan.provenance]),
     ...questionRelationIssues(input.questionPlan.provenance, input.questionInputArtifactId),
   ];
   if (questionIssues.length > 0) return blocked("questions", questionIssues);
+
+  const answerIdentityIssues = inputIdentityIssues("follow_up", [input.answerArtifactId]);
+  if (answerIdentityIssues.length > 0) return blocked("follow_up", answerIdentityIssues);
 
   const answerArtifactId = resolveAnswerArtifactId(input);
   const followUp = buildFollowUpRequirement(input.questionPlan, input.answers, answerArtifactId);
@@ -181,6 +186,25 @@ function resolveAnswerArtifactId(input: LiveInterviewCutoverInput): string {
     input.answerArtifactId?.trim() ||
     liveInterviewAnswerArtifactId(input.questionPlan.provenance.artifactId)
   );
+}
+
+function inputIdentityIssues(
+  stage: LiveInterviewStage,
+  artifactIds: readonly (string | undefined)[],
+): readonly LiveInterviewIssue[] {
+  return artifactIds.some((artifactId) => isNonCanonicalNonBlank(artifactId))
+    ? [
+        {
+          code: "noncanonical_interview_input_identity",
+          stage,
+          message: "Interview input artifact ids must be canonical.",
+        },
+      ]
+    : [];
+}
+
+function isNonCanonicalNonBlank(value: string | undefined): boolean {
+  return value !== undefined && value.trim() !== "" && value !== value.trim();
 }
 
 function blocked(
