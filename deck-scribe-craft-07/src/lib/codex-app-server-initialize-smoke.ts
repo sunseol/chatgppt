@@ -1,5 +1,6 @@
 import {
   failedInitializeSmokeStatus,
+  healthTurnEvidenceIsComplete,
   initializedEvidenceIsComplete,
 } from "./codex-app-server-initialize-evidence";
 
@@ -167,7 +168,7 @@ export function evaluateCodexAppServerHealthTurn(
 ): CodexAppServerHealthTurnStatus {
   switch (evidence.kind) {
     case "completed":
-      if (evidence.threadId.trim() === "" || evidence.turnId.trim() === "") {
+      if (!healthTurnEvidenceIsComplete(evidence)) {
         return failedHealthTurn(evidence.transport, evidence.cliVersion);
       }
 
@@ -198,8 +199,7 @@ export function evaluateCodexAppServerRestartSmoke(
         evidence.appServerVersion !== evidence.cliVersion ||
         evidence.crashProbeError.trim() === "" ||
         evidence.postRestartHealthTurn.cliVersion !== evidence.cliVersion ||
-        evidence.postRestartHealthTurn.threadId.trim() === "" ||
-        evidence.postRestartHealthTurn.turnId.trim() === "" ||
+        !healthTurnEvidenceIsComplete(evidence.postRestartHealthTurn) ||
         isSameHealthTurn(evidence.preRestartHealthTurn, evidence.postRestartHealthTurn)
       ) {
         return failedRestartSmoke(evidence.cliVersion);

@@ -82,4 +82,31 @@ describe("Codex app-server restart smoke evidence", () => {
       ["failed", "failed", "failed"],
     );
   });
+
+  test("blocks post-restart health turns with non-canonical durable ids", () => {
+    const result = evaluateCodexAppServerRestartSmoke({
+      kind: "restarted",
+      cliVersion: "0.141.0",
+      appServerVersion: "0.141.0",
+      oldPid: 97850,
+      newPid: 5889,
+      crashProbeError: "failed to connect to app-server-control.sock: Connection refused",
+      postRestartHealthTurn: {
+        kind: "completed",
+        transport: "stdio",
+        cliVersion: "0.141.0",
+        account: {
+          type: "chatgpt",
+          requiresOpenaiAuth: true,
+        },
+        threadId: " thread_after_restart ",
+        turnId: " turn_after_restart ",
+        turnStatus: "completed",
+      },
+    });
+
+    expect(result.kind).toBe("failed");
+    if (result.kind !== "failed") return;
+    expect(result.message).toBe("Codex App Server crash restart smoke failed.");
+  });
 });

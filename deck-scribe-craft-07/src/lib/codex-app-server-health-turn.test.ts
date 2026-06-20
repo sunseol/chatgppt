@@ -27,4 +27,23 @@ describe("Codex app-server health turn evidence", () => {
       "Codex App Server authenticated health turn failed.",
     ]);
   });
+
+  test("blocks completed health turns with non-canonical durable ids", () => {
+    const result = evaluateCodexAppServerHealthTurn({
+      kind: "completed",
+      transport: "stdio",
+      cliVersion: "0.141.0",
+      account: {
+        type: "chatgpt",
+        requiresOpenaiAuth: true,
+      },
+      threadId: " thread_live ",
+      turnId: " turn_live ",
+      turnStatus: "completed",
+    });
+
+    expect(result.kind).toBe("failed");
+    if (result.kind !== "failed") return;
+    expect(result.message).toBe("Codex App Server authenticated health turn failed.");
+  });
 });
