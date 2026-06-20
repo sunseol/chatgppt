@@ -21,6 +21,9 @@ describe("live auth secret lifecycle documentation", () => {
     expect(authSecretLifecycle.includes("redactSensitiveText")).toBe(true);
     expect(authSecretLifecycle.includes('quoted `CODEX_SESSION="..."`')).toBe(true);
     expect(authSecretLifecycle.includes('serialized `"token":"..."`')).toBe(true);
+    expect(authSecretLifecycle.includes('"id_token":"..."')).toBe(true);
+    expect(authSecretLifecycle.includes('"sessionToken":"..."')).toBe(true);
+    expect(authSecretLifecycle.includes('"clientSecret":"..."')).toBe(true);
     expect(authSecretLifecycle.includes("disconnectImageApiKeySecret")).toBe(true);
     expect(authSecretLifecycle.includes("rejects store-kind mismatch before delete")).toBe(true);
     expect(authSecretLifecycle.includes("classifyLiveAuthFailure")).toBe(true);

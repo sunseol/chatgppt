@@ -40,6 +40,17 @@ describe("redaction", () => {
     );
   });
 
+  test("redacts OAuth identity and session token field variants", () => {
+    const text =
+      'id_token=codex.id.secret sessionToken=codex.session.secret {"clientSecret":"abc123def456","session_token":"def456ghi789"}';
+
+    const redacted = redactSensitiveText(text);
+
+    expect(redacted).toBe(
+      'id_token=[redacted] sessionToken=[redacted] {"clientSecret":"[redacted]","session_token":"[redacted]"}',
+    );
+  });
+
   test("redacts Codex auth file paths", () => {
     const text =
       "Codex auth path /Users/jake/.codex/auth.json and ~/.codex/auth.json must stay private.";

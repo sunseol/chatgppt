@@ -97,6 +97,28 @@ describe("project list codec", () => {
     expect(restored[0]?.initialPrompt.includes("codex.refresh.secret")).toBe(false);
   });
 
+  test("redacts identity and session token material before project DB serialization", () => {
+    const project = createDeckProject(
+      {
+        name: "Identity token prompt",
+        initialPrompt:
+          'Save id_token=codex.id.secret sessionToken=codex.session.secret {"clientSecret":"client.secret"}',
+        slideCount: 5,
+        aspectRatio: "16:9",
+        language: "ko",
+      },
+      { createId: () => "p_identity_secret_prompt", now: () => 203 },
+    );
+
+    const serialized = serializeProjectList([project]);
+    const restored = parseProjectList(serialized);
+
+    expect(serialized.includes("codex.id.secret")).toBe(false);
+    expect(serialized.includes("codex.session.secret")).toBe(false);
+    expect(serialized.includes("client.secret")).toBe(false);
+    expect(restored[0]?.initialPrompt.includes("[redacted]")).toBe(true);
+  });
+
   test("migrates persisted research packs to current live metadata fields", () => {
     const project = {
       ...createDeckProject(
