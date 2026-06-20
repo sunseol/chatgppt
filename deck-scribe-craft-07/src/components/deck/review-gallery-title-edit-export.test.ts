@@ -53,6 +53,29 @@ describe("review gallery title edit re-export evidence", () => {
     expect(validation.issues.map((issue) => issue.code)).toEqual(["title_edit_reexport_mismatch"]);
   });
 
+  test("blocks title edit evidence from template export paths", () => {
+    // Given
+    const items = validItems();
+
+    // When
+    const validation = validateReviewGalleryLiveCompositions({
+      items,
+      expectedSlideCount: 1,
+      titleEditReexportEvidence: {
+        slideNumber: 1,
+        originalTitle: "시장",
+        editedTitle: "수정된 시장",
+        exportedSvgPath: "templates/live-review/exports/svg/slide_01.svg",
+        exportedSvgContent: '<svg><text data-role="title">수정된 시장</text></svg>',
+      },
+    });
+
+    // Then
+    expect(validation.kind).toBe("blocked");
+    if (validation.kind !== "blocked") return;
+    expect(validation.issues.map((issue) => issue.code)).toEqual(["title_edit_reexport_mismatch"]);
+  });
+
   test("allows live review when title edit evidence is present in the exported SVG", () => {
     // Given
     const items = validItems();

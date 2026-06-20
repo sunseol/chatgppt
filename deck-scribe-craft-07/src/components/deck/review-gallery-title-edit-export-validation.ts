@@ -1,3 +1,4 @@
+import { hasNonSyntheticEvidencePath } from "@/lib/live-evidence-path";
 import type { ReviewGalleryItem } from "./review-gallery-model";
 import type { ReviewGalleryLiveCompositionIssue } from "./review-gallery-live-validation";
 
@@ -8,6 +9,8 @@ export interface ReviewGalleryTitleEditReexportEvidence {
   readonly exportedSvgPath: string;
   readonly exportedSvgContent: string;
 }
+
+const NON_OBSERVED_EXPORT_PATH_MARKERS = ["template", "sample", "example", "placeholder"] as const;
 
 export function titleEditReexportIssues(
   items: readonly ReviewGalleryItem[],
@@ -44,9 +47,20 @@ function titleEditEvidenceMatches(
     originalTitle.length > 0 &&
     editedTitle.length > 0 &&
     originalTitle !== editedTitle &&
-    evidence.exportedSvgPath.endsWith(`exports/svg/slide_${pad2(evidence.slideNumber)}.svg`) &&
+    isObservedTitleEditExportPath(evidence.exportedSvgPath, evidence.slideNumber) &&
     evidence.exportedSvgContent.includes(editedTitle) &&
     !evidence.exportedSvgContent.includes(`>${originalTitle}<`)
+  );
+}
+
+function isObservedTitleEditExportPath(value: string, slideNumber: number): boolean {
+  const trimmed = value.trim();
+  const normalized = trimmed.toLowerCase();
+  return (
+    hasNonSyntheticEvidencePath(trimmed, [".svg"]) &&
+    normalized.startsWith("projects/") &&
+    normalized.endsWith(`/exports/svg/slide_${pad2(slideNumber)}.svg`) &&
+    !NON_OBSERVED_EXPORT_PATH_MARKERS.some((marker) => normalized.includes(marker))
   );
 }
 
