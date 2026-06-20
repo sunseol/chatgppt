@@ -30,9 +30,9 @@ Verified local unsigned Tauri outputs:
 - `src-tauri/target/release/bundle/macos/DeckForge.app`
 - `src-tauri/target/release/bundle/dmg/DeckForge_0.1.0_aarch64.dmg`
 - copied internal DMG: `release-artifacts/DeckForge_0.1.0_aarch64.dmg`
-- current internal DMG SHA-256: `ad8b11dee61a15c193fabfc3a7bf85110b116db65098bd2a845c2533a25dae5d`
+- current internal DMG SHA-256: `53428ab9cf805a85c41e775bc2107d9e58713e0b7234ede271c0ead9560f932b`
 
-Latest local native package scan on 2026-06-19 found 0 OpenAI/Codex secret-like values and 0 mock/fixture/test/local-path contamination hits in both the built app bundle and a mounted copy of the DMG.
+Latest local native package scan on 2026-06-21 found 0 configured OpenAI/Codex secret-like values and 0 mock/fixture/test/local-path contamination hits in both the built app bundle and a mounted copy of the DMG.
 
 Latest local signing assessment:
 
