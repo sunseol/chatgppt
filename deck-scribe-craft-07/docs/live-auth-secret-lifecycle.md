@@ -132,3 +132,26 @@ evidence needed is an isolated clean-machine sequence covering first login,
 logout, live job lock/cancel state while logged out, relogin, post-relogin App
 Server smoke, packaged secret-store write/read/delete, and a persisted secret
 leak scan.
+
+## 2026-06-21 Lane I Non-Destructive Auth Recheck
+
+Lane I rechecked only non-destructive auth evidence from developer worktree
+`/Users/jake/chatgppt-lane-auth-release-qa/deck-scribe-craft-07`.
+
+- `codex --version`: `codex-cli 0.141.0`
+- `codex login status`: `Logged in using ChatGPT`
+- `codex app-server daemon version`: `status: "running"`,
+  `managedCodexVersion: "0.141.0"`, `cliVersion: "0.141.0"`,
+  `appServerVersion: "0.141.0"`
+- Fresh dry-run package SHA-256:
+  `e80f2378b21a79b5e600e49840deb97e6159d249e4d45d50ad9f19699a6a680f`
+- Fresh dry-run package scans over `dist/client`, `dist/server`, and
+  `dist/deckforge-macos-dry-run/DeckForge.app` found 0 bundled
+  `auth.json`/`.codex` payloads, 0 `CODEX_SESSION=` assignments, 0 long
+  `Bearer` tokens, 0 assigned `OPENAI_API_KEY` values, and 0 OpenAI key-shaped
+  values.
+
+DF-205 remains open. Lane I did not run `codex logout` because that would
+destroy the shared authenticated ChatGPT session, and no disposable clean
+account, device-login handoff, or packaged keychain lifecycle environment was
+available.
