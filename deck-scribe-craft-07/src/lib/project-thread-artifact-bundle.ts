@@ -28,6 +28,11 @@ export function approvedArtifactBundleIssues(input: {
     ...(input.artifactIds.some((artifactId) => artifactId.trim() === "")
       ? [`${input.ownerLabel} has a blank approved artifact id.`]
       : []),
+    ...input.artifactIds
+      .filter((artifactId) => artifactId.trim() !== "" && artifactId !== artifactId.trim())
+      .map(
+        (artifactId) => `${input.ownerLabel} has non-canonical approved artifact id ${artifactId}.`,
+      ),
     ...[...duplicateArtifactIds].map(
       (artifactId) => `${input.ownerLabel} duplicates approved artifact id ${artifactId}.`,
     ),

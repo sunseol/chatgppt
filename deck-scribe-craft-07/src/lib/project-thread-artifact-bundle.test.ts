@@ -75,6 +75,37 @@ describe("project thread approved artifact bundle", () => {
       recovery.issues.includes("Current deck context duplicates approved artifact id plan_001."),
     ).toBe(true);
   });
+
+  test("blocks approved artifact ids that only become canonical after trimming", () => {
+    // Given
+    const manifest = createProjectThreadManifest({
+      context: {
+        ...contextFixture(),
+        approvedArtifacts: {
+          ...contextFixture().approvedArtifacts,
+          researchPackId: " research_001 ",
+        },
+      },
+      coordinatorThreadId: "thread_coordinator_001",
+      workers: [
+        {
+          stage: "research",
+          threadId: "thread_research_001",
+          lastCompletedTurnId: "turn_research_001",
+        },
+      ],
+    });
+
+    // When
+    const validation = validateProjectThreadManifest(manifest);
+
+    // Then
+    expect(validation.kind).toBe("blocked");
+    if (validation.kind !== "blocked") return;
+    expect(validation.issues).toEqual([
+      "Project thread manifest has non-canonical approved artifact id  research_001 .",
+    ]);
+  });
 });
 
 function contextFixture(): FrozenDeckContext {

@@ -56,6 +56,7 @@ describe("live text smoke documentation", () => {
       "duplicate worker thread ids",
       "coordinator thread id",
       "raw conversation source-of-truth",
+      "non-canonical approved artifact ids",
       "context hash changes under the same `deckContextId`",
       "same-context-id context-hash drift",
       "019edc28-bf27-7380-b7d2-65405e6c6758",
