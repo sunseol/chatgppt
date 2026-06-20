@@ -76,6 +76,7 @@ describe("live background batch", () => {
     expect(validation.issues.map((issue) => issue.code)).toEqual([
       "slide_id_mismatch",
       "mock_provider_output",
+      "stored_background_artifact_mismatch",
       "wrong_aspect_ratio",
       "deck_context_mismatch",
       "missing_text_overlay_rule",

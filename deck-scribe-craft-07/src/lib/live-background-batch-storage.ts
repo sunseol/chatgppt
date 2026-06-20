@@ -1,7 +1,14 @@
 import type { StoredSlideImageArtifact } from "./image-artifact-store";
 import { parseVersionedProjectImageArtifactPath } from "./image-artifact-path";
 import type { LiveBackgroundBatchIssue } from "./live-background-batch";
+import type { ProviderAuthMode } from "./provider-provenance";
 import type { SlideImageArtifact, SlideImageRequestMetadata } from "./slide-image-provider";
+
+const AUTH_MODE_BY_PROVIDER = {
+  mock: "none",
+  openaiImage: "api_key",
+  codex: "codex_session",
+} as const satisfies Record<SlideImageArtifact["providerId"], ProviderAuthMode>;
 
 export function storedArtifactIssues(
   artifact: SlideImageArtifact,
@@ -45,9 +52,36 @@ function storedArtifactMatches(
     storedRequestMatches(artifact, stored) &&
     storedBinaryPathMatchesSlide(stored.binary.path, artifact.slideNumber) &&
     sidecarPathsMatchBinary(stored) &&
+    storedProvenanceMatches(artifact, stored) &&
     /^sha256:[a-f0-9]{64}$/.test(stored.binary.hash) &&
     stored.provenance.fixture === false
   );
+}
+
+function storedProvenanceMatches(
+  artifact: SlideImageArtifact,
+  stored: StoredSlideImageArtifact,
+): boolean {
+  return (
+    stored.provenance.artifactId === stored.binary.artifactId &&
+    stored.provenance.executionMode === "production" &&
+    stored.provenance.providerKind === artifact.providerId &&
+    stored.provenance.authMode === AUTH_MODE_BY_PROVIDER[artifact.providerId] &&
+    stored.provenance.promptVersion === `${artifact.prompt.id}@${artifact.prompt.version}` &&
+    stored.provenance.inputArtifactIds.length === 2 &&
+    stored.provenance.inputArtifactIds[0] === artifact.prompt.hash &&
+    stored.provenance.inputArtifactIds[1] === artifact.layoutReference.screenshot &&
+    provenanceDurationMatches(artifact, stored)
+  );
+}
+
+function provenanceDurationMatches(
+  artifact: SlideImageArtifact,
+  stored: StoredSlideImageArtifact,
+): boolean {
+  const requestLatencyMs = artifact.request?.latencyMs;
+  if (requestLatencyMs === undefined) return stored.provenance.durationMs === 0;
+  return stored.provenance.durationMs === requestLatencyMs;
 }
 
 function storedBinaryPathMatchesSlide(path: string, slideNumber: number): boolean {

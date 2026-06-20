@@ -167,6 +167,7 @@ describe("live readiness documentation", () => {
     expect(backgroundBatch.includes("missing_stored_background_artifact")).toBe(true);
     expect(backgroundBatch.includes("stored_background_artifact_mismatch")).toBe(true);
     expect(backgroundBatch.includes("stored metadata/provenance request ids")).toBe(true);
+    expect(backgroundBatch.includes("provider provenance sidecar identity fields")).toBe(true);
     expect(backgroundBatch.includes("versioned project image storage path")).toBe(true);
     expect(backgroundBatch.includes("by slide id rather than array order")).toBe(true);
     expect(backgroundBatch.includes("structured text overlay strategy rules")).toBe(true);
