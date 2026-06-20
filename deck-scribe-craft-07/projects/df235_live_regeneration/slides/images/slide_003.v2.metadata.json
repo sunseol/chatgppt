@@ -1,0 +1,29 @@
+{
+  "path": "projects/df235_live_regeneration/slides/images/slide_003.v2.metadata.json",
+  "providerId": "codex",
+  "slideNumber": 3,
+  "aspectRatio": "16:9",
+  "canvas": {
+    "width": 1600,
+    "height": 900
+  },
+  "layoutReference": {
+    "screenshot": "live-layout-reference/df232-slide-003-composition.png",
+    "mode": "composition-reference"
+  },
+  "prompt": {
+    "id": "slide_generation",
+    "version": "codex-live-regeneration-v1",
+    "hash": "sha256:df235-live-slide-003-regeneration-prompt"
+  },
+  "request": {
+    "model": "gpt-image-2",
+    "threadId": "019ee690-9595-7323-86d7-e188639cd355",
+    "turnId": "019ee690-9801-71b0-9062-cc72a74d2f97",
+    "latencyMs": 63784,
+    "usage": {
+      "imageCount": 1
+    }
+  },
+  "generatedAt": 1781984764024
+}

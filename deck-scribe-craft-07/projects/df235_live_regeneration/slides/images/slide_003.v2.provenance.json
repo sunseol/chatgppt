@@ -1,0 +1,17 @@
+{
+  "path": "projects/df235_live_regeneration/slides/images/slide_003.v2.provenance.json",
+  "artifactId": "df235_live_regeneration_image_slide_003_v2",
+  "executionMode": "production",
+  "providerKind": "codex",
+  "authMode": "codex_session",
+  "modelOrRuntime": "gpt-image-2",
+  "promptVersion": "slide_generation@codex-live-regeneration-v1",
+  "durationMs": 63784,
+  "inputArtifactIds": [
+    "sha256:df235-live-slide-003-regeneration-prompt",
+    "live-layout-reference/df232-slide-003-composition.png"
+  ],
+  "fixture": false,
+  "threadId": "019ee690-9595-7323-86d7-e188639cd355",
+  "turnId": "019ee690-9801-71b0-9062-cc72a74d2f97"
+}

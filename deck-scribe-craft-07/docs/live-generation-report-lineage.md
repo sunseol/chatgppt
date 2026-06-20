@@ -83,9 +83,20 @@ Each production slide report must include:
 - `src/lib/final-export-gate.test.ts` verifies the existing final export gate still blocks incomplete or contaminated export summaries and production generation reports that leak raw secrets.
 - `src/lib/project-export.test.ts` verifies project export uses approved layout PNGs and redacts project file content.
 
-## Remaining Live Evidence
+## Live Image Evidence Update
 
-The local contract can reject incomplete or contaminated provenance, but DF-240 still requires a real live run where the app populates this lineage from production Codex text turns and Codex image turns. The ticket should remain open until a zero-contamination report/export bundle is produced from the real compositor output.
+2026-06-21 KST Lane B produced real Codex image lineage that can feed the slide-level report:
+
+- Single route-lock image evidence: `docs/live-evidence/codex-image/df230-df231-live-artifact-summary.json`
+- Five background batch evidence: `docs/live-evidence/codex-image/df232-five-background-protocol-summary.json`
+- Selected-slide regeneration evidence: `docs/live-evidence/codex-image/df235-selected-slide-regeneration-summary.json`
+- Five background artifact ids: `df232_live_codex_batch_image_slide_001_v1` through `df232_live_codex_batch_image_slide_005_v1`
+- Five background image turns: `019ee689-3af0-7891-83f5-2f386f43c181`, `019ee68a-214d-7be2-8984-b3461b1cf8db`, `019ee68a-e53e-71c0-814a-8d5da527c75a`, `019ee68b-5d5c-7a62-bf39-ae1c19bf4c41`, `019ee68b-cf93-7dd3-9a6a-2a25cb63205a`
+- Regeneration image turn: `019ee690-9801-71b0-9062-cc72a74d2f97`
+- Provider/auth for all image sidecars: `codex` / `codex_session`
+- Fixture flag for all image sidecars: `false`
+
+DF-240 remains open because a zero-contamination generation report and final export bundle still require production Codex text-turn lineage, compositor output hashes, exported PNG hashes, and packaged export QA. The image provider side is now live; the report/export surface has not yet been driven end to end.
 
 ## 2026-06-21 KST lane evidence update
 

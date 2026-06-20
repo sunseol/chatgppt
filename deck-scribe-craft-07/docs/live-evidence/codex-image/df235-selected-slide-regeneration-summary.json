@@ -1,0 +1,37 @@
+{
+  "capturedAt": "2026-06-20T19:46:04.024Z",
+  "runtime": "codex-cli 0.141.0 app-server --stdio",
+  "threadId": "019ee690-9595-7323-86d7-e188639cd355",
+  "turnId": "019ee690-9801-71b0-9062-cc72a74d2f97",
+  "selectedSlideNumber": 3,
+  "approvedOriginal": {
+    "binaryPath": "projects/df232_live_codex_batch/slides/images/slide_003.v1.png",
+    "binaryHash": "sha256:d5a129265c0bfb05e85641606a7d1972842eb80ac0d3f230a9c8694fe96c15a8"
+  },
+  "regenerated": {
+    "binaryPath": "projects/df235_live_regeneration/slides/images/slide_003.v2.png",
+    "binaryHash": "sha256:fec63060405bbe50246c9216447c8759fc5426eed8f14d5c1dfb7b8df5d0d202",
+    "binaryBytes": 1487303,
+    "metadataPath": "projects/df235_live_regeneration/slides/images/slide_003.v2.metadata.json",
+    "provenancePath": "projects/df235_live_regeneration/slides/images/slide_003.v2.provenance.json",
+    "threadId": "019ee690-9595-7323-86d7-e188639cd355",
+    "turnId": "019ee690-9801-71b0-9062-cc72a74d2f97",
+    "latencyMs": 63784
+  },
+  "protocolLineCount": 174,
+  "stderrLineCount": 53,
+  "writes": [
+    {
+      "path": "projects/df235_live_regeneration/slides/images/slide_003.v2.png",
+      "bytes": 1487303
+    },
+    {
+      "path": "projects/df235_live_regeneration/slides/images/slide_003.v2.metadata.json",
+      "bytes": 767
+    },
+    {
+      "path": "projects/df235_live_regeneration/slides/images/slide_003.v2.provenance.json",
+      "bytes": 638
+    }
+  ]
+}

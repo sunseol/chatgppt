@@ -37,10 +37,21 @@ DF-235 requires selected-slide regeneration to create a full new slide backgroun
 - `bun run typecheck`
 - `bun run lint`
 
-## Remaining Live Work
+## Live Evidence Update
 
-The current repository has not yet executed full-slide regeneration against a real provider. DF-235 remains open until a production run captures live before/after approval QA, stores a real regenerated background artifact version, and verifies that a failed regeneration preserves the approved original in the app surface.
+2026-06-21 KST Lane B submitted selected slide 3 to the authenticated Codex OAuth image route for a full-slide regeneration. The first structured attempt timed out and produced no artifact. The retry used a simpler generation turn and stored a real regenerated version 2 background.
 
-## Current blocker evidence
+- Runtime: `codex-cli 0.141.0 app-server --stdio`
+- Regeneration thread id: `019ee690-9595-7323-86d7-e188639cd355`
+- Regeneration turn id: `019ee690-9801-71b0-9062-cc72a74d2f97`
+- Selected slide: `3`
+- Approved original: `projects/df232_live_codex_batch/slides/images/slide_003.v1.png`
+- Approved original hash: `sha256:d5a129265c0bfb05e85641606a7d1972842eb80ac0d3f230a9c8694fe96c15a8`
+- Regenerated binary: `projects/df235_live_regeneration/slides/images/slide_003.v2.png`
+- Regenerated hash: `sha256:fec63060405bbe50246c9216447c8759fc5426eed8f14d5c1dfb7b8df5d0d202`
+- Metadata sidecar: `projects/df235_live_regeneration/slides/images/slide_003.v2.metadata.json`
+- Provenance sidecar: `projects/df235_live_regeneration/slides/images/slide_003.v2.provenance.json`
+- Latency: `63784ms`
+- Evidence summary: `docs/live-evidence/codex-image/df235-selected-slide-regeneration-summary.json`
 
-2026-06-21 KST Image/Packaging lane recheck found GitHub issue #149 still open with `status:needs-live-evidence`. The worker has no approved live original slide artifact from the five-background Codex image run, so selected-slide full regeneration could not be submitted through the authenticated Codex image route. No before/after app-surface approval QA or failed-regeneration preservation evidence was produced.
+DF-235 still needs packaged app before/after approval QA before closure: the live regenerated background exists, but the review-gallery approval surface was not manually driven to approve the v2 candidate or verify failed-regeneration preservation in the UI.

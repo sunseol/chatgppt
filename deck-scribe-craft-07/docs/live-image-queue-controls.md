@@ -27,10 +27,13 @@ DF-233 requires the live image queue to throttle concurrent work, retry only tra
 - `bun run typecheck`
 - `bun run lint`
 
-## Remaining Live Work
+## Live Evidence Update
 
-The current repository has not yet executed live throttling against a real image provider. DF-233 remains open until a production image run captures actual rate limit or 5xx retry evidence, user cancellation manual QA, and partial resume after app restart with real stored image artifacts.
+2026-06-21 KST Lane B executed live Codex OAuth image generation for five backgrounds. The five successful turns provide real latency and stored-completion evidence for resume inputs, but they did not encounter live 429/5xx responses and did not include a user cancellation from the packaged app surface.
 
-## Current blocker evidence
+- Five-background live evidence: `docs/live-evidence/codex-image/df232-five-background-protocol-summary.json`
+- Stored artifacts: `projects/df232_live_codex_batch/slides/images/slide_001.v1.png` through `slide_005.v1.png`
+- Observed latencies: `56466ms`, `49422ms`, `30413ms`, `28803ms`, `32849ms`
+- Each stored slide has metadata/provenance sidecars with Codex thread `019ee689-3814-73e3-bf80-3ff0fc6e1d44` and unique turn ids.
 
-2026-06-21 KST Image/Packaging lane recheck found GitHub issue #147 still open with `status:needs-live-evidence`. Because no Codex image auth is available in this worker environment, live rate-limit/5xx retry behavior, user cancellation against an in-flight real provider request, and app-restart partial resume with real stored artifacts could not be exercised. Existing queue tests are local contract evidence only.
+DF-233 remains open for true queue-control evidence: actual rate-limit or 5xx retry provenance, user cancellation against an in-flight real provider request, and app-restart partial resume through the packaged UI.

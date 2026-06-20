@@ -53,6 +53,8 @@ function mapNotification(
   switch (notification.method) {
     case "turn/started":
       return mapTurnStarted(state, notification);
+    case "item/completed":
+      return mapImageItemCompleted(input, state, notification);
     case "rawResponseItem/completed":
       return mapRawResponseItemCompleted(input, state, notification);
     default:
@@ -75,6 +77,23 @@ function mapTurnStarted(
   return { state: { ...state, threadId, turnId }, issues: [] };
 }
 
+function mapImageItemCompleted(
+  input: {
+    readonly runtime: string;
+    readonly durationMs: number;
+  },
+  state: CodexImageGenerationState,
+  notification: CodexImageGenerationNotification,
+): MappingResult {
+  const params = paramsRecord(notification);
+  if (!params) return { state, issues: ["item/completed params must be an object."] };
+  const item = getRecord(params, "item");
+  if (!item || getString(item, "type") !== "imageGeneration") {
+    return { state, issues: [] };
+  }
+  return mapImageGenerationItem(input, state, params, item);
+}
+
 function mapRawResponseItemCompleted(
   input: {
     readonly runtime: string;
@@ -89,7 +108,18 @@ function mapRawResponseItemCompleted(
   if (!item || getString(item, "type") !== "image_generation_call") {
     return { state, issues: [] };
   }
+  return mapImageGenerationItem(input, state, params, item);
+}
 
+function mapImageGenerationItem(
+  input: {
+    readonly runtime: string;
+    readonly durationMs: number;
+  },
+  state: CodexImageGenerationState,
+  params: Record<string, unknown>,
+  item: Record<string, unknown>,
+): MappingResult {
   const threadId = getString(params, "threadId") ?? state.threadId;
   const turnId = getString(params, "turnId") ?? state.turnId;
   const status = getString(item, "status");
@@ -97,14 +127,14 @@ function mapRawResponseItemCompleted(
   if (!threadId || !turnId) {
     return { state, issues: ["image_generation_call requires threadId and turnId."] };
   }
-  if (!isCompletedStatus(status)) {
+  if (getString(item, "type") === "image_generation_call" && !isCompletedStatus(status)) {
     return { state, issues: [`image_generation_call did not complete: ${status ?? "unknown"}.`] };
   }
   const imageDataUrl = imageDataUrlFromResult(result);
   if (imageDataUrl === undefined) {
     return { state, issues: ["image_generation_call result is empty."] };
   }
-  const revisedPrompt = getString(item, "revised_prompt");
+  const revisedPrompt = getString(item, "revised_prompt") ?? getString(item, "revisedPrompt");
   return {
     state: {
       ...state,

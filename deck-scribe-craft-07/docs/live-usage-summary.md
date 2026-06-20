@@ -79,6 +79,18 @@ The same integration surface now blocks misleading confirmation copy when the im
 
 The local contract, one live Codex text usage probe, app progress-panel usage display with invalid provider payload omission, blank or duplicated stage-id and unsupported provider-kind blockers, incomplete text/image usage blockers, invalid usage/cost amount and cost-label blockers, persisted Codex image usage confirmation evidence blockers, developer-local and template confirmation evidence path blockers, and secret-redacted formatted-summary/progress/report image usage disclosure display are ready, but DF-244 still needs manual QA against the packaged app surface with real provider image Codex usage disclosure payloads.
 
+## Live Image Usage Update
+
+2026-06-21 KST Lane B captured real Codex image usage evidence from the authenticated image route:
+
+- Single-image route-lock run: `imageCount: 1`, latency `33496ms`, evidence `docs/live-evidence/codex-image/df230-df231-live-artifact-summary.json`
+- Five-background batch: `imageCount: 5` total across five live turns, evidence `docs/live-evidence/codex-image/df232-five-background-protocol-summary.json`
+- Batch latencies: `56466ms`, `49422ms`, `30413ms`, `28803ms`, `32849ms`
+- Selected-slide regeneration: `imageCount: 1`, latency `63784ms`, evidence `docs/live-evidence/codex-image/df235-selected-slide-regeneration-summary.json`
+- Provider/auth: `codex` / `codex_session`
+
+No exact provider cost was exposed by the App Server image protocol, so cost remains hidden rather than estimated as an exact charge.
+
 ## 2026-06-21 KST lane evidence update
 
 This ticket remains hard-blocked on packaged-app usage-summary QA with real

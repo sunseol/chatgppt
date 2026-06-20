@@ -25,10 +25,14 @@ DF-234 requires the review gallery to show compositor output built from real gen
 - `bun run typecheck`
 - `bun run lint`
 
-## Remaining Live Work
+## Live Evidence Update
 
-The current repository still lacks live compositor screenshots from five real image artifacts. DF-234 remains open until a production run captures live compositor screenshots, verifies title edit and re-export against real backgrounds, and confirms the review gallery uses only stored live image artifacts.
+2026-06-21 KST Lane B produced the five real stored Codex background artifacts required to drive the compositor/review gallery:
 
-## Current blocker evidence
+- Batch evidence: `docs/live-evidence/codex-image/df232-five-background-protocol-summary.json`
+- Stored live backgrounds: `projects/df232_live_codex_batch/slides/images/slide_001.v1.png` through `slide_005.v1.png`
+- Sidecars: matching `.metadata.json` and `.provenance.json` files beside every PNG
+- Provider/auth: `codex` / `codex_session`
+- Fixture flag: `false`
 
-2026-06-21 KST Image/Packaging lane recheck found GitHub issue #148 still open with `status:needs-live-evidence`. The review gallery/compositor code can validate stored live background artifacts, but this worktree has no five real generated backgrounds to drive the app-surface gallery. No live compositor screenshots or title edit/re-export evidence were produced in this run because the upstream real image artifacts are missing.
+DF-234 remains open because this lane did not run the packaged review gallery surface after the batch was created. Still required: five live compositor screenshots, selected presentation preview screenshot, title edit/re-export proof against real backgrounds, and approval/regeneration UI evidence.
