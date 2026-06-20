@@ -116,9 +116,12 @@ function researchPackProvenanceIssues(
   lineage: readonly ProviderArtifactProvenance[],
 ): readonly LiveResearchApprovalIssue[] {
   if (lineage.length === 0) return [];
-  const packArtifactId = pack.id.trim();
+  const packArtifactId = pack.id;
   const hasPackProvenance = lineage.some(
-    (provenance) => provenance.artifactId.trim() === packArtifactId,
+    (provenance) =>
+      packArtifactId === packArtifactId.trim() &&
+      provenance.artifactId === provenance.artifactId.trim() &&
+      provenance.artifactId === packArtifactId,
   );
   if (hasPackProvenance) return [];
   return [

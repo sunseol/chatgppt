@@ -5,6 +5,39 @@ import { createProviderArtifactProvenance } from "./provider-provenance";
 import type { ResearchPack } from "./research-types";
 
 describe("live research approval provenance identity", () => {
+  test("blocks approval when provenance artifact id only matches after trimming", () => {
+    // Given
+    const pack = readyResearchPack();
+
+    // When
+    const gate = evaluateLiveResearchApprovalGate({
+      pack,
+      evidenceRefs: pack.liveEvidenceRefs ?? [],
+      provenanceLineage: [
+        createProviderArtifactProvenance({
+          artifactId: " research_approved ",
+          executionMode: "production",
+          providerKind: "codex",
+          authMode: "codex_session",
+          modelOrRuntime: "codex app-server --stdio",
+          promptVersion: "live_research_pack@v1",
+          durationMs: 2_200,
+          inputArtifactIds: ["source_capture_bundle_001"],
+          fixture: false,
+          turnId: "turn_research_001",
+          threadId: "thread_project_001",
+        }),
+      ],
+    });
+
+    // Then
+    expect(gate.kind).toBe("blocked");
+    if (gate.kind !== "blocked") return;
+    expect(
+      gate.issues.map((issue) => issue.code).includes("research_pack_provenance_mismatch"),
+    ).toBe(true);
+  });
+
   test("blocks approval when provenance is for a different Research Pack artifact", () => {
     // Given
     const pack = readyResearchPack();
