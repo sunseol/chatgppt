@@ -1,6 +1,6 @@
 import type { ProviderJob, ProviderJobStatus, ProviderUsageSummary } from "./provider-job-manager";
 import { redactSensitiveText } from "./redaction";
-import { hasNonSyntheticJsonEvidencePath } from "./live-evidence-path";
+import { hasBillingConfirmationEvidencePath } from "./live-usage-billing-evidence";
 
 export type ProviderJobArtifactView = {
   readonly label: string;
@@ -137,7 +137,7 @@ function imageBillingDisclosureItem(usageSummary: ProviderUsageSummary): string 
   const disclosure = usageSummary.imageBillingDisclosure;
   if (disclosure === undefined) return "";
   if (!disclosure.userConfirmed) return "API key billing not confirmed";
-  if (!hasNonSyntheticJsonEvidencePath(disclosure.confirmationEvidencePath)) {
+  if (!hasBillingConfirmationEvidencePath(disclosure.confirmationEvidencePath)) {
     return "API key billing not confirmed";
   }
   return redactSensitiveText(disclosure.label.trim());

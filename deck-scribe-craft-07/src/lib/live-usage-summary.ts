@@ -1,8 +1,8 @@
 import type { ProviderImageBillingDisclosure, ProviderUsageSummary } from "./provider-job-manager";
 import type { ProviderKind } from "./provider-types";
-import { hasNonSyntheticJsonEvidencePath } from "./live-evidence-path";
 import { redactSensitiveText } from "./redaction";
 import { usageStageIdentityIssues } from "./live-usage-stage-identity";
+import { hasBillingConfirmationEvidencePath } from "./live-usage-billing-evidence";
 
 export type LiveCostLabel = "actual" | "estimate" | "hidden";
 
@@ -201,7 +201,7 @@ function imageBillingIssues(stage: LiveUsageStageSummary): readonly LiveUsageSum
 }
 
 function billingConfirmationHasEvidence(disclosure: LiveImageBillingDisclosure): boolean {
-  return hasNonSyntheticJsonEvidencePath(disclosure.confirmationEvidencePath);
+  return hasBillingConfirmationEvidencePath(disclosure.confirmationEvidencePath);
 }
 
 function isImageGenerationStage(stage: LiveUsageStageSummary): boolean {
