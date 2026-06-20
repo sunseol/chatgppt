@@ -23,6 +23,9 @@ describe("live auth secret lifecycle documentation", () => {
     expect(authSecretLifecycle.includes("LiveSecretReferenceError")).toBe(true);
     expect(authSecretLifecycle.includes("serializeProjectList")).toBe(true);
     expect(authSecretLifecycle.includes("redactSensitiveText")).toBe(true);
+    expect(authSecretLifecycle.includes("Bearer/Basic/token Authorization credentials")).toBe(true);
+    expect(authSecretLifecycle.includes("Authorization: Basic ...")).toBe(true);
+    expect(authSecretLifecycle.includes("Authorization: token ...")).toBe(true);
     expect(authSecretLifecycle.includes('quoted `CODEX_SESSION="..."`')).toBe(true);
     expect(authSecretLifecycle.includes('serialized `"token":"..."`')).toBe(true);
     expect(authSecretLifecycle.includes('"id_token":"..."')).toBe(true);

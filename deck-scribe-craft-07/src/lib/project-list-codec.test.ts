@@ -53,6 +53,31 @@ describe("project list codec", () => {
     expect(restored[0]?.initialPrompt.includes("[redacted]")).toBe(true);
   });
 
+  test("redacts non-bearer authorization credentials before project DB serialization", () => {
+    // Given
+    const project = createDeckProject(
+      {
+        name: "Authorization header prompt",
+        initialPrompt:
+          "Use Authorization: Basic Y29kZXg6c2Vzc2lvbg== and Authorization: token ghp_live_secret123",
+        slideCount: 5,
+        aspectRatio: "16:9",
+        language: "ko",
+      },
+      { createId: () => "p_authorization_prompt", now: () => 204 },
+    );
+
+    // When
+    const serialized = serializeProjectList([project]);
+    const restored = parseProjectList(serialized);
+
+    // Then
+    expect(serialized.includes("Y29kZXg6c2Vzc2lvbg==")).toBe(false);
+    expect(serialized.includes("ghp_live_secret123")).toBe(false);
+    expect(restored[0]?.initialPrompt.includes("Y29kZXg6c2Vzc2lvbg==")).toBe(false);
+    expect(restored[0]?.initialPrompt.includes("[redacted]")).toBe(true);
+  });
+
   test("redacts quoted Codex session material before project DB serialization", () => {
     const project = createDeckProject(
       {

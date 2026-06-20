@@ -10,6 +10,15 @@ describe("redaction", () => {
     expect(redacted).toBe("OPENAI_API_KEY=[redacted] Authorization: Bearer [redacted]");
   });
 
+  test("redacts non-bearer authorization credentials from text", () => {
+    const text =
+      "Authorization: Basic Y29kZXg6c2Vzc2lvbg== Authorization: token ghp_live_secret123";
+
+    const redacted = redactSensitiveText(text);
+
+    expect(redacted).toBe("Authorization: Basic [redacted] Authorization: token [redacted]");
+  });
+
   test("redacts generic secret assignments", () => {
     const text = "token=abc123def456 password=hunter2 api_key=key_secret";
 
