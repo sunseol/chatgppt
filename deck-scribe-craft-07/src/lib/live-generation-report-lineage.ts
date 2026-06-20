@@ -207,7 +207,9 @@ function joinOrNone(values: readonly string[]): string {
 const isSha256Digest = (value: string): boolean => /^sha256:[a-f0-9]{64}$/.test(value);
 
 function imageArtifactMatchesSlide(imageArtifactId: string, slideNumber: number): boolean {
-  return !imageArtifactId.trim() || imageArtifactId.includes(`_slide_${pad3(slideNumber)}_`);
+  if (!imageArtifactId.trim()) return true;
+  const match = /^[A-Za-z0-9_-]+_image_slide_(\d{3})_v[1-9]\d*$/.exec(imageArtifactId);
+  return match?.[1] === pad3(slideNumber);
 }
 
 function pad3(value: number): string {

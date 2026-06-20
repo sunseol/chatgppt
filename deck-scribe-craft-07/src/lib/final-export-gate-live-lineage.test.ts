@@ -88,7 +88,7 @@ describe("final export gate live report lineage", () => {
         {
           ...liveReportLineageFixture(),
           textArtifactId: "text_artifact_unlinked",
-          imageArtifactId: "project_001_image_slide_001_unlinked",
+          imageArtifactId: "project_001_image_slide_001_v9",
         },
       ],
     });

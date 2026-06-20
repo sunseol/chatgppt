@@ -42,7 +42,7 @@ Each production slide report must include:
 - `duplicate_text_artifact`: a text artifact id is reused across slide lineage entries.
 - `missing_image_artifact`: image lineage is missing an image artifact id.
 - `duplicate_image_artifact`: an image artifact id is reused across slide lineage entries.
-- `image_artifact_slide_mismatch`: image artifact id does not match the reported slide number.
+- `image_artifact_slide_mismatch`: image artifact id is not a versioned `*_image_slide_###_vN` artifact id for the reported slide number.
 - `missing_image_request`: image lineage is missing the nonblank provider request id.
 - `duplicate_image_request`: an image provider request id is reused across slide lineage entries.
 - `missing_text_provider_lineage`: text artifact id is absent from provider provenance.
@@ -67,7 +67,7 @@ Each production slide report must include:
 ## Local Evidence
 
 - `src/lib/live-generation-report-lineage.test.ts` verifies the formatted report section, complete production lineage, blocked missing or blank evidence ids, mixed blank source ids, duplicate source ids, missing text prompt version evidence, invalid export/compositor hashes, duplicate slide rows, reused image request ids, sidecar lineage secret leakage, contaminated exported project content, and contaminated exports.
-- `src/lib/live-generation-report-artifact-identity.test.ts` verifies that reused text or image artifact ids cannot satisfy multiple slide lineage rows.
+- `src/lib/live-generation-report-artifact-identity.test.ts` verifies that malformed image artifact ids and reused text or image artifact ids cannot satisfy slide lineage rows.
 - `src/lib/final-export-gate-live-lineage.test.ts`, `src/lib/final-export-gate-live-lineage-auth.test.ts`, and `src/lib/final-export-gate-live-lineage-text-prompt.test.ts` verify that production export is blocked when slide-level live report lineage is missing, incomplete, omits project slides, reuses image request evidence, references provider artifacts that are absent from provider provenance, lacks authenticated text/image provider auth, disagrees with provider turn/request metadata, or disagrees with text prompt version provenance, and is allowed only when provider provenance plus slide report lineage are complete.
 - `src/lib/final-export-gate-live-lineage-report-section.test.ts` verifies that production export is blocked when verified sidecar lineage is absent from the report markdown.
 - `src/lib/generation-report-live-lineage.test.ts` verifies that `buildGenerationReport` appends the formatted `## Live Slide Lineage` section when live lineage is supplied.
