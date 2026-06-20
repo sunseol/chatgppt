@@ -8,11 +8,12 @@ describe("live benchmark documentation", () => {
     const benchmark = readFileSync(BENCHMARK_DOC, "utf8");
 
     expect(benchmark.includes("output_bundle_evidence_count_mismatch")).toBe(true);
+    expect(benchmark.includes("output_bundle_synthetic_artifact_reference")).toBe(true);
     expect(benchmark.includes("matching evidence counts")).toBe(true);
     expect(benchmark.includes("output_bundle_regeneration_image_missing")).toBe(true);
-    expect(benchmark.includes("one separate approved regenerated live image artifact id")).toBe(
-      true,
-    );
+    expect(
+      benchmark.includes("one separate approved non-synthetic regenerated live image artifact id"),
+    ).toBe(true);
     expect(benchmark.includes("initial five-image floor")).toBe(true);
   });
 });

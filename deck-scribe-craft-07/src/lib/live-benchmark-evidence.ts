@@ -78,6 +78,7 @@ export type LiveBenchmarkEvidenceIssueCode =
   | "duplicate_output_bundle_image_artifact"
   | "duplicate_output_bundle_image_request"
   | "duplicate_output_bundle_golden_path_report"
+  | "output_bundle_synthetic_artifact_reference"
   | "output_bundle_golden_path_evidence_missing"
   | "output_bundle_regeneration_image_missing"
   | "mock_score_contamination"
