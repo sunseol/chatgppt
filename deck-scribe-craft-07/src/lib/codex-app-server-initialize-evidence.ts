@@ -22,10 +22,19 @@ export function initializedEvidenceIsComplete(evidence: InitializedEvidence): bo
 }
 
 export function healthTurnEvidenceIsComplete(evidence: {
+  readonly account: {
+    readonly type: string;
+    readonly requiresOpenaiAuth: boolean;
+  };
   readonly threadId: string;
   readonly turnId: string;
 }): boolean {
-  return isCanonicalNonBlank(evidence.threadId) && isCanonicalNonBlank(evidence.turnId);
+  return (
+    evidence.account.type === "chatgpt" &&
+    evidence.account.requiresOpenaiAuth &&
+    isCanonicalNonBlank(evidence.threadId) &&
+    isCanonicalNonBlank(evidence.turnId)
+  );
 }
 
 function isCanonicalNonBlank(value: string): boolean {
