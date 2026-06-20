@@ -1,6 +1,8 @@
 import type { LiveManualQaIssue } from "./live-manual-qa-evidence";
 import { hasNonSyntheticJsonEvidencePath } from "./live-evidence-path";
 
+const NON_OBSERVED_SESSION_MARKERS = ["template", "sample", "example", "placeholder"] as const;
+
 export function sessionEvidenceIssues(sessionEvidencePath: string): readonly LiveManualQaIssue[] {
   return validSessionEvidencePath(sessionEvidencePath)
     ? []
@@ -18,6 +20,7 @@ function validSessionEvidencePath(value: string): boolean {
   return (
     hasNonSyntheticJsonEvidencePath(value) &&
     normalized.includes("manual-qa") &&
-    normalized.includes("session")
+    normalized.includes("session") &&
+    !NON_OBSERVED_SESSION_MARKERS.some((marker) => normalized.includes(marker))
   );
 }
