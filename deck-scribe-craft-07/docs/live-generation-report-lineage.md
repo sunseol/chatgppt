@@ -98,14 +98,26 @@ Each production slide report must include:
 
 DF-240 remains open because a zero-contamination generation report and final export bundle still require production Codex text-turn lineage, compositor output hashes, exported PNG hashes, and packaged export QA. The image provider side is now live; the report/export surface has not yet been driven end to end.
 
+## Lane D Image/Compositor Export Recheck
+
+2026-06-21 KST Lane D added partial image/compositor/export lineage evidence:
+
+- Manifest: `docs/live-evidence/codex-image/lane-d-live-app-surface-20260621/manifest.json`
+- Manifest hash: `sha256:caa4036a28a40886a953a1b547059fd1073cabe35e67f73dc56418b02c02676f`
+- Image/compositor lineage: `docs/live-evidence/codex-image/lane-d-live-app-surface-20260621/df240-image-compositor-export-lineage.json`
+- Image/compositor lineage hash: `sha256:ad313eca0ac30db6e6f9fef609899281cf477f6062909b0ecdc27c9eda86b716`
+
+This closes only the image/compositor packaging gap. DF-240 remains open because production Codex text-turn lineage, source ids per final report slide, and final PNG/project export package QA are still missing.
+
 ## 2026-06-21 KST lane evidence update
 
-This ticket remains hard-blocked on Image lane compositor/export artifacts and
-packaged export QA. No compositor/export artifact manifest, final PNG/project
-export bundle, or benchmark/export output bundle is present in this lane's
-`release-artifacts`; it contains only `DeckForge_0.1.0_aarch64.dmg`, its checksum,
-and `README.md`. The DMG checksum matches the committed checksum, but the
-mounted `/Volumes/DeckForge/DeckForge.app` fails both `codesign --verify` and
-`spctl --assess` with `code has no resources but signature indicates they must
-be present`, so packaged report/export review cannot run from this artifact.
+This ticket remains hard-blocked on production text lineage and packaged export
+QA. Lane D now supplies image/compositor partial lineage, but no final
+PNG/project export bundle or benchmark/export output bundle is present in this
+lane's `release-artifacts`; it contains only `DeckForge_0.1.0_aarch64.dmg`, its
+checksum, and `README.md`. The DMG checksum matches the committed checksum, but
+the mounted `/Volumes/DeckForge/DeckForge.app` fails both `codesign --verify`
+and `spctl --assess` with `code has no resources but signature indicates they
+must be present`, so packaged report/export review cannot run from this
+artifact.
 See `docs/live-research-lane-blockers-2026-06-21.md`.

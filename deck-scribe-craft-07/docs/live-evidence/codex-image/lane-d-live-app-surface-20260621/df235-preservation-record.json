@@ -1,0 +1,67 @@
+{
+  "selectedSlideNumber": 3,
+  "approvedOriginalPreservedUntilApproval": true,
+  "failedRegenerationPreservesOriginal": true,
+  "original": {
+    "slideNumber": 3,
+    "path": "docs/live-evidence/codex-image/lane-d-live-app-surface-20260621/review-compositor-slide-003.svg",
+    "hash": "sha256:5d66cabc572f86e837926d7745f42720f8c9be7c06f032a2c9486f9bba4e3faf",
+    "title": "Risk and controls",
+    "body": "Selected slide can route to full regeneration instead of inpainting.",
+    "binaryPath": "projects/df232_live_codex_batch/slides/images/slide_003.v1.png",
+    "binaryHash": "sha256:d5a129265c0bfb05e85641606a7d1972842eb80ac0d3f230a9c8694fe96c15a8",
+    "artifactId": "df232_live_codex_batch_image_slide_003_v1",
+    "threadId": "019ee689-3814-73e3-bf80-3ff0fc6e1d44",
+    "turnId": "019ee68a-e53e-71c0-814a-8d5da527c75a"
+  },
+  "regenerated": {
+    "binaryPath": "projects/df235_live_regeneration/slides/images/slide_003.v2.png",
+    "binaryHash": "sha256:fec63060405bbe50246c9216447c8759fc5426eed8f14d5c1dfb7b8df5d0d202",
+    "metadata": {
+      "path": "projects/df235_live_regeneration/slides/images/slide_003.v2.metadata.json",
+      "providerId": "codex",
+      "slideNumber": 3,
+      "aspectRatio": "16:9",
+      "canvas": {
+        "width": 1600,
+        "height": 900
+      },
+      "layoutReference": {
+        "screenshot": "live-layout-reference/df232-slide-003-composition.png",
+        "mode": "composition-reference"
+      },
+      "prompt": {
+        "id": "slide_generation",
+        "version": "codex-live-regeneration-v1",
+        "hash": "sha256:df235-live-slide-003-regeneration-prompt"
+      },
+      "request": {
+        "model": "gpt-image-2",
+        "threadId": "019ee690-9595-7323-86d7-e188639cd355",
+        "turnId": "019ee690-9801-71b0-9062-cc72a74d2f97",
+        "latencyMs": 63784,
+        "usage": {
+          "imageCount": 1
+        }
+      },
+      "generatedAt": 1781984764024
+    },
+    "provenance": {
+      "path": "projects/df235_live_regeneration/slides/images/slide_003.v2.provenance.json",
+      "artifactId": "df235_live_regeneration_image_slide_003_v2",
+      "executionMode": "production",
+      "providerKind": "codex",
+      "authMode": "codex_session",
+      "modelOrRuntime": "gpt-image-2",
+      "promptVersion": "slide_generation@codex-live-regeneration-v1",
+      "durationMs": 63784,
+      "inputArtifactIds": [
+        "sha256:df235-live-slide-003-regeneration-prompt",
+        "live-layout-reference/df232-slide-003-composition.png"
+      ],
+      "fixture": false,
+      "threadId": "019ee690-9595-7323-86d7-e188639cd355",
+      "turnId": "019ee690-9801-71b0-9062-cc72a74d2f97"
+    }
+  }
+}

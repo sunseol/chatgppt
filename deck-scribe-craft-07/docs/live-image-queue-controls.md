@@ -37,3 +37,7 @@ DF-233 requires the live image queue to throttle concurrent work, retry only tra
 - Each stored slide has metadata/provenance sidecars with Codex thread `019ee689-3814-73e3-bf80-3ff0fc6e1d44` and unique turn ids.
 
 DF-233 remains open for true queue-control evidence: actual rate-limit or 5xx retry provenance, user cancellation against an in-flight real provider request, and app-restart partial resume through the packaged UI.
+
+## Lane D App-Surface Recheck
+
+2026-06-21 KST Lane D produced the image UI evidence bundle at `docs/live-evidence/codex-image/lane-d-live-app-surface-20260621/manifest.json` (`sha256:caa4036a28a40886a953a1b547059fd1073cabe35e67f73dc56418b02c02676f`). The bundle confirms the five stored successful image turns can feed review/compositor/usage surfaces, but it does not contain a genuine live `429`/`5xx` retry event, user cancellation event, or packaged restart-resume trace. DF-233 remains open until those three events are produced against real provider jobs.

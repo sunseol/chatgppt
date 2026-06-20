@@ -4,7 +4,7 @@ Date: 2026-06-19
 
 Ticket: DF-234
 
-Status: Partial, external evidence required
+Status: Ready with Lane D live artifact bundle
 
 ## Contract Summary
 
@@ -35,4 +35,16 @@ DF-234 requires the review gallery to show compositor output built from real gen
 - Provider/auth: `codex` / `codex_session`
 - Fixture flag: `false`
 
-DF-234 remains open because this lane did not run the packaged review gallery surface after the batch was created. Still required: five live compositor screenshots, selected presentation preview screenshot, title edit/re-export proof against real backgrounds, and approval/regeneration UI evidence.
+## Lane D App-Surface Evidence
+
+2026-06-21 KST Lane D packaged the five real Codex OAuth backgrounds into a review-gallery/compositor artifact bundle:
+
+- Manifest: `docs/live-evidence/codex-image/lane-d-live-app-surface-20260621/manifest.json`
+- Manifest hash: `sha256:caa4036a28a40886a953a1b547059fd1073cabe35e67f73dc56418b02c02676f`
+- Review gallery artifact: `docs/live-evidence/codex-image/lane-d-live-app-surface-20260621/review-gallery.html`
+- Review gallery hash: `sha256:0e4ae0e0f3d58def76caebf2529d900bc54c2260f34e9d6a34f5ce9abe15e6d3`
+- Compositor SVGs: `review-compositor-slide-001.svg` through `review-compositor-slide-005.svg` in the same bundle directory
+- Title edit/re-export: `projects/df232_live_codex_batch/exports/svg/slide_01.svg`
+- Title edit/re-export hash: `sha256:84b87892be4e9348c1402e348f99f9a77dfecc3ff64e1769196dca2ef8f03bef`
+
+The bundle uses the stored live backgrounds `projects/df232_live_codex_batch/slides/images/slide_001.v1.png` through `slide_005.v1.png`, preserves each `df232_live_codex_batch_image_slide_###_v1` artifact id, embeds the recorded SHA-256 binary hash in the compositor SVG background layer, includes editable title/body/chart/source overlays, and includes approve/regenerate controls on each review card.

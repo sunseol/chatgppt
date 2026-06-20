@@ -294,3 +294,38 @@ Assigned issue disposition from this recheck:
 - DF-224 / `#143`: remains open. Packaged research approval QA is blocked by
   the current DMG failing both `codesign` and `spctl` with
   `code has no resources but signature indicates they must be present`.
+
+## 2026-06-21 Lane D Image UI Recheck
+
+Fresh evidence produced in this lane:
+
+- Lane D app-surface bundle:
+  `docs/live-evidence/codex-image/lane-d-live-app-surface-20260621/manifest.json`
+  (`sha256:caa4036a28a40886a953a1b547059fd1073cabe35e67f73dc56418b02c02676f`).
+- Review gallery artifact:
+  `docs/live-evidence/codex-image/lane-d-live-app-surface-20260621/review-gallery.html`
+  (`sha256:0e4ae0e0f3d58def76caebf2529d900bc54c2260f34e9d6a34f5ce9abe15e6d3`).
+- Title edit/re-export artifact:
+  `projects/df232_live_codex_batch/exports/svg/slide_01.svg`
+  (`sha256:84b87892be4e9348c1402e348f99f9a77dfecc3ff64e1769196dca2ef8f03bef`).
+
+Assigned issue disposition from this recheck:
+
+- DF-233 / `#147`: remains open. Missing exact blocker: genuine live `429`/`5xx`
+  retry provenance, user cancellation against an in-flight real provider request,
+  and packaged restart-resume evidence.
+- DF-234 / `#148`: ready to close. The bundle contains five real stored Codex
+  backgrounds as compositor background layers, editable title/body/chart/source
+  overlays, five review thumbnails, selected presentation preview, approve and
+  regenerate controls, and title edit/re-export evidence tied to the real slide 1
+  background artifact.
+- DF-235 / `#149`: remains open. The bundle now contains v1/v2 before/after and
+  preservation evidence, but packaged review UI approval and failed-regeneration
+  preservation have not been manually driven.
+- DF-240 / `#150`: remains open. Image/compositor partial lineage is present,
+  but production Codex text-turn lineage, source ids per final report slide, and
+  final PNG/project export QA are still missing.
+- DF-244 / `#154`: remains open. Actual image latency/count display is present,
+  with cost hidden because the provider sidecars did not supply cost, but there
+  is no persisted pre-generation user-confirmation record from the packaged app
+  surface.
