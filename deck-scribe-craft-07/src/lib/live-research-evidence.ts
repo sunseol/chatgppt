@@ -14,6 +14,7 @@ export type LiveResearchEvidenceIssueCode =
   | "missing_dataset_or_numeric_evidence"
   | "major_number_metadata"
   | "duplicate_evidence_reference"
+  | "noncanonical_evidence_reference"
   | "unknown_reference";
 
 export type LiveResearchEvidenceIssue = {

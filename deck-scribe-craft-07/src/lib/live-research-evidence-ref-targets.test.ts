@@ -50,6 +50,23 @@ describe("live research evidence reference targets", () => {
       },
     ]);
   });
+
+  test("rejects evidence refs with non-canonical persisted ids", () => {
+    // Given
+    const pack = researchPack();
+    const evidenceRefs: LiveResearchEvidenceReference[] = [
+      quoteEvidenceRef(" ev_001 ", "claim_001"),
+    ];
+
+    // When
+    const report = validateLiveResearchEvidence({ pack, evidenceRefs });
+
+    // Then
+    expect(report.valid).toBe(false);
+    expect(
+      report.fatalIssues.map((issue) => issue.code).includes("noncanonical_evidence_reference"),
+    ).toBe(true);
+  });
 });
 
 function quoteEvidenceRef(id: string, claimId: string): LiveResearchEvidenceReference {

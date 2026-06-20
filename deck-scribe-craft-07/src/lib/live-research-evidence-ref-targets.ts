@@ -9,6 +9,7 @@ export function validateEvidenceRefClaimTargets(
 ): readonly LiveResearchEvidenceIssue[] {
   return [
     ...duplicateEvidenceRefIssues(evidenceRefs),
+    ...nonCanonicalEvidenceRefIssues(evidenceRefs),
     ...evidenceRefs
       .filter((evidenceRef) => !claimIds.has(evidenceRef.claimId))
       .map((evidenceRef) => ({
@@ -18,6 +19,25 @@ export function validateEvidenceRefClaimTargets(
         message: `Unknown evidence claim: ${evidenceRef.claimId}`,
       })),
   ];
+}
+
+function nonCanonicalEvidenceRefIssues(
+  evidenceRefs: readonly LiveResearchEvidenceReference[],
+): readonly LiveResearchEvidenceIssue[] {
+  return evidenceRefs.flatMap((evidenceRef) =>
+    [evidenceRef.id, evidenceRef.claimId, evidenceRef.sourceId, evidenceRef.datasetId].some(
+      isNonCanonicalNonBlank,
+    )
+      ? [
+          {
+            code: "noncanonical_evidence_reference" as const,
+            severity: "fatal" as const,
+            claimId: evidenceRef.claimId,
+            message: "Persisted live research evidence reference ids must be canonical.",
+          },
+        ]
+      : [],
+  );
 }
 
 function duplicateEvidenceRefIssues(
@@ -37,4 +57,8 @@ function duplicateEvidenceRefIssues(
     severity: "fatal",
     message: `Duplicate evidence reference id: ${id}`,
   }));
+}
+
+function isNonCanonicalNonBlank(value: string | undefined): boolean {
+  return value !== undefined && value.trim() !== "" && value !== value.trim();
 }
