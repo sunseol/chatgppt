@@ -86,3 +86,15 @@ Each production slide report must include:
 ## Remaining Live Evidence
 
 The local contract can reject incomplete or contaminated provenance, but DF-240 still requires a real live run where the app populates this lineage from production provider turns and provider image requests. The ticket should remain open until a zero-contamination report/export bundle is produced from the real compositor output.
+
+## 2026-06-21 KST lane evidence update
+
+This ticket remains hard-blocked on Image lane compositor/export artifacts and
+packaged export QA. No compositor/export artifact manifest, final PNG/project
+export bundle, or benchmark/export output bundle is present in this lane's
+`release-artifacts`; it contains only `DeckForge_0.1.0_aarch64.dmg`, its checksum,
+and `README.md`. The DMG checksum matches the committed checksum, but the
+mounted `/Volumes/DeckForge/DeckForge.app` fails both `codesign --verify` and
+`spctl --assess` with `code has no resources but signature indicates they must
+be present`, so packaged report/export review cannot run from this artifact.
+See `docs/live-research-lane-blockers-2026-06-21.md`.

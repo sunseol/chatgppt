@@ -64,3 +64,15 @@ When the ready-state approval action runs, it records the approved research arti
 ## Remaining Live work
 
 DF-224 is not ready to close. The review UI and approval gate contracts exist locally, and production can now display a persisted Research Pack, source exclusion/reinforcement controls, approval blockers, saved canonical source capture metadata, saved evidence references, saved provider provenance, and a ready-state approval action that writes a current-content `approvedResearchPackHash` plus an approved research artifact record for DF-214. Source exclusion now also purges numeric evidence that survives only through a removed dataset, preventing stale numbers from appearing review-ready after the source decision, and review mutations clear stale provider provenance before any later approval attempt. Approval also requires saved provider provenance for the exact canonical current Research Pack artifact id and a `live_research_pack@...` prompt version, so provenance for a different artifact, whitespace-padded artifact, or another live stage prompt cannot unlock the DF-214 handoff. A non-simulated packaged-app live research approval manual QA run is still required.
+
+## 2026-06-21 KST lane evidence update
+
+This ticket remains hard-blocked on packaged-app research approval manual QA.
+The mounted `release-artifacts/DeckForge_0.1.0_aarch64.dmg` package failed both
+`codesign --verify --deep --strict --verbose=2` and `spctl --assess --type
+execute --verbose=4` against `/Volumes/DeckForge/DeckForge.app` with `code has
+no resources but signature indicates they must be present`. Without a launchable
+packaged app and without a persisted app-produced Research Pack carrying source
+capture metadata, `ResearchPack.liveEvidenceRefs`, and `ResearchPack.provenanceLineage`,
+the required non-simulated approval QA cannot be completed. See
+`docs/live-research-lane-blockers-2026-06-21.md`.

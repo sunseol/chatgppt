@@ -78,3 +78,14 @@ The same integration surface now blocks misleading confirmation copy when the im
 ## Remaining Live Evidence
 
 The local contract, one live Codex text usage probe, app progress-panel usage display with invalid provider payload omission, blank or duplicated stage-id and unsupported provider-kind blockers, incomplete text/image usage blockers, invalid usage/cost amount and cost-label blockers, persisted API-key billing confirmation evidence blockers, developer-local and template billing evidence path blockers, and secret-redacted formatted-summary/progress/report image billing disclosure display are ready, but DF-244 still needs manual QA against the packaged app surface with real provider image billing/API-key disclosure payloads.
+
+## 2026-06-21 KST lane evidence update
+
+This ticket remains hard-blocked on packaged-app usage-summary QA with real
+image billing/API-key disclosure payloads. The available DMG mounted and its
+SHA-256 matched the committed checksum, but `/Volumes/DeckForge/DeckForge.app`
+failed `codesign --verify --deep --strict --verbose=2` and `spctl --assess
+--type execute --verbose=4` with `code has no resources but signature indicates
+they must be present`. This lane also has no persisted real image billing
+confirmation JSON artifact in `release-artifacts`. See
+`docs/live-research-lane-blockers-2026-06-21.md`.
