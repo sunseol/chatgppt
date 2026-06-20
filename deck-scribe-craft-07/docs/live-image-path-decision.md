@@ -19,7 +19,7 @@ Status: partial local contract
 - `src/lib/production-image-generation-gate.ts` allows the `mock` provider only in development mode.
 - Production generation is blocked with `missing_image_path_decision` until `DeckProject.imagePathDecision` contains a locked decision record.
 - A blocked decision forwards `image_path_not_locked` plus the underlying decision blockers to the Generate stage.
-- The production gate revalidates persisted locked decisions before use: fixture fallback flags block with `fixture_fallback_enabled`, blank OpenAI image request ids block with `missing_request_id`, non-versioned binary paths block with `invalid_binary_artifact_path`, non-versioned provenance sidecars block with `invalid_provenance_artifact_path`, and binary/provenance version drift blocks with `provenance_artifact_path_mismatch`.
+- The production gate revalidates persisted locked decisions before use: fixture fallback flags block with `fixture_fallback_enabled`, blank OpenAI image request ids block with `missing_request_id`, padded persisted OpenAI image request ids block with `provenance_request_id_mismatch`, non-versioned binary paths block with `invalid_binary_artifact_path`, non-versioned provenance sidecars block with `invalid_provenance_artifact_path`, and binary/provenance version drift blocks with `provenance_artifact_path_mismatch`.
 - `src/components/deck/GenerateStage.tsx` disables the production image generation action when this gate is blocked, so the stage cannot return mock preview output as a fixture fallback.
 
 ## Decision inputs recorded

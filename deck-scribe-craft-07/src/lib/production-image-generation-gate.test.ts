@@ -144,6 +144,28 @@ describe("production image generation gate", () => {
       ],
     });
   });
+
+  test("blocks persisted OpenAI decisions whose request id is not canonical", () => {
+    const gate = createProductionImageGenerationGate({
+      executionMode: "production",
+      imagePathDecision: {
+        ...lockedDecision(),
+        requestId: " img_req_001 ",
+      },
+    });
+
+    expect(gate).toEqual({
+      kind: "blocked",
+      executionMode: "production",
+      providerId: "openaiImage",
+      issues: [
+        {
+          code: "provenance_request_id_mismatch",
+          message: "OpenAI image production generation requires a canonical provider request id.",
+        },
+      ],
+    });
+  });
 });
 
 function lockedDecision(): ImagePathDecisionRecord {

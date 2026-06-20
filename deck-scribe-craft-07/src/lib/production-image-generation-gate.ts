@@ -73,8 +73,15 @@ export function createProductionImageGenerationGate(input: {
 
   const binaryArtifactPath = decision.binaryArtifactPath?.trim();
   const provenanceArtifactPath = decision.provenanceArtifactPath?.trim();
-  const requestId = decision.requestId?.trim();
-  const issues = decisionIssues(decision, binaryArtifactPath, provenanceArtifactPath, requestId);
+  const persistedRequestId = decision.requestId;
+  const requestId = persistedRequestId?.trim();
+  const issues = decisionIssues(
+    decision,
+    binaryArtifactPath,
+    provenanceArtifactPath,
+    requestId,
+    persistedRequestId,
+  );
   if (issues.length > 0) {
     return {
       kind: "blocked",
@@ -127,6 +134,7 @@ function decisionIssues(
   binaryArtifactPath: string | undefined,
   provenanceArtifactPath: string | undefined,
   requestId: string | undefined,
+  persistedRequestId: string | undefined,
 ): readonly ProductionImageGenerationIssue[] {
   const binaryAddress =
     binaryArtifactPath === undefined
@@ -136,6 +144,11 @@ function decisionIssues(
     provenanceArtifactPath === undefined
       ? undefined
       : parseVersionedProjectImageProvenancePath(provenanceArtifactPath);
+  const hasNonCanonicalRequestId =
+    decision.providerId === "openaiImage" &&
+    persistedRequestId !== undefined &&
+    persistedRequestId.trim().length > 0 &&
+    persistedRequestId !== requestId;
   return [
     ...(decision.status === "locked"
       ? []
@@ -196,6 +209,14 @@ function decisionIssues(
           {
             code: "missing_request_id" as const,
             message: "OpenAI image production generation requires a provider request id.",
+          },
+        ]
+      : []),
+    ...(hasNonCanonicalRequestId
+      ? [
+          {
+            code: "provenance_request_id_mismatch" as const,
+            message: "OpenAI image production generation requires a canonical provider request id.",
           },
         ]
       : []),
