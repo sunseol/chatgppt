@@ -71,6 +71,14 @@ export type ProductionPackagingEvidenceResult =
   | { readonly kind: "ready" }
   | { readonly kind: "blocked"; readonly issues: readonly ProductionPackagingIssue[] };
 
+const RELEASE_TRUST_EVIDENCE_PATH_MARKERS = [
+  "release-trust",
+  "codesign",
+  "notarytool",
+  "stapler",
+  "spctl",
+] as const;
+
 export function evaluateProductionPackagingEvidence(
   evidence: ProductionPackagingEvidence,
 ): ProductionPackagingEvidenceResult {
@@ -248,7 +256,10 @@ const isDeveloperTeamIdentifier = (value: string): boolean => /^[A-Z0-9]{10}$/.t
 
 function hasReleaseTrustEvidencePath(value: string | undefined): boolean {
   const normalized = value?.toLowerCase() ?? "";
-  return hasNonSyntheticJsonEvidencePath(value) && normalized.includes("release-trust");
+  return (
+    hasNonSyntheticJsonEvidencePath(value) &&
+    RELEASE_TRUST_EVIDENCE_PATH_MARKERS.every((marker) => normalized.includes(marker))
+  );
 }
 
 function issue(

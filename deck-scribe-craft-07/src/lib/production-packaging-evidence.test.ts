@@ -1,15 +1,17 @@
 import { describe, expect, test } from "bun:test";
 import {
-  CLEAN_MACHINE_STEPS,
   evaluateProductionPackagingEvidence,
   formatProductionPackagingEvidenceSummary,
-  type ProductionPackagingEvidence,
 } from "./production-packaging-evidence";
+import {
+  completeProductionPackagingEvidence,
+  VALID_RELEASE_TRUST_EVIDENCE_PATH,
+} from "./production-packaging-test-fixtures";
 
 describe("production packaging evidence", () => {
   test("passes clean production package evidence with clean-machine runbook coverage", () => {
     // Given
-    const evidence = completeEvidence();
+    const evidence = completeProductionPackagingEvidence();
 
     // When
     const result = evaluateProductionPackagingEvidence(evidence);
@@ -20,7 +22,7 @@ describe("production packaging evidence", () => {
 
   test("summarizes package path, content scan, runtime remediation, and clean-machine steps", () => {
     // Given
-    const evidence = completeEvidence();
+    const evidence = completeProductionPackagingEvidence();
 
     // When
     const summary = formatProductionPackagingEvidenceSummary(evidence);
@@ -42,7 +44,7 @@ describe("production packaging evidence", () => {
 
   test("blocks missing package, content contamination, runbook gaps, and missing remediation", () => {
     // Given
-    const evidence = completeEvidence({
+    const evidence = completeProductionPackagingEvidence({
       packagePath: "",
       packageSha256: "",
       nativeMacosBundlePath: "",
@@ -81,7 +83,7 @@ describe("production packaging evidence", () => {
   test("blocks local developer path leakage in package content", () => {
     // Given
     const evidence = {
-      ...completeEvidence(),
+      ...completeProductionPackagingEvidence(),
       contentScan: {
         mockResourceHits: [],
         fixtureHits: [],
@@ -105,7 +107,7 @@ describe("production packaging evidence", () => {
 
   test("blocks package artifact, native bundle, and runbook file URL evidence paths", () => {
     // Given
-    const evidence = completeEvidence({
+    const evidence = completeProductionPackagingEvidence({
       packagePath: "file:///Users/jake/chatgppt/dist/deckforge-macos-dry-run.tgz",
       nativeMacosBundlePath: "file:///Users/jake/chatgppt/release-artifacts/DeckForge.dmg",
       runbookPath: "file:///Users/jake/chatgppt/docs/production-clean-machine-runbook.md",
@@ -126,7 +128,7 @@ describe("production packaging evidence", () => {
 
   test("blocks non-canonical clean-machine runbook paths", () => {
     // Given
-    const evidence = completeEvidence({
+    const evidence = completeProductionPackagingEvidence({
       runbookPath: "release-evidence/production-clean-machine-runbook.md",
     });
 
@@ -141,14 +143,14 @@ describe("production packaging evidence", () => {
 
   test("blocks native macOS release trust evidence that is unsigned or unnotarized", () => {
     // Given
-    const evidence = completeEvidence({
+    const evidence = completeProductionPackagingEvidence({
       nativeMacosReleaseTrust: {
         signature: "adhoc",
         teamIdentifier: "",
         notarized: false,
         stapled: false,
         gatekeeperAccepted: false,
-        releaseTrustEvidencePath: "release-evidence/macos-release-trust.json",
+        releaseTrustEvidencePath: VALID_RELEASE_TRUST_EVIDENCE_PATH,
       },
     });
 
@@ -167,14 +169,14 @@ describe("production packaging evidence", () => {
 
   test("blocks Developer ID trust evidence with a placeholder TeamIdentifier", () => {
     // Given
-    const evidence = completeEvidence({
+    const evidence = completeProductionPackagingEvidence({
       nativeMacosReleaseTrust: {
         signature: "developer_id",
         teamIdentifier: "not set",
         notarized: true,
         stapled: true,
         gatekeeperAccepted: true,
-        releaseTrustEvidencePath: "release-evidence/macos-release-trust.json",
+        releaseTrustEvidencePath: VALID_RELEASE_TRUST_EVIDENCE_PATH,
       },
     });
 
@@ -190,7 +192,7 @@ describe("production packaging evidence", () => {
 
   test("blocks release trust claims without persisted assessment evidence", () => {
     // Given
-    const evidence = completeEvidence({
+    const evidence = completeProductionPackagingEvidence({
       nativeMacosReleaseTrust: {
         signature: "developer_id",
         teamIdentifier: "TEAMID1234",
@@ -212,7 +214,7 @@ describe("production packaging evidence", () => {
 
   test("blocks release trust claims backed only by developer-local assessment evidence", () => {
     // Given
-    const evidence = completeEvidence({
+    const evidence = completeProductionPackagingEvidence({
       nativeMacosReleaseTrust: {
         signature: "developer_id",
         teamIdentifier: "TEAMID1234",
@@ -234,7 +236,7 @@ describe("production packaging evidence", () => {
 
   test("blocks release trust evidence paths that are not release-trust bundles", () => {
     // Given
-    const evidence = completeEvidence({
+    const evidence = completeProductionPackagingEvidence({
       nativeMacosReleaseTrust: {
         signature: "developer_id",
         teamIdentifier: "TEAMID1234",
@@ -253,46 +255,26 @@ describe("production packaging evidence", () => {
     if (result.kind !== "blocked") return;
     expect(result.issues.map((issue) => issue.code)).toEqual(["missing_release_trust_evidence"]);
   });
+
+  test("blocks generic release trust bundle paths without assessment markers", () => {
+    // Given
+    const evidence = completeProductionPackagingEvidence({
+      nativeMacosReleaseTrust: {
+        signature: "developer_id",
+        teamIdentifier: "TEAMID1234",
+        notarized: true,
+        stapled: true,
+        gatekeeperAccepted: true,
+        releaseTrustEvidencePath: "release-evidence/macos-release-trust.json",
+      },
+    });
+
+    // When
+    const result = evaluateProductionPackagingEvidence(evidence);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual(["missing_release_trust_evidence"]);
+  });
 });
-
-function completeEvidence(
-  patch: Partial<ProductionPackagingEvidence> = {},
-): ProductionPackagingEvidence {
-  return {
-    packagePath: "dist/deckforge-macos-dry-run.tgz",
-    packageSha256: "3c15121b7fd11559b98c4ba751ccdac89a9990a669b7612e95b3cdfd94d0edf3",
-    nativeMacosBundlePath: "release-artifacts/DeckForge_0.1.0_aarch64.dmg",
-    nativeMacosBundleSha256: "ad8b11dee61a15c193fabfc3a7bf85110b116db65098bd2a845c2533a25dae5d",
-    nativeMacosReleaseTrust: {
-      signature: "developer_id",
-      teamIdentifier: "TEAMID1234",
-      notarized: true,
-      stapled: true,
-      gatekeeperAccepted: true,
-      releaseTrustEvidencePath: "release-evidence/macos-release-trust.json",
-    },
-    productionMode: true,
-    contentScan: {
-      mockResourceHits: [],
-      fixtureHits: [],
-      secretHits: [],
-      testFileHits: [],
-      localPathHits: [],
-    },
-    cleanMachineSteps: CLEAN_MACHINE_STEPS,
-    cleanMachineStepEvidencePaths: cleanMachineStepEvidencePaths(),
-    runtimeAbsenceRemediationShown: true,
-    runbookPath: "docs/production-clean-machine-runbook.md",
-    ...patch,
-  };
-}
-
-function cleanMachineStepEvidencePaths(): ProductionPackagingEvidence["cleanMachineStepEvidencePaths"] {
-  return {
-    install_app: "release-evidence/clean-machine/install-app.json",
-    codex_login: "release-evidence/clean-machine/codex-login.json",
-    image_credentials: "release-evidence/clean-machine/image-credentials.json",
-    project_launch: "release-evidence/clean-machine/project-launch.json",
-    live_interview: "release-evidence/clean-machine/live-interview.json",
-  };
-}
