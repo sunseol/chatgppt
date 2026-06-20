@@ -18,7 +18,7 @@ Status: partial local contract
 - Requires slide number and artifact version to be positive integers before writing, so `slide_000`, fractional, or non-positive versioned-looking paths cannot count as stored provider output.
 - Rejects mock image artifacts before writing, so development preview output cannot be persisted as Live provider bytes.
 - Records a real 64-character SHA-256 digest for the stored binary.
-- Rejects blank prompt version/hash and blank layout screenshot references before writing, so stored provenance `inputArtifactIds` cannot be built from missing prompt or layout lineage.
+- Rejects blank or whitespace-padded prompt id/version/hash and layout screenshot references before writing, so stored provenance `promptVersion` and `inputArtifactIds` cannot be built from missing or trim-only prompt/layout lineage.
 - Preserves request metadata when available: `requestId`, model, size, quality, latency, and usage.
 - Rejects whitespace-padded request ids, request models, size values, or quality values before writing, so stored metadata and provenance keep canonical provider request metadata rather than trim-only evidence.
 - Rejects blank request models, missing/invalid latency, empty usage metadata without usage evidence, fractional or negative usage counts, and negative or non-finite usage/cost values before writing image bytes or metadata.

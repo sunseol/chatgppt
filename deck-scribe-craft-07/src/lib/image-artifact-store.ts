@@ -105,12 +105,20 @@ function assertSafeStorageAddress(input: {
 }
 
 function assertImageInputLineage(artifact: SlideImageArtifact): void {
-  if (!artifact.prompt.version.trim() || !artifact.prompt.hash.trim()) {
+  if (
+    !canonicalNonEmpty(artifact.prompt.id) ||
+    !canonicalNonEmpty(artifact.prompt.version) ||
+    !canonicalNonEmpty(artifact.prompt.hash)
+  ) {
     throw new ImageArtifactStoreError("Image artifact prompt lineage is required.");
   }
-  if (!artifact.layoutReference.screenshot.trim()) {
+  if (!canonicalNonEmpty(artifact.layoutReference.screenshot)) {
     throw new ImageArtifactStoreError("Image artifact layout reference is required.");
   }
+}
+
+function canonicalNonEmpty(value: string): boolean {
+  return value.length > 0 && value === value.trim();
 }
 
 function imageMetadata(

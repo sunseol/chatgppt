@@ -8,8 +8,9 @@ describe("image artifact storage documentation", () => {
     const text = readFileSync(DOC, "utf8");
 
     expect(text.includes("DF-231")).toBe(true);
-    expect(text.includes("prompt hash")).toBe(true);
+    expect(text.includes("prompt id/version/hash")).toBe(true);
     expect(text.includes("layout reference")).toBe(true);
+    expect(text.includes("trim-only prompt/layout lineage")).toBe(true);
     expect(text.includes("canonical provider request metadata")).toBe(true);
     expect(text.includes("usage evidence")).toBe(true);
     expect(text.includes("image-artifact-store-lineage.test.ts")).toBe(true);

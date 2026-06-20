@@ -39,6 +39,52 @@ describe("image artifact store input lineage", () => {
     expect(blankPromptHash).toBe("Image artifact prompt lineage is required.");
     expect(blankLayoutReference).toBe("Image artifact layout reference is required.");
   });
+
+  test("rejects prompt and layout lineage that is only canonical after trimming", async () => {
+    // Given
+    const store = createImageArtifactStore({
+      write: async () => {
+        throw new Error("write should not run for non-canonical input lineage.");
+      },
+    });
+
+    // When
+    const paddedPromptArtifact = imageArtifact();
+    Object.defineProperties(paddedPromptArtifact.prompt, {
+      id: { value: " slide_generation " },
+      version: { value: " v1 " },
+      hash: { value: " sha256:prompt " },
+    });
+
+    const paddedPrompt = await rejectionMessage(
+      storeSlideImageArtifact({
+        store,
+        projectId: "project_001",
+        artifact: paddedPromptArtifact,
+        version: 1,
+        createdAt: 1_789_800_014,
+      }),
+    );
+    const paddedLayoutReference = await rejectionMessage(
+      storeSlideImageArtifact({
+        store,
+        projectId: "project_001",
+        artifact: {
+          ...imageArtifact(),
+          layoutReference: {
+            ...imageArtifact().layoutReference,
+            screenshot: " slide_001_layout.png ",
+          },
+        },
+        version: 1,
+        createdAt: 1_789_800_015,
+      }),
+    );
+
+    // Then
+    expect(paddedPrompt).toBe("Image artifact prompt lineage is required.");
+    expect(paddedLayoutReference).toBe("Image artifact layout reference is required.");
+  });
 });
 
 async function rejectionMessage(promise: Promise<unknown>): Promise<string> {

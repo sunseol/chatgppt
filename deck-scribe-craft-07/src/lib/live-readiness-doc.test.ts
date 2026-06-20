@@ -150,6 +150,7 @@ describe("live readiness documentation", () => {
     expect(imageArtifactStorage.includes("content_policy")).toBe(true);
     expect(imageArtifactStorage.includes("requestId")).toBe(true);
     expect(imageArtifactStorage.includes("canonical provider request metadata")).toBe(true);
+    expect(imageArtifactStorage.includes("trim-only prompt/layout lineage")).toBe(true);
     expect(imageArtifactStorage.includes("invalid latency")).toBe(true);
     expect(imageArtifactStorage.includes("non-finite usage")).toBe(true);
     expect(imageArtifactStorage.includes("provider_contract")).toBe(true);
