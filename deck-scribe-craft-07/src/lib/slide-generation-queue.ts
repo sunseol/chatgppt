@@ -3,6 +3,7 @@ import { hashContent } from "./artifacts";
 import { createPromptUsageRecord, type PromptUsageRecord } from "./prompt-assets";
 import { createProviderJobManager, type ProviderJobManager } from "./provider-job-manager";
 import type { SlideContextBundle } from "./slide-context-bundle";
+import { createSlideGenerationQueueConcurrencyTracker } from "./slide-generation-queue-concurrency";
 import {
   runSlideGenerationTask,
   type SlideGenerationQueueTask,
@@ -48,23 +49,35 @@ export async function runSlideGenerationQueue(
   const failures: SlideGenerationFailure[] = [];
   const retryProvenance: SlideGenerationRetryProvenance[] = [];
   let cursor = 0;
+  const requestedMaxParallel = normalizeRequestedWorkerLimit(input.maxParallel);
+  const workerCount = normalizeWorkerCount(requestedMaxParallel, tasks.length);
+  const concurrency = createSlideGenerationQueueConcurrencyTracker({
+    requestedMaxParallel,
+    effectiveMaxParallel: workerCount,
+  });
 
   async function runWorker(): Promise<void> {
     for (;;) {
       const task = tasks[cursor];
       cursor += 1;
       if (!task) return;
-      const result = await runSlideGenerationTask({
-        task,
-        context: queueContext,
-        generateSlide: input.generateSlide,
-        manager,
-        options: {
-          isCancellationRequested: input.isCancellationRequested,
-          retryPolicy: input.retryPolicy,
-          waitForRetry: input.waitForRetry,
-        },
-      });
+      concurrency.start();
+      let result;
+      try {
+        result = await runSlideGenerationTask({
+          task,
+          context: queueContext,
+          generateSlide: input.generateSlide,
+          manager,
+          options: {
+            isCancellationRequested: input.isCancellationRequested,
+            retryPolicy: input.retryPolicy,
+            waitForRetry: input.waitForRetry,
+          },
+        });
+      } finally {
+        concurrency.finish();
+      }
       if (result.kind === "succeeded") slides.push(result.slide);
       else failures.push(result.failure);
       retryProvenance.push(...result.retryProvenance);
@@ -72,7 +85,6 @@ export async function runSlideGenerationQueue(
     }
   }
 
-  const workerCount = normalizeWorkerCount(input.maxParallel, tasks.length);
   await Promise.all(Array.from({ length: workerCount }, () => runWorker()));
 
   return {
@@ -84,6 +96,7 @@ export async function runSlideGenerationQueue(
     jobs: manager.snapshot(),
     promptUsages: tasks.map((task) => task.promptUsage),
     retryProvenance,
+    concurrency: concurrency.evidence(),
     progress: progress.current(),
   };
 }
@@ -188,13 +201,17 @@ function queueStatus(
   return completedCount === 0 ? "failed" : "partial_failure";
 }
 
-function normalizeWorkerCount(maxParallel: number | undefined, taskCount: number): number {
+function normalizeWorkerCount(requestedMaxParallel: number, taskCount: number): number {
   if (taskCount === 0) return 0;
+  return Math.min(requestedMaxParallel, taskCount);
+}
+
+function normalizeRequestedWorkerLimit(maxParallel: number | undefined): number {
   const requested =
     maxParallel === undefined || !Number.isFinite(maxParallel)
       ? DEFAULT_MAX_PARALLEL
       : Math.floor(maxParallel);
-  return Math.min(Math.max(1, requested), taskCount);
+  return Math.max(1, requested);
 }
 
 function designTokenHash(bundle: SlideContextBundle): string {

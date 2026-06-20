@@ -37,6 +37,12 @@ export interface SlideGenerationQueueProgress {
   readonly percent: number;
 }
 
+export interface SlideGenerationQueueConcurrencyEvidence {
+  readonly requestedMaxParallel: number;
+  readonly effectiveMaxParallel: number;
+  readonly observedMaxRunning: number;
+}
+
 export interface SlideGenerationFailure {
   readonly jobId: string;
   readonly bundleId: string;
@@ -60,6 +66,7 @@ export type SlideGenerationQueueResult =
       readonly jobs: readonly ProviderJob[];
       readonly promptUsages: readonly PromptUsageRecord[];
       readonly retryProvenance: readonly SlideGenerationRetryProvenance[];
+      readonly concurrency?: SlideGenerationQueueConcurrencyEvidence;
       readonly progress: SlideGenerationQueueProgress;
     };
 

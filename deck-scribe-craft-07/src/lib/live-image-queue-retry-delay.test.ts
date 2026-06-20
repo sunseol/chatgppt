@@ -79,6 +79,7 @@ function readyQueueResult(
     jobs: [],
     promptUsages: [],
     retryProvenance: [],
+    concurrency: { requestedMaxParallel: 3, effectiveMaxParallel: 3, observedMaxRunning: 0 },
     progress: { completed: 0, failed: 1, total: 5, percent: 20 },
     ...overrides,
   };

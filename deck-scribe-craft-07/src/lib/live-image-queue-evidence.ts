@@ -2,11 +2,15 @@ import type { SlideGenerationQueueResult } from "./slide-generation-queue-types"
 import type { ImageProviderFailureKind } from "./image-provider-errors";
 import type { PromptUsageRecord } from "./prompt-assets";
 import type { ProviderJob } from "./provider-job-manager";
+import { concurrencyIssues } from "./live-image-queue-concurrency";
 import { retrySlideIssues } from "./live-image-queue-retry-slide";
 import { retryDelayIssues } from "./live-image-queue-retry-delay";
 
 export type LiveImageQueueEvidenceIssueCode =
   | "queue_result_blocked"
+  | "missing_concurrency_evidence"
+  | "invalid_concurrency_evidence"
+  | "concurrency_limit_exceeded"
   | "retry_job_not_found"
   | "retry_attempt_count_mismatch"
   | "retry_attempt_sequence_mismatch"
@@ -47,6 +51,7 @@ export function evaluateLiveImageQueueEvidence(
     };
   }
   const issues = [
+    ...concurrencyIssues(result.concurrency),
     ...retryJobIssues(result.jobs, result.retryProvenance),
     ...retryAttemptIssues(result.jobs, result.retryProvenance),
     ...retrySlideIssues(result.jobs, result.failures, result.retryProvenance),
