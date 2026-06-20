@@ -4,7 +4,7 @@ Date: 2026-06-18
 
 Scope: DF-231 Live Image Provider Adapter and Binary Artifact Storage.
 
-Status: partial local contract
+Status: Closed on GitHub with live Codex OAuth evidence
 
 ## Contract added
 

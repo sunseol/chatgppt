@@ -4,7 +4,7 @@ Date: 2026-06-18
 
 Ticket: DF-232
 
-Status: Partial, external evidence required
+Status: Closed on GitHub with live Codex OAuth evidence
 
 ## Contract Summary
 

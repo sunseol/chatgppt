@@ -4,7 +4,7 @@ Date: 2026-06-18
 
 Scope: DF-230 production image generation path lock.
 
-Status: partial local contract
+Status: Closed on GitHub with live Codex OAuth evidence
 
 ## Contract added
 
