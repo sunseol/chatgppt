@@ -64,7 +64,7 @@ Package archive and native macOS bundle paths must be persisted non-synthetic, n
 
 Native macOS release trust evidence must include a Developer ID team signature, a 10-character uppercase alphanumeric Apple TeamIdentifier, notarization, stapling, Gatekeeper acceptance, and a persisted non-synthetic, non-local `releaseTrustEvidencePath` JSON bundle whose path identifies a release-trust bundle containing the codesign, notarytool, stapler, and `spctl` assessment records. Ad-hoc signatures, missing TeamIdentifier values, placeholder values such as `not set`, missing, generically named, or developer-local release-trust evidence bundles, unstapled notarization tickets, or rejected `spctl` assessments block DF-245.
 
-The clean-machine checklist must include distinct evidence events for install, Codex login, image credential setup, project launch, and first live interview. Each step must cite a persisted non-synthetic, non-local JSON evidence path. Repeating one step, adding an unsupported runtime step name, or listing step labels without persisted evidence paths cannot inflate the completed step count or replace a missing clean-machine action.
+The clean-machine checklist must include distinct evidence events for install, Codex login, image credential setup, project launch, and first live interview. Each step must cite a persisted non-synthetic, non-local JSON evidence path whose path identifies that specific checklist step; for example, `codex_login` cannot point at `install-app.json`. Repeating one step, adding an unsupported runtime step name, listing step labels without persisted evidence paths, or reusing another step's evidence path cannot inflate the completed step count or replace a missing clean-machine action.
 
 ## Clean account validation
 

@@ -68,6 +68,26 @@ describe("production packaging clean-machine step evidence", () => {
       "live_interview",
     ]);
   });
+
+  test("blocks clean-machine step evidence paths that reference another step", () => {
+    // Given
+    const result = evaluateProductionPackagingEvidence(
+      completeEvidence({
+        cleanMachineStepEvidencePaths: {
+          ...cleanMachineStepEvidencePaths(),
+          codex_login: "release-evidence/clean-machine/install-app.json",
+        },
+      }),
+    );
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "missing_clean_machine_step_evidence",
+    ]);
+    expect(result.issues[0]?.refs).toEqual(["codex_login"]);
+  });
 });
 
 function completeEvidence(

@@ -15,6 +15,14 @@ export type CleanMachineStepEvidencePaths = {
   readonly [Step in CleanMachineStep]?: string;
 };
 
+const CLEAN_MACHINE_STEP_PATH_MARKERS = {
+  install_app: ["install-app", "install_app"],
+  codex_login: ["codex-login", "codex_login"],
+  image_credentials: ["image-credentials", "image_credentials"],
+  project_launch: ["project-launch", "project_launch"],
+  live_interview: ["live-interview", "live_interview"],
+} as const satisfies Record<CleanMachineStep, readonly string[]>;
+
 export function cleanMachineStepIssues(
   steps: readonly unknown[],
 ): readonly ProductionPackagingIssue[] {
@@ -64,17 +72,24 @@ export function cleanMachineStepEvidencePathIssues(
   evidencePaths: CleanMachineStepEvidencePaths | undefined,
 ): readonly ProductionPackagingIssue[] {
   const missing = CLEAN_MACHINE_STEPS.filter(
-    (step) => !hasNonSyntheticJsonEvidencePath(evidencePaths?.[step]),
+    (step) => !hasStepSpecificEvidencePath(step, evidencePaths?.[step]),
   );
   return missing.length === 0
     ? []
     : [
         issue(
           "missing_clean_machine_step_evidence",
-          "Clean-machine validation steps must cite persisted evidence paths.",
+          "Clean-machine validation steps must cite step-specific persisted evidence paths.",
           missing,
         ),
       ];
+}
+
+function hasStepSpecificEvidencePath(step: CleanMachineStep, path: string | undefined): boolean {
+  if (path === undefined) return false;
+  if (!hasNonSyntheticJsonEvidencePath(path)) return false;
+  const normalizedPath = path.toLowerCase();
+  return CLEAN_MACHINE_STEP_PATH_MARKERS[step].some((marker) => normalizedPath.includes(marker));
 }
 
 function isCleanMachineStep(value: unknown): value is CleanMachineStep {
