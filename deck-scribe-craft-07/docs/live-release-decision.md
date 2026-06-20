@@ -21,7 +21,7 @@ The current worktree has stronger Live-readiness contracts than the previous moc
 
 ## Latest local verification
 
-- `bun run verify` passes: typecheck, 943 tests, and production build.
+- `bun run verify` passes: typecheck, 944 tests, and production build.
 - `bun run lint` exits 0 with six pre-existing React Fast Refresh warnings in shared UI files.
 - `bun run package:dry-run` creates `dist/deckforge-macos-dry-run.tgz`.
 - Dry-run archive SHA-256: `83032811d035f19bc7ac6d1837f137d535e011334197e6b18ae8f9477e342df7`.
