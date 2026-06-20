@@ -15,14 +15,14 @@ export function concurrencyIssues(
     ];
   }
   if (
-    !isValidCount(concurrency.requestedMaxParallel) ||
-    !isValidCount(concurrency.effectiveMaxParallel) ||
-    !isValidCount(concurrency.observedMaxRunning)
+    !isPositiveCount(concurrency.requestedMaxParallel) ||
+    !isPositiveCount(concurrency.effectiveMaxParallel) ||
+    !isNonNegativeCount(concurrency.observedMaxRunning)
   ) {
     return [
       {
         code: "invalid_concurrency_evidence" as const,
-        message: "Live image queue concurrency evidence must use finite non-negative integers.",
+        message: "Live image queue requested and effective concurrency must be positive integers.",
       },
     ];
   }
@@ -40,6 +40,10 @@ export function concurrencyIssues(
   return [];
 }
 
-function isValidCount(value: number): boolean {
+function isPositiveCount(value: number): boolean {
+  return Number.isInteger(value) && value > 0;
+}
+
+function isNonNegativeCount(value: number): boolean {
   return Number.isInteger(value) && value >= 0;
 }

@@ -35,6 +35,19 @@ describe("live image queue concurrency evidence", () => {
     expect(issueCodes(validation)).toEqual(["concurrency_limit_exceeded"]);
   });
 
+  test("blocks queue evidence whose effective limit is zero", () => {
+    // Given
+    const result = readyQueueResult({
+      concurrency: { requestedMaxParallel: 0, effectiveMaxParallel: 0, observedMaxRunning: 0 },
+    });
+
+    // When
+    const validation = evaluateLiveImageQueueEvidence(result);
+
+    // Then
+    expect(issueCodes(validation)).toEqual(["invalid_concurrency_evidence"]);
+  });
+
   test("records observed concurrency from the live queue throttle", async () => {
     // Given
     let activeCalls = 0;
