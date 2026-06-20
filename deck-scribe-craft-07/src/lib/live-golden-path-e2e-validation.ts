@@ -16,6 +16,17 @@ import {
 } from "./provider-provenance";
 import { redactSensitiveText } from "./redaction";
 
+const REQUIRED_TEXT_STAGE_LINEAGE = [
+  { step: "live_interview", markers: ["interview"] },
+  { step: "live_research", markers: ["research"] },
+  { step: "live_deck_plan", markers: ["deck_plan", "plan"] },
+  { step: "live_design_system", markers: ["design_system", "design"] },
+  { step: "live_layout_ir", markers: ["layout_ir", "layout"] },
+] as const satisfies readonly {
+  readonly step: LiveGoldenPathE2EStep;
+  readonly markers: readonly string[];
+}[];
+
 export function liveGoldenPathIssues(
   bundle: LiveGoldenPathE2EBundle,
 ): readonly LiveGoldenPathE2EIssue[] {
@@ -145,6 +156,7 @@ function lineageIssues(
 ): readonly LiveGoldenPathE2EIssue[] {
   const contamination = collectLineageContamination(lineage);
   return [
+    ...textLineageIssues(lineage),
     ...contamination.mockArtifactIds.map((artifactId) =>
       liveGoldenPathIssue(
         "mock_lineage_contamination",
@@ -160,6 +172,50 @@ function lineageIssues(
       ),
     ),
   ];
+}
+
+function textLineageIssues(
+  lineage: readonly ProviderArtifactProvenance[],
+): readonly LiveGoldenPathE2EIssue[] {
+  const liveTextArtifacts = lineage.filter(isProductionCodexTextArtifact);
+  const missing = REQUIRED_TEXT_STAGE_LINEAGE.filter(
+    (requirement) =>
+      !liveTextArtifacts.some((artifact) =>
+        textArtifactMatchesStage(artifact, requirement.markers),
+      ),
+  ).map((requirement) => requirement.step);
+  return missing.length === 0
+    ? []
+    : [
+        liveGoldenPathIssue(
+          "missing_live_text_artifact",
+          "Golden Path text stages require production Codex provider lineage.",
+          missing,
+        ),
+      ];
+}
+
+function isProductionCodexTextArtifact(artifact: ProviderArtifactProvenance): boolean {
+  return (
+    artifact.executionMode === "production" &&
+    artifact.providerKind === "codex" &&
+    artifact.authMode === "codex_session" &&
+    artifact.artifactId.trim() === artifact.artifactId &&
+    artifact.artifactId.length > 0 &&
+    artifact.modelOrRuntime.trim().length > 0 &&
+    artifact.promptVersion.trim().length > 0 &&
+    artifact.fixture === false &&
+    Boolean(artifact.turnId?.trim()) &&
+    Boolean(artifact.threadId?.trim())
+  );
+}
+
+function textArtifactMatchesStage(
+  artifact: ProviderArtifactProvenance,
+  markers: readonly string[],
+): boolean {
+  const evidence = `${artifact.artifactId} ${artifact.promptVersion}`.toLowerCase();
+  return markers.some((marker) => evidence.includes(marker));
 }
 
 function restartIssues(bundle: LiveGoldenPathE2EBundle): readonly LiveGoldenPathE2EIssue[] {

@@ -5,6 +5,7 @@ import {
   evaluateLiveGoldenPathE2EBundle,
   type LiveGoldenPathE2EBundle,
 } from "./live-golden-path-e2e";
+import { goldenPathTextLineage } from "./live-golden-path-test-fixtures";
 import { createProviderArtifactProvenance } from "./provider-provenance";
 
 describe("live golden path image request uniqueness", () => {
@@ -90,7 +91,7 @@ function completeBundle(
       exportArtifactId: "live_export_001",
     },
     sources,
-    lineage: imageArtifacts,
+    lineage: [...goldenPathTextLineage(), ...imageArtifacts],
     imageArtifacts,
   };
 }

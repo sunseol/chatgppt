@@ -6,6 +6,7 @@ import {
   evaluateLiveGoldenPathE2EBundle,
   type LiveGoldenPathE2EBundle,
 } from "./live-golden-path-e2e";
+import { goldenPathTextLineage } from "./live-golden-path-test-fixtures";
 
 describe("live golden path final validation bundle references", () => {
   test("blocks source and image artifact ids that are not part of validated Golden Path evidence", () => {
@@ -79,7 +80,7 @@ function completeBundle(): LiveGoldenPathE2EBundle {
       exportArtifactId: "live_export_001",
     },
     sources,
-    lineage: imageArtifacts,
+    lineage: [...goldenPathTextLineage(), ...imageArtifacts],
     imageArtifacts,
   };
 }

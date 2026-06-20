@@ -1,33 +1,36 @@
 import { describe, expect, test } from "bun:test";
 import { hashContent } from "./artifacts";
 import {
-  LIVE_GOLDEN_PATH_E2E_STEPS,
   evaluateLiveGoldenPathE2EBundle,
+  LIVE_GOLDEN_PATH_E2E_STEPS,
   type LiveGoldenPathE2EBundle,
 } from "./live-golden-path-e2e";
-import { goldenPathTextLineage } from "./live-golden-path-test-fixtures";
 import { createProviderArtifactProvenance } from "./provider-provenance";
 
-describe("live golden path restart reopen timestamp", () => {
-  test("blocks restart reopen evidence without a parseable timestamp", () => {
-    const result = evaluateLiveGoldenPathE2EBundle(
-      completeBundle({
-        restartReopen: {
-          projectId: "p_live",
-          reopenedAt: "after restart",
-          exportArtifactId: "live_export_001",
-        },
-      }),
-    );
+describe("live golden path text lineage", () => {
+  test("blocks completed text stages without production Codex provider lineage", () => {
+    // Given
+    const bundle = completeBundle();
 
+    // When
+    const result = evaluateLiveGoldenPathE2EBundle(bundle);
+
+    // Then
     expect(result.kind).toBe("blocked");
     if (result.kind !== "blocked") return;
-    expect(result.issues.map((issue) => issue.code)).toEqual(["missing_restart_reopen_evidence"]);
+    expect(result.issues.map((issue) => issue.code)).toEqual(["missing_live_text_artifact"]);
+    expect(result.issues[0]?.refs).toEqual([
+      "live_interview",
+      "live_research",
+      "live_deck_plan",
+      "live_design_system",
+      "live_layout_ir",
+    ]);
   });
 });
 
-function completeBundle(patch: Partial<LiveGoldenPathE2EBundle> = {}): LiveGoldenPathE2EBundle {
-  const reportContent = "Golden Path passed with five live images.";
+function completeBundle(): LiveGoldenPathE2EBundle {
+  const reportContent = "Golden Path passed with image-only lineage.";
   const screenshots = LIVE_GOLDEN_PATH_E2E_STEPS.map((step) => `screenshots/${step}.png`);
   const sources = [
     { url: "https://www.sec.gov/example", role: "official" as const, artifactId: "src_sec" },
@@ -39,8 +42,8 @@ function completeBundle(patch: Partial<LiveGoldenPathE2EBundle> = {}): LiveGolde
     },
   ];
   const imageArtifacts = [
-    ...Array.from({ length: 5 }, (_, index) => imageArtifact(index + 1)),
-    imageArtifact(6, "live_regenerated_slide_003"),
+    ...Array.from({ length: 5 }, (_, index) => liveImage(index + 1)),
+    liveImage(6, "live_regenerated_slide_003", ["live_image_3"]),
   ];
   return {
     projectId: "p_live",
@@ -50,7 +53,7 @@ function completeBundle(patch: Partial<LiveGoldenPathE2EBundle> = {}): LiveGolde
     reportContent,
     reportSignature: {
       signer: "qa.lead@example.com",
-      signedAt: "2026-06-19T09:00:00.000Z",
+      signedAt: "2026-06-20T09:00:00.000Z",
       digest: hashContent(reportContent),
     },
     screenshots,
@@ -66,17 +69,20 @@ function completeBundle(patch: Partial<LiveGoldenPathE2EBundle> = {}): LiveGolde
     },
     restartReopen: {
       projectId: "p_live",
-      reopenedAt: "2026-06-19T09:10:00.000Z",
+      reopenedAt: "2026-06-20T09:10:00.000Z",
       exportArtifactId: "live_export_001",
     },
     sources,
-    lineage: [...goldenPathTextLineage(), ...imageArtifacts],
+    lineage: imageArtifacts,
     imageArtifacts,
-    ...patch,
   };
 }
 
-function imageArtifact(index: number, artifactId = `live_image_${index}`) {
+function liveImage(
+  index: number,
+  artifactId = `live_image_${index}`,
+  inputArtifactIds = ["live_layout_ir"],
+) {
   return createProviderArtifactProvenance({
     artifactId,
     executionMode: "production",
@@ -85,7 +91,7 @@ function imageArtifact(index: number, artifactId = `live_image_${index}`) {
     modelOrRuntime: "gpt-image-1",
     promptVersion: "slide_background@v1",
     durationMs: 1_000,
-    inputArtifactIds: ["live_layout_ir"],
+    inputArtifactIds,
     fixture: false,
     requestId: `img_req_${index}`,
   });

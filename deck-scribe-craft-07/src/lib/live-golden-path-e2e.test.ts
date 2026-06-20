@@ -85,6 +85,7 @@ describe("live golden path E2E evidence", () => {
       "unsigned_live_e2e_report",
       "insufficient_step_evidence",
       "missing_validation_bundle",
+      "missing_live_text_artifact",
       "mock_lineage_contamination",
       "fixture_lineage_contamination",
       "insufficient_live_sources",

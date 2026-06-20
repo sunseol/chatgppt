@@ -5,6 +5,7 @@ import {
   evaluateLiveGoldenPathE2EBundle,
   type LiveGoldenPathE2EBundle,
 } from "./live-golden-path-e2e";
+import { goldenPathTextLineage } from "./live-golden-path-test-fixtures";
 import { createProviderArtifactProvenance } from "./provider-provenance";
 
 describe("live golden path source URL evidence", () => {
@@ -88,7 +89,7 @@ function completeBundle(sources: LiveGoldenPathE2EBundle["sources"]): LiveGolden
       exportArtifactId: "live_export_001",
     },
     sources,
-    lineage: imageArtifacts,
+    lineage: [...goldenPathTextLineage(), ...imageArtifacts],
     imageArtifacts,
   };
 }

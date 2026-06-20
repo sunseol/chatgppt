@@ -4,6 +4,7 @@ import {
   evaluateLiveGoldenPathE2EBundle,
   LIVE_GOLDEN_PATH_E2E_STEPS,
 } from "./live-golden-path-e2e";
+import { goldenPathTextLineage } from "./live-golden-path-test-fixtures";
 import { createProviderArtifactProvenance } from "./provider-provenance";
 
 describe("live golden path validation bundle path", () => {
@@ -52,7 +53,7 @@ describe("live golden path validation bundle path", () => {
           artifactId: "src_rfc",
         },
       ],
-      lineage: [],
+      lineage: goldenPathTextLineage(),
       imageArtifacts: [
         ...[1, 2, 3, 4, 5].map((index) => imageArtifact(index)),
         imageArtifact(6, "live_regenerated_slide_003"),

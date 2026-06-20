@@ -5,6 +5,7 @@ import {
   evaluateLiveGoldenPathE2EBundle,
   type LiveGoldenPathE2EBundle,
 } from "./live-golden-path-e2e";
+import { goldenPathTextLineage } from "./live-golden-path-test-fixtures";
 import { createProviderArtifactProvenance } from "./provider-provenance";
 
 type ImageArtifactsPatch = {
@@ -71,7 +72,7 @@ function completeBundle(patch: ImageArtifactsPatch): LiveGoldenPathE2EBundle {
       exportArtifactId: "live_export_001",
     },
     sources,
-    lineage: patch.imageArtifacts,
+    lineage: [...goldenPathTextLineage(), ...patch.imageArtifacts],
     imageArtifacts: patch.imageArtifacts,
   };
 }

@@ -6,6 +6,7 @@ import {
   evaluateLiveGoldenPathE2EBundle,
   type LiveGoldenPathE2EBundle,
 } from "./live-golden-path-e2e";
+import { goldenPathTextLineage } from "./live-golden-path-test-fixtures";
 
 describe("live golden path regenerated image evidence", () => {
   test("blocks bundles that only include the initial five live images", () => {
@@ -78,7 +79,7 @@ function bundleWithImages(
       exportArtifactId: "live_export_001",
     },
     sources,
-    lineage: imageArtifacts,
+    lineage: [...goldenPathTextLineage(), ...imageArtifacts],
     imageArtifacts,
   };
 }

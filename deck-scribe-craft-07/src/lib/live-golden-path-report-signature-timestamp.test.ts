@@ -4,6 +4,7 @@ import {
   evaluateLiveGoldenPathE2EBundle,
   LIVE_GOLDEN_PATH_E2E_STEPS,
 } from "./live-golden-path-e2e";
+import { goldenPathTextLineage } from "./live-golden-path-test-fixtures";
 import { createProviderArtifactProvenance } from "./provider-provenance";
 
 describe("live golden path report signature timestamp", () => {
@@ -103,7 +104,7 @@ function bundleFixture(reportContent: string) {
       exportArtifactId: "export_001",
     },
     sources,
-    lineage: imageArtifacts,
+    lineage: [...goldenPathTextLineage(), ...imageArtifacts],
     imageArtifacts,
   };
 }
