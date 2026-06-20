@@ -68,6 +68,36 @@ describe("live research number evidence", () => {
     ]);
   });
 
+  test("rejects major-number datasets that are not sourced by the claim artifacts", () => {
+    // Given
+    const base = researchPack();
+    const pack = researchPack({
+      sources: [
+        ...base.sources,
+        { ...base.sources[0], id: "src_002", title: "Unlinked dataset source" },
+      ],
+      datasets: [
+        {
+          ...base.datasets[0],
+          sourceIds: ["src_002"],
+        },
+      ],
+    });
+
+    // When
+    const report = validateLiveResearchEvidence({ pack, evidenceRefs: evidenceRefs() });
+
+    // Then
+    expect(report.valid).toBe(false);
+    expect(report.fatalIssues.map((issue) => issue.code)).toEqual([
+      "unknown_reference",
+      "missing_number_dataset",
+    ]);
+    expect(report.fatalIssues.map((issue) => issue.datasetId).filter(Boolean)).toEqual([
+      "dataset_001",
+    ]);
+  });
+
   test("rejects evidence ref datasets that point outside the claim lineage", () => {
     // Given
     const base = researchPack();

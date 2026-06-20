@@ -12,7 +12,22 @@ export function validateClaimNumberEvidence(
 ) {
   if (!claim.hasNumber) return;
 
-  if (!hasDatasetReference(claim, datasetsById)) {
+  const datasets = referencedDatasets(claim, datasetsById);
+
+  for (const dataset of datasets) {
+    if (!datasetHasClaimSource(dataset, claim.sourceIds)) {
+      issues.push(
+        issue({
+          code: "unknown_reference",
+          claimId: claim.id,
+          datasetId: dataset.id,
+          message: `Dataset is not linked to a claim source artifact: ${dataset.id}`,
+        }),
+      );
+    }
+  }
+
+  if (!hasDatasetReference(datasets, claim.sourceIds)) {
     issues.push(
       issue({
         code: "missing_number_dataset",
@@ -29,7 +44,7 @@ export function validateClaimNumberEvidence(
     }
   }
 
-  for (const dataset of referencedDatasets(claim, datasetsById)) {
+  for (const dataset of datasets) {
     if (!isCompleteDatasetMetadata(dataset)) {
       issues.push(numberMetadataIssue(claim.id, dataset.id));
     }
@@ -37,10 +52,10 @@ export function validateClaimNumberEvidence(
 }
 
 function hasDatasetReference(
-  claim: Claim,
-  datasetsById: ReadonlyMap<string, ResearchDataset>,
+  datasets: readonly ResearchDataset[],
+  claimSourceIds: readonly string[],
 ): boolean {
-  return referencedDatasets(claim, datasetsById).length > 0;
+  return datasets.some((dataset) => datasetHasClaimSource(dataset, claimSourceIds));
 }
 
 function referencedDatasets(
@@ -60,6 +75,13 @@ function isCompleteNumberEvidence(evidence: NumericEvidence): boolean {
     !!evidence.geography.trim() &&
     !!evidence.definition.trim()
   );
+}
+
+function datasetHasClaimSource(
+  dataset: ResearchDataset,
+  claimSourceIds: readonly string[],
+): boolean {
+  return dataset.sourceIds.some((sourceId) => claimSourceIds.includes(sourceId));
 }
 
 function isCompleteDatasetMetadata(dataset: ResearchDataset): boolean {
