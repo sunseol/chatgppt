@@ -1,5 +1,6 @@
 import type { ProviderJobManager, ProviderJobStatus } from "./provider-job-manager";
 import type { ProviderStatus } from "./provider-types";
+import { secretMaterialCandidates } from "./live-secret-material-candidates";
 
 export type LiveSecretStoreKind = "os_keychain" | "equivalent_secret_store";
 
@@ -76,6 +77,13 @@ export class LiveSecretReferenceError extends Error {
   }
 }
 
+export class LiveSecretReferenceScopeError extends Error {
+  constructor() {
+    super("Secret store returned a reference for the wrong scope.");
+    this.name = "LiveSecretReferenceScopeError";
+  }
+}
+
 export class LiveSecretStoreKindError extends Error {
   constructor() {
     super("Secret store returned an unsupported store kind.");
@@ -100,6 +108,11 @@ export async function connectImageApiKeySecret(input: {
   });
   if (!isExpectedStoreKind(secretReference.storeKind, input.store.kind))
     throw new LiveSecretStoreKindError();
+  if (
+    secretReference.service !== "deckforge.openai.image" ||
+    secretReference.account !== input.account
+  )
+    throw new LiveSecretReferenceScopeError();
   if (secretReferenceContainsRawSecret(secretReference, trimmed))
     throw new LiveSecretReferenceError();
 
@@ -229,34 +242,4 @@ function secretReferenceContainsRawSecret(
   return [reference.service, reference.account, reference.secretId].some((field) =>
     secretCandidates.some((candidate) => field.includes(candidate)),
   );
-}
-
-function secretMaterialCandidates(rawSecret: string): readonly string[] {
-  const secretBytes = new TextEncoder().encode(rawSecret);
-  const encodedSecret = encodeURIComponent(rawSecret);
-  const base64Secret = bytesToBase64(secretBytes);
-  const base64UrlSecret = base64Secret.replaceAll("+", "-").replaceAll("/", "_").replace(/=+$/, "");
-  const hexSecret = bytesToHex(secretBytes);
-  return Array.from(
-    new Set([
-      rawSecret,
-      encodedSecret,
-      encodedSecret.toLowerCase(),
-      base64Secret,
-      base64UrlSecret,
-      hexSecret,
-    ]),
-  );
-}
-
-function bytesToBase64(bytes: Uint8Array): string {
-  const chunks: string[] = [];
-  for (let offset = 0; offset < bytes.length; offset += 32_768) {
-    chunks.push(String.fromCharCode(...bytes.subarray(offset, offset + 32_768)));
-  }
-  return btoa(chunks.join(""));
-}
-
-function bytesToHex(bytes: Uint8Array): string {
-  return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
 }
