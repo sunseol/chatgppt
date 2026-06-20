@@ -19,6 +19,7 @@ export function storedProviderProvenanceBlockers(input: {
   }
 
   const requestId = input.successfulArtifact.request?.requestId?.trim();
+  const expectedPromptVersion = `${input.successfulArtifact.prompt.id}@${input.successfulArtifact.prompt.version}`;
   return [
     ...(provenance.executionMode === "production"
       ? []
@@ -50,6 +51,14 @@ export function storedProviderProvenanceBlockers(input: {
           {
             code: "provenance_model_mismatch" as const,
             message: "Image provider provenance model must match the selected route model.",
+          },
+        ]),
+    ...(provenance.promptVersion === expectedPromptVersion
+      ? []
+      : [
+          {
+            code: "provenance_prompt_version_mismatch" as const,
+            message: "Image provider provenance prompt version must match the stored artifact.",
           },
         ]),
     ...(provenance.fixture === false

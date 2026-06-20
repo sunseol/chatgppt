@@ -37,6 +37,7 @@ export type ImagePathBlockerCode =
   | "provenance_provider_mismatch"
   | "provenance_auth_mode_mismatch"
   | "provenance_model_mismatch"
+  | "provenance_prompt_version_mismatch"
   | "provenance_fixture_contamination"
   | "provenance_request_id_mismatch"
   | "invalid_image_binary"
