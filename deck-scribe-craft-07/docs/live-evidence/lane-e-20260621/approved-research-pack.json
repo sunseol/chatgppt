@@ -1,0 +1,467 @@
+{
+  "id": "rp_lane_e_20260621_solar",
+  "sources": [
+    {
+      "id": "src_solar_capacity",
+      "title": "Installed solar PV capacity",
+      "publisher": "Our World in Data",
+      "year": 2026,
+      "grade": "A",
+      "sourceType": "dataset",
+      "usePolicy": "captured artifact only",
+      "url": "https://ourworldindata.org/grapher/installed-solar-pv-capacity.csv",
+      "capture": {
+        "originalUrl": "https://ourworldindata.org/grapher/installed-solar-pv-capacity.csv",
+        "finalUrl": "https://ourworldindata.org/grapher/installed-solar-pv-capacity.csv",
+        "fetchedAt": 1781986146000,
+        "mimeType": "text/csv",
+        "statusCode": 200,
+        "contentHash": "sha256:6ae86f7c263a8fd4d0e42ce1d894d09f42bec3e7370b8a758087ea31ae5640e5",
+        "rawArchivePath": "docs/live-evidence/lane-e-20260621/raw/owid-installed-solar-pv-capacity.csv",
+        "textArchivePath": "docs/live-evidence/lane-e-20260621/text/owid-installed-solar-pv-capacity.txt",
+        "extractedTextHash": "sha256:6ae86f7c263a8fd4d0e42ce1d894d09f42bec3e7370b8a758087ea31ae5640e5",
+        "version": 1
+      }
+    },
+    {
+      "id": "src_solar_module_cost",
+      "title": "Solar PV module cost",
+      "publisher": "Our World in Data",
+      "year": 2026,
+      "grade": "A",
+      "sourceType": "dataset",
+      "usePolicy": "captured artifact only",
+      "url": "https://ourworldindata.org/grapher/solar-pv-prices.csv",
+      "capture": {
+        "originalUrl": "https://ourworldindata.org/grapher/solar-pv-prices.csv",
+        "finalUrl": "https://ourworldindata.org/grapher/solar-pv-prices.csv",
+        "fetchedAt": 1781986146000,
+        "mimeType": "text/csv",
+        "statusCode": 200,
+        "contentHash": "sha256:24bde60f4ca3f802d390eeb13f54c1aa9e130aa67e6e97e608da450fab334518",
+        "rawArchivePath": "docs/live-evidence/lane-e-20260621/raw/owid-solar-pv-prices.csv",
+        "textArchivePath": "docs/live-evidence/lane-e-20260621/text/owid-solar-pv-prices.txt",
+        "extractedTextHash": "sha256:24bde60f4ca3f802d390eeb13f54c1aa9e130aa67e6e97e608da450fab334518",
+        "version": 1
+      }
+    },
+    {
+      "id": "src_worldbank_renewable_ex_hydro",
+      "title": "Renewable electricity output excluding hydroelectric (% of total)",
+      "publisher": "World Bank",
+      "year": 2026,
+      "grade": "A",
+      "sourceType": "api",
+      "usePolicy": "captured artifact only",
+      "url": "https://api.worldbank.org/v2/country/WLD/indicator/EG.ELC.RNWX.ZS?format=json&per_page=10",
+      "capture": {
+        "originalUrl": "https://api.worldbank.org/v2/country/WLD/indicator/EG.ELC.RNWX.ZS?format=json&per_page=10",
+        "finalUrl": "https://api.worldbank.org/v2/country/WLD/indicator/EG.ELC.RNWX.ZS?format=json&per_page=10",
+        "fetchedAt": 1781986146000,
+        "mimeType": "application/json;charset=utf-8",
+        "statusCode": 200,
+        "contentHash": "sha256:85163fa043df74ef42384b9b65fc4b4feb646339324b334eb29d248cd056f3f6",
+        "rawArchivePath": "docs/live-evidence/lane-e-20260621/raw/worldbank-renewable-ex-hydro.json",
+        "textArchivePath": "docs/live-evidence/lane-e-20260621/text/worldbank-renewable-ex-hydro.txt",
+        "extractedTextHash": "sha256:85163fa043df74ef42384b9b65fc4b4feb646339324b334eb29d248cd056f3f6",
+        "version": 1
+      }
+    }
+  ],
+  "claims": [
+    {
+      "id": "clm_solar_capacity_growth",
+      "statement": "Global installed solar PV capacity grew from 41.37146 GW in 2010 to 1,866.3064 GW in 2024, a roughly 45x increase.",
+      "sourceIds": [
+        "src_solar_capacity"
+      ],
+      "datasetIds": [
+        "ds_solar_capacity_world"
+      ],
+      "confidence": "high",
+      "hasNumber": true,
+      "needsUserReview": false,
+      "status": "supported",
+      "slideCandidates": [
+        1
+      ],
+      "numericEvidence": [
+        {
+          "id": "num_cap_2010",
+          "value": "41.37146",
+          "unit": "GW",
+          "baseYear": 2010,
+          "geography": "World",
+          "definition": "Installed solar photovoltaic capacity",
+          "sourceId": "src_solar_capacity",
+          "datasetId": "ds_solar_capacity_world"
+        },
+        {
+          "id": "num_cap_2024",
+          "value": "1866.3064",
+          "unit": "GW",
+          "baseYear": 2024,
+          "geography": "World",
+          "definition": "Installed solar photovoltaic capacity",
+          "sourceId": "src_solar_capacity",
+          "datasetId": "ds_solar_capacity_world"
+        }
+      ]
+    },
+    {
+      "id": "clm_solar_module_cost_decline",
+      "statement": "Global solar PV module costs fell from 2.4433622 USD/W in 2010 to 0.2579602 USD/W in 2024, an approximately 89% decline.",
+      "sourceIds": [
+        "src_solar_module_cost"
+      ],
+      "datasetIds": [
+        "ds_solar_module_cost_world"
+      ],
+      "confidence": "high",
+      "hasNumber": true,
+      "needsUserReview": false,
+      "status": "supported",
+      "slideCandidates": [
+        2
+      ],
+      "numericEvidence": [
+        {
+          "id": "num_cost_2010",
+          "value": "2.4433622",
+          "unit": "USD/W",
+          "baseYear": 2010,
+          "geography": "World",
+          "definition": "Solar PV module cost",
+          "sourceId": "src_solar_module_cost",
+          "datasetId": "ds_solar_module_cost_world"
+        },
+        {
+          "id": "num_cost_2024",
+          "value": "0.2579602",
+          "unit": "USD/W",
+          "baseYear": 2024,
+          "geography": "World",
+          "definition": "Solar PV module cost",
+          "sourceId": "src_solar_module_cost",
+          "datasetId": "ds_solar_module_cost_world"
+        }
+      ]
+    },
+    {
+      "id": "clm_non_hydro_share_support",
+      "statement": "The World Bank's captured global series shows non-hydro renewables rising from 7.357428807255% of electricity output in 2016 to 12.4213916892576% in 2021; the same captured API response returns null for 2022-2025.",
+      "sourceIds": [
+        "src_worldbank_renewable_ex_hydro"
+      ],
+      "datasetIds": [
+        "ds_worldbank_renewable_ex_hydro_world"
+      ],
+      "confidence": "high",
+      "hasNumber": true,
+      "needsUserReview": false,
+      "status": "supported",
+      "slideCandidates": [
+        3
+      ],
+      "numericEvidence": [
+        {
+          "id": "num_rnx_2016",
+          "value": "7.357428807255",
+          "unit": "%",
+          "baseYear": 2016,
+          "geography": "World",
+          "definition": "Renewable electricity output excluding hydroelectric as share of total electricity output",
+          "sourceId": "src_worldbank_renewable_ex_hydro",
+          "datasetId": "ds_worldbank_renewable_ex_hydro_world"
+        },
+        {
+          "id": "num_rnx_2021",
+          "value": "12.4213916892576",
+          "unit": "%",
+          "baseYear": 2021,
+          "geography": "World",
+          "definition": "Renewable electricity output excluding hydroelectric as share of total electricity output",
+          "sourceId": "src_worldbank_renewable_ex_hydro",
+          "datasetId": "ds_worldbank_renewable_ex_hydro_world"
+        }
+      ]
+    }
+  ],
+  "datasets": [
+    {
+      "id": "ds_solar_capacity_world",
+      "title": "World installed solar PV capacity",
+      "sourceIds": [
+        "src_solar_capacity"
+      ],
+      "unit": "GW",
+      "period": "2010-2024",
+      "geography": "World",
+      "definition": "Installed solar photovoltaic capacity",
+      "rows": [
+        {
+          "label": "World",
+          "value": 41.37146,
+          "year": 2010
+        },
+        {
+          "label": "World",
+          "value": 719.6642,
+          "year": 2020
+        },
+        {
+          "label": "World",
+          "value": 1866.3064,
+          "year": 2024
+        }
+      ],
+      "uncertain": false
+    },
+    {
+      "id": "ds_solar_module_cost_world",
+      "title": "World solar PV module cost",
+      "sourceIds": [
+        "src_solar_module_cost"
+      ],
+      "unit": "USD/W",
+      "period": "2010-2024",
+      "geography": "World",
+      "definition": "Solar PV module cost",
+      "rows": [
+        {
+          "label": "World",
+          "value": 2.4433622,
+          "year": 2010
+        },
+        {
+          "label": "World",
+          "value": 0.35966694,
+          "year": 2020
+        },
+        {
+          "label": "World",
+          "value": 0.2579602,
+          "year": 2024
+        }
+      ],
+      "uncertain": false
+    },
+    {
+      "id": "ds_worldbank_renewable_ex_hydro_world",
+      "title": "World renewable electricity output excluding hydroelectric share",
+      "sourceIds": [
+        "src_worldbank_renewable_ex_hydro"
+      ],
+      "unit": "%",
+      "period": "2016-2021",
+      "geography": "World",
+      "definition": "Renewable electricity output excluding hydroelectric as share of total electricity output; captured response has nulls for 2022-2025",
+      "rows": [
+        {
+          "label": "World",
+          "value": 7.357428807255,
+          "year": 2016
+        },
+        {
+          "label": "World",
+          "value": 12.4213916892576,
+          "year": 2021
+        }
+      ],
+      "uncertain": false
+    }
+  ],
+  "charts": [
+    {
+      "id": "cht_solar_capacity_growth",
+      "title": "Global installed solar PV capacity",
+      "chartType": "line",
+      "datasetId": "ds_solar_capacity_world",
+      "unit": "GW",
+      "period": "2010-2024",
+      "sourceIds": [
+        "src_solar_capacity"
+      ],
+      "slideCandidates": [
+        1
+      ],
+      "uncertain": false
+    },
+    {
+      "id": "cht_solar_module_cost_decline",
+      "title": "Global solar PV module cost decline",
+      "chartType": "line",
+      "datasetId": "ds_solar_module_cost_world",
+      "unit": "USD/W",
+      "period": "2010-2024",
+      "sourceIds": [
+        "src_solar_module_cost"
+      ],
+      "slideCandidates": [
+        2
+      ],
+      "uncertain": false
+    },
+    {
+      "id": "cht_non_hydro_renewable_share",
+      "title": "Global non-hydro renewable electricity share",
+      "chartType": "line",
+      "datasetId": "ds_worldbank_renewable_ex_hydro_world",
+      "unit": "%",
+      "period": "2016-2021",
+      "sourceIds": [
+        "src_worldbank_renewable_ex_hydro"
+      ],
+      "slideCandidates": [
+        3
+      ],
+      "uncertain": false
+    }
+  ],
+  "factCheckReport": {
+    "summary": "All claims are grounded in the three provided captured artifacts only. The World Bank support series is limited by null values for 2022-2025 in the captured response, so the claim is framed through 2021 and explicitly notes the null tail.",
+    "generatedAt": 1781986146000,
+    "fatalIssueCount": 0,
+    "issues": [],
+    "uncertainItems": []
+  },
+  "liveEvidenceRefs": [
+    {
+      "id": "ev_cap_table_2010",
+      "claimId": "clm_solar_capacity_growth",
+      "sourceId": "src_solar_capacity",
+      "sourceArtifactPath": "docs/live-evidence/lane-e-20260621/raw/owid-installed-solar-pv-capacity.csv",
+      "kind": "table_reference",
+      "tableRef": {
+        "tableId": "world_rows",
+        "rowKey": "World,OWID_WRL,2010,41.37146",
+        "columnKey": "value"
+      },
+      "datasetId": "ds_solar_capacity_world"
+    },
+    {
+      "id": "ev_cap_table_2024",
+      "claimId": "clm_solar_capacity_growth",
+      "sourceId": "src_solar_capacity",
+      "sourceArtifactPath": "docs/live-evidence/lane-e-20260621/raw/owid-installed-solar-pv-capacity.csv",
+      "kind": "table_reference",
+      "tableRef": {
+        "tableId": "world_rows",
+        "rowKey": "World,OWID_WRL,2024,1866.3064",
+        "columnKey": "value"
+      },
+      "datasetId": "ds_solar_capacity_world"
+    },
+    {
+      "id": "ev_cap_quote_2024",
+      "claimId": "clm_solar_capacity_growth",
+      "sourceId": "src_solar_capacity",
+      "sourceArtifactPath": "docs/live-evidence/lane-e-20260621/raw/owid-installed-solar-pv-capacity.csv",
+      "kind": "quote_span",
+      "quoteSpan": {
+        "text": "World,OWID_WRL,2024,1866.3064",
+        "start": 0,
+        "end": 30
+      },
+      "datasetId": "ds_solar_capacity_world"
+    },
+    {
+      "id": "ev_cost_table_2010",
+      "claimId": "clm_solar_module_cost_decline",
+      "sourceId": "src_solar_module_cost",
+      "sourceArtifactPath": "docs/live-evidence/lane-e-20260621/raw/owid-solar-pv-prices.csv",
+      "kind": "table_reference",
+      "tableRef": {
+        "tableId": "world_rows",
+        "rowKey": "World,OWID_WRL,2010,2.4433622",
+        "columnKey": "value"
+      },
+      "datasetId": "ds_solar_module_cost_world"
+    },
+    {
+      "id": "ev_cost_table_2024",
+      "claimId": "clm_solar_module_cost_decline",
+      "sourceId": "src_solar_module_cost",
+      "sourceArtifactPath": "docs/live-evidence/lane-e-20260621/raw/owid-solar-pv-prices.csv",
+      "kind": "table_reference",
+      "tableRef": {
+        "tableId": "world_rows",
+        "rowKey": "World,OWID_WRL,2024,0.2579602",
+        "columnKey": "value"
+      },
+      "datasetId": "ds_solar_module_cost_world"
+    },
+    {
+      "id": "ev_cost_quote_2024",
+      "claimId": "clm_solar_module_cost_decline",
+      "sourceId": "src_solar_module_cost",
+      "sourceArtifactPath": "docs/live-evidence/lane-e-20260621/raw/owid-solar-pv-prices.csv",
+      "kind": "quote_span",
+      "quoteSpan": {
+        "text": "World,OWID_WRL,2024,0.2579602",
+        "start": 0,
+        "end": 30
+      },
+      "datasetId": "ds_solar_module_cost_world"
+    },
+    {
+      "id": "ev_rnx_table_2016",
+      "claimId": "clm_non_hydro_share_support",
+      "sourceId": "src_worldbank_renewable_ex_hydro",
+      "sourceArtifactPath": "docs/live-evidence/lane-e-20260621/raw/worldbank-renewable-ex-hydro.json",
+      "kind": "table_reference",
+      "tableRef": {
+        "tableId": "indicator_values",
+        "rowKey": "2016",
+        "columnKey": "value"
+      },
+      "datasetId": "ds_worldbank_renewable_ex_hydro_world"
+    },
+    {
+      "id": "ev_rnx_table_2021",
+      "claimId": "clm_non_hydro_share_support",
+      "sourceId": "src_worldbank_renewable_ex_hydro",
+      "sourceArtifactPath": "docs/live-evidence/lane-e-20260621/raw/worldbank-renewable-ex-hydro.json",
+      "kind": "table_reference",
+      "tableRef": {
+        "tableId": "indicator_values",
+        "rowKey": "2021",
+        "columnKey": "value"
+      },
+      "datasetId": "ds_worldbank_renewable_ex_hydro_world"
+    },
+    {
+      "id": "ev_rnx_quote_2021",
+      "claimId": "clm_non_hydro_share_support",
+      "sourceId": "src_worldbank_renewable_ex_hydro",
+      "sourceArtifactPath": "docs/live-evidence/lane-e-20260621/raw/worldbank-renewable-ex-hydro.json",
+      "kind": "quote_span",
+      "quoteSpan": {
+        "text": "2021 12.4213916892576%",
+        "start": 0,
+        "end": 22
+      },
+      "datasetId": "ds_worldbank_renewable_ex_hydro_world"
+    }
+  ],
+  "provenanceLineage": [
+    {
+      "artifactId": "rp_lane_e_20260621_solar",
+      "executionMode": "production",
+      "providerKind": "codex",
+      "authMode": "codex_session",
+      "modelOrRuntime": "codex app-server --stdio",
+      "promptVersion": "live_research_pack@lane-e-20260621",
+      "durationMs": 73873,
+      "inputArtifactIds": [
+        "src_solar_capacity",
+        "src_solar_module_cost",
+        "src_worldbank_renewable_ex_hydro"
+      ],
+      "fixture": false,
+      "turnId": "019ee6a8-5136-70a3-b3aa-9ebc22f86286",
+      "threadId": "019ee6a8-4eeb-74d0-869d-b065fd6184a3"
+    }
+  ],
+  "approvedHash": "sha256:440b17df"
+}

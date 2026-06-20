@@ -1,0 +1,128 @@
+{
+  "pre": {
+    "threadId": "019ee6b1-1488-7c31-9459-960b542d39f6",
+    "turnId": "019ee6b1-1703-7111-9dae-0366406cad76",
+    "protocolLineCount": 70,
+    "stderrLogLineCount": 40,
+    "eventMethods": [
+      "remoteControl/status/changed",
+      "thread/started",
+      "warning",
+      "mcpServer/startupStatus/updated",
+      "thread/status/changed",
+      "turn/started",
+      "hook/started",
+      "hook/completed",
+      "item/started",
+      "item/completed",
+      "item/agentMessage/delta",
+      "thread/tokenUsage/updated",
+      "account/rateLimits/updated",
+      "turn/completed"
+    ]
+  },
+  "post": {
+    "resume": {
+      "id": 2,
+      "result": {
+        "thread": {
+          "id": "019ee6b1-1488-7c31-9459-960b542d39f6",
+          "sessionId": "019ee6b1-1488-7c31-9459-960b542d39f6",
+          "forkedFromId": null,
+          "parentThreadId": null,
+          "preview": "Project-thread worker pre-restart layout checkpoint. Return status ok and stage project_thread_pre_restart.",
+          "ephemeral": false,
+          "modelProvider": "openai",
+          "createdAt": 1781986825,
+          "updatedAt": 1781986825,
+          "status": {
+            "type": "idle"
+          },
+          "path": "/Users/jake/.codex/sessions/2026/06/21/rollout-2026-06-21T05-20-25-019ee6b1-1488-7c31-9459-960b542d39f6.jsonl",
+          "cwd": "/Users/jake/chatgppt-lane-text-research-e2e/deck-scribe-craft-07",
+          "cliVersion": "0.141.0",
+          "source": "vscode",
+          "threadSource": null,
+          "agentNickname": null,
+          "agentRole": null,
+          "gitInfo": {
+            "sha": "d55b46c22fd780025bef6c5480bcadf511385c7a",
+            "branch": "jacobex/live-lane-text-research-e2e",
+            "originUrl": "https://github.com/sunseol/chatgppt.git"
+          },
+          "name": null,
+          "turns": [
+            {
+              "id": "019ee6b1-1703-7111-9dae-0366406cad76",
+              "items": [
+                {
+                  "type": "userMessage",
+                  "id": "item-1",
+                  "clientId": null,
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Project-thread worker pre-restart layout checkpoint. Return status ok and stage project_thread_pre_restart.",
+                      "text_elements": []
+                    }
+                  ]
+                },
+                {
+                  "type": "agentMessage",
+                  "id": "item-2",
+                  "text": "{\"status\":\"ok\",\"stage\":\"project_thread_pre_restart\"}",
+                  "phase": "final_answer",
+                  "memoryCitation": null
+                }
+              ],
+              "itemsView": "full",
+              "status": "completed",
+              "error": null,
+              "startedAt": 1781986825,
+              "completedAt": 1781986830,
+              "durationMs": 4644
+            }
+          ]
+        },
+        "model": "gpt-5.4",
+        "modelProvider": "openai",
+        "serviceTier": "default",
+        "cwd": "/Users/jake/chatgppt-lane-text-research-e2e/deck-scribe-craft-07",
+        "runtimeWorkspaceRoots": [
+          "/Users/jake/chatgppt-lane-text-research-e2e/deck-scribe-craft-07"
+        ],
+        "instructionSources": [
+          "/Users/jake/.codex/AGENTS.md"
+        ],
+        "approvalPolicy": "never",
+        "approvalsReviewer": "user",
+        "sandbox": {
+          "type": "readOnly",
+          "networkAccess": false
+        },
+        "activePermissionProfile": null,
+        "reasoningEffort": "medium",
+        "initialTurnsPage": null
+      }
+    },
+    "resumedTurnId": "019ee6b1-2d8f-74d0-a451-27dca543d3eb",
+    "protocolLineCount": 72,
+    "stderrLogLineCount": 40,
+    "eventMethods": [
+      "remoteControl/status/changed",
+      "warning",
+      "mcpServer/startupStatus/updated",
+      "thread/status/changed",
+      "thread/tokenUsage/updated",
+      "thread/goal/cleared",
+      "turn/started",
+      "hook/started",
+      "hook/completed",
+      "item/started",
+      "item/completed",
+      "item/agentMessage/delta",
+      "account/rateLimits/updated",
+      "turn/completed"
+    ]
+  }
+}

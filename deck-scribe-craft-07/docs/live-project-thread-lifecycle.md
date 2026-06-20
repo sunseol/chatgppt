@@ -68,6 +68,32 @@ proves authenticated fresh smoke and structured turns still work on this lane
 (`019ee682-75f6-7f63-a741-9ea51e0beba6` /
 `019ee682-7888-74a0-a5e1-29223ff1dcbb` and
 `019ee682-8819-74f3-8f5a-8e5864e54db1` /
-`019ee682-8ab0-79d0-9068-b37e428faf04`). It does not satisfy the DF-212
-restart/reopen acceptance because that acceptance requires a persisted packaged
-project manifest and recovered worker turn after app restart.
+`019ee682-8ab0-79d0-9068-b37e428faf04`).
+
+## 2026-06-21 Lane E Approved-Context Restart Recheck
+
+Lane E produced a fresh approved-context project-thread restart bundle under
+`docs/live-evidence/lane-e-20260621/` after the live Research Pack and text
+pipeline gates passed.
+
+- Protocol evidence:
+  `docs/live-evidence/lane-e-20260621/project-thread-restart-protocol.json`,
+  SHA-256 `44620e507b9067cf24ef53877ccbcb6df8c8df71fecc5c2ab98937a74dcb9baf`.
+- Manifest/restart gate:
+  `docs/live-evidence/lane-e-20260621/project-thread-manifest-restart-gate.json`,
+  SHA-256 `04673ad108fa3bf2e8ab5f4e5f76106cfbb30a96b2949a667ebbf38172bb424d`,
+  manifest validation `ready`, resume gate `ready`.
+
+The first App Server process created worker thread
+`019ee6b1-1488-7c31-9459-960b542d39f6` and completed turn
+`019ee6b1-1703-7111-9dae-0366406cad76`. After closing that process, a second
+App Server process called `thread/resume` for the same worker thread and
+completed resumed turn `019ee6b1-2d8f-74d0-a451-27dca543d3eb`.
+
+The persisted manifest used approved artifacts
+`lane_e_live_text_20260621_brief_live`, `rp_lane_e_20260621_solar`,
+`lane_e_live_text_20260621_deck_plan_live`,
+`lane_e_live_text_20260621_design_system_live`, and
+`lane_e_live_text_20260621_layout_ir_live`, with Research Pack approved hash
+`sha256:440b17df`. This satisfies the assigned DF-212 protocol-level lifecycle
+evidence for this lane.

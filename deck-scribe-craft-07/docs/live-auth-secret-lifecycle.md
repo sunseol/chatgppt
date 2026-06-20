@@ -110,3 +110,23 @@ This recheck proves the current lane can use the official authenticated Codex
 runtime without storing token material in the project. It does not close
 DF-205 because fresh unauthenticated login, logout/relogin, and packaged
 desktop keychain setup require a user-controlled clean account or clean machine.
+
+## 2026-06-21 Lane E Auth Evidence
+
+Fresh Lane E auth/bootstrap evidence is stored at
+`docs/live-evidence/lane-e-20260621/auth-bootstrap-smoke.json` with SHA-256
+`4803348fa684e1eaeb6662be04d7877e180ce8178340db2d92049e2d1a465dff`.
+
+- Account type: `chatgpt`
+- Smoke thread: `019ee6ab-9437-7520-9e6f-5bdd58b6bd41`
+- Smoke turn: `019ee6ab-96a4-7270-b6e9-829d5415721`
+- Protocol frames: 86 stdout protocol frames, 40 stderr log lines
+- Completed event: `turn/completed`
+
+DF-205 remains open. This run intentionally did not execute `codex logout`
+against the shared worker session, and no clean macOS account, device-login
+handoff, or packaged app secret-store/keychain lifecycle was available. The next
+evidence needed is an isolated clean-machine sequence covering first login,
+logout, live job lock/cancel state while logged out, relogin, post-relogin App
+Server smoke, packaged secret-store write/read/delete, and a persisted secret
+leak scan.

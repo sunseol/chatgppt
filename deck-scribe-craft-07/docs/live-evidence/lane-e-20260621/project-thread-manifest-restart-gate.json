@@ -1,0 +1,90 @@
+{
+  "manifestValidation": {
+    "kind": "ready"
+  },
+  "resumeGate": {
+    "kind": "ready",
+    "resumedThread": {
+      "stage": "layout",
+      "threadId": "019ee6b1-1488-7c31-9459-960b542d39f6",
+      "lastCompletedTurnId": "019ee6b1-1703-7111-9dae-0366406cad76",
+      "deckContextId": "lane_e_ctx_20260621"
+    },
+    "previousTurnId": "019ee6b1-1703-7111-9dae-0366406cad76",
+    "resumedTurnId": "019ee6b1-2d8f-74d0-a451-27dca543d3eb"
+  },
+  "context": {
+    "projectId": "lane_e_live_text_20260621",
+    "deckContextId": "lane_e_ctx_20260621",
+    "hash": "sha256:lane_e_ctx_20260621",
+    "createdAt": 1781986146000,
+    "locked": true,
+    "slideCount": 3,
+    "approvedArtifacts": {
+      "briefId": "lane_e_live_text_20260621_brief_live",
+      "researchPackId": "rp_lane_e_20260621_solar",
+      "deckPlanId": "lane_e_live_text_20260621_deck_plan_live",
+      "designSystemId": "lane_e_live_text_20260621_design_system_live",
+      "layoutPrototypeId": "lane_e_live_text_20260621_layout_ir_live"
+    },
+    "approvedHashes": {
+      "briefHash": "sha256:brief_live_lane_e",
+      "researchHash": "sha256:440b17df",
+      "deckPlanHash": "sha256:deck_plan_live_lane_e",
+      "designHash": "sha256:design_live_lane_e",
+      "layoutHash": "sha256:layout_live_lane_e"
+    },
+    "layout": {
+      "layoutPrototypeId": "lane_e_live_text_20260621_layout_ir_live",
+      "slides": []
+    }
+  },
+  "manifest": {
+    "projectId": "lane_e_live_text_20260621",
+    "coordinatorThreadId": "019ee6ab-9437-7520-9e6f-5bdd58b6bd41",
+    "deckContextId": "lane_e_ctx_20260621",
+    "deckContextHash": "sha256:lane_e_ctx_20260621",
+    "approvedArtifactIds": [
+      "lane_e_live_text_20260621_brief_live",
+      "rp_lane_e_20260621_solar",
+      "lane_e_live_text_20260621_deck_plan_live",
+      "lane_e_live_text_20260621_design_system_live",
+      "lane_e_live_text_20260621_layout_ir_live"
+    ],
+    "workers": [
+      {
+        "stage": "layout",
+        "threadId": "019ee6b1-1488-7c31-9459-960b542d39f6",
+        "lastCompletedTurnId": "019ee6b1-1703-7111-9dae-0366406cad76",
+        "deckContextId": "lane_e_ctx_20260621",
+        "deckContextHash": "sha256:lane_e_ctx_20260621",
+        "approvedArtifactIds": [
+          "lane_e_live_text_20260621_brief_live",
+          "rp_lane_e_20260621_solar",
+          "lane_e_live_text_20260621_deck_plan_live",
+          "lane_e_live_text_20260621_design_system_live",
+          "lane_e_live_text_20260621_layout_ir_live"
+        ]
+      }
+    ]
+  },
+  "evidence": {
+    "threadId": "019ee6b1-1488-7c31-9459-960b542d39f6",
+    "previousTurnId": "019ee6b1-1703-7111-9dae-0366406cad76",
+    "resumedTurnId": "019ee6b1-2d8f-74d0-a451-27dca543d3eb",
+    "completed": true,
+    "resumedAfterProcessRestart": true,
+    "deckContextId": "lane_e_ctx_20260621",
+    "deckContextHash": "sha256:lane_e_ctx_20260621",
+    "approvedArtifactIds": [
+      "lane_e_live_text_20260621_brief_live",
+      "rp_lane_e_20260621_solar",
+      "lane_e_live_text_20260621_deck_plan_live",
+      "lane_e_live_text_20260621_design_system_live",
+      "lane_e_live_text_20260621_layout_ir_live"
+    ],
+    "providerKind": "codex",
+    "authMode": "codex_session",
+    "executionMode": "production"
+  }
+}
