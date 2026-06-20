@@ -6,13 +6,10 @@ import type {
   OrganizationVerification,
 } from "./image-provider-feasibility";
 import { storedArtifactPathBlockers } from "./image-path-decision-artifact-paths";
+import { decisionMetadataBlockers } from "./image-path-decision-metadata";
 import { storedProviderProvenanceBlockers } from "./image-path-decision-provenance";
 import type { ProviderArtifactProvenance } from "./provider-provenance";
 import type { SlideImageArtifact } from "./slide-image-provider";
-
-const PLACEHOLDER_DECISION_TEXTS = new Set(
-  "n/a|na|none|not set|tbd|to be determined|unknown".split("|"),
-);
 
 export {
   isVersionedProjectImageArtifactPath,
@@ -216,48 +213,6 @@ function requestModelBlockers(
   ];
 }
 
-function decisionMetadataBlockers(input: {
-  readonly organizationVerification: OrganizationVerification;
-  readonly billingOwner: string;
-  readonly requiredPermissions: readonly string[];
-  readonly feasibility: ImageProviderFeasibilityDecision;
-}): readonly ImagePathBlocker[] {
-  return [
-    ...(input.feasibility.authMode === "openaiApiKey" &&
-    input.feasibility.setup === "ready" &&
-    input.organizationVerification !== "verified"
-      ? [
-          {
-            code: "requiresOrganizationVerification" as const,
-            message:
-              "OpenAI image route evidence must retain verified organization status before locking.",
-          },
-        ]
-      : []),
-    ...(isMeaningfulDecisionText(input.billingOwner)
-      ? []
-      : [
-          {
-            code: "missing_billing_owner" as const,
-            message: "The image path decision must record the billing owner.",
-          },
-        ]),
-    ...(input.requiredPermissions.some(isMeaningfulDecisionText)
-      ? []
-      : [
-          {
-            code: "missing_required_permissions" as const,
-            message: "The image path decision must record required provider permissions.",
-          },
-        ]),
-  ];
-}
-
 function hasPngSignatureDataUrl(dataUrl: string): boolean {
   return dataUrl.startsWith("data:image/png;base64,iVBORw0KGgo");
-}
-
-function isMeaningfulDecisionText(value: string): boolean {
-  const normalized = value.trim().toLowerCase();
-  return normalized.length > 0 && !PLACEHOLDER_DECISION_TEXTS.has(normalized);
 }

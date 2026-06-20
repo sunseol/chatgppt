@@ -42,4 +42,34 @@ describe("image path decision metadata evidence", () => {
     ]);
     expect(productionChoices).toEqual([]);
   });
+
+  test("blocks route locking when required permissions mix real and placeholder text", () => {
+    // Given
+    const record = createImagePathDecisionRecord({
+      decisionId: "image_path_mixed_permission_metadata",
+      decidedAt: 1_789_700_012,
+      feasibility: decideImageProviderFeasibility({
+        codexImageCapability: "unknown",
+        apiCredential: "available",
+        organizationVerification: "verified",
+      }),
+      successfulArtifact: imageDecisionRealImageArtifact(),
+      binaryArtifactPath: BINARY_ARTIFACT_PATH,
+      provenanceArtifactPath: PROVENANCE_ARTIFACT_PATH,
+      providerProvenance: imageDecisionProviderProvenance(),
+      billingOwner: "workspace-billing",
+      requiredPermissions: ["images.generate", "TBD"],
+      organizationVerification: "verified",
+    });
+
+    // When
+    const productionChoices = getProductionImageProviderChoices(record);
+
+    // Then
+    expect(record.status).toBe("blocked");
+    expect(record.blockers.map((blocker) => blocker.code)).toEqual([
+      "missing_required_permissions",
+    ]);
+    expect(productionChoices).toEqual([]);
+  });
 });

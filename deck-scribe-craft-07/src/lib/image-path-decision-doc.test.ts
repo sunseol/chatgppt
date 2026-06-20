@@ -14,6 +14,8 @@ describe("image path decision documentation", () => {
     expect(text.includes("non-placeholder billing owner")).toBe(true);
     expect(text.includes("canonical request id")).toBe(true);
     expect(text.includes("placeholder text such as `unknown` or `TBD`")).toBe(true);
+    expect(text.includes("all required provider permissions as non-placeholder values")).toBe(true);
+    expect(text.includes("images.generate` plus `TBD`")).toBe(true);
     expect(text.includes("same slide as the successful artifact")).toBe(true);
   });
 });
