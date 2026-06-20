@@ -23,6 +23,11 @@ describe("live usage summary documentation", () => {
     expect(usageSummary.includes("template/sample/example/placeholder")).toBe(true);
     expect(usageSummary.includes("live-usage-billing-evidence.ts")).toBe(true);
     expect(
+      usageSummary.includes(
+        "report usage lines only when persisted confirmation evidence is valid",
+      ),
+    ).toBe(true);
+    expect(
       usageSummary.includes("secret-like text inside displayed image billing disclosure labels"),
     ).toBe(true);
     expect(usageSummary.includes("live-usage-summary-redaction.test.ts")).toBe(true);
@@ -46,11 +51,15 @@ describe("live usage summary documentation", () => {
     expect(progress.includes("provider kinds outside the DeckForge taxonomy")).toBe(true);
     expect(progress.includes("unsupported runtime cost labels")).toBe(true);
     expect(progress.includes("usage/image-billing-template.json")).toBe(true);
+    expect(progress.includes("confirmed-looking audit payload without valid")).toBe(true);
     expect(progress.includes("real provider image billing/API-key disclosure payloads")).toBe(true);
 
     expect(decision.includes("ProviderJobProgressPanel.tsx")).toBe(true);
     expect(decision.includes("confirmationEvidencePath")).toBe(true);
     expect(decision.includes("template/sample/example/placeholder")).toBe(true);
+    expect(
+      decision.includes("evidence-less confirmed-looking image billing as not confirmed"),
+    ).toBe(true);
     expect(decision.includes("duplicated usage stage ids")).toBe(true);
     expect(decision.includes("unsupported runtime provider kinds")).toBe(true);
     expect(decision.includes("developer-local")).toBe(true);

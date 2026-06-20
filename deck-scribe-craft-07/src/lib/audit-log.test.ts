@@ -123,4 +123,27 @@ describe("full audit log", () => {
     expect(report.includes("images 5")).toBe(true);
     expect(report.includes("API key billing confirmed")).toBe(true);
   });
+
+  test("does not render image billing confirmation without persisted evidence", () => {
+    const event = createAuditLogEvent({
+      eventId: "evt_provider_image_billing_missing_evidence",
+      eventType: "provider.job.summary",
+      traceId: "trace_provider_image_billing_missing_evidence",
+      timestamp: 2_600,
+      stage: "generate",
+      usageSummary: {
+        imageCount: 5,
+        imageBillingDisclosure: {
+          apiKeyRequired: true,
+          userConfirmed: true,
+          label: "API key billing confirmed",
+        },
+      },
+    });
+
+    const report = formatAuditLogForReport([event]);
+
+    expect(report.includes("API key billing not confirmed")).toBe(true);
+    expect(report.includes("API key billing confirmed")).toBe(false);
+  });
 });

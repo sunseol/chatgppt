@@ -36,7 +36,7 @@ Before image generation, the UI must make API key and billing usage visible and 
 - `src/lib/live-usage-summary.test.ts` verifies stage-level provider/duration/retry display, estimated cost formatting, usage recording, empty usage-object blockers, incomplete text/image usage blockers, invalid usage/cost amount blockers, estimated-cost-as-actual blockers, persisted API-key billing confirmation evidence blockers, developer-local billing evidence path blockers, and image billing confirmation blockers. `src/lib/live-usage-summary-stage-identity.test.ts` verifies that blank or duplicated stage ids and unsupported runtime provider kinds cannot pass as displayable Live usage rows. `src/lib/live-usage-summary-billing-evidence.test.ts` verifies that confirmed-looking image billing payloads without persisted confirmation evidence or with template confirmation evidence stay blocked and render as not confirmed even when `apiKeyRequired: false`. `src/lib/live-usage-billing-evidence.ts` centralizes that confirmation evidence path rule for both summary approval and the progress view. `src/lib/live-usage-summary-cost-label.test.ts` verifies that unsupported runtime cost labels cannot render provider costs as if they were valid estimates. `src/lib/live-usage-summary-redaction.test.ts` verifies that image billing labels are redacted before summary display.
 - `src/lib/live-app-server-usage-summary.ts` converts `thread/tokenUsage/updated` notifications from `codex app-server --stdio` into `LiveUsageStageSummary.usage`, and deliberately leaves `usage` empty when the provider supplied a malformed usage notification so `missing_provider_usage_summary` blocks the summary.
 - `src/lib/provider-job-progress-view.ts` and `src/components/deck/ProviderJobProgressPanel.tsx` expose app-surface provider id, execution duration, retry count, valid token/image usage, and finite estimated provider cost as `cost estimate` while still preserving job status, retry availability, recovered state, partial artifacts, redacted failure messages, and redacted image billing labels.
-- `src/lib/audit-log.ts` records provider usage summaries into report audit events and renders `estimatedCostUsd` as `cost estimate`, not as an exact charge.
+- `src/lib/audit-log.ts` records provider usage summaries into report audit events, renders `estimatedCostUsd` as `cost estimate`, not as an exact charge, and only preserves confirmed image billing disclosure labels when persisted confirmation evidence is valid.
 
 ## Live Codex Usage Probe
 
@@ -73,7 +73,7 @@ The provider job progress panel now renders DF-244 usage context for any job tha
 
 The same integration surface now blocks misleading confirmation copy when the image billing disclosure says `userConfirmed: false`, omits persisted API-key billing confirmation evidence, or only points at developer-local evidence.
 
-`src/lib/audit-log.ts` preserves the same image billing disclosure label in report usage lines while continuing to redact secret-like text from the displayed label.
+`src/lib/audit-log.ts` preserves confirmed image billing disclosure labels in report usage lines only when persisted confirmation evidence is valid; missing, invalid, or evidence-less confirmed-looking payloads render as `API key billing not confirmed` while secret-like text is still redacted from displayed labels.
 
 ## Remaining Live Evidence
 

@@ -4,6 +4,7 @@ import type {
   ProviderJob,
   ProviderUsageSummary,
 } from "./provider-job-manager";
+import { hasBillingConfirmationEvidencePath } from "./live-usage-billing-evidence";
 import { redactSensitiveText } from "./redaction";
 
 export type AuditEventType =
@@ -164,6 +165,12 @@ function formatUsageSummary(summary: ProviderUsageSummary): string {
 }
 
 function imageBillingDisclosureText(summary: ProviderUsageSummary): string {
-  const label = summary.imageBillingDisclosure?.label.trim();
-  return label === undefined ? "" : redactSensitiveText(label);
+  const disclosure = summary.imageBillingDisclosure;
+  if (disclosure === undefined) return "";
+  if (!disclosure.userConfirmed) return "API key billing not confirmed";
+  if (!hasBillingConfirmationEvidencePath(disclosure.confirmationEvidencePath)) {
+    return "API key billing not confirmed";
+  }
+  const label = disclosure.label.trim();
+  return label.length === 0 ? "API key billing not confirmed" : redactSensitiveText(label);
 }
