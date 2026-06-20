@@ -17,6 +17,7 @@ export function liveCodexProvenanceIssues(
   const gateIssues =
     gate.kind === "blocked" ? gate.issues.map((issue) => providerIssue(stage, issue)) : [];
   const modeIssues = lineage.flatMap((provenance) => [
+    ...canonicalIdentityIssues(stage, provenance),
     ...(provenance.providerKind === "codex"
       ? []
       : [
@@ -50,6 +51,23 @@ export function liveCodexProvenanceIssues(
   ]);
 
   return [...gateIssues, ...modeIssues];
+}
+
+function canonicalIdentityIssues(
+  stage: LiveInterviewStage,
+  provenance: ProviderArtifactProvenance,
+): readonly LiveInterviewIssue[] {
+  const identities = [provenance.artifactId, provenance.turnId, provenance.threadId];
+  return identities.every((identity) => identity === undefined || identity === identity.trim())
+    ? []
+    : [
+        {
+          code: "noncanonical_interview_identity",
+          artifactId: provenance.artifactId,
+          stage,
+          message: "Interview artifact, turn, and thread ids must be canonical.",
+        },
+      ];
 }
 
 export function questionRelationIssues(

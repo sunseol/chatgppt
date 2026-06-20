@@ -27,6 +27,7 @@ export type LiveInterviewIssueCode =
   | ProviderProvenanceIssue["code"]
   | "non_codex_interview_turn"
   | "non_production_interview_turn"
+  | "noncanonical_interview_identity"
   | "question_missing_project_input"
   | "missing_brief_artifact"
   | "brief_missing_question_input"

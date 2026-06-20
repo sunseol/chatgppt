@@ -14,6 +14,7 @@ describe("live interview readiness documentation", () => {
     expect(text.includes("brief_missing_answer_input")).toBe(true);
     expect(text.includes("brief_reused_question_turn")).toBe(true);
     expect(text.includes("brief_reused_question_artifact")).toBe(true);
+    expect(text.includes("noncanonical_interview_identity")).toBe(true);
     expect(text.includes("invalid_follow_up_question")).toBe(true);
     expect(text.includes("interview_prompt_version_mismatch")).toBe(true);
     expect(text.includes("interview_questions_desktop@v1")).toBe(true);
