@@ -16,7 +16,10 @@ describe("live auth secret lifecycle documentation", () => {
     expect(authSecretLifecycle.includes("LiveSecretStore")).toBe(true);
     expect(authSecretLifecycle.includes("LiveSecretReference")).toBe(true);
     expect(authSecretLifecycle.includes("unsupported store kind")).toBe(true);
-    expect(authSecretLifecycle.includes("URL-encoded key material")).toBe(true);
+    expect(authSecretLifecycle.includes("URL-encoded, base64")).toBe(true);
+    expect(authSecretLifecycle.includes("base64url key material")).toBe(true);
+    expect(authSecretLifecycle.includes("live-auth-secret-reference-encoding.test.ts")).toBe(true);
+    expect(authSecretLifecycle.includes("LiveSecretReferenceError")).toBe(true);
     expect(authSecretLifecycle.includes("serializeProjectList")).toBe(true);
     expect(authSecretLifecycle.includes("redactSensitiveText")).toBe(true);
     expect(authSecretLifecycle.includes('quoted `CODEX_SESSION="..."`')).toBe(true);

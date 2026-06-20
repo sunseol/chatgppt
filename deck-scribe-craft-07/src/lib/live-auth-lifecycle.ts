@@ -225,9 +225,25 @@ function secretReferenceContainsRawSecret(
   reference: LiveSecretReference,
   rawSecret: string,
 ): boolean {
-  const encodedSecret = encodeURIComponent(rawSecret);
-  const secretCandidates = [rawSecret, encodedSecret, encodedSecret.toLowerCase()];
+  const secretCandidates = secretMaterialCandidates(rawSecret);
   return [reference.service, reference.account, reference.secretId].some((field) =>
     secretCandidates.some((candidate) => field.includes(candidate)),
   );
+}
+
+function secretMaterialCandidates(rawSecret: string): readonly string[] {
+  const encodedSecret = encodeURIComponent(rawSecret);
+  const base64Secret = bytesToBase64(new TextEncoder().encode(rawSecret));
+  const base64UrlSecret = base64Secret.replaceAll("+", "-").replaceAll("/", "_").replace(/=+$/, "");
+  return Array.from(
+    new Set([rawSecret, encodedSecret, encodedSecret.toLowerCase(), base64Secret, base64UrlSecret]),
+  );
+}
+
+function bytesToBase64(bytes: Uint8Array): string {
+  const chunks: string[] = [];
+  for (let offset = 0; offset < bytes.length; offset += 32_768) {
+    chunks.push(String.fromCharCode(...bytes.subarray(offset, offset + 32_768)));
+  }
+  return btoa(chunks.join(""));
 }
