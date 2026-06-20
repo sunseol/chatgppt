@@ -1,0 +1,76 @@
+{
+  "startedAt": "2026-06-20T19:30:49.916Z",
+  "completedAt": "2026-06-20T19:30:50.341Z",
+  "artifact": "release-artifacts/DeckForge_0.1.0_aarch64.dmg",
+  "artifactSha256": "ad8b11dee61a15c193fabfc3a7bf85110b116db65098bd2a845c2533a25dae5d",
+  "sha256FileContents": "ad8b11dee61a15c193fabfc3a7bf85110b116db65098bd2a845c2533a25dae5d  release-artifacts/DeckForge_0.1.0_aarch64.dmg",
+  "shasum": {
+    "command": "shasum -a 256 release-artifacts/DeckForge_0.1.0_aarch64.dmg",
+    "startedAt": "2026-06-20T19:30:49.927Z",
+    "completedAt": "2026-06-20T19:30:49.938Z",
+    "status": 0,
+    "signal": null,
+    "stdout": "ad8b11dee61a15c193fabfc3a7bf85110b116db65098bd2a845c2533a25dae5d  release-artifacts/DeckForge_0.1.0_aarch64.dmg\n",
+    "stderr": ""
+  },
+  "imageInfo": {
+    "command": "hdiutil imageinfo release-artifacts/DeckForge_0.1.0_aarch64.dmg",
+    "startedAt": "2026-06-20T19:30:49.938Z",
+    "completedAt": "2026-06-20T19:30:49.957Z",
+    "status": 0,
+    "signal": null,
+    "stdout": "Format Description: UDIF 읽기 전용으로 압축됨(zlib)\nClass Name: CUDIFDiskImage\nChecksum Type: CRC32\nSize Information:\n\tCUDIFEncoding-bytes-total: 1821273\n\tTotal Empty Bytes: 24226816\n\tSector Count: 59466\n\tTotal Bytes: 30446592\n\tCUDIFEncoding-bytes-wasted: 0\n\tTotal Non-Empty Bytes: 6219776\n\tCompressed Ratio: 0.29280540006585448\n\tCUDIFEncoding-bytes-in-use: 1821273\n\tCompressed Bytes: 1821273\nChecksum Value: $EA1D8453\nSegments:\n\t0: /Users/jake/chatgppt-lane-runtime-research/deck-scribe-craft-07/release-artifacts/DeckForge_0.1.0_aarch64.dmg\nPartition Information:\n\t3:\n\t\tName: disk image(Apple_HFS : 4)\n\t\tPartition Number: 3\n\t\tChecksum Type: CRC32\n\t\tChecksum Value: $164ED020\n\t4:\n\t\tName: (Apple_Free : 5)\n\t\tPartition Number: 4\n\t\tChecksum Type: CRC32\n\t\tChecksum Value: $00000000\n\t0:\n\t\tName: GPT Header(Primary GPT Header : 1)\n\t\tPartition Number: 0\n\t\tChecksum Type: CRC32\n\t\tChecksum Value: $984F2F53\n\t5:\n\t\tName: GPT Partition Data(Backup GPT Table : 6)\n\t\tPartition Number: 5\n\t\tChecksum Type: CRC32\n\t\tChecksum Value: $6D91C584\n\t1:\n\t\tName: GPT Partition Data(Primary GPT Table : 2)\n\t\tPartition Number: 1\n\t\tChecksum Type: CRC32\n\t\tChecksum Value: $6D91C584\n\t6:\n\t\tName: GPT Header(Backup GPT Header : 7)\n\t\tPartition Number: 6\n\t\tChecksum Type: CRC32\n\t\tChecksum Value: $6EF1242A\n\t-1:\n\t\tName: Protective Master Boot Record(MBR : 0)\n\t\tPartition Number: -1\n\t\tChecksum Type: CRC32\n\t\tChecksum Value: $F53FCC69\n\t2:\n\t\tName: (Apple_Free : 3)\n\t\tPartition Number: 2\n\t\tChecksum Type: CRC32\n\t\tChecksum Value: $00000000\nFormat: UDZO\nBacking Store Information:\n\tURL: file:///Users/jake/chatgppt-lane-runtime-research/deck-scribe-craft-07/release-artifacts/DeckForge_0.1.0_aarch64.dmg\n\tName: DeckForge_0.1.0_aarch64.dmg\n\tClass Name: CUDIFEncoding\n\tBacking Store Information:\n\t\tURL: file:///Users/jake/chatgppt-lane-runtime-research/deck-scribe-craft-07/release-artifacts/DeckForge_0.1.0_aarch64.dmg\n\t\tName: DeckForge_0.1.0_aarch64.dmg\n\t\tClass Name: CBSDBackingStore\npartitions:\n\tpartition-scheme: GUID\n\tblock-size: 512\n\tpartitions:\n\t\t0:\n\t\t\tpartition-name: Protective Master Boot Record\n\t\t\tpartition-start: 0\n\t\t\tpartition-synthesized: true\n\t\t\tpartition-length: 1\n\t\t\tpartition-hint: MBR\n\t\t1:\n\t\t\tpartition-name: GPT Header\n\t\t\tpartition-start: 1\n\t\t\tpartition-synthesized: true\n\t\t\tpartition-length: 1\n\t\t\tpartition-hint: Primary GPT Header\n\t\t2:\n\t\t\tpartition-name: GPT Partition Data\n\t\t\tpartition-start: 2\n\t\t\tpartition-synthesized: true\n\t\t\tpartition-length: 32\n\t\t\tpartition-hint: Primary GPT Table\n\t\t3:\n\t\t\tpartition-name: \n\t\t\tpartition-start: 34\n\t\t\tpartition-synthesized: true\n\t\t\tpartition-length: 6\n\t\t\tpartition-hint: Apple_Free\n\t\t4:\n\t\t\tpartition-UUID: BD3F4A4C-C6D5-414D-8B8A-67041082E230\n\t\t\tpartition-name: disk image\n\t\t\tpartition-hint-UUID: 48465300-0000-11AA-AA11-00306543ECAC\n\t\t\tpartition-start: 40\n\t\t\tpartition-number: 1\n\t\t\tpartition-length: 59392\n\t\t\tpartition-hint: Apple_HFS\n\t\t\tpartition-filesystems:\n\t\t\t\tHFS+: \n\t\t5:\n\t\t\tpartition-name: \n\t\t\tpartition-start: 59432\n\t\t\tpartition-synthesized: true\n\t\t\tpartition-length: 1\n\t\t\tpartition-hint: Apple_Free\n\t\t6:\n\t\t\tpartition-name: GPT Partition Data\n\t\t\tpartition-start: 59433\n\t\t\tpartition-synthesized: true\n\t\t\tpartition-length: 32\n\t\t\tpartition-hint: Backup GPT Table\n\t\t7:\n\t\t\tpartition-name: GPT Header\n\t\t\tpartition-start: 59465\n\t\t\tpartition-synthesized: true\n\t\t\tpartition-length: 1\n\t\t\tpartition-hint: Backup GPT Header\n\tburnable: false\nudif-ordered-chunks: true\nProperties:\n\tEncrypted: false\n\tKernel Compatible: true\n\tChecksummed: true\n\tSoftware License Agreement: false\n\tPartitioned: false\n\tCompressed: true\nResize limits (per hdiutil resize -limits):\n17208\t59392\t59392\n",
+    "stderr": ""
+  },
+  "attach": {
+    "command": "hdiutil attach -readonly -nobrowse release-artifacts/DeckForge_0.1.0_aarch64.dmg",
+    "startedAt": "2026-06-20T19:30:49.957Z",
+    "completedAt": "2026-06-20T19:30:50.072Z",
+    "status": 0,
+    "signal": null,
+    "stdout": "예상됨   CRC32 $EA1D8453\n/dev/disk5          \tGUID_partition_scheme          \t\n/dev/disk5s1        \tApple_HFS                      \t/Volumes/DeckForge\n",
+    "stderr": ""
+  },
+  "bundleFiles": [
+    "/Volumes/DeckForge/DeckForge.app/Contents/Info.plist",
+    "/Volumes/DeckForge/DeckForge.app/Contents/MacOS/deckforge",
+    "/Volumes/DeckForge/DeckForge.app/Contents/Resources/DeckForge.icns"
+  ],
+  "infoPlist": {
+    "command": "plutil -p /Volumes/DeckForge/DeckForge.app/Contents/Info.plist",
+    "startedAt": "2026-06-20T19:30:50.074Z",
+    "completedAt": "2026-06-20T19:30:50.082Z",
+    "status": 0,
+    "signal": null,
+    "stdout": "{\n  \"CFBundleDevelopmentRegion\" => \"English\"\n  \"CFBundleDisplayName\" => \"DeckForge\"\n  \"CFBundleExecutable\" => \"deckforge\"\n  \"CFBundleIconFile\" => \"DeckForge.icns\"\n  \"CFBundleIdentifier\" => \"app.deckforge.desktop\"\n  \"CFBundleInfoDictionaryVersion\" => \"6.0\"\n  \"CFBundleName\" => \"DeckForge\"\n  \"CFBundlePackageType\" => \"APPL\"\n  \"CFBundleShortVersionString\" => \"0.1.0\"\n  \"CFBundleVersion\" => \"0.1.0\"\n  \"CSResourcesFileMapped\" => true\n  \"LSApplicationCategoryType\" => \"public.app-category.productivity\"\n  \"LSMinimumSystemVersion\" => \"10.13\"\n  \"LSRequiresCarbon\" => true\n  \"NSHighResolutionCapable\" => true\n  \"NSHumanReadableCopyright\" => \"Copyright DeckForge\"\n}\n",
+    "stderr": ""
+  },
+  "codesign": {
+    "command": "codesign --verify --deep --strict --verbose=2 /Volumes/DeckForge/DeckForge.app",
+    "startedAt": "2026-06-20T19:30:50.082Z",
+    "completedAt": "2026-06-20T19:30:50.110Z",
+    "status": 1,
+    "signal": null,
+    "stdout": "",
+    "stderr": "/Volumes/DeckForge/DeckForge.app: code has no resources but signature indicates they must be present\n"
+  },
+  "spctl": {
+    "command": "spctl --assess --type execute --verbose=4 /Volumes/DeckForge/DeckForge.app",
+    "startedAt": "2026-06-20T19:30:50.110Z",
+    "completedAt": "2026-06-20T19:30:50.269Z",
+    "status": 1,
+    "signal": null,
+    "stdout": "",
+    "stderr": "/Volumes/DeckForge/DeckForge.app: code has no resources but signature indicates they must be present\n"
+  },
+  "detach": {
+    "command": "hdiutil detach /Volumes/DeckForge",
+    "startedAt": "2026-06-20T19:30:50.269Z",
+    "completedAt": "2026-06-20T19:30:50.341Z",
+    "status": 0,
+    "signal": null,
+    "stdout": "\"disk5\" ejected.\n",
+    "stderr": ""
+  },
+  "evidenceDigest": "sha256:74795a764c6aae6660a21bc160a65e59e725f45f7e9fba9c3aff4c6d71a4a44a"
+}

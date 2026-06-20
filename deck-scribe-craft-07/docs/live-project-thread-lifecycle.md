@@ -61,3 +61,13 @@ DF-212 is still not fully Verified Live. The library-level protocol recheck prov
 ## 2026-06-21 Runtime/Text App-Surface Status
 
 The production browser app-surface run persisted live interview records, but did not create a full approved deck context because Plan/Design/Layout remained blocked by missing live Research approval evidence. Therefore DF-212 remains blocked on packaged restart/reopen evidence for a project with approved Brief, Research, Plan, Design System, and Layout IR artifacts. The blocker is exact: without a real approved Research Pack, the Runtime/Text lane cannot produce the full approved artifact bundle needed to exercise packaged project-thread recovery from the production UI.
+
+The current App Server recheck in
+`docs/live-evidence/runtime-text-research-live-recheck-20260620T192929Z.json`
+proves authenticated fresh smoke and structured turns still work on this lane
+(`019ee682-75f6-7f63-a741-9ea51e0beba6` /
+`019ee682-7888-74a0-a5e1-29223ff1dcbb` and
+`019ee682-8819-74f3-8f5a-8e5864e54db1` /
+`019ee682-8ab0-79d0-9068-b37e428faf04`). It does not satisfy the DF-212
+restart/reopen acceptance because that acceptance requires a persisted packaged
+project manifest and recovered worker turn after app restart.

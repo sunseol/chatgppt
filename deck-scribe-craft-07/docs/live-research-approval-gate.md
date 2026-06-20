@@ -76,3 +76,16 @@ packaged app and without a persisted app-produced Research Pack carrying source
 capture metadata, `ResearchPack.liveEvidenceRefs`, and `ResearchPack.provenanceLineage`,
 the required non-simulated approval QA cannot be completed. See
 `docs/live-research-lane-blockers-2026-06-21.md`.
+
+The current lane recheck preserves the exact blocker proof in
+`docs/live-evidence/runtime-text-research-package-assessment-20260620T193049Z.json`
+with digest
+`sha256:74795a764c6aae6660a21bc160a65e59e725f45f7e9fba9c3aff4c6d71a4a44a`.
+It records DMG SHA-256
+`ad8b11dee61a15c193fabfc3a7bf85110b116db65098bd2a845c2533a25dae5d`,
+mounted bundle files, `codesign` exit `1`, `spctl` exit `1`, and successful
+detach. The paired runtime evidence
+`docs/live-evidence/runtime-text-research-live-recheck-20260620T192929Z.json`
+proves authenticated App Server access still works, so DF-224 is specifically
+blocked on packaged-app approval QA and missing app-produced Research Pack
+evidence, not on Codex login.

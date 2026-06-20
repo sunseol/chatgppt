@@ -87,3 +87,24 @@ No persisted app-produced live Research Pack artifact exists in
 candidate sources without captured source metadata, claims, datasets, or
 `ResearchPack.liveEvidenceRefs`. See
 `docs/live-research-lane-blockers-2026-06-21.md` for the exact blocker evidence.
+
+Lane A rechecked the independent runtime and package evidence:
+
+- App Server evidence:
+  `docs/live-evidence/runtime-text-research-live-recheck-20260620T192929Z.json`,
+  digest
+  `sha256:c3fe5790996607ff06ffbac3422c9e2f751b2a855d304a2c8775fe09fa082a3f`,
+  smoke turn `019ee682-7888-74a0-a5e1-29223ff1dcbb`, structured turn
+  `019ee682-8ab0-79d0-9068-b37e428faf04`.
+- Package assessment evidence:
+  `docs/live-evidence/runtime-text-research-package-assessment-20260620T193049Z.json`,
+  digest
+  `sha256:74795a764c6aae6660a21bc160a65e59e725f45f7e9fba9c3aff4c6d71a4a44a`,
+  DMG SHA-256
+  `ad8b11dee61a15c193fabfc3a7bf85110b116db65098bd2a845c2533a25dae5d`,
+  `codesign` and `spctl` both exit `1` with
+  `code has no resources but signature indicates they must be present`.
+
+DF-223 remains open because no app-produced Research Pack with source capture
+metadata, claim quote/table refs, numeric or dataset evidence, and live
+Research Pack provenance exists in the lane.

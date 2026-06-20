@@ -365,3 +365,33 @@ The local manifest validator now also rejects raw conversation source-of-truth c
 ## Conclusion
 
 The local machine is authenticated for Codex CLI, now has the standalone 0.141.0 App Server install, and can run a persistent App Server daemon. Stdio protocol initialize, authenticated account read, stdin-close shutdown, thread creation, a completed health turn, thread resume, a second completed turn, forced daemon crash, daemon restart, post-restart health turn, and schema-constrained structured probe turns all succeeded, including the current recheck with thread `019edb32-07eb-7902-85bd-04823b1c47c2` and turn `019edb32-0a20-7812-ba4b-8603beb1b4aa`, plus the goal-continuation recheck with thread `019edbdc-61ca-7fc1-9cb4-9146ef9a1237` and turn `019edbdc-6472-7252-a846-334f23436989`. The DF-212 project-thread recheck also resumed recovered worker thread `019edc28-bf27-7380-b7d2-65405e6c6758` after recreating the App Server process and completed resumed turn `019edc28-f9ec-72e1-9695-1a9a2c2ca61d`. The app now has Tauri commands and TypeScript adapters for both App Server smoke evidence and reusable structured turns, and the structured-turn notifications can flow into the production Job Manager provenance path. The interview production button is wired to call the desktop interview launcher; the library-level desktop interview workflow has now persisted live `questions` and `brief` artifacts from turns `019edc17-b011-74d2-ae54-49842b7abd9d` and `019edc19-d06e-7793-9fbc-80ec053bb9fa`, and the local gate now rejects question artifacts that omit the project or initial prompt input id or Brief artifacts that reuse a question artifact/turn id with whitespace padding. The Plan/Design/Layout production button is wired to call the desktop structured-turn launcher and persist the ready patch with Plan/Design/Layout artifact records after accepted outputs with strict response schemas, and the text-pipeline gate now rejects Plan/Design/Layout artifact or turn reuse even when the reused id is whitespace-padded. `evaluateLiveTextSmokeGate` now prevents DF-215 from being marked ready unless all text artifacts are live Codex production artifacts with stage-correct prompt versions, question initial-prompt input lineage, Brief answer-bundle input lineage, Deck Plan Research Pack input lineage distinct from Brief, distinct artifact ids, distinct turn ids, turn/thread ids, and a completed post-resume next turn on the same thread as the previous text artifact turn. DF-210 still needs clean-machine reproduction before it should be marked Verified Live. DF-211 common runner criteria are satisfied by the real protocol-level structured event log, current error-event mapping, cancellation/invalid/partial-output tests, and desktop structured-turn command surface. DF-212 still needs packaged desktop restart/reopen evidence. DF-213/DF-214/DF-215 still need a recorded packaged-app live run that persists real DeckForge artifacts, and DF-215 remains partial because the actual packaged DeckForge text pipeline has not yet completed interview through Layout IR with live Codex-only artifacts.
+
+## 2026-06-21 Lane A App Server Recheck
+
+Fresh lane evidence bundle:
+`docs/live-evidence/runtime-text-research-live-recheck-20260620T192929Z.json`.
+
+- Collected at `2026-06-20T19:29:29Z` (`2026-06-21 04:29:29 KST`).
+- Evidence digest:
+  `sha256:c3fe5790996607ff06ffbac3422c9e2f751b2a855d304a2c8775fe09fa082a3f`.
+- `codex --version`: `codex-cli 0.141.0`.
+- Daemon evidence: `status: "running"`, `managedCodexVersion: "0.141.0"`,
+  `cliVersion: "0.141.0"`, `appServerVersion: "0.141.0"`.
+- Authenticated smoke turn: thread
+  `019ee682-75f6-7f63-a741-9ea51e0beba6`, turn
+  `019ee682-7888-74a0-a5e1-29223ff1dcbb`.
+- Schema-constrained structured turn: thread
+  `019ee682-8819-74f3-8f5a-8e5864e54db1`, turn
+  `019ee682-8ab0-79d0-9068-b37e428faf04`.
+- Both turns observed `turn/started`, `item/agentMessage/delta`,
+  `thread/tokenUsage/updated`, `account/rateLimits/updated`, and
+  `turn/completed`.
+- Protocol/log separation evidence: smoke captured 86 stdout protocol frames
+  and 40 stderr log lines; structured turn captured 97 stdout protocol frames
+  and 40 stderr log lines.
+
+This strengthens DF-210 app-server evidence and confirms current authenticated
+runtime availability. DF-210 remains open because the assigned acceptance still
+requires clean macOS reproduction. DF-215 remains open because the packaged app
+has not produced a complete interview-through-Layout-IR smoke bundle with a
+real approved Research Pack and post-resume text turn.

@@ -62,6 +62,28 @@ Launch-assessment blocker:
   exited 1 with the same message.
 - The image was detached afterwards with `hdiutil detach /Volumes/DeckForge`.
 
+Current Lane A package recheck evidence was captured at
+`2026-06-20T19:30:49Z` and preserved in
+`docs/live-evidence/runtime-text-research-package-assessment-20260620T193049Z.json`.
+The bundle digest is
+`sha256:74795a764c6aae6660a21bc160a65e59e725f45f7e9fba9c3aff4c6d71a4a44a`.
+It confirms the same DMG SHA-256
+`ad8b11dee61a15c193fabfc3a7bf85110b116db65098bd2a845c2533a25dae5d`,
+records the mounted bundle files, records `codesign` exit status `1`, records
+`spctl` exit status `1`, and records successful detach status `0`.
+
+Current Lane A authenticated App Server evidence was captured at
+`2026-06-20T19:29:29Z` in
+`docs/live-evidence/runtime-text-research-live-recheck-20260620T192929Z.json`
+with digest
+`sha256:c3fe5790996607ff06ffbac3422c9e2f751b2a855d304a2c8775fe09fa082a3f`.
+It completed smoke thread/turn
+`019ee682-75f6-7f63-a741-9ea51e0beba6` /
+`019ee682-7888-74a0-a5e1-29223ff1dcbb` and structured thread/turn
+`019ee682-8819-74f3-8f5a-8e5864e54db1` /
+`019ee682-8ab0-79d0-9068-b37e428faf04`, proving the research blockers are not
+caused by missing Codex authentication or App Server availability.
+
 This blocks the packaged-app/manual QA required by DF-223, DF-224, DF-244, and
 DF-242 in this lane. It is also relevant to DF-240 because the real production
 report/export bundle must be produced from the packaged compositor/export path.

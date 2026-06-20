@@ -78,3 +78,25 @@ DF-214 is not Verified Live yet. The app now exposes the production text-pipelin
 - five-slide context consistency evidence from the app surface
 
 Until those bundles exist, DF-214 remains `Partial, external evidence required`.
+
+## 2026-06-21 Lane A Recheck
+
+The current lane recheck produced fresh authenticated App Server evidence at
+`2026-06-20T19:29:29Z`:
+
+- Evidence bundle:
+  `docs/live-evidence/runtime-text-research-live-recheck-20260620T192929Z.json`
+- Digest:
+  `sha256:c3fe5790996607ff06ffbac3422c9e2f751b2a855d304a2c8775fe09fa082a3f`
+- Smoke thread/turn:
+  `019ee682-75f6-7f63-a741-9ea51e0beba6` /
+  `019ee682-7888-74a0-a5e1-29223ff1dcbb`
+- Structured thread/turn:
+  `019ee682-8819-74f3-8f5a-8e5864e54db1` /
+  `019ee682-8ab0-79d0-9068-b37e428faf04`
+
+The recheck confirms App Server availability is not the blocker. The active
+DF-214 blocker remains `missing_approved_research`: the app must receive a real
+approved Research Pack with live source capture metadata, live evidence refs,
+and exact `approvedResearchPackHash` before Deck Plan, Design System, and
+Layout IR turns can honestly launch from the production surface.
