@@ -13,6 +13,8 @@ describe("live benchmark documentation", () => {
     expect(benchmark.includes("template`, `sample`, `example`, or `placeholder")).toBe(true);
     expect(benchmark.includes("matching evidence counts")).toBe(true);
     expect(benchmark.includes("output_bundle_regeneration_image_missing")).toBe(true);
+    expect(benchmark.includes("output_bundle_step_screenshot_missing")).toBe(true);
+    expect(benchmark.includes("name every Golden Path step")).toBe(true);
     expect(
       benchmark.includes("one separate approved non-synthetic regenerated live image artifact id"),
     ).toBe(true);

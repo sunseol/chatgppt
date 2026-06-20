@@ -4,6 +4,7 @@ import {
   type LiveBenchmarkEvidenceBundle,
   type LiveBenchmarkRun,
 } from "./live-benchmark-evidence";
+import { LIVE_GOLDEN_PATH_E2E_STEPS } from "./live-golden-path-e2e-contract";
 
 const PACKAGE_SHA = "83032811d035f19bc7ac6d1837f137d535e011334197e6b18ae8f9477e342df7";
 
@@ -101,5 +102,5 @@ function withSyntheticRefs(run: LiveBenchmarkRun): LiveBenchmarkRun {
 }
 
 function screenshotPaths(id: string): readonly string[] {
-  return Array.from({ length: 10 }, (_, index) => `screenshots/${id}/step_${index + 1}.png`);
+  return LIVE_GOLDEN_PATH_E2E_STEPS.map((step) => `screenshots/${id}/${step}.png`);
 }

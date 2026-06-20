@@ -5,6 +5,7 @@ import {
   type LiveBenchmarkId,
   type LiveBenchmarkRun,
 } from "./live-benchmark-evidence";
+import { LIVE_GOLDEN_PATH_E2E_STEPS } from "./live-golden-path-e2e-contract";
 
 describe("live benchmark package hash", () => {
   test("blocks benchmark package hashes that are not SHA-256 digests", () => {
@@ -73,5 +74,5 @@ function run(
 }
 
 function screenshotPaths(id: string): readonly string[] {
-  return Array.from({ length: 10 }, (_, index) => `screenshots/${id}/step_${index + 1}.png`);
+  return LIVE_GOLDEN_PATH_E2E_STEPS.map((step) => `screenshots/${id}/${step}.png`);
 }

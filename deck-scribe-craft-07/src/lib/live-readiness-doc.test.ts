@@ -74,6 +74,7 @@ describe("live readiness documentation", () => {
     expect(benchmark.includes("duplicate_output_bundle_report")).toBe(true);
     expect(benchmark.includes("duplicate_output_bundle_golden_path_report")).toBe(true);
     expect(benchmark.includes("duplicate_output_bundle_screenshot")).toBe(true);
+    expect(benchmark.includes("output_bundle_step_screenshot_missing")).toBe(true);
     expect(benchmark.includes("missing_benchmark_package_hash")).toBe(true);
     expect(benchmark.includes("output_bundle_package_mismatch")).toBe(true);
     expect(benchmark.includes("duplicate_output_bundle")).toBe(true);

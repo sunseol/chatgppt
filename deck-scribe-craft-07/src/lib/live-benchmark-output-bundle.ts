@@ -6,12 +6,16 @@ import type {
 import { hasObservedBenchmarkEvidencePath } from "./live-benchmark-evidence-path";
 import { goldenPathEvidenceIssues } from "./live-benchmark-golden-path-evidence";
 import { duplicatePassedArtifactRefs } from "./live-benchmark-output-artifact-duplicates";
+import { evidenceCountMismatchRefs } from "./live-benchmark-output-bundle-counts";
 import {
   duplicateOutputBundleRefs,
   duplicateOutputBundleReports,
   duplicatePassedExportArtifacts,
 } from "./live-benchmark-output-bundle-duplicates";
-import { duplicateScreenshotEvidenceIssues } from "./live-benchmark-screenshot-evidence";
+import {
+  duplicateScreenshotEvidenceIssues,
+  missingStepScreenshotEvidenceIssues,
+} from "./live-benchmark-screenshot-evidence";
 
 export function outputBundleIssues(
   runs: readonly LiveBenchmarkRun[],
@@ -158,6 +162,7 @@ export function outputBundleIssues(
           ),
         ]),
     ...duplicateScreenshotEvidenceIssues(runs),
+    ...missingStepScreenshotEvidenceIssues(runs),
     ...(duplicateSourceArtifacts.length === 0
       ? []
       : [
@@ -206,44 +211,6 @@ function validEvidenceReportPath(value: string, expectedSuffix: string): boolean
   const normalized = value.toLowerCase().trim();
   if (!normalized.endsWith(expectedSuffix)) return false;
   return hasObservedBenchmarkEvidencePath(value, [".md"]);
-}
-
-function evidenceCountMismatchRefs(runs: readonly LiveBenchmarkRun[]): readonly string[] {
-  return runs
-    .filter((run) => run.status === "passed")
-    .flatMap((run) => [
-      ...countMismatchRef(
-        run.id,
-        "screenshots",
-        run.outputBundle.screenshotCount,
-        nonblankCount(run.outputBundle.screenshotPaths ?? []),
-      ),
-      ...countMismatchRef(
-        run.id,
-        "sources",
-        run.outputBundle.sourceCount,
-        nonblankCount(run.outputBundle.sourceArtifactIds),
-      ),
-      ...countMismatchRef(
-        run.id,
-        "images",
-        run.outputBundle.imageArtifactCount,
-        nonblankCount(run.outputBundle.liveImageArtifactIds),
-      ),
-    ]);
-}
-
-function countMismatchRef(
-  benchmarkId: string,
-  label: string,
-  claimed: number,
-  actual: number,
-): readonly string[] {
-  return claimed === actual ? [] : [`${benchmarkId}:${label}=${claimed}/${actual}`];
-}
-
-function nonblankCount(values: readonly string[]): number {
-  return values.map((value) => value.trim()).filter(Boolean).length;
 }
 
 function issue(

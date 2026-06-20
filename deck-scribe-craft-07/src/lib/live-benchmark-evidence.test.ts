@@ -2,11 +2,12 @@ import { describe, expect, test } from "bun:test";
 import {
   LIVE_BENCHMARK_IDS,
   evaluateLiveBenchmarkEvidence,
-  formatLiveBenchmarkEvidenceSummary,
   type LiveBenchmarkEvidenceBundle,
   type LiveBenchmarkFailureDomain,
   type LiveBenchmarkRun,
 } from "./live-benchmark-evidence";
+import { formatLiveBenchmarkEvidenceSummary } from "./live-benchmark-evidence-summary";
+import { LIVE_GOLDEN_PATH_E2E_STEPS } from "./live-golden-path-e2e-contract";
 
 const PACKAGE_SHA = "83032811d035f19bc7ac6d1837f137d535e011334197e6b18ae8f9477e342df7";
 
@@ -268,7 +269,7 @@ function run(
 }
 
 function screenshotPaths(id: string): readonly string[] {
-  return Array.from({ length: 10 }, (_, index) => `screenshots/${id}/step_${index + 1}.png`);
+  return LIVE_GOLDEN_PATH_E2E_STEPS.map((step) => `screenshots/${id}/${step}.png`);
 }
 
 function withOutputBundlePath(run: LiveBenchmarkRun, path: string): LiveBenchmarkRun {
