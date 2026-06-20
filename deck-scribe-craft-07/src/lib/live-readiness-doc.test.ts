@@ -190,6 +190,7 @@ describe("live readiness documentation", () => {
     expect(imageQueueControls.includes("concurrency_limit_exceeded")).toBe(true);
     expect(imageQueueControls.includes("different bundle or slide")).toBe(true);
     expect(imageQueueControls.includes("retry_delay_history_mismatch")).toBe(true);
+    expect(imageQueueControls.includes("cancelled_job_missing_failure")).toBe(true);
     expect(imageQueueControls.includes("partial resume")).toBe(true);
     expect(imageQueueControls.includes("slide_generation@v1")).toBe(true);
     expect(imageQueueControls.includes("stale prompt-lineage")).toBe(true);

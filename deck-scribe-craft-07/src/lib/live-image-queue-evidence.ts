@@ -3,6 +3,7 @@ import type { ImageProviderFailureKind } from "./image-provider-errors";
 import type { PromptUsageRecord } from "./prompt-assets";
 import type { ProviderJob } from "./provider-job-manager";
 import { concurrencyIssues } from "./live-image-queue-concurrency";
+import { cancellationIssues } from "./live-image-queue-cancellation";
 import { retrySlideIssues } from "./live-image-queue-retry-slide";
 import { retryDelayIssues } from "./live-image-queue-retry-delay";
 
@@ -19,6 +20,7 @@ export type LiveImageQueueEvidenceIssueCode =
   | "retry_prompt_usage_missing"
   | "retry_bundle_mismatch"
   | "retry_non_transient_failure"
+  | "cancelled_job_missing_failure"
   | "cancel_failure_without_cancelled_job"
   | "cancel_prompt_usage_missing"
   | "cancel_bundle_mismatch"
@@ -157,85 +159,6 @@ function retryFailureKindIssues(
           },
         ],
   );
-}
-
-function cancellationIssues(
-  jobs: readonly ProviderJob[],
-  failures: ReadyQueueResult["failures"],
-  promptUsages: readonly PromptUsageRecord[],
-): readonly LiveImageQueueEvidenceIssue[] {
-  return failures
-    .filter((failure) => failure.failureKind === "cancelled")
-    .flatMap((failure): readonly LiveImageQueueEvidenceIssue[] => {
-      const job = jobs.find((candidate) => candidate.id === failure.jobId);
-      if (job?.status !== "cancelled") {
-        return [
-          {
-            code: "cancel_failure_without_cancelled_job" as const,
-            jobId: failure.jobId,
-            slideNumber: failure.slideNumber,
-            message: "Cancellation failure evidence must have a cancelled provider job.",
-          },
-        ];
-      }
-      const promptUsage = promptUsages.find((usage) => usage.jobId === failure.jobId);
-      const promptIssue = cancelPromptIssue(failure, promptUsage);
-      const attemptIssue = cancelAttemptIssue(failure, job);
-      const signalIssue = job.cancelRequested
-        ? []
-        : [
-            {
-              code: "cancel_failure_without_cancel_signal" as const,
-              jobId: failure.jobId,
-              slideNumber: failure.slideNumber,
-              message: "Cancelled provider jobs must preserve the user cancel signal.",
-            },
-          ];
-      return [...promptIssue, ...attemptIssue, ...signalIssue];
-    });
-}
-
-function cancelPromptIssue(
-  failure: ReadyQueueResult["failures"][number],
-  promptUsage: PromptUsageRecord | undefined,
-): readonly LiveImageQueueEvidenceIssue[] {
-  if (!promptUsage) {
-    return [
-      {
-        code: "cancel_prompt_usage_missing" as const,
-        jobId: failure.jobId,
-        slideNumber: failure.slideNumber,
-        message: "Cancellation evidence must be tied to recorded slide-generation prompt usage.",
-      },
-    ];
-  }
-  return promptUsage.artifactId === failure.bundleId
-    ? []
-    : [
-        {
-          code: "cancel_bundle_mismatch" as const,
-          jobId: failure.jobId,
-          slideNumber: failure.slideNumber,
-          message:
-            "Cancellation evidence must reference the same bundle as the slide prompt usage.",
-        },
-      ];
-}
-
-function cancelAttemptIssue(
-  failure: ReadyQueueResult["failures"][number],
-  job: ProviderJob,
-): readonly LiveImageQueueEvidenceIssue[] {
-  return failure.attempts === job.attempt
-    ? []
-    : [
-        {
-          code: "cancel_attempt_count_mismatch" as const,
-          jobId: failure.jobId,
-          slideNumber: failure.slideNumber,
-          message: "Cancellation failure attempts must match the cancelled provider job attempt.",
-        },
-      ];
 }
 
 function isTransientFailure(kind: ImageProviderFailureKind): boolean {
