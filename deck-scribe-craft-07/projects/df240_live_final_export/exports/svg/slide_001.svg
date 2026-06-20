@@ -1,0 +1,8 @@
+<svg data-final-slide="1" data-export-basis="compositor" viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg">
+<image data-role="generated-background" data-locked="true" data-background-artifact-id="df232_live_codex_batch_image_slide_001_v1" data-background-artifact-path="projects/df232_live_codex_batch/slides/images/slide_001.v1.png" data-background-artifact-hash="sha256:6f68ea1203e933f5eeb4ccde8c6ac50743359939db79ccedf25c9e56e0adb441" href="../../../../projects/df232_live_codex_batch/slides/images/slide_001.v1.png" x="0" y="0" width="1600" height="900" preserveAspectRatio="xMidYMid slice"/>
+<rect x="72" y="70" width="720" height="180" fill="rgba(255,255,255,0.86)"/>
+<text data-editable-layer="slide_001_title" data-layer-type="text" data-role="title" x="112" y="150" font-size="56">Live market signal</text>
+<text data-editable-layer="slide_001_body" data-layer-type="text" data-role="body" x="112" y="218" font-size="32">Real Codex background with editable title/body/source overlays.</text>
+<g data-editable-layer="slide_001_chart" data-layer-type="chart" data-role="chart"><rect x="920" y="180" width="520" height="360" fill="none" stroke="#111827" stroke-width="4"/><text x="960" y="248" font-size="30">chart overlay</text></g>
+<text data-editable-layer="slide_001_source" data-layer-type="text" data-role="source" x="112" y="830" font-size="24">Sources: live-codex-image-001</text>
+</svg>

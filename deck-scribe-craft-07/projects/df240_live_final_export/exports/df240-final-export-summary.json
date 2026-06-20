@@ -1,0 +1,10 @@
+{
+  "artifactId": "df240_live_final_export_export_v1",
+  "artifactHash": "sha256:55b68f1615e44f537d3dff68eb1ddf77b903478bd9f3cb8c3a4a406385f123f3",
+  "artifactPath": "projects/df240_live_final_export/exports/df240-final-export-summary.json",
+  "createdAt": 1782000000000,
+  "pngCount": 5,
+  "svgCount": 5,
+  "hybridSvgCount": 5,
+  "projectFilePath": "projects/df240_live_final_export/exports/df240-final-project-export.json"
+}

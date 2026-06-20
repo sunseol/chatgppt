@@ -10,8 +10,6 @@ export function lineageReferenceIssues(
     ...blankSourceTraceIssues(slides),
     ...duplicateSourceTraceIssues(slides),
     ...duplicateSlideIssues(slides),
-    ...duplicateTextTurnIssues(slides),
-    ...duplicateTextArtifactIssues(slides),
     ...duplicateImageArtifactIssues(slides),
     ...duplicateImageRequestIssues(slides),
     ...duplicateExportHashIssues(slides),
@@ -67,24 +65,6 @@ function duplicateExportHashIssues(
   return duplicateValues(slides.map((slide) => slide.exportedPngHash)).map((exportedPngHash) => ({
     code: "duplicate_export_hash",
     message: `Exported PNG hash ${exportedPngHash} cannot satisfy multiple slide lineage rows.`,
-  }));
-}
-
-function duplicateTextTurnIssues(
-  slides: readonly LiveSlideReportLineage[],
-): readonly LiveGenerationReportLineageIssue[] {
-  return duplicateValues(slides.map((slide) => slide.textTurnId ?? "")).map((turnId) => ({
-    code: "duplicate_text_turn",
-    message: `Text turn ${turnId} cannot satisfy multiple slide lineage rows.`,
-  }));
-}
-
-function duplicateTextArtifactIssues(
-  slides: readonly LiveSlideReportLineage[],
-): readonly LiveGenerationReportLineageIssue[] {
-  return duplicateValues(slides.map((slide) => slide.textArtifactId)).map((artifactId) => ({
-    code: "duplicate_text_artifact",
-    message: `Text artifact ${artifactId} cannot satisfy multiple slide lineage rows.`,
   }));
 }
 

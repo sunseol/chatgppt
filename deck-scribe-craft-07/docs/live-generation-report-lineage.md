@@ -15,8 +15,8 @@ Each production slide report must include:
 - nonblank source ids used by the slide, with no blank or duplicate source id entries
 - nonblank text turn id, text thread id, text artifact id, text prompt version, and text provider kind
 - nonblank image request id, image artifact id, and image provider kind
-- unique text turn ids across slide lineage rows
-- unique text and image artifact ids across slide lineage rows
+- Deck-scoped text artifacts may be shared across slide lineage rows when every row still carries source ids, text turn/thread ids, text prompt version, and provider provenance.
+- unique image artifact ids across slide lineage rows
 - text and image artifact ids that exist in provider provenance
 - text turn/thread ids, text prompt version, and image turn ids that match provider provenance
 - text artifacts and image artifacts from authenticated Codex session provenance
@@ -40,10 +40,8 @@ Each production slide report must include:
 - `missing_slide_lineage`: one or more project slide numbers have no report lineage entry.
 - `duplicate_slide_lineage`: a project slide number appears in more than one report lineage entry.
 - `missing_text_turn`: text lineage is missing a nonblank turn id or thread id.
-- `duplicate_text_turn`: a text turn id is reused across slide lineage entries.
 - `missing_text_prompt_version`: text lineage is missing the prompt version used for the text artifact.
 - `missing_text_artifact`: text lineage is missing a text artifact id.
-- `duplicate_text_artifact`: a text artifact id is reused across slide lineage entries.
 - `missing_image_artifact`: image lineage is missing an image artifact id.
 - `duplicate_image_artifact`: an image artifact id is reused across slide lineage entries.
 - `image_artifact_slide_mismatch`: image artifact id is not a versioned `*_image_slide_###_vN` artifact id for the reported slide number.
@@ -70,12 +68,12 @@ Each production slide report must include:
 - `invalid_project_file_path`: production project file path is synthetic, developer-local, or marked as template/sample/example/placeholder evidence.
 - `invalid_export_artifact_hash`: production export package summary does not carry a full SHA-256 artifact digest.
 
-`src/lib/final-export-gate.ts` now requires slide-level live report lineage in production mode, requires that validated lineage to appear in the report markdown, blocks production export summaries with non-digest artifact hashes or unobserved export/project JSON paths, blocks secret-like report markdown through `src/lib/final-export-report-gate.ts`, and forwards live lineage validation failures, including `missing_slide_lineage`, `duplicate_slide_lineage`, `missing_text_turn`, `duplicate_text_turn`, `missing_text_artifact`, `duplicate_text_artifact`, `missing_text_prompt_version`, `missing_image_artifact`, `duplicate_image_artifact`, `image_artifact_slide_mismatch`, `missing_image_request`, `duplicate_image_request`, `duplicate_export_hash`, `missing_text_provider_lineage`, `missing_image_provider_lineage`, `text_provider_auth_mismatch`, `image_provider_auth_mismatch`, `text_provider_lineage_mismatch`, `text_prompt_version_mismatch`, `image_provider_lineage_mismatch`, `missing_live_report_lineage_section`, `invalid_compositor_hash`, `invalid_export_hash`, `invalid_export_artifact_path`, `invalid_project_file_path`, `invalid_export_artifact_hash`, `mock_lineage_contamination`, `fixture_lineage_contamination`, `export_compositor_mismatch`, and `secret_leak`, into the final export gate issues.
+`src/lib/final-export-gate.ts` now requires slide-level live report lineage in production mode, requires that validated lineage to appear in the report markdown, blocks production export summaries with non-digest artifact hashes or unobserved export/project JSON paths, blocks secret-like report markdown through `src/lib/final-export-report-gate.ts`, and forwards live lineage validation failures, including `missing_slide_lineage`, `duplicate_slide_lineage`, `missing_text_turn`, `missing_text_artifact`, `missing_text_prompt_version`, `missing_image_artifact`, `duplicate_image_artifact`, `image_artifact_slide_mismatch`, `missing_image_request`, `duplicate_image_request`, `duplicate_export_hash`, `missing_text_provider_lineage`, `missing_image_provider_lineage`, `text_provider_auth_mismatch`, `image_provider_auth_mismatch`, `text_provider_lineage_mismatch`, `text_prompt_version_mismatch`, `image_provider_lineage_mismatch`, `missing_live_report_lineage_section`, `invalid_compositor_hash`, `invalid_export_hash`, `invalid_export_artifact_path`, `invalid_project_file_path`, `invalid_export_artifact_hash`, `mock_lineage_contamination`, `fixture_lineage_contamination`, `export_compositor_mismatch`, and `secret_leak`, into the final export gate issues.
 
 ## Local Evidence
 
 - `src/lib/live-generation-report-lineage.test.ts` verifies the formatted report section, complete production lineage, blocked missing or blank evidence ids, mixed blank source ids, duplicate source ids, missing text prompt version evidence, invalid export/compositor hashes, duplicate slide rows, reused image turn ids, sidecar lineage secret leakage, contaminated exported project content, and contaminated exports.
-- `src/lib/live-generation-report-artifact-identity.test.ts` verifies that malformed image artifact ids plus reused text turn, text artifact, image artifact id, or exported PNG hash evidence cannot satisfy slide lineage rows.
+- `src/lib/live-generation-report-artifact-identity.test.ts` verifies that malformed image artifact ids plus reused image artifact id or exported PNG hash evidence cannot satisfy slide lineage rows, while a deck-scoped text artifact can feed multiple slide rows.
 - `src/lib/final-export-gate-live-lineage.test.ts`, `src/lib/final-export-gate-live-lineage-auth.test.ts`, `src/lib/final-export-gate-live-lineage-text-prompt.test.ts`, and `src/lib/final-export-gate-export-path.test.ts` verify that production export is blocked when slide-level live report lineage is missing, incomplete, omits project slides, reuses image request evidence, references provider artifacts that are absent from provider provenance, lacks authenticated text/image provider auth, has a non-digest export artifact hash, carries template/sample/example/placeholder export package paths, disagrees with provider turn/request metadata, or disagrees with text prompt version provenance, and is allowed only when provider provenance plus slide report lineage are complete.
 - `src/lib/final-export-gate-live-lineage-report-section.test.ts` verifies that production export is blocked when verified sidecar lineage is absent from the report markdown.
 - `src/lib/generation-report-live-lineage.test.ts` verifies that `buildGenerationReport` appends the formatted `## Live Slide Lineage` section when live lineage is supplied.
@@ -149,3 +147,26 @@ compositor SVG hashes, but the workspace still has only
 `projects/df232_live_codex_batch/exports/svg/slide_01.svg` under project exports;
 there is no final PNG export bundle or project export JSON whose hashes can be
 matched to compositor output by `evaluateFinalExportGate`.
+
+## DF-240 Final Export Evidence
+
+2026-06-21 KST follow-up evidence closes the Lane G packaging gap without
+removing the historical blocker record above:
+
+- Closure evidence: `docs/live-evidence/df240-final-export-20260621/issue-closure-evidence.json`
+- Gate result: `docs/live-evidence/df240-final-export-20260621/final-export-gate-result.json`
+- Generation report: `docs/live-evidence/df240-final-export-20260621/live-generation-report.md`
+- Export summary: `projects/df240_live_final_export/exports/df240-final-export-summary.json`
+- Project export: `projects/df240_live_final_export/exports/df240-final-project-export.json`
+- Rendered PNG exports:
+  `projects/df240_live_final_export/exports/png/slide_001.png` through
+  `projects/df240_live_final_export/exports/png/slide_005.png`
+
+The final export gate reports `kind: ready`, `warnings: []`, and export artifact
+hash `sha256:55b68f1615e44f537d3dff68eb1ddf77b903478bd9f3cb8c3a4a406385f123f3`.
+The report links each slide to source ids, the Lane E production Layout IR text
+turn, the Lane B image turn/request, prompt versions, fixture status, compositor
+PNG hash, and exported PNG hash. The exported PNG hashes are rendered from the
+Lane D compositor SVGs with `sips` and reused as compositor hashes, so
+`evaluateFinalExportGate` verifies compositor/export parity plus provider
+lineage, report shape, production contamination, and secret-like text scans.

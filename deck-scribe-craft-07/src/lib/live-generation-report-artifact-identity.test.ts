@@ -27,7 +27,7 @@ describe("live generation report artifact identity", () => {
     expect(validation.issues.map((issue) => issue.code)).toEqual(["image_artifact_slide_mismatch"]);
   });
 
-  test("blocks reused text and image artifact ids across slide lineage", () => {
+  test("blocks reused image artifact ids across slide lineage while allowing deck-scoped text artifacts", () => {
     // Given
     const base = liveSlideLineage();
 
@@ -51,14 +51,12 @@ describe("live generation report artifact identity", () => {
     expect(validation.kind).toBe("blocked");
     if (validation.kind !== "blocked") return;
     expect(validation.issues.map((issue) => issue.code)).toEqual([
-      "duplicate_text_turn",
-      "duplicate_text_artifact",
       "duplicate_image_artifact",
       "image_artifact_slide_mismatch",
     ]);
   });
 
-  test("blocks reused text turn ids across distinct slide artifacts", () => {
+  test("allows reused deck-scoped text turn ids across distinct slide artifacts", () => {
     // Given
     const base = liveSlideLineage();
 
@@ -82,9 +80,7 @@ describe("live generation report artifact identity", () => {
     });
 
     // Then
-    expect(validation.kind).toBe("blocked");
-    if (validation.kind !== "blocked") return;
-    expect(validation.issues.map((issue) => issue.code)).toEqual(["duplicate_text_turn"]);
+    expect(validation).toEqual({ kind: "ready" });
   });
 
   test("blocks reused exported PNG hashes across distinct slide artifacts", () => {

@@ -1,0 +1,112 @@
+{
+  "projectId": "df240_live_final_export",
+  "createdAt": "2026-06-21T00:00:00.000Z",
+  "researchPackId": "rp_lane_e_20260621_solar",
+  "approvedResearchPackHash": "sha256:440b17df",
+  "sources": [
+    {
+      "id": "src_solar_capacity",
+      "title": "Installed solar PV capacity",
+      "url": "https://ourworldindata.org/grapher/installed-solar-pv-capacity.csv"
+    },
+    {
+      "id": "src_solar_module_cost",
+      "title": "Solar PV module cost",
+      "url": "https://ourworldindata.org/grapher/solar-pv-prices.csv"
+    },
+    {
+      "id": "src_worldbank_renewable_ex_hydro",
+      "title": "Renewable electricity output excluding hydroelectric (% of total)",
+      "url": "https://api.worldbank.org/v2/country/WLD/indicator/EG.ELC.RNWX.ZS?format=json&per_page=10"
+    }
+  ],
+  "textArtifactId": "lane_e_live_text_20260621_layout_ir_live",
+  "slideExports": [
+    {
+      "slideNumber": 1,
+      "sourceIds": [
+        "src_solar_capacity"
+      ],
+      "textArtifactId": "lane_e_live_text_20260621_layout_ir_live",
+      "imageArtifactId": "df232_live_codex_batch_image_slide_001_v1",
+      "imageTurnId": "019ee689-3af0-7891-83f5-2f386f43c181",
+      "compositorSvgPath": "docs/live-evidence/codex-image/lane-d-live-app-surface-20260621/review-compositor-slide-001.svg",
+      "compositorSvgHash": "sha256:c6b2e80be88c69edeb854373a6e7d5e26008b2ac4663627cbda9bfcee5158be9",
+      "exportedSvgPath": "projects/df240_live_final_export/exports/svg/slide_001.svg",
+      "exportedHybridSvgPath": "projects/df240_live_final_export/exports/hybrid-svg/slide_001.svg",
+      "exportedPngPath": "projects/df240_live_final_export/exports/png/slide_001.png",
+      "exportedPngHash": "sha256:3250188a5701224262ddd7c81f940f01e2a4689bb3dbaad47cde9a759b60bea1"
+    },
+    {
+      "slideNumber": 2,
+      "sourceIds": [
+        "src_solar_module_cost"
+      ],
+      "textArtifactId": "lane_e_live_text_20260621_layout_ir_live",
+      "imageArtifactId": "df232_live_codex_batch_image_slide_002_v1",
+      "imageTurnId": "019ee68a-214d-7be2-8984-b3461b1cf8db",
+      "compositorSvgPath": "docs/live-evidence/codex-image/lane-d-live-app-surface-20260621/review-compositor-slide-002.svg",
+      "compositorSvgHash": "sha256:352beb71baa4bb12d86972c2e22f3b3b861b843fdfd17edc3ba2657495034db4",
+      "exportedSvgPath": "projects/df240_live_final_export/exports/svg/slide_002.svg",
+      "exportedHybridSvgPath": "projects/df240_live_final_export/exports/hybrid-svg/slide_002.svg",
+      "exportedPngPath": "projects/df240_live_final_export/exports/png/slide_002.png",
+      "exportedPngHash": "sha256:c209cd71694ddedc597602013539c8457d71d0e4857cd00d05fa00e1fcf8c60f"
+    },
+    {
+      "slideNumber": 3,
+      "sourceIds": [
+        "src_worldbank_renewable_ex_hydro"
+      ],
+      "textArtifactId": "lane_e_live_text_20260621_layout_ir_live",
+      "imageArtifactId": "df232_live_codex_batch_image_slide_003_v1",
+      "imageTurnId": "019ee68a-e53e-71c0-814a-8d5da527c75a",
+      "compositorSvgPath": "docs/live-evidence/codex-image/lane-d-live-app-surface-20260621/review-compositor-slide-003.svg",
+      "compositorSvgHash": "sha256:5d66cabc572f86e837926d7745f42720f8c9be7c06f032a2c9486f9bba4e3faf",
+      "exportedSvgPath": "projects/df240_live_final_export/exports/svg/slide_003.svg",
+      "exportedHybridSvgPath": "projects/df240_live_final_export/exports/hybrid-svg/slide_003.svg",
+      "exportedPngPath": "projects/df240_live_final_export/exports/png/slide_003.png",
+      "exportedPngHash": "sha256:cd00391d1a1a90631d05a1de785a5176ead969294c3646ef31d86ce965d6a300"
+    },
+    {
+      "slideNumber": 4,
+      "sourceIds": [
+        "src_solar_capacity",
+        "src_solar_module_cost"
+      ],
+      "textArtifactId": "lane_e_live_text_20260621_layout_ir_live",
+      "imageArtifactId": "df232_live_codex_batch_image_slide_004_v1",
+      "imageTurnId": "019ee68b-5d5c-7a62-bf39-ae1c19bf4c41",
+      "compositorSvgPath": "docs/live-evidence/codex-image/lane-d-live-app-surface-20260621/review-compositor-slide-004.svg",
+      "compositorSvgHash": "sha256:8ea08c76d94ba95bddc4adcc5e323a4784d47ba65675635626b7a3aa6a66c443",
+      "exportedSvgPath": "projects/df240_live_final_export/exports/svg/slide_004.svg",
+      "exportedHybridSvgPath": "projects/df240_live_final_export/exports/hybrid-svg/slide_004.svg",
+      "exportedPngPath": "projects/df240_live_final_export/exports/png/slide_004.png",
+      "exportedPngHash": "sha256:56ff0698e792dbcdf41af715ca328a02f745a7c7b9f8cfca493d1eab3cfd0cd1"
+    },
+    {
+      "slideNumber": 5,
+      "sourceIds": [
+        "src_solar_capacity",
+        "src_solar_module_cost",
+        "src_worldbank_renewable_ex_hydro"
+      ],
+      "textArtifactId": "lane_e_live_text_20260621_layout_ir_live",
+      "imageArtifactId": "df232_live_codex_batch_image_slide_005_v1",
+      "imageTurnId": "019ee68b-cf93-7dd3-9a6a-2a25cb63205a",
+      "compositorSvgPath": "docs/live-evidence/codex-image/lane-d-live-app-surface-20260621/review-compositor-slide-005.svg",
+      "compositorSvgHash": "sha256:e79286ebbdcb15797c673a0d120197b5c63e0ec3e430c7381d5576590e211b02",
+      "exportedSvgPath": "projects/df240_live_final_export/exports/svg/slide_005.svg",
+      "exportedHybridSvgPath": "projects/df240_live_final_export/exports/hybrid-svg/slide_005.svg",
+      "exportedPngPath": "projects/df240_live_final_export/exports/png/slide_005.png",
+      "exportedPngHash": "sha256:aceb2709faafc94be30b7fe7b99e8d51997dbcd2caa3339c1b92d44bad579ad2"
+    }
+  ],
+  "providerArtifactIds": [
+    "lane_e_live_text_20260621_layout_ir_live",
+    "df232_live_codex_batch_image_slide_001_v1",
+    "df232_live_codex_batch_image_slide_002_v1",
+    "df232_live_codex_batch_image_slide_003_v1",
+    "df232_live_codex_batch_image_slide_004_v1",
+    "df232_live_codex_batch_image_slide_005_v1"
+  ]
+}
