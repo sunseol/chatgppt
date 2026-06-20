@@ -69,4 +69,4 @@ Not run. This checklist and the local evidence validator are ready for execution
 
 ## Current blocker evidence
 
-2026-06-21 KST Image/Packaging lane recheck found GitHub issue #156 still open with `status:needs-live-evidence`. The current session is an autonomous developer worker running as user `jake` in `/Users/jake/chatgppt-lane-image`, not a non-developer tester on a clean production candidate. DF-245 is still blocked by missing signing/notarization, Gatekeeper acceptance, clean-machine execution, and image credentials, so DF-246 cannot honestly record a 10-minute non-developer manual QA session yet.
+2026-06-21 KST Release/Packaging lane recheck found GitHub issue #156 still open with `status:needs-live-evidence`. The current session is an autonomous developer worker running as user `jake` in `/Users/jake/chatgppt-lane-release-qa`, not a non-developer tester on a clean production candidate. DF-245 is still blocked by missing Developer ID signing/notarization, Gatekeeper acceptance, clean-machine execution, and image credentials, so DF-246 cannot honestly record a 10-minute non-developer manual QA session yet.

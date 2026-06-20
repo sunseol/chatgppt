@@ -40,7 +40,7 @@ Package integrity evidence:
 
 - `shasum -a 256 release-artifacts/DeckForge_0.1.0_aarch64.dmg`
   returned
-  `ad8b11dee61a15c193fabfc3a7bf85110b116db65098bd2a845c2533a25dae5d`.
+  `53428ab9cf805a85c41e775bc2107d9e58713e0b7234ede271c0ead9560f932b`.
 - The committed `.sha256` file contains the same digest.
 - `hdiutil imageinfo release-artifacts/DeckForge_0.1.0_aarch64.dmg`
   completed and identified a compressed read-only UDIF image.
