@@ -71,3 +71,19 @@ The local claim-to-source roundtrip is covered by `src/lib/live-research-evidenc
 ## Remaining Live work
 
 DF-223 is not ready to close. The local pipeline can now generate and persist `ResearchPack.liveEvidenceRefs` from captured source artifacts and evidence extraction results, but it still needs a recorded authenticated packaged-app Research run plus review using real live captures.
+
+## 2026-06-21 KST lane evidence update
+
+This ticket remains hard-blocked on packaged-app Research Pack evidence. The
+Research lane mounted `release-artifacts/DeckForge_0.1.0_aarch64.dmg`
+read-only and confirmed its SHA-256 matches the committed checksum, but both
+`codesign --verify --deep --strict --verbose=2 /Volumes/DeckForge/DeckForge.app`
+and `spctl --assess --type execute --verbose=4 /Volumes/DeckForge/DeckForge.app`
+failed with `code has no resources but signature indicates they must be
+present`. The mounted bundle was detached after inspection.
+
+No persisted app-produced live Research Pack artifact exists in
+`release-artifacts`, and the current live `web_search` workflow only creates
+candidate sources without captured source metadata, claims, datasets, or
+`ResearchPack.liveEvidenceRefs`. See
+`docs/live-research-lane-blockers-2026-06-21.md` for the exact blocker evidence.

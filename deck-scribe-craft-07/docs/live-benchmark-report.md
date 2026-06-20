@@ -80,3 +80,15 @@ Blocking issue codes:
 - `missing_live_benchmark_report`
 
 Current local status: the validator is implemented and tested, including rejection of unknown or duplicate benchmark scenarios, unsupported failure domains, `mock`, `fixture`, `test`, `fake`, `template`, `sample`, `example`, `placeholder`, developer-local absolute, and `file://` output bundle paths and report paths, synthetic or observer-template source/image/request/regeneration/export artifact ids, evidence count/list mismatches, duplicate scenario report reuse, missing, reused, or non-step-named screenshot path evidence, missing regenerated image artifact evidence, regenerated images counted toward the initial five-image floor, plus cross-run source/image/request evidence reuse, but no real provider output bundle 5 sets have been produced.
+
+## 2026-06-21 KST lane evidence update
+
+This ticket remains hard-blocked on downstream packaged Live Golden Path
+benchmark execution. `release-artifacts` contains no benchmark output bundles;
+it contains only `DeckForge_0.1.0_aarch64.dmg`, its checksum, and `README.md`.
+The DMG checksum matches its committed `.sha256` file, but the mounted
+`/Volumes/DeckForge/DeckForge.app` fails both `codesign --verify` and `spctl
+--assess` with `code has no resources but signature indicates they must be
+present`. The current benchmark result remains 0 of 5, below the required 4 of
+5 named packaged Live Golden Path completions. See
+`docs/live-research-lane-blockers-2026-06-21.md`.
