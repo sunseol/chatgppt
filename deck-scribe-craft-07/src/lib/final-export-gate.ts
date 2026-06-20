@@ -5,6 +5,7 @@ import {
   type LiveReportGateIssueCode,
 } from "./final-export-live-report-gate";
 import { finalExportReportIssues } from "./final-export-report-gate";
+import { hasNonSyntheticEvidencePath } from "./live-evidence-path";
 import type { LiveSlideReportLineage } from "./live-generation-report-lineage";
 import { type ExecutionMode, type ProviderArtifactProvenance } from "./provider-provenance";
 import { workflowErrorBlocksFinalApproval } from "./workflow-error-policy";
@@ -16,6 +17,8 @@ export type FinalExportGateIssueCode =
   | "missing_svg_export"
   | "missing_hybrid_svg_export"
   | "missing_project_file"
+  | "invalid_export_artifact_path"
+  | "invalid_project_file_path"
   | "invalid_export_artifact_hash"
   | "missing_generation_report"
   | "fatal_workflow_error"
@@ -215,8 +218,19 @@ function exportPackageIssues(
       message: "편집용 SVG 파일이 1개 이상 필요합니다.",
     });
   }
+  if (executionMode === "production" && !isObservedExportJsonPath(summary.artifactPath)) {
+    issues.push({
+      code: "invalid_export_artifact_path",
+      message: "Production export package path must point at observed export JSON evidence.",
+    });
+  }
   if (summary.projectFilePath.trim().length === 0) {
     issues.push({ code: "missing_project_file", message: "프로젝트 파일이 필요합니다." });
+  } else if (executionMode === "production" && !isObservedExportJsonPath(summary.projectFilePath)) {
+    issues.push({
+      code: "invalid_project_file_path",
+      message: "Production project export path must point at observed project JSON evidence.",
+    });
   }
   if (executionMode === "production" && !isSha256Digest(summary.artifactHash)) {
     issues.push({
@@ -229,4 +243,14 @@ function exportPackageIssues(
 
 function isSha256Digest(value: string): boolean {
   return /^sha256:[a-f0-9]{64}$/.test(value);
+}
+
+const NON_OBSERVED_EXPORT_PATH_MARKERS = ["template", "sample", "example", "placeholder"] as const;
+
+function isObservedExportJsonPath(value: string): boolean {
+  const normalized = value.toLowerCase();
+  return (
+    hasNonSyntheticEvidencePath(value, [".json"]) &&
+    !NON_OBSERVED_EXPORT_PATH_MARKERS.some((marker) => normalized.includes(marker))
+  );
 }
