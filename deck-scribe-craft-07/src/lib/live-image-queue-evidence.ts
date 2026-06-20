@@ -3,6 +3,7 @@ import type { ImageProviderFailureKind } from "./image-provider-errors";
 import type { PromptUsageRecord } from "./prompt-assets";
 import type { ProviderJob } from "./provider-job-manager";
 import { retrySlideIssues } from "./live-image-queue-retry-slide";
+import { retryDelayIssues } from "./live-image-queue-retry-delay";
 
 export type LiveImageQueueEvidenceIssueCode =
   | "queue_result_blocked"
@@ -10,6 +11,7 @@ export type LiveImageQueueEvidenceIssueCode =
   | "retry_attempt_count_mismatch"
   | "retry_attempt_sequence_mismatch"
   | "retry_slide_mismatch"
+  | "retry_delay_history_mismatch"
   | "retry_prompt_usage_missing"
   | "retry_bundle_mismatch"
   | "retry_non_transient_failure"
@@ -48,6 +50,7 @@ export function evaluateLiveImageQueueEvidence(
     ...retryJobIssues(result.jobs, result.retryProvenance),
     ...retryAttemptIssues(result.jobs, result.retryProvenance),
     ...retrySlideIssues(result.jobs, result.failures, result.retryProvenance),
+    ...retryDelayIssues(result.failures, result.retryProvenance),
     ...retryBundleIssues(result.promptUsages, result.retryProvenance),
     ...retryFailureKindIssues(result.retryProvenance),
     ...cancellationIssues(result.jobs, result.failures, result.promptUsages),

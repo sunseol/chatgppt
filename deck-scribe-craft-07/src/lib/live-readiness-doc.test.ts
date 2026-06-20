@@ -196,6 +196,7 @@ describe("live readiness documentation", () => {
     expect(imageQueueControls.includes("in-flight cancellation")).toBe(true);
     expect(imageQueueControls.includes("retryProvenance")).toBe(true);
     expect(imageQueueControls.includes("different bundle or slide")).toBe(true);
+    expect(imageQueueControls.includes("retry_delay_history_mismatch")).toBe(true);
     expect(imageQueueControls.includes("partial resume")).toBe(true);
     expect(imageQueueControls.includes("slide_generation@v1")).toBe(true);
     expect(imageQueueControls.includes("stale prompt-lineage")).toBe(true);
