@@ -183,6 +183,26 @@ describe("live initial release gate", () => {
       "invalid_critical_defect_count",
     ]);
   });
+
+  test("blocks P1 risks whose summary contradicts a non-blocking category", () => {
+    // Given
+    const result = evaluateLiveInitialReleaseGate({
+      ...readyInput(),
+      unresolvedP1Risks: [
+        {
+          id: "P1-security-summary",
+          category: "other",
+          summary: "Security token leak in production export report.",
+        },
+      ],
+    });
+
+    // When / Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.blockers.map((blocker) => blocker.code)).toEqual(["p1_release_blocker"]);
+    expect(result.blockers[0]?.refs).toEqual(["P1-security-summary"]);
+  });
 });
 
 function readyInput(): LiveReleaseGateInput {

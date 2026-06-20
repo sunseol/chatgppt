@@ -194,7 +194,7 @@ function defectBlockers(criticalDefectCount: number): readonly LiveReleaseBlocke
 }
 
 function p1RiskBlockers(risks: readonly UnresolvedP1Risk[]): readonly LiveReleaseBlocker[] {
-  const blocking = risks.filter((risk) => RELEASE_BLOCKING_P1_CATEGORIES.includes(risk.category));
+  const blocking = risks.filter(isReleaseBlockingP1Risk);
   return blocking.length === 0
     ? []
     : [
@@ -204,6 +204,28 @@ function p1RiskBlockers(risks: readonly UnresolvedP1Risk[]): readonly LiveReleas
           blocking.map((risk) => risk.id),
         ),
       ];
+}
+
+function isReleaseBlockingP1Risk(risk: UnresolvedP1Risk): boolean {
+  return (
+    RELEASE_BLOCKING_P1_CATEGORIES.includes(risk.category) ||
+    summaryNamesReleaseBlockingRisk(risk.summary)
+  );
+}
+
+function summaryNamesReleaseBlockingRisk(summary: string): boolean {
+  const normalized = summary.toLowerCase().replace(/[_-]+/g, " ");
+  return (
+    normalized.includes("data loss") ||
+    normalized.includes("security") ||
+    normalized.includes("credential leak") ||
+    normalized.includes("token leak") ||
+    normalized.includes("billing") ||
+    normalized.includes("payment") ||
+    normalized.includes("source error") ||
+    normalized.includes("source mismatch") ||
+    normalized.includes("citation")
+  );
 }
 
 function blocker(
