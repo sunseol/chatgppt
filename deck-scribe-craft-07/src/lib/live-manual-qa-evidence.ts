@@ -16,6 +16,17 @@ export { MANUAL_QA_APPROVAL_TARGETS };
 
 export const MANUAL_QA_TESTER_ROLES = ["non_developer", "developer"] as const;
 
+const NON_LIVE_SLIDE_ID_MARKERS = [
+  "placeholder",
+  "template",
+  "sample",
+  "example",
+  "mock",
+  "fixture",
+  "test",
+  "fake",
+] as const;
+
 export type ManualQaSetupTask = (typeof MANUAL_QA_SETUP_TASKS)[number];
 export type ManualQaExport = (typeof MANUAL_QA_EXPORTS)[number];
 export type ManualQaSeverity = "P0" | "P1" | "P2";
@@ -135,8 +146,8 @@ export function formatLiveManualQaEvidenceSummary(evidence: LiveManualQaEvidence
     `approval targets checked: ${countDistinctApprovalTargetChecks(evidence.approvalTargetChecks)}`,
     `real sources opened: ${nonEmpty(evidence.openedRealSourceUrls).length}`,
     `report sources: ${nonEmpty(evidence.finalReportSourceUrls).length}`,
-    `regenerated slides: ${nonEmpty(evidence.regeneratedSlideIds).join(", ") || "missing"}`,
-    `title edits: ${nonEmpty(evidence.editedTitleSlideIds).join(", ") || "missing"}`,
+    `regenerated slides: ${liveSlideIds(evidence.regeneratedSlideIds).join(", ") || "missing"}`,
+    `title edits: ${liveSlideIds(evidence.editedTitleSlideIds).join(", ") || "missing"}`,
     `exports opened: ${evidence.openedExports.join(", ") || "missing"}`,
     `critical errors: ${evidence.criticalErrorCount}`,
     `mock indicators: ${evidence.mockIndicatorCount}`,
@@ -192,7 +203,9 @@ function presenceIssue(
   values: readonly string[],
   message: string,
 ): readonly LiveManualQaIssue[] {
-  return nonEmpty(values).length > 0 ? [] : [issue(code, message, ["missing"])];
+  const liveIds = liveSlideIds(values);
+  const refs = nonEmpty(values);
+  return liveIds.length > 0 ? [] : [issue(code, message, refs.length > 0 ? refs : ["missing"])];
 }
 
 function countIssue(
@@ -230,6 +243,13 @@ function severityCounts(
 
 function nonEmpty(values: readonly string[]): readonly string[] {
   return values.filter((value) => value.trim().length > 0);
+}
+
+function liveSlideIds(values: readonly string[]): readonly string[] {
+  return nonEmpty(values).filter((value) => {
+    const normalized = value.toLowerCase();
+    return !NON_LIVE_SLIDE_ID_MARKERS.some((marker) => normalized.includes(marker));
+  });
 }
 
 function issue(

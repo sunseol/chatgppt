@@ -242,6 +242,25 @@ describe("live manual QA evidence", () => {
     if (result.kind !== "blocked") return;
     expect(result.issues.map((issue) => issue.code)).toEqual(["opened_source_not_in_report"]);
   });
+
+  test("blocks placeholder slide ids as regeneration or title edit evidence", () => {
+    // Given
+    const evidence = completeEvidence({
+      regeneratedSlideIds: ["placeholder-slide"],
+      editedTitleSlideIds: ["template-title-slide"],
+    });
+
+    // When
+    const result = evaluateLiveManualQaEvidence(evidence);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "missing_slide_regeneration",
+      "missing_title_edit",
+    ]);
+  });
 });
 
 function completeEvidence(patch: Partial<LiveManualQaEvidence> = {}): LiveManualQaEvidence {

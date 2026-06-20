@@ -44,7 +44,7 @@ Within 10 minutes, the tester must:
 - `sessionEvidencePath` pointing to a persisted non-synthetic `manual-qa` session JSON bundle for the observed QA session, not a generic notes JSON such as `manual-qa/session-notes-20260619.json`, template/sample/example/placeholder bundle, developer-local absolute, or `file://` path
 - distinct approval target checks for `research_pack`, `slide_generation`, and `export`, with every target understood
 - at least one opened real HTTP(S) source URL that also appears in the final report sources, excluding placeholder, reserved documentation, private-network, or local domains/IPs
-- at least one regenerated slide id and one edited title slide id
+- at least one non-placeholder regenerated slide id and one non-placeholder edited title slide id; `placeholder`, `template`, `sample`, `example`, `mock`, `fixture`, `test`, or `fake` slide ids do not count
 - opened export artifacts `png`, `project`, and `report`
 - non-negative integer counters for critical errors, mock indicators, and placeholder outputs
 - zero critical errors, zero mock indicators, and zero placeholder outputs
@@ -58,8 +58,8 @@ Blocker codes: `tester_not_non_developer`, `missing_manual_qa_session_evidence`,
 - Tester is not a developer or implementation contributor, and the session has a persisted non-local evidence bundle.
 - Tester explains the research, slide generation, and export approval gate targets with one distinct evidence event per target.
 - At least one non-placeholder, non-reserved real source from the final report is opened and understood.
-- One slide is regenerated and accepted or rejected.
-- One title edit survives export.
+- One non-placeholder slide is regenerated and accepted or rejected.
+- One non-placeholder title edit survives export.
 - PNG/project/report artifacts are found.
 - Critical errors, mock labels, placeholder outputs, and fixture artifacts are all zero.
 
