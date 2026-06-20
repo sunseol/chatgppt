@@ -33,6 +33,9 @@ describe("live golden path E2E documentation", () => {
     expect(goldenPathE2E.includes("live-golden-path-image-model-evidence.test.ts")).toBe(true);
     expect(goldenPathE2E.includes("blank image artifact id rejection")).toBe(true);
     expect(goldenPathE2E.includes("insufficient_live_image_artifacts")).toBe(true);
+    expect(goldenPathE2E.includes("missing_regenerated_live_image_artifact")).toBe(true);
+    expect(goldenPathE2E.includes("five initial images")).toBe(true);
+    expect(goldenPathE2E.includes("live-golden-path-regeneration-image.test.ts")).toBe(true);
     expect(goldenPathE2E.includes("missing_restart_reopen_evidence")).toBe(true);
   });
 });

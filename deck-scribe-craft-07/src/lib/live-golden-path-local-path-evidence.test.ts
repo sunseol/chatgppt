@@ -37,6 +37,7 @@ describe("live golden path local path evidence", () => {
           "live_image_3",
           "live_image_4",
           "live_image_5",
+          "live_regenerated_slide_003",
         ],
       },
     });
@@ -66,7 +67,10 @@ function completeBundle(patch: Partial<LiveGoldenPathE2EBundle>): LiveGoldenPath
       artifactId: "src_rfc",
     },
   ];
-  const imageArtifacts = Array.from({ length: 5 }, (_, index) => imageArtifact(index + 1));
+  const imageArtifacts = [
+    ...Array.from({ length: 5 }, (_, index) => imageArtifact(index + 1)),
+    imageArtifact(6, "live_regenerated_slide_003"),
+  ];
   return {
     projectId: "p_live",
     finalExportArtifactId: "live_export_001",
@@ -101,9 +105,9 @@ function completeBundle(patch: Partial<LiveGoldenPathE2EBundle>): LiveGoldenPath
   };
 }
 
-function imageArtifact(index: number) {
+function imageArtifact(index: number, artifactId = `live_image_${index}`) {
   return createProviderArtifactProvenance({
-    artifactId: `live_image_${index}`,
+    artifactId,
     executionMode: "production",
     providerKind: "openaiImage",
     authMode: "api_key",

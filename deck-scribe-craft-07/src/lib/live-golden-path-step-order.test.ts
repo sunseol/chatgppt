@@ -37,7 +37,10 @@ describe("live golden path step order", () => {
 
 function completeBundle(patch: Partial<LiveGoldenPathE2EBundle> = {}): LiveGoldenPathE2EBundle {
   const reportContent = "Golden Path passed with ordered production steps.";
-  const imageArtifacts = Array.from({ length: 5 }, (_, index) => imageArtifact(index + 1));
+  const imageArtifacts = [
+    ...Array.from({ length: 5 }, (_, index) => imageArtifact(index + 1)),
+    imageArtifact(6, "live_regenerated_slide_003"),
+  ];
   const screenshots = LIVE_GOLDEN_PATH_E2E_STEPS.map((step) => `screenshots/${step}.png`);
   const sources = [
     { url: "https://www.sec.gov/example", role: "official" as const, artifactId: "src_sec" },
@@ -82,9 +85,9 @@ function completeBundle(patch: Partial<LiveGoldenPathE2EBundle> = {}): LiveGolde
   };
 }
 
-function imageArtifact(index: number) {
+function imageArtifact(index: number, artifactId = `live_image_${index}`) {
   return createProviderArtifactProvenance({
-    artifactId: `live_image_${index}`,
+    artifactId,
     executionMode: "production",
     providerKind: "openaiImage",
     authMode: "api_key",

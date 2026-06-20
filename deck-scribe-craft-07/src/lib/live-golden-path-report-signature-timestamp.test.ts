@@ -46,7 +46,7 @@ function bundleFixture(reportContent: string) {
       artifactId: "src_003",
     },
   ];
-  const imageArtifacts = Array.from({ length: 5 }, (_, index) =>
+  const initialImages = Array.from({ length: 5 }, (_, index) =>
     createProviderArtifactProvenance({
       artifactId: `project_001_image_slide_00${index + 1}_v1`,
       executionMode: "production",
@@ -60,6 +60,21 @@ function bundleFixture(reportContent: string) {
       requestId: `img_req_00${index + 1}`,
     }),
   );
+  const imageArtifacts = [
+    ...initialImages,
+    createProviderArtifactProvenance({
+      artifactId: "project_001_image_slide_003_v2",
+      executionMode: "production",
+      providerKind: "openaiImage",
+      authMode: "api_key",
+      modelOrRuntime: "gpt-image-2",
+      promptVersion: "slide_generation@v1",
+      durationMs: 1_200,
+      inputArtifactIds: ["project_001_image_slide_003_v1"],
+      fixture: false,
+      requestId: "img_req_003_regenerated",
+    }),
+  ];
   return {
     projectId: "project_001",
     finalExportArtifactId: "export_001",

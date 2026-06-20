@@ -35,6 +35,7 @@ describe("live golden path validation bundle path", () => {
           "live_image_3",
           "live_image_4",
           "live_image_5",
+          "live_regenerated_slide_003",
         ],
       },
       restartReopen: {
@@ -52,7 +53,10 @@ describe("live golden path validation bundle path", () => {
         },
       ],
       lineage: [],
-      imageArtifacts: [1, 2, 3, 4, 5].map(imageArtifact),
+      imageArtifacts: [
+        ...[1, 2, 3, 4, 5].map((index) => imageArtifact(index)),
+        imageArtifact(6, "live_regenerated_slide_003"),
+      ],
     });
 
     expect(result.kind).toBe("blocked");
@@ -61,9 +65,9 @@ describe("live golden path validation bundle path", () => {
   });
 });
 
-function imageArtifact(index: number) {
+function imageArtifact(index: number, artifactId = `live_image_${index}`) {
   return createProviderArtifactProvenance({
-    artifactId: `live_image_${index}`,
+    artifactId,
     executionMode: "production",
     providerKind: "openaiImage",
     authMode: "api_key",

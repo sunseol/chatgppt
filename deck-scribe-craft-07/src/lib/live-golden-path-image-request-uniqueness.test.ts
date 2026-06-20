@@ -10,9 +10,10 @@ import { createProviderArtifactProvenance } from "./provider-provenance";
 describe("live golden path image request uniqueness", () => {
   test("blocks distinct image artifacts that reuse one provider request id", () => {
     // Given
-    const imageArtifacts = Array.from({ length: 5 }, (_, index) =>
-      liveImageArtifact(`live_image_${index + 1}`),
-    );
+    const imageArtifacts = [
+      ...Array.from({ length: 5 }, (_, index) => liveImageArtifact(`live_image_${index + 1}`)),
+      liveImageArtifact("live_regenerated_slide_003"),
+    ];
     const bundle = completeBundle({ imageArtifacts });
 
     // When

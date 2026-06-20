@@ -77,6 +77,7 @@ export type LiveGoldenPathE2EIssueCode =
   | "duplicate_live_image_artifact"
   | "duplicate_live_image_request"
   | "insufficient_live_image_artifacts"
+  | "missing_regenerated_live_image_artifact"
   | "missing_restart_reopen_evidence"
   | "secret_leak";
 
