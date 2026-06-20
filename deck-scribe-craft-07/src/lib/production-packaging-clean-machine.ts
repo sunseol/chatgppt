@@ -1,4 +1,5 @@
 import type { ProductionPackagingIssue } from "./production-packaging-evidence";
+import { hasNonSyntheticJsonEvidencePath } from "./live-evidence-path";
 
 export const CLEAN_MACHINE_STEPS = [
   "install_app",
@@ -9,6 +10,10 @@ export const CLEAN_MACHINE_STEPS = [
 ] as const;
 
 export type CleanMachineStep = (typeof CLEAN_MACHINE_STEPS)[number];
+
+export type CleanMachineStepEvidencePaths = {
+  readonly [Step in CleanMachineStep]?: string;
+};
 
 export function cleanMachineStepIssues(
   steps: readonly unknown[],
@@ -53,6 +58,23 @@ export function cleanMachineStepIssues(
 
 export function countDistinctCleanMachineSteps(steps: readonly unknown[]): number {
   return new Set(steps.filter(isCleanMachineStep)).size;
+}
+
+export function cleanMachineStepEvidencePathIssues(
+  evidencePaths: CleanMachineStepEvidencePaths | undefined,
+): readonly ProductionPackagingIssue[] {
+  const missing = CLEAN_MACHINE_STEPS.filter(
+    (step) => !hasNonSyntheticJsonEvidencePath(evidencePaths?.[step]),
+  );
+  return missing.length === 0
+    ? []
+    : [
+        issue(
+          "missing_clean_machine_step_evidence",
+          "Clean-machine validation steps must cite persisted evidence paths.",
+          missing,
+        ),
+      ];
 }
 
 function isCleanMachineStep(value: unknown): value is CleanMachineStep {

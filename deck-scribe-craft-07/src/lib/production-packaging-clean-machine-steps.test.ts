@@ -45,6 +45,29 @@ describe("production packaging clean-machine step evidence", () => {
     // Then
     expect(summary.includes("clean-machine steps: 4/5")).toBe(true);
   });
+
+  test("blocks clean-machine step labels without persisted evidence paths", () => {
+    // Given
+    const result = evaluateProductionPackagingEvidence(
+      completeEvidence({
+        cleanMachineStepEvidencePaths: {},
+      }),
+    );
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "missing_clean_machine_step_evidence",
+    ]);
+    expect(result.issues[0]?.refs).toEqual([
+      "install_app",
+      "codex_login",
+      "image_credentials",
+      "project_launch",
+      "live_interview",
+    ]);
+  });
 });
 
 function completeEvidence(
@@ -78,8 +101,19 @@ function completeEvidence(
       "project_launch",
       "live_interview",
     ],
+    cleanMachineStepEvidencePaths: cleanMachineStepEvidencePaths(),
     runtimeAbsenceRemediationShown: true,
     runbookPath: "docs/production-clean-machine-runbook.md",
     ...patch,
+  };
+}
+
+function cleanMachineStepEvidencePaths(): ProductionPackagingEvidence["cleanMachineStepEvidencePaths"] {
+  return {
+    install_app: "release-evidence/clean-machine/install-app.json",
+    codex_login: "release-evidence/clean-machine/codex-login.json",
+    image_credentials: "release-evidence/clean-machine/image-credentials.json",
+    project_launch: "release-evidence/clean-machine/project-launch.json",
+    live_interview: "release-evidence/clean-machine/live-interview.json",
   };
 }

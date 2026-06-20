@@ -1,13 +1,15 @@
 import { hasNonSyntheticEvidencePath, hasNonSyntheticJsonEvidencePath } from "./live-evidence-path";
 import {
   CLEAN_MACHINE_STEPS,
+  cleanMachineStepEvidencePathIssues,
   cleanMachineStepIssues,
   countDistinctCleanMachineSteps,
   type CleanMachineStep,
+  type CleanMachineStepEvidencePaths,
 } from "./production-packaging-clean-machine";
 
 export { CLEAN_MACHINE_STEPS };
-export type { CleanMachineStep };
+export type { CleanMachineStep, CleanMachineStepEvidencePaths };
 
 export type PackageContentScan = {
   readonly mockResourceHits: readonly string[];
@@ -37,6 +39,7 @@ export type ProductionPackagingEvidence = {
   readonly productionMode: boolean;
   readonly contentScan: PackageContentScan;
   readonly cleanMachineSteps: readonly CleanMachineStep[];
+  readonly cleanMachineStepEvidencePaths?: CleanMachineStepEvidencePaths;
   readonly runtimeAbsenceRemediationShown: boolean;
   readonly runbookPath: string;
 };
@@ -54,6 +57,7 @@ export type ProductionPackagingIssueCode =
   | "invalid_clean_machine_step"
   | "duplicate_clean_machine_step"
   | "missing_clean_machine_step"
+  | "missing_clean_machine_step_evidence"
   | "missing_runtime_absence_remediation"
   | "missing_clean_machine_runbook";
 
@@ -75,6 +79,7 @@ export function evaluateProductionPackagingEvidence(
     ...macosReleaseTrustIssues(evidence.nativeMacosReleaseTrust),
     ...contentScanIssues(evidence.contentScan),
     ...cleanMachineStepIssues(evidence.cleanMachineSteps),
+    ...cleanMachineStepEvidencePathIssues(evidence.cleanMachineStepEvidencePaths),
     ...runtimeRemediationIssues(evidence.runtimeAbsenceRemediationShown),
     ...runbookIssues(evidence.runbookPath),
   ];

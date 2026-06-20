@@ -280,8 +280,19 @@ function completeEvidence(
       localPathHits: [],
     },
     cleanMachineSteps: CLEAN_MACHINE_STEPS,
+    cleanMachineStepEvidencePaths: cleanMachineStepEvidencePaths(),
     runtimeAbsenceRemediationShown: true,
     runbookPath: "docs/production-clean-machine-runbook.md",
     ...patch,
+  };
+}
+
+function cleanMachineStepEvidencePaths(): ProductionPackagingEvidence["cleanMachineStepEvidencePaths"] {
+  return {
+    install_app: "release-evidence/clean-machine/install-app.json",
+    codex_login: "release-evidence/clean-machine/codex-login.json",
+    image_credentials: "release-evidence/clean-machine/image-credentials.json",
+    project_launch: "release-evidence/clean-machine/project-launch.json",
+    live_interview: "release-evidence/clean-machine/live-interview.json",
   };
 }

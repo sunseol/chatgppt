@@ -28,6 +28,8 @@ describe("live packaging documentation", () => {
     expect(progress.includes("DF-245 live update")).toBe(true);
     expect(progress.includes("non-synthetic/non-local package archive")).toBe(true);
     expect(progress.includes("canonical clean-machine runbook path evidence")).toBe(true);
+    expect(progress.includes("persisted step evidence paths")).toBe(true);
+    expect(runbook.includes("missing_clean_machine_step_evidence")).toBe(true);
     expect(progress.includes("unsupported-step inflation")).toBe(true);
     expect(progress.includes("valid distinct checklist steps")).toBe(true);
     expect(progress.includes("developer-local package archive")).toBe(true);
@@ -39,7 +41,7 @@ describe("live packaging documentation", () => {
     expect(decision.includes("releaseTrustEvidencePath")).toBe(true);
     expect(decision.includes("developer-local persisted `releaseTrustEvidencePath`")).toBe(true);
     expect(decision.includes("release-trust evidence paths")).toBe(true);
-    expect(decision.includes("894 tests")).toBe(true);
+    expect(decision.includes("895 tests")).toBe(true);
   });
 });
 
