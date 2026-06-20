@@ -45,6 +45,12 @@ export function validationBundleIssues(
     ...manifestRecordingIssues(manifest, bundle.recordingPath),
     ...manifestSourceIssues(manifest, expectedSourceIds),
     ...manifestImageIssues(manifest, expectedImageIds),
+    ...manifestUnexpectedReferenceIssues(
+      manifest,
+      bundle.screenshots,
+      expectedSourceIds,
+      expectedImageIds,
+    ),
   ];
 }
 
@@ -186,6 +192,34 @@ function manifestImageIssues(
       ];
 }
 
+function manifestUnexpectedReferenceIssues(
+  manifest: LiveFinalValidationBundle,
+  expectedScreenshots: readonly string[],
+  expectedSourceIds: readonly string[],
+  expectedImageIds: readonly string[],
+): readonly LiveGoldenPathE2EIssue[] {
+  const unexpected = [
+    ...unexpectedValues(manifest.screenshotPaths, expectedScreenshots).map(
+      (path) => `screenshot:${path}`,
+    ),
+    ...unexpectedValues(manifest.sourceArtifactIds, expectedSourceIds).map(
+      (artifactId) => `source:${artifactId}`,
+    ),
+    ...unexpectedValues(manifest.imageArtifactIds, expectedImageIds).map(
+      (artifactId) => `image:${artifactId}`,
+    ),
+  ];
+  return unexpected.length === 0
+    ? []
+    : [
+        liveGoldenPathIssue(
+          "validation_bundle_unexpected_reference",
+          "Final validation bundle must not include unvalidated artifact or screenshot references.",
+          unexpected,
+        ),
+      ];
+}
+
 function isHttpUrl(value: string): boolean {
   try {
     const url = new URL(value);
@@ -214,4 +248,12 @@ function duplicateValues(values: readonly string[]): readonly string[] {
     }
   }
   return [...duplicates];
+}
+
+function unexpectedValues(
+  actualValues: readonly string[],
+  expectedValues: readonly string[],
+): readonly string[] {
+  const expected = pathSet(expectedValues);
+  return actualValues.map((value) => value.trim()).filter((value) => value && !expected.has(value));
 }

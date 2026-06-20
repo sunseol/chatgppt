@@ -27,7 +27,7 @@ The `completedSteps` evidence must match this canonical sequence exactly; a bund
 
 - Signed non-synthetic, non-local `live_e2e_report.md` with signer, parseable `signedAt` timestamp, and matching digest
 - Step-level screenshots and a recording at non-synthetic, non-local evidence paths
-- Final validation bundle at a non-synthetic, non-local `.zip` or `.json` path whose manifest references the final export artifact id, signed report digest, every step screenshot, the recording, valid source artifact ids, and nonblank live image artifact ids without duplicate references
+- Final validation bundle at a non-synthetic, non-local `.zip` or `.json` path whose manifest references the final export artifact id, signed report digest, every step screenshot, the recording, valid source artifact ids, and nonblank live image artifact ids without duplicate or unexpected references
 - Zero mock or fixture artifacts in Golden Path lineage
 - At least three distinct real source URLs with distinct source artifact ids
 - At least one primary or official source URL
@@ -54,6 +54,7 @@ The local gate returns these issue codes:
 - `validation_bundle_missing_source`: final validation bundle does not include every valid source artifact id.
 - `validation_bundle_missing_image_artifact`: final validation bundle does not include every nonblank live image artifact id.
 - `validation_bundle_duplicate_reference`: final validation bundle repeats screenshot, source artifact, or image artifact references.
+- `validation_bundle_unexpected_reference`: final validation bundle includes screenshot, source artifact, or image artifact references outside the validated Golden Path evidence.
 - `mock_lineage_contamination`: Golden Path lineage includes mock artifacts.
 - `fixture_lineage_contamination`: Golden Path lineage includes fixture artifacts.
 - `duplicate_live_source`: repeated source URLs or artifact ids cannot satisfy the three-source requirement.
@@ -68,7 +69,7 @@ The local gate returns these issue codes:
 
 ## Local Evidence
 
-- `src/lib/live-golden-path-e2e.test.ts`, `src/lib/live-golden-path-step-order.test.ts`, `src/lib/live-golden-path-report-signature-timestamp.test.ts`, `src/lib/live-golden-path-local-path-evidence.test.ts`, `src/lib/live-golden-path-validation-bundle-path.test.ts`, `src/lib/live-golden-path-restart-reopen-timestamp.test.ts`, `src/lib/live-golden-path-image-request-uniqueness.test.ts`, `src/lib/live-golden-path-regeneration-image.test.ts`, `src/lib/live-golden-path-image-auth-evidence.test.ts`, and `src/lib/live-golden-path-image-model-evidence.test.ts` verify a passing signed bundle, redacted summary formatting, digest matching, report signature timestamp rejection, canonical step order, per-step screenshot requirements, final validation bundle manifest consistency, synthetic and developer-local evidence path rejection, restart timestamp rejection, unauthenticated image rejection, missing model/runtime or prompt version rejection, duplicate validation bundle reference rejection, blank image artifact id rejection, duplicate source/image artifact/request rejection, regenerated image artifact rejection, regenerated-image count separation from the five initial images, and incomplete/contaminated bundle blockers.
+- `src/lib/live-golden-path-e2e.test.ts`, `src/lib/live-golden-path-step-order.test.ts`, `src/lib/live-golden-path-report-signature-timestamp.test.ts`, `src/lib/live-golden-path-local-path-evidence.test.ts`, `src/lib/live-golden-path-validation-bundle-path.test.ts`, `src/lib/live-golden-path-validation-bundle-extra-reference.test.ts`, `src/lib/live-golden-path-restart-reopen-timestamp.test.ts`, `src/lib/live-golden-path-image-request-uniqueness.test.ts`, `src/lib/live-golden-path-regeneration-image.test.ts`, `src/lib/live-golden-path-image-auth-evidence.test.ts`, and `src/lib/live-golden-path-image-model-evidence.test.ts` verify a passing signed bundle, redacted summary formatting, digest matching, report signature timestamp rejection, canonical step order, per-step screenshot requirements, final validation bundle manifest consistency, synthetic and developer-local evidence path rejection, unexpected validation bundle reference rejection, restart timestamp rejection, unauthenticated image rejection, missing model/runtime or prompt version rejection, duplicate validation bundle reference rejection, blank image artifact id rejection, duplicate source/image artifact/request rejection, regenerated image artifact rejection, regenerated-image count separation from the five initial images, and incomplete/contaminated bundle blockers.
 - `src/lib/live-release-gate.ts` still requires DF-241 to be `verified_live` before the Live Initial Version can release.
 - `docs/live-release-decision.md` remains blocked because no real authenticated Golden Path bundle has been produced.
 

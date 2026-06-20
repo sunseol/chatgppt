@@ -24,6 +24,7 @@ describe("live golden path image auth evidence", () => {
 
     // Then
     expect(result.kind === "blocked" ? result.issues.map((issue) => issue.code) : []).toEqual([
+      "validation_bundle_unexpected_reference",
       "insufficient_live_image_artifacts",
     ]);
   });
