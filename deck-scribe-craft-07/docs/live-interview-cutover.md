@@ -58,6 +58,21 @@ Using the current authenticated `codex app-server --stdio` binary through a temp
 - Brief artifact: `p_goal_live_interview_20260619_brief_brief_live`, thread `019edc19-ce10-7c32-acbd-a3ec406e7d7b`, turn `019edc19-d06e-7793-9fbc-80ec053bb9fa`, hash `sha256:4dabd196`, prompt version `interview_brief@v1`, duration 173,967 ms.
 - The Brief artifact cited `p_goal_live_interview_20260619_brief_questions_live` in `inputArtifactIds`, proving the required question-to-Brief lineage. Future packaged evidence must also cite the deterministic user answer bundle id now required by `brief_missing_answer_input`.
 
+## Production App-Surface Recheck
+
+On 2026-06-21 KST, the production build was served at `http://127.0.0.1:4173/` and the app surface was driven with Playwright through the production `ProductionWorkflowStage` interview route. A local bridge helper implemented the same Tauri command names, then forwarded `deckforge_codex_app_server_structured_turn` to the authenticated `codex app-server --stdio` runtime (`codex-cli 0.141.0`, ChatGPT login, App Server `0.141.0`).
+
+- Project: `p_live_runtime_text_20260621`, route `/project/p_live_runtime_text_20260621/interview`.
+- First UI click produced `follow_up_required` and persisted `interview_questions` record `p_live_runtime_text_20260621_questions_live`, thread `019ee651-ecb8-70b0-b7a7-db93d9807c67`, turn `019ee651-ef5c-74c0-8608-acc5a0b9db1a`, hash `sha256:915848c9`.
+- After the project prompt was updated with the requested canonical interview fields, the same production UI button completed a new question turn and a Brief turn.
+- Ready question record: `p_live_runtime_text_20260621_questions_live`, thread `019ee652-f5e8-7eb2-b61b-6eadaba4307e`, turn `019ee652-f878-73c3-ae5d-80a212086a04`, hash `sha256:29b8b76d`.
+- Ready Brief record: `p_live_runtime_text_20260621_brief_live`, thread `019ee653-1eea-7e83-8a5c-5a0e786b8b4b`, turn `019ee653-2126-7b51-bc89-f0d16497dc2c`, hash `sha256:bd4566a1`.
+- Helper summary for all three turns included `turn/completed`; protocol frame counts were 446, 307, and 263 respectively, with 40 stderr log lines each and no stdout protocol parse failure.
+- The project reached `INTERVIEW_APPROVAL_PENDING`, and the visible app status was `Live interview brief is ready.`
+- Screenshot: `docs/live-evidence/runtime-text-interview-live-ready-2026-06-21.png`.
+
+This is production browser app-surface evidence, not packaged native Tauri evidence. DF-213 can move closer to Verified Live for the interview path, but a packaged app run and follow-up-answer bundle audit are still required before closing.
+
 ## Remaining Live Evidence
 
 DF-213 is not Verified Live yet. The app now exposes the production interview workflow gate, has desktop App Server smoke plus structured-turn commands, the library-level desktop workflow has completed live `questions` and `brief` turns with persisted provenance, and the ready interview button can invoke that launcher. It still needs the production interview workflow to record the same path from the packaged app surface and store:

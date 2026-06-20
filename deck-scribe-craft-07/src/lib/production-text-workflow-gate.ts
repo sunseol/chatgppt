@@ -1,4 +1,5 @@
 import type { DeckProject, StepKey } from "./deck-types";
+import { createLiveResearchDeckPlanInput } from "./live-research-approval-gate";
 
 export type ProductionTextWorkflowBridgeStatus = "available" | "missing";
 
@@ -126,7 +127,7 @@ function textPipelinePrerequisiteIssues(
             message: "Live text pipeline requires an approved interview brief.",
           },
         ]),
-    ...(project.research?.approvedHash
+    ...(project.research && createLiveResearchDeckPlanInput(project.research)
       ? []
       : [
           {

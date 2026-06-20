@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { DeckProject, InterviewBrief, ResearchPack, StepKey } from "./deck-types";
+import { liveApprovedResearchPackFixture } from "./live-research-approval-test-fixtures";
 import { createProductionTextWorkflowGate } from "./production-text-workflow-gate";
 
 describe("production text workflow gate", () => {
@@ -46,7 +47,7 @@ describe("production text workflow gate", () => {
     // Given
     const project = projectFixture({
       brief: briefFixture(),
-      research: researchFixture(),
+      research: liveApprovedResearchPackFixture(),
       stage: "PLANNING",
     });
 
@@ -62,6 +63,26 @@ describe("production text workflow gate", () => {
     expect(gate.workflow).toBe("text_pipeline");
     expect(gate.requiredStages).toEqual(["deck_plan", "design_system", "layout_ir"]);
     expect(gate.patchTargets).toEqual(["plan", "design", "layout"]);
+  });
+
+  test("blocks the text pipeline when Research has a nonblank but unapproved handoff hash", () => {
+    // Given
+    const project = projectFixture({
+      brief: briefFixture(),
+      research: researchFixture(),
+      stage: "PLANNING",
+    });
+
+    // When
+    const gate = createProductionTextWorkflowGate({
+      project,
+      step: "plan",
+      appServerBridge: "available",
+    });
+
+    // Then
+    if (gate.kind !== "blocked") throw new Error("Expected blocked text pipeline gate.");
+    expect(gate.issues.map((issue) => issue.code)).toEqual(["missing_approved_research"]);
   });
 
   test("does not render a text workflow gate for non-text production steps", () => {

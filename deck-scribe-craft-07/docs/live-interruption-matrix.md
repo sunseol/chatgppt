@@ -97,3 +97,7 @@ This proves the current App Server interrupt path does not produce a delayed com
 ## Remaining Live Evidence
 
 The local contract is ready and live text-turn, source-fetch interruption, and App Server no-background-completion behavior have been verified, but DF-243 still requires the rest of the live interruption test matrix against live image partial resume, app-level persisted cancel-signal snapshots that target the same live job id, and interrupted artifact approval/export before the issue can close.
+
+## 2026-06-21 Runtime/Text Lane Status
+
+The production app-surface text recheck did not reach Plan/Design/Layout jobs because approved Research evidence is missing. Runtime/Text can still report the existing direct live text-turn interruption evidence above, but DF-243 remains blocked on app-level persisted cancellation snapshots, interrupted approval/export gate evidence, and image partial-resume evidence from the image lane. No new app-level interruption matrix scenario was closed by the 2026-06-21 Runtime/Text run.

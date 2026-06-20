@@ -32,6 +32,7 @@ Scope: DF-214 Deck Plan, Design System, and Layout IR Live cutover contract.
 - `deckforge_codex_app_server_smoke`, `deckforge_codex_app_server_structured_turn`, `src/lib/desktop-app-server-bridge.ts`, and `src/lib/desktop-codex-app-server-production-job.ts` now provide the desktop commands/adapters needed to detect the App Server bridge, smoke-test it, and feed structured-turn notifications into the production Job Manager path.
 - `src/lib/desktop-live-text-pipeline-workflow.ts` and `src/lib/desktop-live-text-pipeline-jobs.ts` now build the desktop Plan/Design/Layout prompts, parse desktop structured-turn outputs through the same schema gates, run all three turns through the Tauri bridge adapter, and hand accepted outputs to the live text persistence gate.
 - `src/components/deck/ProductionTextWorkflowLauncher.tsx` wires the ready production text-pipeline button to that desktop launcher and stores the ready `plan`, `design`, and `layout` project patch plus the `deck_plan`, `design_system`, and `layout_ir` live artifact records when all three live turns are accepted.
+- `createProductionTextWorkflowGate` now checks the same `createLiveResearchDeckPlanInput` handoff predicate used by the Deck Plan launcher, so a nonblank but stale or incomplete Research `approvedHash` no longer makes the production UI appear ready before the workflow fails.
 
 ## Verified Locally
 
@@ -48,6 +49,22 @@ Scope: DF-214 Deck Plan, Design System, and Layout IR Live cutover contract.
 - `src/lib/desktop-app-server-bridge.test.ts`, `src/lib/desktop-codex-app-server-production-job.test.ts`, and `cargo test --manifest-path src-tauri/Cargo.toml codex_app_server` verify the desktop bridge smoke adapter, structured-turn adapter, production notification adapter, and Rust protocol command pieces.
 - `src/lib/desktop-live-text-pipeline-workflow.test.ts` verifies the app-level desktop launcher invokes three structured turns before persisting a ready Plan/Design/Layout bundle and blocks before invoking turns when the approved Brief/Research prerequisites are missing.
 - `src/lib/desktop-live-text-pipeline-artifact-patch.test.ts` verifies the ready UI patch preserves existing live artifact records and appends the accepted Plan, Design System, and Layout IR artifact records.
+- `src/lib/production-text-workflow-gate.test.ts` and `src/components/deck/ProductionTextWorkflowPanel.integration.test.tsx` now verify that the production text-pipeline action is ready only with a live-approved Research handoff, and remains blocked when Research has merely a nonblank unapproved hash.
+
+## Production App-Surface Recheck
+
+On 2026-06-21 KST, the production app-surface Plan route was exercised after the successful interview app-surface run. The project had an approved live Brief record from the production UI, then a deliberately synthetic Research Pack was seeded only to test the Runtime/Text gate behavior while the Research lane remains blocked.
+
+- Project: `p_live_runtime_text_20260621`, route `/project/p_live_runtime_text_20260621/plan`.
+- Synthetic Research Pack id: `research_synthetic_runtime_text_dependency_20260621`.
+- Initial noncanonical handoff attempt used `sha256:synthetic-runtime-text-research-dependency-20260621` and failed before any App Server turn launched with `Desktop live text pipeline requires approved research.`
+- The canonical hash for that synthetic pack was then computed as `sha256:fc483c37`, but the handoff still failed because `createLiveResearchDeckPlanInput` also requires live Research approval provenance, live evidence refs, and live source capture metadata through `evaluateLiveResearchApprovalGate`.
+- No Deck Plan, Design System, or Layout IR App Server turn was launched during this app-surface attempt; the helper summary remained at the three interview turns.
+- The production gate has been tightened so the UI blocks this state before launch instead of showing a runnable action.
+- Screenshot of the observed blocker before the gate fix: `docs/live-evidence/runtime-text-plan-blocked-research-2026-06-21.png`.
+- Screenshot after the gate fix: `docs/live-evidence/runtime-text-plan-blocked-research-fixed-2026-06-21.png`; the UI shows `missing_approved_research`, omits `Ready to launch`, and disables `Run live text pipeline`.
+
+This is a hard blocker on DF-214 from the Runtime/Text lane: a real approved Research Pack from the Research lane is required before Plan/Design/Layout app-surface evidence can be produced. The blocker is not credentials or Codex runtime access; Codex App Server was authenticated and available, but the text pipeline correctly refused Research input that lacked live approval evidence.
 
 ## Remaining Live Evidence
 
