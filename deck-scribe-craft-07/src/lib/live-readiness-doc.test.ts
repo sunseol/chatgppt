@@ -192,11 +192,11 @@ describe("live readiness documentation", () => {
 
     expect(imageQueueControls.includes("DF-233")).toBe(true);
     expect(imageQueueControls.includes("rate_limit")).toBe(true);
-    expect(imageQueueControls.includes("server")).toBe(true);
     expect(imageQueueControls.includes("max-attempt")).toBe(true);
     expect(imageQueueControls.includes("cancellation")).toBe(true);
     expect(imageQueueControls.includes("in-flight cancellation")).toBe(true);
     expect(imageQueueControls.includes("retryProvenance")).toBe(true);
+    expect(imageQueueControls.includes("different bundle or slide")).toBe(true);
     expect(imageQueueControls.includes("partial resume")).toBe(true);
     expect(imageQueueControls.includes("slide_generation@v1")).toBe(true);
     expect(imageQueueControls.includes("stale prompt-lineage")).toBe(true);

@@ -2,12 +2,14 @@ import type { SlideGenerationQueueResult } from "./slide-generation-queue-types"
 import type { ImageProviderFailureKind } from "./image-provider-errors";
 import type { PromptUsageRecord } from "./prompt-assets";
 import type { ProviderJob } from "./provider-job-manager";
+import { retrySlideIssues } from "./live-image-queue-retry-slide";
 
 export type LiveImageQueueEvidenceIssueCode =
   | "queue_result_blocked"
   | "retry_job_not_found"
   | "retry_attempt_count_mismatch"
   | "retry_attempt_sequence_mismatch"
+  | "retry_slide_mismatch"
   | "retry_prompt_usage_missing"
   | "retry_bundle_mismatch"
   | "retry_non_transient_failure"
@@ -45,6 +47,7 @@ export function evaluateLiveImageQueueEvidence(
   const issues = [
     ...retryJobIssues(result.jobs, result.retryProvenance),
     ...retryAttemptIssues(result.jobs, result.retryProvenance),
+    ...retrySlideIssues(result.jobs, result.failures, result.retryProvenance),
     ...retryBundleIssues(result.promptUsages, result.retryProvenance),
     ...retryFailureKindIssues(result.retryProvenance),
     ...cancellationIssues(result.jobs, result.failures, result.promptUsages),
