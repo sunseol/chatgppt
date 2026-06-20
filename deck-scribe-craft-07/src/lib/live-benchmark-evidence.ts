@@ -61,6 +61,7 @@ export type LiveBenchmarkEvidenceBundle = {
 export type LiveBenchmarkEvidenceIssueCode =
   | "missing_benchmark_scenario"
   | "duplicate_benchmark_scenario"
+  | "unknown_benchmark_scenario"
   | "missing_benchmark_package_hash"
   | "invalid_benchmark_package_hash"
   | "missing_output_bundle"
@@ -140,15 +141,29 @@ export function formatLiveBenchmarkEvidenceSummary(bundle: LiveBenchmarkEvidence
 
 function countPassedLiveBenchmarks(runs: readonly LiveBenchmarkRun[]): number {
   return runs.filter(
-    (run) => run.status === "passed" && run.source === "live" && run.goldenPathCompleted,
+    (run) =>
+      isLiveBenchmarkId(run.id) &&
+      run.status === "passed" &&
+      run.source === "live" &&
+      run.goldenPathCompleted,
   ).length;
 }
 
 function scenarioIssues(runs: readonly LiveBenchmarkRun[]): readonly LiveBenchmarkEvidenceIssue[] {
-  const present = new Set(runs.map((run) => run.id));
+  const present = new Set(runs.filter((run) => isLiveBenchmarkId(run.id)).map((run) => run.id));
+  const unknown = uniqueRefs(runs.map((run) => run.id).filter((id) => !isLiveBenchmarkId(id)));
   const missing = LIVE_BENCHMARK_IDS.filter((id) => !present.has(id));
   const duplicates = duplicateScenarioIds(runs);
   return [
+    ...(unknown.length === 0
+      ? []
+      : [
+          issue(
+            "unknown_benchmark_scenario",
+            "Live benchmark evidence may only include the five DF-242 scenarios.",
+            unknown,
+          ),
+        ]),
     ...(missing.length === 0
       ? []
       : [
@@ -172,7 +187,8 @@ function scenarioIssues(runs: readonly LiveBenchmarkRun[]): readonly LiveBenchma
 
 function duplicateScenarioIds(runs: readonly LiveBenchmarkRun[]): readonly string[] {
   const counts = runs.reduce(
-    (nextCounts, run) => ({ ...nextCounts, [run.id]: nextCounts[run.id] + 1 }),
+    (nextCounts, run) =>
+      isLiveBenchmarkId(run.id) ? { ...nextCounts, [run.id]: nextCounts[run.id] + 1 } : nextCounts,
     {
       korean_business: 0,
       market_research: 0,
@@ -182,6 +198,14 @@ function duplicateScenarioIds(runs: readonly LiveBenchmarkRun[]): readonly strin
     } satisfies Record<LiveBenchmarkId, number>,
   );
   return LIVE_BENCHMARK_IDS.filter((id) => counts[id] > 1);
+}
+
+function isLiveBenchmarkId(value: string): value is LiveBenchmarkId {
+  return (LIVE_BENCHMARK_IDS as readonly string[]).includes(value);
+}
+
+function uniqueRefs(values: readonly string[]): readonly string[] {
+  return [...new Set(values.map((value) => value.trim()).filter(Boolean))];
 }
 
 function mockScoreIssues(runs: readonly LiveBenchmarkRun[]): readonly LiveBenchmarkEvidenceIssue[] {

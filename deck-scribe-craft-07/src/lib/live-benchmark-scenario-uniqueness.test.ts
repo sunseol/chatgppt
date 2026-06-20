@@ -23,6 +23,32 @@ describe("live benchmark scenario uniqueness", () => {
     if (result.kind !== "blocked") return;
     expect(result.issues.map((issue) => issue.code)).toEqual(["duplicate_benchmark_scenario"]);
   });
+
+  test("blocks unknown benchmark scenarios from inflating the four-of-five pass count", () => {
+    // Given
+    const bundle = completeBundle({
+      runs: [
+        run("korean_business"),
+        run("market_research"),
+        run("chart_report"),
+        failedRun("image_intro"),
+        failedRun("revision_regeneration"),
+        run("rogue_scenario" as (typeof LIVE_BENCHMARK_IDS)[number]),
+      ],
+    });
+
+    // When
+    const result = evaluateLiveBenchmarkEvidence(bundle);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.passedLiveCount).toBe(3);
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "unknown_benchmark_scenario",
+      "live_benchmark_shortfall",
+    ]);
+  });
 });
 
 function completeBundle(
@@ -76,6 +102,16 @@ function run(id: (typeof LIVE_BENCHMARK_IDS)[number], pathSuffix: string = id): 
         `${id}_img_req_5`,
       ],
     },
+  };
+}
+
+function failedRun(id: (typeof LIVE_BENCHMARK_IDS)[number]): LiveBenchmarkRun {
+  return {
+    ...run(id),
+    status: "failed",
+    failureDomain: "editor",
+    score: 0,
+    goldenPathCompleted: false,
   };
 }
 

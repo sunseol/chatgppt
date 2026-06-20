@@ -8,6 +8,7 @@ describe("live benchmark documentation", () => {
     const benchmark = readFileSync(BENCHMARK_DOC, "utf8");
 
     expect(benchmark.includes("output_bundle_evidence_count_mismatch")).toBe(true);
+    expect(benchmark.includes("unknown_benchmark_scenario")).toBe(true);
     expect(benchmark.includes("output_bundle_synthetic_artifact_reference")).toBe(true);
     expect(benchmark.includes("template`, `sample`, `example`, or `placeholder")).toBe(true);
     expect(benchmark.includes("matching evidence counts")).toBe(true);
