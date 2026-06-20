@@ -39,9 +39,9 @@ function bundleFixture(reportContent: string) {
       role: "official" as const,
       artifactId: "src_001",
     },
-    { url: "https://primary.example.org/data", role: "primary" as const, artifactId: "src_002" },
+    { url: "https://www.w3.org/TR/WCAG22/", role: "primary" as const, artifactId: "src_002" },
     {
-      url: "https://source.example.net/context",
+      url: "https://www.rfc-editor.org/rfc/rfc9110",
       role: "supporting" as const,
       artifactId: "src_003",
     },

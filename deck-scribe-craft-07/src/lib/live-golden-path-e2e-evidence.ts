@@ -7,6 +7,7 @@ import {
   type LiveGoldenPathE2EIssue,
   type LiveGoldenPathSource,
 } from "./live-golden-path-e2e-contract";
+import { isRealHttpSourceUrl } from "./live-real-source-url";
 import type { ProviderArtifactProvenance } from "./provider-provenance";
 
 export function countValidLiveSources(sources: readonly LiveGoldenPathSource[]): number {
@@ -57,7 +58,7 @@ export function validationBundleIssues(
 export function validSources(
   sources: readonly LiveGoldenPathSource[],
 ): readonly LiveGoldenPathSource[] {
-  return sources.filter((source) => isHttpUrl(source.url) && source.artifactId.trim());
+  return sources.filter((source) => isRealHttpSourceUrl(source.url) && source.artifactId.trim());
 }
 
 export function liveImageArtifacts(
@@ -218,15 +219,6 @@ function manifestUnexpectedReferenceIssues(
           unexpected,
         ),
       ];
-}
-
-function isHttpUrl(value: string): boolean {
-  try {
-    const url = new URL(value);
-    return url.protocol === "https:" || url.protocol === "http:";
-  } catch {
-    return false;
-  }
 }
 
 function pathSet(paths: readonly string[]): ReadonlySet<string> {
