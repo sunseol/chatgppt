@@ -75,17 +75,47 @@ function isHttpUrl(value: string): boolean {
 
 function isPlaceholderSourceUrl(value: string): boolean {
   try {
-    const hostname = new URL(value).hostname.toLowerCase();
+    const hostname = normalizeHostname(new URL(value).hostname);
     return (
       PLACEHOLDER_HOSTS.has(hostname) ||
+      hostname.endsWith(".local") ||
       hostname.endsWith(".invalid") ||
       hostname.endsWith(".test") ||
-      hostname === "127.0.0.1" ||
-      hostname === "::1"
+      isLocalNetworkHost(hostname)
     );
   } catch {
     return false;
   }
+}
+
+function normalizeHostname(value: string): string {
+  return value.toLowerCase().replace(/^\[(.*)\]$/, "$1");
+}
+
+function isLocalNetworkHost(hostname: string): boolean {
+  if (hostname === "::1" || hostname === "0.0.0.0") return true;
+  const octets = parseIpv4Octets(hostname);
+  if (octets === undefined) return false;
+  const [first, second] = octets;
+  if (first === undefined || second === undefined) return false;
+  return (
+    first === 10 ||
+    first === 127 ||
+    (first === 172 && second >= 16 && second <= 31) ||
+    (first === 192 && second === 168) ||
+    (first === 169 && second === 254)
+  );
+}
+
+function parseIpv4Octets(hostname: string): readonly number[] | undefined {
+  const rawOctets = hostname.split(".");
+  if (rawOctets.length !== 4) return undefined;
+  const octets = rawOctets.map((octet) => Number.parseInt(octet, 10));
+  return octets.every(
+    (octet, index) => String(octet) === rawOctets[index] && octet >= 0 && octet <= 255,
+  )
+    ? octets
+    : undefined;
 }
 
 function normalizedUrl(value: string): readonly string[] {

@@ -43,7 +43,7 @@ Within 10 minutes, the tester must:
 - `testerRole` set to `non_developer`
 - `sessionEvidencePath` pointing to a persisted non-synthetic `manual-qa` session JSON bundle for the observed QA session, not a generic notes JSON, developer-local absolute, or `file://` path
 - distinct approval target checks for `research_pack`, `slide_generation`, and `export`, with every target understood
-- at least one opened real HTTP(S) source URL that also appears in the final report sources, excluding placeholder or local domains
+- at least one opened real HTTP(S) source URL that also appears in the final report sources, excluding placeholder, private-network, or local domains
 - at least one regenerated slide id and one edited title slide id
 - opened export artifacts `png`, `project`, and `report`
 - non-negative integer counters for critical errors, mock indicators, and placeholder outputs

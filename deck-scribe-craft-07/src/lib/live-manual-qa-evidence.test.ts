@@ -211,6 +211,22 @@ describe("live manual QA evidence", () => {
     expect(result.issues.map((issue) => issue.code)).toEqual(["placeholder_real_source_url"]);
   });
 
+  test("blocks private-network URLs as opened source evidence", () => {
+    // Given
+    const evidence = completeEvidence({
+      openedRealSourceUrls: ["http://192.168.1.20/source"],
+      finalReportSourceUrls: ["http://192.168.1.20/source"],
+    });
+
+    // When
+    const result = evaluateLiveManualQaEvidence(evidence);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual(["placeholder_real_source_url"]);
+  });
+
   test("blocks opened source evidence that is absent from the final report sources", () => {
     // Given
     const evidence = completeEvidence({
