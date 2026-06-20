@@ -44,6 +44,7 @@ export type LiveTextPipelineIssueCode =
   | "non_production_text_turn"
   | "shared_live_turn"
   | "shared_live_artifact"
+  | "shared_brief_research_input"
   | "missing_brief_input"
   | "missing_research_input"
   | "missing_plan_input"

@@ -40,4 +40,25 @@ describe("live text pipeline artifact identity", () => {
       "shared_live_artifact",
     ]);
   });
+
+  test("blocks approved brief and research inputs that reuse one artifact id", () => {
+    const fixtures = completePipelineFixtures();
+    const input = completePipelineInput(fixtures);
+    const reusedUpstreamArtifactId = input.approvedBriefArtifactId;
+
+    const result = evaluateLiveTextPipelineCutover({
+      ...input,
+      approvedResearchPackArtifactId: ` ${reusedUpstreamArtifactId} `,
+      deckPlan: {
+        ...input.deckPlan,
+        provenance: liveCodexProvenance("deck_plan_live_1", "turn_plan", "deck_plan@v1", [
+          reusedUpstreamArtifactId,
+        ]),
+      },
+    });
+
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual(["shared_brief_research_input"]);
+  });
 });

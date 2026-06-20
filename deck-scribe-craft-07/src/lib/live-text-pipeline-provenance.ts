@@ -151,6 +151,17 @@ function deckPlanInputIssues(
 ): readonly LiveTextPipelineIssue[] {
   const inputs = input.deckPlan.provenance.inputArtifactIds;
   return [
+    ...(input.approvedBriefArtifactId.trim() !== input.approvedResearchPackArtifactId.trim()
+      ? []
+      : [
+          {
+            code: "shared_brief_research_input" as const,
+            stage: "deck_plan" as const,
+            artifactId: input.deckPlan.provenance.artifactId,
+            message:
+              "Deck Plan turn must cite distinct approved Brief and Live Research Pack artifacts.",
+          },
+        ]),
     ...(hasInputArtifact(inputs, input.approvedBriefArtifactId)
       ? []
       : [
