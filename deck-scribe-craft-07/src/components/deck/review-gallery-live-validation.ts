@@ -9,6 +9,10 @@ import {
   compositorPreviewIdentityIssues,
   compositorPreviewIssues,
 } from "./review-gallery-preview-validation";
+import {
+  titleEditReexportIssues,
+  type ReviewGalleryTitleEditReexportEvidence,
+} from "./review-gallery-title-edit-export-validation";
 
 export type ReviewGalleryLiveCompositionIssueCode =
   | "expected_five_compositions"
@@ -25,6 +29,8 @@ export type ReviewGalleryLiveCompositionIssueCode =
   | "compositor_svg_artifact_mismatch"
   | "invalid_compositor_preview"
   | "duplicate_compositor_preview"
+  | "missing_title_edit_reexport_evidence"
+  | "title_edit_reexport_mismatch"
   | "missing_editable_overlay"
   | "invalid_editable_overlay_bounds"
   | "text_overlay_collision";
@@ -54,16 +60,24 @@ export function validateReviewGalleryLiveCompositions(input: {
   readonly items: readonly ReviewGalleryItem[];
   readonly expectedSlideCount?: number;
   readonly backgroundTextDetections?: readonly BackgroundTextDetection[];
+  readonly titleEditReexportEvidence?: ReviewGalleryTitleEditReexportEvidence;
 }): ReviewGalleryLiveCompositionValidation {
   const expectedSlideCount = input.expectedSlideCount ?? 5;
   const detections = input.backgroundTextDetections ?? [];
-  const issues = [
+  const compositionIssues = [
     ...countIssues(input.items, expectedSlideCount),
     ...slideCoverageIssues(input.items, expectedSlideCount),
     ...storedBackgroundArtifactIdentityIssues(input.items),
     ...compositorPreviewIdentityIssues(input.items),
     ...input.items.flatMap((item) => liveCompositionIssues(item, detections)),
   ];
+  const issues =
+    compositionIssues.length === 0
+      ? [
+          ...compositionIssues,
+          ...titleEditReexportIssues(input.items, input.titleEditReexportEvidence),
+        ]
+      : compositionIssues;
   return issues.length === 0 ? { kind: "ready" } : { kind: "blocked", issues };
 }
 
