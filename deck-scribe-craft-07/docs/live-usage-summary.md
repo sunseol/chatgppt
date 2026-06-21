@@ -35,6 +35,8 @@ Before image generation, the UI must make Codex account image usage visible and 
 
 - `src/lib/live-usage-summary.test.ts` verifies stage-level provider/duration/retry display, estimated cost formatting, usage recording, empty usage-object blockers, incomplete text/image usage blockers, invalid usage/cost amount blockers, estimated-cost-as-actual blockers, persisted Codex image usage confirmation evidence blockers, developer-local confirmation evidence path blockers, and image usage confirmation blockers. `src/lib/live-usage-summary-stage-identity.test.ts` verifies that blank or duplicated stage ids and unsupported runtime provider kinds cannot pass as displayable Live usage rows. `src/lib/live-usage-summary-billing-evidence.test.ts` verifies that confirmed-looking image usage payloads without persisted confirmation evidence or with template confirmation evidence stay blocked and render as not confirmed. `src/lib/live-usage-billing-evidence.ts` centralizes that confirmation evidence path rule for summary approval, formatted summaries, and the progress view. `src/lib/live-usage-summary-cost-label.test.ts` verifies that unsupported runtime cost labels cannot render provider costs as if they were valid estimates. `src/lib/live-usage-summary-redaction.test.ts` verifies that image usage labels are redacted before summary display.
 - `src/lib/live-app-server-usage-summary.ts` converts `thread/tokenUsage/updated` notifications from `codex app-server --stdio` into `LiveUsageStageSummary.usage`, and deliberately leaves `usage` empty when the provider supplied a malformed usage notification so `missing_provider_usage_summary` blocks the summary.
+- `src/lib/live-image-billing-confirmation.ts` persists the pre-generation Codex OAuth image usage confirmation record into product storage as `usage/<project>/<job>/image-billing-confirmation.json`, returns the matching `ProviderImageBillingDisclosure`, and refuses to treat a declined or unpersisted confirmation as evidence.
+- `src/lib/generate-stage-recovery.ts` owns Generate-stage job recovery storage, and `src/components/deck/GenerateStage.tsx` now records the persisted Codex image confirmation disclosure on Codex image-generation jobs before the job starts.
 - `src/lib/provider-job-progress-view.ts` and `src/components/deck/ProviderJobProgressPanel.tsx` expose app-surface provider id, execution duration, retry count, valid token/image usage, and finite estimated provider cost as `cost estimate` while still preserving job status, retry availability, recovered state, partial artifacts, redacted failure messages, and redacted image usage labels.
 - `src/lib/audit-log.ts` records provider usage summaries into report audit events, renders `estimatedCostUsd` as `cost estimate`, not as an exact charge, and only preserves confirmed image usage disclosure labels when persisted confirmation evidence is valid.
 
@@ -77,7 +79,7 @@ The same integration surface now blocks misleading confirmation copy when the im
 
 ## Remaining Live Evidence
 
-The local contract, one live Codex text usage probe, app progress-panel usage display with invalid provider payload omission, blank or duplicated stage-id and unsupported provider-kind blockers, incomplete text/image usage blockers, invalid usage/cost amount and cost-label blockers, persisted Codex image usage confirmation evidence blockers, developer-local and template confirmation evidence path blockers, and secret-redacted formatted-summary/progress/report image usage disclosure display are ready, but DF-244 still needs manual QA against the packaged app surface with real provider image Codex usage disclosure payloads.
+The local contract, one live Codex text usage probe, app progress-panel usage display with invalid provider payload omission, blank or duplicated stage-id and unsupported provider-kind blockers, incomplete text/image usage blockers, invalid usage/cost amount and cost-label blockers, persisted Codex image usage confirmation evidence blockers, developer-local and template confirmation evidence path blockers, Generate-stage Codex OAuth confirmation persistence, and secret-redacted formatted-summary/progress/report image usage disclosure display are ready, but DF-244 still needs manual QA against the packaged app surface with real provider image Codex usage disclosure payloads.
 
 ## Lane D Image Usage Recheck
 
@@ -124,3 +126,16 @@ The Lane D usage summary proves `5` actual Codex image generations and
 `sha256:01b6043d35d12a744ffd898486a8ae7157110fd7561ce2c1c5e96587688dd4a9`.
 The issue remains open because no persisted, non-synthetic pre-generation
 confirmation JSON from the packaged app surface exists.
+
+## Generate Stage Confirmation Persistence
+
+2026-06-21 KST product update: the Generate stage now calls
+`confirmAndPersistLiveImageBilling` before a production `codex` image job starts.
+When the user confirms, the job records `imageCount` and a
+`confirmationEvidencePath` such as
+`usage/<project>/<job>/image-billing-confirmation.json`; when the user declines
+or the confirmation cannot be persisted, the queued image job is cancelled
+before generation. This closes the local product gap that prevented the app
+from producing a valid DF-244 confirmation record, but it still requires one
+packaged-app Codex image run to capture the actual persisted record and update
+the Lane D evidence bundle.

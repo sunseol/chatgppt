@@ -13,6 +13,8 @@ import {
 import { fakeAsync } from "@/components/deck/stage-timing";
 import { invalidateDownstream, updateProject } from "@/lib/deck-store";
 import type { DeckProject, GeneratedSlide } from "@/lib/deck-types";
+import { readGenerateRecovery, writeGenerateRecovery } from "@/lib/generate-stage-recovery";
+import { confirmAndPersistLiveImageBilling } from "@/lib/live-image-billing-confirmation";
 import { mockSlides } from "@/lib/mock-ai";
 import {
   createProductionImageGenerationGate,
@@ -24,20 +26,6 @@ import {
   type ProviderJob,
   type ProviderJobManager,
 } from "@/lib/provider-job-manager";
-import {
-  findRecoveredProviderJob,
-  parseProviderJobRecoverySnapshot,
-  providerJobRecoveryKey,
-  serializeProviderJobRecoverySnapshot,
-  type ProviderJobRecoverySnapshot,
-} from "@/lib/provider-job-recovery";
-
-const GENERATE_STEP = "generate";
-
-type GenerateRecovery = {
-  readonly snapshot: ProviderJobRecoverySnapshot;
-  readonly job: ProviderJob;
-};
 
 export function GenerateStage({
   project,
@@ -71,7 +59,32 @@ export function GenerateStage({
       capability: "imageGeneration",
       description: "슬라이드 이미지 생성",
     });
-    syncJob(project.id, manager, queued, setJob, setRecovered);
+    if (imageGenerationGate.providerId === "codex") {
+      const confirmation = confirmAndPersistLiveImageBilling({
+        projectId: project.id,
+        jobId: queued.id,
+        providerId: imageGenerationGate.providerId,
+      });
+      if (confirmation.kind !== "confirmed") {
+        const cancelled = await manager.run(queued.id, async () => {
+          throw new ProviderJobCancelledError(queued.id);
+        });
+        syncJob(project.id, manager, cancelled, setJob, setRecovered);
+        return;
+      }
+      syncJob(
+        project.id,
+        manager,
+        manager.recordUsageSummary(queued.id, {
+          imageCount: project.plan.slides.length,
+          imageBillingDisclosure: confirmation.disclosure,
+        }),
+        setJob,
+        setRecovered,
+      );
+    } else {
+      syncJob(project.id, manager, queued, setJob, setRecovered);
+    }
     await runGeneration(queued.id);
   };
 
@@ -215,38 +228,11 @@ function syncJob(
 ): void {
   setJob(nextJob);
   setRecovered(false);
-  writeGenerateRecovery(projectId, nextJob.id, manager.snapshot());
-}
-
-function readGenerateRecovery(projectId: string): GenerateRecovery | undefined {
-  if (!isBrowser()) return undefined;
-  const snapshot = parseProviderJobRecoverySnapshot(
-    window.localStorage.getItem(providerJobRecoveryKey(projectId, GENERATE_STEP)),
-  );
-  if (!snapshot) return undefined;
-  const job = findRecoveredProviderJob(snapshot, snapshot.currentJobId);
-  return job === undefined ? undefined : { snapshot, job };
-}
-
-function writeGenerateRecovery(
-  projectId: string,
-  currentJobId: string,
-  jobs: readonly ProviderJob[],
-): void {
-  if (!isBrowser()) return;
-  window.localStorage.setItem(
-    providerJobRecoveryKey(projectId, GENERATE_STEP),
-    serializeProviderJobRecoverySnapshot({
-      projectId,
-      step: GENERATE_STEP,
-      currentJobId,
-      jobs,
-    }),
-  );
-}
-
-function isBrowser(): boolean {
-  return typeof window !== "undefined";
+  writeGenerateRecovery({
+    projectId,
+    currentJobId: nextJob.id,
+    jobs: manager.snapshot(),
+  });
 }
 
 function defaultExecutionMode(): ImageGenerationExecutionMode {
