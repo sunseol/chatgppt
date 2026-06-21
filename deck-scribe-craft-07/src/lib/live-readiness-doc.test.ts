@@ -187,6 +187,8 @@ describe("live readiness documentation", () => {
     expect(imageQueueControls.includes("cancellation")).toBe(true);
     expect(imageQueueControls.includes("in-flight cancellation")).toBe(true);
     expect(imageQueueControls.includes("retryProvenance")).toBe(true);
+    expect(imageQueueControls.includes("queue_progress_count_mismatch")).toBe(true);
+    expect(imageQueueControls.includes("queue_status_count_mismatch")).toBe(true);
     expect(imageQueueControls.includes("missing_concurrency_evidence")).toBe(true);
     expect(imageQueueControls.includes("concurrency_limit_exceeded")).toBe(true);
     expect(imageQueueControls.includes("different bundle or slide")).toBe(true);

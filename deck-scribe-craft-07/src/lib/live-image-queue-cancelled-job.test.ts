@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { createPromptUsageRecord } from "./prompt-assets";
 import type { ProviderJob } from "./provider-job-manager";
 import { evaluateLiveImageQueueEvidence } from "./live-image-queue-evidence";
-import type { SlideGenerationQueueResult } from "./slide-generation-queue-types";
+import { readyQueueResultFixture as readyQueueResult } from "./live-image-queue-test-fixtures";
 
 describe("live image queue cancelled job evidence", () => {
   test("blocks cancelled provider jobs that are missing slide failure evidence", () => {
@@ -30,31 +30,6 @@ describe("live image queue cancelled job evidence", () => {
     expect(validation.issues.map((issue) => issue.code)).toEqual(["cancelled_job_missing_failure"]);
   });
 });
-
-function readyQueueResult(
-  overrides: Partial<Extract<SlideGenerationQueueResult, { readonly kind: "ready" }>>,
-): SlideGenerationQueueResult {
-  return {
-    kind: "ready",
-    status: "succeeded",
-    context: {
-      deckContextId: "deck_context_live",
-      deckContextHash: "sha256:context",
-      designSystemId: "design_live",
-      designTokenHash: "sha256:design",
-      layoutPrototypeId: "layout_live",
-      slideCount: 5,
-    },
-    slides: [],
-    failures: [],
-    jobs: [],
-    promptUsages: [],
-    retryProvenance: [],
-    concurrency: { requestedMaxParallel: 3, effectiveMaxParallel: 3, observedMaxRunning: 0 },
-    progress: { completed: 5, failed: 0, total: 5, percent: 100 },
-    ...overrides,
-  };
-}
 
 function job(overrides: Partial<ProviderJob>): ProviderJob {
   return {

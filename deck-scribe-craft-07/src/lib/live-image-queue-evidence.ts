@@ -6,9 +6,12 @@ import { concurrencyIssues } from "./live-image-queue-concurrency";
 import { cancellationIssues } from "./live-image-queue-cancellation";
 import { retrySlideIssues } from "./live-image-queue-retry-slide";
 import { retryDelayIssues } from "./live-image-queue-retry-delay";
+import { queueProgressIssues } from "./live-image-queue-progress";
 
 export type LiveImageQueueEvidenceIssueCode =
   | "queue_result_blocked"
+  | "queue_progress_count_mismatch"
+  | "queue_status_count_mismatch"
   | "missing_concurrency_evidence"
   | "invalid_concurrency_evidence"
   | "concurrency_limit_exceeded"
@@ -53,6 +56,7 @@ export function evaluateLiveImageQueueEvidence(
     };
   }
   const issues = [
+    ...queueProgressIssues(result),
     ...concurrencyIssues(result.concurrency),
     ...retryJobIssues(result.jobs, result.retryProvenance),
     ...retryAttemptIssues(result.jobs, result.retryProvenance),

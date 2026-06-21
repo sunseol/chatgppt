@@ -1,11 +1,13 @@
 import { describe, expect, test } from "bun:test";
 import { createPromptUsageRecord } from "./prompt-assets";
-import type { ProviderJob } from "./provider-job-manager";
 import {
   evaluateLiveImageQueueEvidence,
   type LiveImageQueueEvidenceIssueCode,
 } from "./live-image-queue-evidence";
-import type { SlideGenerationQueueResult } from "./slide-generation-queue-types";
+import {
+  providerJobFixture as job,
+  readyQueueResultFixture as readyQueueResult,
+} from "./live-image-queue-test-fixtures";
 
 describe("live image queue evidence", () => {
   test("accepts retry and cancellation evidence when provenance matches recorded jobs", () => {
@@ -234,43 +236,4 @@ function issueCodes(
   validation: ReturnType<typeof evaluateLiveImageQueueEvidence>,
 ): readonly LiveImageQueueEvidenceIssueCode[] {
   return validation.kind === "blocked" ? validation.issues.map((issue) => issue.code) : [];
-}
-
-function readyQueueResult(
-  overrides: Partial<Extract<SlideGenerationQueueResult, { readonly kind: "ready" }>>,
-): SlideGenerationQueueResult {
-  return {
-    kind: "ready",
-    status: "succeeded",
-    context: {
-      deckContextId: "deck_context_live",
-      deckContextHash: "sha256:context",
-      designSystemId: "design_live",
-      designTokenHash: "sha256:design",
-      layoutPrototypeId: "layout_live",
-      slideCount: 5,
-    },
-    slides: [],
-    failures: [],
-    jobs: [],
-    promptUsages: [],
-    retryProvenance: [],
-    concurrency: { requestedMaxParallel: 3, effectiveMaxParallel: 3, observedMaxRunning: 0 },
-    progress: { completed: 5, failed: 0, total: 5, percent: 100 },
-    ...overrides,
-  };
-}
-
-function job(overrides: Partial<ProviderJob>): ProviderJob {
-  return {
-    id: "job_live",
-    providerId: "openaiImage",
-    capability: "imageGeneration",
-    description: "Generate slide",
-    status: "succeeded",
-    createdAt: 1_789_500_000,
-    attempt: 1,
-    cancelRequested: false,
-    ...overrides,
-  };
 }

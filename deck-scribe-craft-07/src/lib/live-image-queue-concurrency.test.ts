@@ -5,6 +5,7 @@ import {
   evaluateLiveImageQueueEvidence,
   type LiveImageQueueEvidenceValidation,
 } from "./live-image-queue-evidence";
+import { readyQueueResultFixture as readyQueueResult } from "./live-image-queue-test-fixtures";
 import { mockBrief, mockDesign, mockLayout, mockPlan, mockResearch } from "./mock-ai";
 import { buildSlideContextBundles, type SlideContextBundle } from "./slide-context-bundle";
 import { runSlideGenerationQueue } from "./slide-generation-queue";
@@ -13,7 +14,11 @@ import type { SlideGenerationQueueResult } from "./slide-generation-queue-types"
 describe("live image queue concurrency evidence", () => {
   test("blocks otherwise valid queue evidence without observed concurrency proof", () => {
     // Given
-    const result = readyQueueResult();
+    const resultWithConcurrency = readyQueueResult();
+    if (resultWithConcurrency.kind !== "ready") {
+      throw new Error("Expected ready queue fixture.");
+    }
+    const { concurrency: _concurrency, ...result } = resultWithConcurrency;
 
     // When
     const validation = evaluateLiveImageQueueEvidence(result);
@@ -80,30 +85,6 @@ describe("live image queue concurrency evidence", () => {
 
 function issueCodes(validation: LiveImageQueueEvidenceValidation): readonly string[] {
   return validation.kind === "blocked" ? validation.issues.map((issue) => issue.code) : [];
-}
-
-function readyQueueResult(
-  overrides: Partial<Extract<SlideGenerationQueueResult, { readonly kind: "ready" }>> = {},
-): SlideGenerationQueueResult {
-  return {
-    kind: "ready",
-    status: "succeeded",
-    context: {
-      deckContextId: "deck_context_live",
-      deckContextHash: "sha256:context",
-      designSystemId: "design_live",
-      designTokenHash: "sha256:design",
-      layoutPrototypeId: "layout_live",
-      slideCount: 5,
-    },
-    slides: [],
-    failures: [],
-    jobs: [],
-    promptUsages: [],
-    retryProvenance: [],
-    progress: { completed: 5, failed: 0, total: 5, percent: 100 },
-    ...overrides,
-  };
 }
 
 function approvedBundles(slideCount: number): readonly SlideContextBundle[] {
