@@ -21,6 +21,7 @@ export type LiveUsageStageSummary = {
 
 export type LiveUsageSummaryIssueCode =
   | "missing_usage_stage_identity"
+  | "noncanonical_usage_stage_identity"
   | "duplicate_usage_stage_identity"
   | "invalid_usage_provider_kind"
   | "missing_provider_usage_summary"

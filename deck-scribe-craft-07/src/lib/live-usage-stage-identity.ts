@@ -20,6 +20,15 @@ export function usageStageIdentityIssues(
           "Usage summary stages require a displayable stage id.",
         ),
       ),
+    ...stages
+      .filter((stage) => stage.stageId.trim().length > 0 && stage.stageId !== stage.stageId.trim())
+      .map((stage) =>
+        issue(
+          "noncanonical_usage_stage_identity",
+          stage,
+          "Usage summary stage ids must be canonical before display or gate checks.",
+        ),
+      ),
     ...duplicateStageIssues(stages),
     ...stages
       .filter((stage) => !isProviderKind(stage.providerKind))

@@ -59,7 +59,7 @@ describe("live usage summary stage identity", () => {
         imageBillingDisclosure: confirmedBillingDisclosure(),
       }),
       runtimeStage({
-        stageId: " generate ",
+        stageId: "generate",
         providerKind: "openaiImage",
         durationMs: 1400,
         retryCount: 1,
@@ -76,6 +76,28 @@ describe("live usage summary stage identity", () => {
     expect(result.kind).toBe("blocked");
     if (result.kind !== "blocked") return;
     expect(result.issues.map((issue) => issue.code)).toEqual(["duplicate_usage_stage_identity"]);
+    expect(result.issues[0]?.stageId).toBe("generate");
+  });
+
+  test("blocks usage summary stage ids that only become canonical after trimming", () => {
+    // Given: a runtime payload pads the generate stage id so exact image-stage checks miss it.
+    const stages = [
+      runtimeStage({
+        stageId: " generate ",
+        providerKind: "codex",
+        durationMs: 800,
+        retryCount: 0,
+        providerUsageProvided: false,
+        costLabel: "hidden",
+      }),
+    ];
+
+    // When / Then: trim-only stage identity cannot satisfy DF-244 usage evidence.
+    const result = evaluateLiveUsageSummary(stages);
+
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual(["noncanonical_usage_stage_identity"]);
     expect(result.issues[0]?.stageId).toBe("generate");
   });
 });

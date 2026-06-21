@@ -47,6 +47,7 @@ describe("live usage summary documentation", () => {
     expect(usageSummary.includes("incomplete_text_token_usage")).toBe(true);
     expect(usageSummary.includes("missing_image_usage_count")).toBe(true);
     expect(usageSummary.includes("missing_usage_stage_identity")).toBe(true);
+    expect(usageSummary.includes("noncanonical_usage_stage_identity")).toBe(true);
     expect(usageSummary.includes("duplicate_usage_stage_identity")).toBe(true);
     expect(usageSummary.includes("invalid_usage_provider_kind")).toBe(true);
     expect(usageSummary.includes("live-usage-summary-stage-identity.test.ts")).toBe(true);
@@ -62,7 +63,7 @@ describe("live usage summary documentation", () => {
     expect(progress.includes("`costLabel` to `estimate`")).toBe(true);
     expect(progress.includes("confirmationEvidencePath")).toBe(true);
     expect(progress.includes("non-local")).toBe(true);
-    expect(progress.includes("blank or duplicated stage ids")).toBe(true);
+    expect(progress.includes("blank, padded, or duplicated stage ids")).toBe(true);
     expect(progress.includes("provider kinds outside the DeckForge taxonomy")).toBe(true);
     expect(progress.includes("unsupported runtime cost labels")).toBe(true);
     expect(progress.includes("usage/image-billing-template.json")).toBe(true);
@@ -85,7 +86,7 @@ describe("live usage summary documentation", () => {
       true,
     );
     expect(decision.includes("formatted summaries")).toBe(true);
-    expect(decision.includes("duplicated usage stage ids")).toBe(true);
+    expect(decision.includes("non-canonical, or duplicated usage stage ids")).toBe(true);
     expect(decision.includes("unsupported runtime provider kinds")).toBe(true);
     expect(decision.includes("developer-local")).toBe(true);
     expect(decision.includes("packaged app-surface usage summary manual QA")).toBe(true);
