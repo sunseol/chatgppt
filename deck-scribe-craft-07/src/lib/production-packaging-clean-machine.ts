@@ -15,7 +15,8 @@ export type CleanMachineStepEvidencePaths = {
   readonly [Step in CleanMachineStep]?: string;
 };
 
-const CLEAN_MACHINE_ACCOUNT_PATH_MARKERS = ["clean-machine", "macos-account"] as const;
+const CLEAN_MACHINE_ACCOUNT_EVIDENCE_PATH =
+  "release-evidence/clean-machine/clean-macos-account.json";
 
 const CLEAN_MACHINE_STEP_PATH_MARKERS = {
   install_app: ["install-app", "install_app"],
@@ -115,11 +116,7 @@ function hasStepSpecificEvidencePath(step: CleanMachineStep, path: string | unde
 
 function hasCleanMacosAccountEvidencePath(path: string | undefined): boolean {
   if (path === undefined || path.trim() !== path) return false;
-  const normalizedPath = path?.toLowerCase() ?? "";
-  return (
-    hasNonSyntheticJsonEvidencePath(path) &&
-    CLEAN_MACHINE_ACCOUNT_PATH_MARKERS.every((marker) => normalizedPath.includes(marker))
-  );
+  return hasNonSyntheticJsonEvidencePath(path) && path === CLEAN_MACHINE_ACCOUNT_EVIDENCE_PATH;
 }
 
 function duplicatedStepEvidencePathSteps(

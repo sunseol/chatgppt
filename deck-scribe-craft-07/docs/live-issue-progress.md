@@ -4,6 +4,20 @@ Date: 2026-06-19
 
 Scope: tracked GitHub issues `#126` through `#157` (`DF-200` through `DF-247`).
 
+## 2026-06-22 KST DF-245 Canonical Clean macOS Account Evidence
+
+DF-245 local update: clean-machine account evidence now has to use the exact
+canonical persisted path `release-evidence/clean-machine/clean-macos-account.json`.
+A generic JSON filename that merely borrows the `clean-machine` directory and
+`macos-account` marker, such as
+`release-evidence/clean-machine/session-macos-account.json`, now blocks with
+`missing_clean_machine_account_evidence`. Regression coverage lives in
+`src/lib/production-packaging-clean-machine-account.test.ts`.
+
+This still does not close DF-245. The ticket still needs real clean macOS
+account validation, Developer ID signing, notarization, stapling, Gatekeeper
+acceptance, and persisted release-trust assessment bundle capture.
+
 ## 2026-06-22 KST DF-246 Contaminated Manual QA Slide Actions
 
 DF-246 local update: manual QA slide action evidence now rejects every
