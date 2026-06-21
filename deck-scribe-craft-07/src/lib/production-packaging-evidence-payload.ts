@@ -79,10 +79,14 @@ const CleanMachineStepPayloadSchema = z
     step: z.enum(CLEAN_MACHINE_STEPS),
     evidencePath: z.string().min(1),
     accountEvidencePath: z.string().min(1),
+    macosUsername: z.string().min(1),
+    homeDirectory: z.string().min(1),
     status: z.literal("passed"),
     capturedAt: z.string().datetime(),
   })
   .strict();
+
+type CleanMachineAccountPayload = z.infer<typeof CleanMachineAccountPayloadSchema>;
 
 const RELEASE_TRUST_BASE_BLOCKERS = [
   "missing_production_package",
@@ -141,10 +145,7 @@ function cleanMachineAccountPayloadIssues(
   existingIssues: readonly ProductionPackagingIssue[],
 ): readonly ProductionPackagingIssue[] {
   if (hasIssue(existingIssues, "missing_clean_machine_account_evidence")) return [];
-  const parsed = CleanMachineAccountPayloadSchema.safeParse(
-    input.evidencePayloads?.cleanMachineAccount,
-  );
-  return parsed.success && parsed.data.evidencePath === input.cleanMachineAccountEvidencePath
+  return validCleanMachineAccountPayload(input) !== undefined
     ? []
     : [
         issue(
@@ -161,8 +162,10 @@ function cleanMachineStepPayloadIssues(
 ): readonly ProductionPackagingIssue[] {
   if (hasAnyIssue(existingIssues, CLEAN_MACHINE_STEP_BASE_BLOCKERS)) return [];
   if (hasIssue(existingIssues, "missing_clean_machine_account_evidence")) return [];
+  const accountPayload = validCleanMachineAccountPayload(input);
+  if (accountPayload === undefined) return [];
   const missing = CLEAN_MACHINE_STEPS.filter(
-    (step) => !hasValidCleanMachineStepPayload(input, step),
+    (step) => !hasValidCleanMachineStepPayload(input, step, accountPayload),
   );
   return missing.length === 0
     ? []
@@ -178,6 +181,7 @@ function cleanMachineStepPayloadIssues(
 function hasValidCleanMachineStepPayload(
   input: ProductionPackagingPayloadInput,
   step: CleanMachineStep,
+  accountPayload: CleanMachineAccountPayload,
 ): boolean {
   const parsed = CleanMachineStepPayloadSchema.safeParse(
     input.evidencePayloads?.cleanMachineSteps?.[step],
@@ -186,8 +190,21 @@ function hasValidCleanMachineStepPayload(
     parsed.success &&
     parsed.data.step === step &&
     parsed.data.evidencePath === input.cleanMachineStepEvidencePaths?.[step] &&
-    parsed.data.accountEvidencePath === input.cleanMachineAccountEvidencePath
+    parsed.data.accountEvidencePath === input.cleanMachineAccountEvidencePath &&
+    parsed.data.macosUsername === accountPayload.macosUsername &&
+    parsed.data.homeDirectory === accountPayload.homeDirectory
   );
+}
+
+function validCleanMachineAccountPayload(
+  input: ProductionPackagingPayloadInput,
+): CleanMachineAccountPayload | undefined {
+  const parsed = CleanMachineAccountPayloadSchema.safeParse(
+    input.evidencePayloads?.cleanMachineAccount,
+  );
+  return parsed.success && parsed.data.evidencePath === input.cleanMachineAccountEvidencePath
+    ? parsed.data
+    : undefined;
 }
 
 function hasAnyIssue(

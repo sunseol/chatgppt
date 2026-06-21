@@ -4,6 +4,9 @@ import {
   type ProductionPackagingEvidence,
 } from "./production-packaging-evidence";
 
+const CLEAN_MACOS_USERNAME = "deckforge-clean";
+const CLEAN_MACOS_HOME = "/Users/deckforge-clean";
+
 type CompleteCleanMachineStepEvidencePaths = {
   readonly [Step in CleanMachineStep]: string;
 };
@@ -81,8 +84,8 @@ export function productionPackagingEvidencePayloads() {
       kind: "clean_macos_account",
       evidencePath: "release-evidence/clean-machine/clean-macos-account.json",
       accountType: "clean_macos_account",
-      macosUsername: "deckforge-clean",
-      homeDirectory: "/Users/deckforge-clean",
+      macosUsername: CLEAN_MACOS_USERNAME,
+      homeDirectory: CLEAN_MACOS_HOME,
       developerAccount: false,
       capturedAt: "2026-06-21T19:30:00Z",
     },
@@ -102,6 +105,8 @@ function cleanMachineStepPayload(step: CleanMachineStep, evidencePath: string) {
     step,
     evidencePath,
     accountEvidencePath: "release-evidence/clean-machine/clean-macos-account.json",
+    macosUsername: CLEAN_MACOS_USERNAME,
+    homeDirectory: CLEAN_MACOS_HOME,
     status: "passed",
     capturedAt: "2026-06-21T19:32:00Z",
   };

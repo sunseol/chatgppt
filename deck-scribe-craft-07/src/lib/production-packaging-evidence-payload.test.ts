@@ -86,4 +86,64 @@ describe("production packaging persisted evidence payloads", () => {
     ]);
     expect(result.issues[0]?.refs).toEqual(["codex_login"]);
   });
+
+  test("blocks clean-machine step payloads that omit the clean account identity", () => {
+    // Given
+    const payloads = productionPackagingEvidencePayloads();
+    const stepPaths = productionCleanMachineStepEvidencePaths();
+    const result = evaluateProductionPackagingEvidence(
+      completeProductionPackagingEvidence({
+        evidencePayloads: {
+          ...payloads,
+          cleanMachineSteps: {
+            ...payloads.cleanMachineSteps,
+            codex_login: {
+              kind: "clean_machine_step",
+              step: "codex_login",
+              evidencePath: stepPaths.codex_login,
+              accountEvidencePath: "release-evidence/clean-machine/clean-macos-account.json",
+              status: "passed",
+              capturedAt: "2026-06-21T19:32:00Z",
+            },
+          },
+        },
+      }),
+    );
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "missing_clean_machine_step_evidence",
+    ]);
+    expect(result.issues[0]?.refs).toEqual(["codex_login"]);
+  });
+
+  test("blocks clean-machine step payloads from a different macOS account", () => {
+    // Given
+    const payloads = productionPackagingEvidencePayloads();
+    const result = evaluateProductionPackagingEvidence(
+      completeProductionPackagingEvidence({
+        evidencePayloads: {
+          ...payloads,
+          cleanMachineSteps: {
+            ...payloads.cleanMachineSteps,
+            project_launch: {
+              ...payloads.cleanMachineSteps.project_launch,
+              macosUsername: "jake",
+              homeDirectory: "/Users/jake",
+            },
+          },
+        },
+      }),
+    );
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "missing_clean_machine_step_evidence",
+    ]);
+    expect(result.issues[0]?.refs).toEqual(["project_launch"]);
+  });
 });

@@ -1358,3 +1358,14 @@ confirmed`. A copied confirmation path such as
 `src/lib/live-usage-billing-same-job.test.ts`. DF-244 remains open until the
 packaged app captures real image usage payloads and the persisted pre-generation
 confirmation JSON from the same run.
+
+DF-245 local update: clean-machine step payloads now have to carry the same
+`macosUsername` and `homeDirectory` as the clean macOS account payload. A
+`codex_login` or `project_launch` step that only points at the canonical
+`cleanMachineAccountEvidencePath`, but omits the account identity or names a
+different macOS account, now blocks as `missing_clean_machine_step_evidence`.
+Regression coverage lives in `src/lib/production-packaging-evidence-payload.test.ts`.
+DF-245 remains open until real Developer ID signing, notarization/stapling,
+Gatekeeper acceptance, persisted release-trust evidence, and clean macOS account
+install/login/image-credential/project-launch/live-interview evidence are
+captured from a packaged run.

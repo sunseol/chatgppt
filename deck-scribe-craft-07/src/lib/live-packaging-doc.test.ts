@@ -38,6 +38,8 @@ describe("live packaging documentation", () => {
     expect(runbook.includes("missing_clean_machine_account_evidence")).toBe(true);
     expect(runbook.includes("one shared evidence path that names every step")).toBe(true);
     expect(runbook.includes("cleanMachineAccountEvidencePath")).toBe(true);
+    expect(runbook.includes("macosUsername")).toBe(true);
+    expect(runbook.includes("homeDirectory")).toBe(true);
     expect(runbook.includes("macos-account")).toBe(true);
     expect(progress.includes("unsupported-step inflation")).toBe(true);
     expect(progress.includes("valid distinct checklist steps")).toBe(true);
@@ -64,6 +66,7 @@ describe("live packaging documentation", () => {
     expect(decision.includes("generic release-trust paths without codesign")).toBe(true);
     expect(decision.includes("production-packaging-evidence-payload.ts")).toBe(true);
     expect(decision.includes("payload-drifted clean-machine step evidence")).toBe(true);
+    expect(decision.includes("same `macosUsername` and `homeDirectory`")).toBe(true);
     expect(progress.includes("DF-245 local update: production packaging evidence")).toBe(true);
     expect(progress.includes("structurally incomplete")).toBe(true);
     expect(decision.includes("release-trust evidence paths")).toBe(true);
