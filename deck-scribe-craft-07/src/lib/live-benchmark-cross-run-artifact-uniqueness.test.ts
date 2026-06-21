@@ -105,6 +105,46 @@ describe("live benchmark cross-run artifact uniqueness", () => {
       reusedTurnIds.map((turnId) => `korean_business:market_research:${turnId}`),
     );
   });
+
+  test("blocks reused image request evidence even when distinct Codex turn ids are present", () => {
+    // Given
+    const reusedRequestIds = [
+      "shared_request_1",
+      "shared_request_2",
+      "shared_request_3",
+      "shared_request_4",
+      "shared_request_5",
+    ];
+
+    // When
+    const result = evaluateLiveBenchmarkEvidence({
+      reportPath: "docs/live-benchmark-report.md",
+      packageArchiveSha256: PACKAGE_SHA,
+      runs: [
+        withImageTurnIds(
+          run("korean_business", "passed", undefined, undefined, reusedRequestIds),
+          distinctImageTurnIds("korean_business"),
+        ),
+        withImageTurnIds(
+          run("market_research", "passed", undefined, undefined, reusedRequestIds),
+          distinctImageTurnIds("market_research"),
+        ),
+        run("chart_report", "passed"),
+        run("image_intro", "passed"),
+        run("revision_regeneration", "failed"),
+      ],
+    });
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "duplicate_output_bundle_image_request",
+    ]);
+    expect(result.issues[0]?.refs).toEqual(
+      reusedRequestIds.map((requestId) => `korean_business:market_research:${requestId}`),
+    );
+  });
 });
 
 function run(
@@ -178,4 +218,8 @@ function withImageTurnIds(
     ...run,
     outputBundle: { ...run.outputBundle, liveImageTurnIds },
   };
+}
+
+function distinctImageTurnIds(id: LiveBenchmarkId): readonly string[] {
+  return LIVE_BENCHMARK_IDS.map((_, index) => `${id}_turn_${index + 1}`);
 }

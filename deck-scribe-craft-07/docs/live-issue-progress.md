@@ -4,6 +4,20 @@ Date: 2026-06-19
 
 Scope: tracked GitHub issues `#126` through `#157` (`DF-200` through `DF-247`).
 
+## 2026-06-22 KST DF-242 Mixed Image Turn/Request Identity Reuse
+
+DF-242 local update: benchmark output bundle image provider identity checks now
+validate both Codex image turn ids and legacy/request ids when both are present.
+A benchmark bundle pair with distinct `liveImageTurnIds` but reused
+`liveImageRequestIds` now blocks with `duplicate_output_bundle_image_request`
+instead of hiding the reused request evidence behind the turn-id list.
+Regression coverage lives in
+`src/lib/live-benchmark-cross-run-artifact-uniqueness.test.ts`.
+
+This still does not close DF-242. The ticket still needs real five-scenario
+Live benchmark output bundles tied to the current package candidate, with at
+least four passing named Live runs.
+
 ## 2026-06-22 KST DF-245 Canonical Clean macOS Account Evidence
 
 DF-245 local update: clean-machine account evidence now has to use the exact

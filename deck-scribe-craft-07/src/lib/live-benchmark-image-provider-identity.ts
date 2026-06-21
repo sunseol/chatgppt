@@ -4,9 +4,8 @@ export function liveBenchmarkImageProviderIdentityIds(
   bundle: LiveBenchmarkOutputBundleManifest,
 ): readonly string[] {
   const turnIds = canonicalProviderIdentityIds(bundle.liveImageTurnIds ?? []);
-  return turnIds.length > 0
-    ? turnIds
-    : canonicalProviderIdentityIds(bundle.liveImageRequestIds ?? []);
+  const requestIds = canonicalProviderIdentityIds(bundle.liveImageRequestIds ?? []);
+  return [...turnIds, ...requestIds];
 }
 
 export function liveBenchmarkCitedImageProviderIdentityIds(
