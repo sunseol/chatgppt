@@ -2,6 +2,7 @@ import { scenarioEvidenceDetailIssues } from "./live-interruption-evidence-detai
 import { partialImageResumeIssues } from "./live-interruption-image-resume";
 import { interruptionReportPathIssues } from "./live-interruption-report-path";
 import { scenarioCoverageIssues } from "./live-interruption-scenario-coverage";
+import { scenarioEvidencePathIdentityIssues } from "./live-interruption-scenario-evidence-path";
 
 export const LIVE_INTERRUPTION_SCENARIOS = [
   "text_turn_shutdown",
@@ -73,6 +74,7 @@ export type LiveInterruptionIssueCode =
   | "missing_interrupted_export_gate_evidence"
   | "duplicate_interrupted_gate_evidence"
   | "interrupted_artifact_approvable"
+  | "interruption_evidence_path_scenario_mismatch"
   | "missing_interruption_report";
 
 export type LiveInterruptionIssue = {
@@ -91,6 +93,7 @@ export function evaluateLiveInterruptionMatrix(
   const issues = [
     ...scenarioCoverageIssues(matrix.scenarios, LIVE_INTERRUPTION_SCENARIOS),
     ...scenarioEvidenceDetailIssues(matrix.scenarios),
+    ...scenarioEvidencePathIdentityIssues(matrix.scenarios),
     ...invalidRecoveredStateIssues(matrix.scenarios),
     ...unsafeRecoveredStateIssues(matrix.scenarios),
     ...completedArtifactLossIssues(matrix.scenarios),
