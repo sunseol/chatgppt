@@ -117,6 +117,37 @@ describe("live full-slide regeneration approval evidence", () => {
       }).map((issue) => issue.code),
     ).toEqual(["regeneration_comparison_mismatch"]);
   });
+
+  test("preserves the approved original when comparison preservation checks fail", async () => {
+    // Given
+    const candidate = await readyCandidate();
+    const originalSlides = [approvedSlideFixture()];
+    const changedTarget = firstMustKeepTarget(candidate);
+    const comparison = {
+      ...matchingComparison(candidate),
+      preservationChecks: candidate.mustKeep.map((target) => ({
+        target,
+        status: target === changedTarget ? ("changed" as const) : ("kept" as const),
+        message:
+          target === changedTarget
+            ? `${target} changed during live regeneration.`
+            : `${target} preserved during live regeneration.`,
+      })),
+    };
+
+    // When
+    const approved = approveLiveSlideRegenerationCandidate(originalSlides, candidate, comparison);
+
+    // Then
+    expect(approved).toEqual(originalSlides);
+    expect(
+      liveSlideRegenerationApprovalIssues({
+        slides: originalSlides,
+        candidate,
+        comparison,
+      }).map((issue) => issue.code),
+    ).toEqual(["regeneration_preservation_check_failed"]);
+  });
 });
 
 async function readyCandidate() {
@@ -157,4 +188,10 @@ function matchingComparison(candidate: LiveSlideRegenerationCandidate): SlideRev
     })),
     summary: "Slide 3 live regeneration comparison is approved.",
   };
+}
+
+function firstMustKeepTarget(candidate: LiveSlideRegenerationCandidate): string {
+  const target = candidate.mustKeep[0];
+  if (target === undefined) throw new Error("Expected at least one must-keep target.");
+  return target;
 }

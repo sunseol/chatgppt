@@ -38,7 +38,8 @@ export type LiveSlideRegenerationIssueCode =
   | "regeneration_request_id_not_new"
   | "missing_regeneration_comparison"
   | "candidate_not_ready_for_approval"
-  | "regeneration_comparison_mismatch";
+  | "regeneration_comparison_mismatch"
+  | "regeneration_preservation_check_failed";
 
 export interface LiveSlideRegenerationIssue {
   readonly code: LiveSlideRegenerationIssueCode;

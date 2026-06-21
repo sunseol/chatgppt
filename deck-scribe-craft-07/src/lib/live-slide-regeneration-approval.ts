@@ -38,16 +38,17 @@ function comparisonIssues(
   comparison: SlideRevisionComparison,
   currentSlide: GeneratedSlide | undefined,
 ): readonly LiveSlideRegenerationIssue[] {
-  return comparisonMatchesCandidate(candidate, comparison, currentSlide)
-    ? []
-    : [
-        {
-          code: "regeneration_comparison_mismatch" as const,
-          slideNumber: candidate.slide.number,
-          message:
-            "Before/after comparison evidence must match the approved original and regenerated candidate.",
-        },
-      ];
+  if (!comparisonMatchesCandidate(candidate, comparison, currentSlide)) {
+    return [
+      {
+        code: "regeneration_comparison_mismatch" as const,
+        slideNumber: candidate.slide.number,
+        message:
+          "Before/after comparison evidence must match the approved original and regenerated candidate.",
+      },
+    ];
+  }
+  return preservationCheckIssues(candidate, comparison);
 }
 
 function comparisonMatchesCandidate(
@@ -77,6 +78,23 @@ function targetsMatch(expected: readonly string[], actual: readonly string[]): b
     expectedTargets.length === actualTargets.length &&
     expectedTargets.every((target, index) => target === actualTargets[index])
   );
+}
+
+function preservationCheckIssues(
+  candidate: LiveSlideRegenerationCandidate,
+  comparison: SlideRevisionComparison,
+): readonly LiveSlideRegenerationIssue[] {
+  const checkedTargets = comparison.preservationChecks.map((check) => check.target);
+  return targetsMatch(candidate.mustKeep, checkedTargets) &&
+    comparison.preservationChecks.every((check) => check.status === "kept")
+    ? []
+    : [
+        {
+          code: "regeneration_preservation_check_failed" as const,
+          slideNumber: candidate.slide.number,
+          message: "Live regeneration approval requires every preserved target check to pass.",
+        },
+      ];
 }
 
 function sortedTargets(values: readonly string[]): readonly string[] {
