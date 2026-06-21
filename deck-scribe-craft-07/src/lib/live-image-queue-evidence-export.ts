@@ -1,4 +1,5 @@
 import { ImageArtifactStoreError, type ImageArtifactStore } from "./image-artifact-store";
+import { parseVersionedProjectImageArtifactPath } from "./image-artifact-path";
 import {
   evaluateLiveImageQueueEvidence,
   type LiveImageQueueEvidenceIssue,
@@ -171,10 +172,9 @@ function duplicateStoredImageArtifactPathIssues(
 function isVersionedImageArtifactPath(projectId: string, path: string): boolean {
   if (path.length === 0 || path !== path.trim()) return false;
   if (hasSyntheticEvidenceMarker(path)) return false;
-  return (
-    /^projects\/[A-Za-z0-9_-]+\/slides\/images\/slide_\d{3}\.v\d+\.png$/.test(path) &&
-    path.startsWith(`projects/${projectId}/slides/images/`)
-  );
+  const address = parseVersionedProjectImageArtifactPath(path);
+  if (address === undefined) return false;
+  return path.startsWith(`projects/${projectId}/slides/images/`);
 }
 
 function expectedStoredImageArtifactPath(

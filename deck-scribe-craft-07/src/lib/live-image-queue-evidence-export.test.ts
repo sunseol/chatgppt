@@ -76,6 +76,31 @@ describe("live image queue evidence export", () => {
       "stored_image_artifact_missing",
     ]);
   });
+
+  test("blocks stored image artifact evidence with a non-positive version", async () => {
+    // Given / When
+    const stored = await writeLiveImageQueueEvidenceExport({
+      store: {
+        write: async () => undefined,
+      },
+      projectId: "project_001",
+      jobId: "job_generate_v0_store",
+      exportedAt: 1_789_940_201,
+      result: readyStoredQueueResult({
+        slides: [{ ...readyStoredQueueResult().slides[0], version: 0 }],
+      }),
+      storedImageArtifactPaths: ["projects/project_001/slides/images/slide_001.v0.png"],
+    });
+
+    // Then
+    expect(stored.evidence.validation.kind).toBe("blocked");
+    if (stored.evidence.validation.kind !== "blocked") {
+      throw new Error("Expected non-positive stored image version to block export evidence.");
+    }
+    expect(stored.evidence.validation.issues.map((issue) => issue.code)).toEqual([
+      "stored_image_artifact_path_invalid",
+    ]);
+  });
 });
 
 function readyQueueResult(): Extract<SlideGenerationQueueResult, { readonly kind: "ready" }> {
@@ -154,7 +179,9 @@ function readyQueueResult(): Extract<SlideGenerationQueueResult, { readonly kind
   };
 }
 
-function readyStoredQueueResult(): Extract<SlideGenerationQueueResult, { readonly kind: "ready" }> {
+function readyStoredQueueResult(
+  patch: Partial<Extract<SlideGenerationQueueResult, { readonly kind: "ready" }>> = {},
+): Extract<SlideGenerationQueueResult, { readonly kind: "ready" }> {
   return {
     kind: "ready",
     status: "succeeded",
@@ -204,5 +231,6 @@ function readyStoredQueueResult(): Extract<SlideGenerationQueueResult, { readonl
       observedMaxRunning: 1,
     },
     progress: { completed: 1, failed: 0, total: 1, percent: 100 },
+    ...patch,
   };
 }

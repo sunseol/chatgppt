@@ -37,8 +37,11 @@ function parseVersionedProjectImagePath(
   const slideNumber = match[1];
   const version = match[2];
   if (slideNumber === undefined || version === undefined) return undefined;
+  const parsedSlideNumber = Number.parseInt(slideNumber, 10);
+  const parsedVersion = Number.parseInt(version, 10);
+  if (parsedSlideNumber <= 0 || parsedVersion <= 0) return undefined;
   return {
-    slideNumber: Number.parseInt(slideNumber, 10),
-    version: Number.parseInt(version, 10),
+    slideNumber: parsedSlideNumber,
+    version: parsedVersion,
   };
 }

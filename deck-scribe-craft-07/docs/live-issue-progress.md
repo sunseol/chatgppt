@@ -73,6 +73,20 @@ This still does not close DF-233. A packaged Codex OAuth image run still needs
 real 429/5xx retry provenance, in-flight cancellation evidence, and
 restart-resume evidence against real provider jobs.
 
+DF-233 local update: shared versioned image artifact path parsing now rejects
+non-positive slide numbers and artifact versions before any gate can count a
+path as versioned project image storage. Exported queue evidence also reuses that
+parser, so a stored path such as
+`projects/project_001/slides/images/slide_001.v0.png` blocks with
+`stored_image_artifact_path_invalid` instead of satisfying completed-slide
+storage evidence. Regression coverage lives in
+`src/lib/image-artifact-path.test.ts` and
+`src/lib/live-image-queue-evidence-export.test.ts`.
+
+This still does not close DF-233. A packaged Codex OAuth image run still needs
+real 429/5xx retry provenance, in-flight cancellation evidence, and
+restart-resume evidence against real provider jobs.
+
 ## 2026-06-22 KST DF-243 Interrupted Artifact Gate Product Evidence Export
 
 DF-243 local update: the product now has a dedicated app-storage evidence writer
