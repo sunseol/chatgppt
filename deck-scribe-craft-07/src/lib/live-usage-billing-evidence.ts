@@ -5,7 +5,7 @@ const BILLING_CONFIRMATION_FILENAME = "image-billing-confirmation.json";
 const SAFE_EVIDENCE_SEGMENT = /^[a-zA-Z0-9_-]+$/;
 
 export function hasBillingConfirmationEvidencePath(path: string | undefined): boolean {
-  if (path === undefined) return false;
+  if (path === undefined || path.trim() !== path) return false;
   if (!hasNonSyntheticJsonEvidencePath(path)) return false;
   const normalizedPath = path.toLowerCase();
   return (
@@ -15,7 +15,7 @@ export function hasBillingConfirmationEvidencePath(path: string | undefined): bo
 }
 
 function hasProductBillingConfirmationPath(path: string): boolean {
-  const segments = path.trim().split("/");
+  const segments = path.split("/");
   const [usageRoot, projectId, jobId, filename, ...extraSegments] = segments;
   return (
     usageRoot === "usage" &&

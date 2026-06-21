@@ -446,6 +446,16 @@ the summary/progress/report confirmation gate, so closure evidence must be tied
 to a specific packaged app project and provider job before `Codex image usage
 confirmed` can render.
 
+DF-244 local update: image usage confirmation evidence now also rejects
+`confirmationEvidencePath` values that only become valid after trimming
+boundary whitespace. A padded
+`usage/<project>/<job>/image-billing-confirmation.json` path now blocks as
+`missing_image_billing_confirmation` and renders `Codex image usage not
+confirmed`, so summary/progress/report surfaces cannot imply user-confirmed
+Codex image usage from a non-canonical persisted evidence path. The issue
+remains open because packaged app manual QA with real provider usage/cost
+payloads and real image Codex usage disclosure evidence has not run.
+
 ## 2026-06-21 Generate Stage Queue Evidence Export
 
 The current product branch now persists a DF-233 queue evidence JSON bundle for
