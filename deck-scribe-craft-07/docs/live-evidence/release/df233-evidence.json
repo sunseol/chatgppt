@@ -1,0 +1,31 @@
+{
+  "ticketId": "DF-233",
+  "issueNumber": 147,
+  "status": "blocked",
+  "validationKind": "blocked",
+  "generatedAt": "2026-06-21T19:14:59Z",
+  "packageArchiveSha256": "74804249a251f29186ea6e0bf9391293ba788a5167b100abf4e81497d59bcb0d",
+  "summary": "Queue throttling, retry, cancellation, resume, and product evidence writers are implemented, but no packaged Codex OAuth image run has captured genuine retry, cancellation, and restart-resume evidence.",
+  "currentEvidence": [
+    {
+      "path": "docs/live-image-queue-controls.md",
+      "kind": "image queue control contract"
+    },
+    {
+      "path": "src/lib/live-image-queue-evidence-export.ts",
+      "kind": "product queue evidence writer"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/lane-g-closure-recheck-20260621/issue-closure-evidence.json",
+      "sha256": "cce49011bc94260509f1f4c4e0fb8753ecaff53e8a4313206cea8de1b718f13d",
+      "kind": "blocked image/export/usage closure recheck"
+    }
+  ],
+  "missingEvidence": [
+    "packaged Codex OAuth image run with genuine 429 or 5xx retry provenance",
+    "in-flight user cancellation evidence from a real provider job",
+    "restart-resume evidence proving completed slides are not regenerated",
+    "stored versioned PNG artifact paths for every completed queue slide",
+    "product-generated DF-233 queue evidence JSON copied into docs/live-evidence"
+  ]
+}

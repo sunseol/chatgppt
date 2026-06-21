@@ -19,7 +19,32 @@ describe("packaged live evidence index", () => {
 
     expect(result).toEqual({ kind: "ready" });
     expect(summary.includes("Packaged Live Evidence Index")).toBe(true);
-    expect(summary.includes("Ready tickets: 6 of 6")).toBe(true);
+    expect(summary.includes("Ready tickets: 10 of 10")).toBe(true);
+  });
+
+  test("blocks indexes that omit still-open P0 evidence tickets", () => {
+    // Given
+    const index = completeIndex({
+      entries: [
+        entry("DF-241"),
+        entry("DF-242"),
+        entry("DF-243"),
+        entry("DF-245"),
+        entry("DF-246"),
+        entry("DF-247"),
+      ],
+    });
+
+    // When
+    const result = evaluatePackagedLiveEvidenceIndex(index);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    const missingIssue = result.issues.find(
+      (issue) => issue.code === "missing_packaged_live_ticket",
+    );
+    expect(missingIssue?.refs).toEqual(["DF-205", "DF-233", "DF-235", "DF-244"]);
   });
 
   test("blocks missing duplicate and mismatched ticket evidence entries", () => {
@@ -113,9 +138,13 @@ function entry(ticketId: PackagedLiveEvidenceTicketId) {
 
 function issueNumber(ticketId: PackagedLiveEvidenceTicketId): number {
   return {
+    "DF-205": 131,
+    "DF-233": 147,
+    "DF-235": 149,
     "DF-241": 151,
     "DF-242": 152,
     "DF-243": 153,
+    "DF-244": 154,
     "DF-245": 155,
     "DF-246": 156,
     "DF-247": 157,

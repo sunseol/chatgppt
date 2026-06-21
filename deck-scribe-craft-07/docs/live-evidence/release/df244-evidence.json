@@ -1,0 +1,36 @@
+{
+  "ticketId": "DF-244",
+  "issueNumber": 154,
+  "status": "blocked",
+  "validationKind": "blocked",
+  "generatedAt": "2026-06-21T19:14:59Z",
+  "packageArchiveSha256": "74804249a251f29186ea6e0bf9391293ba788a5167b100abf4e81497d59bcb0d",
+  "summary": "Live text and image usage display contracts exist, and Lane D shows real image latency/count display, but no packaged-app run has captured the pre-generation Codex OAuth image usage confirmation JSON from the same run.",
+  "currentEvidence": [
+    {
+      "path": "docs/live-usage-summary.md",
+      "kind": "usage and billing disclosure contract"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/lane-d-live-app-surface-20260621/df244-usage-display.html",
+      "sha256": "d8d136e45e91916f30908b7e66b336359596d1a25a596aff3de5ecfcb292cffc",
+      "kind": "static app-surface usage display"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/lane-d-live-app-surface-20260621/df244-usage-summary.json",
+      "sha256": "01b6043d35d12a744ffd898486a8ae7157110fd7561ce2c1c5e96587688dd4a9",
+      "kind": "image latency and count usage summary"
+    },
+    {
+      "path": "scripts/lane-d-live-usage-confirmation.mjs",
+      "kind": "Lane D confirmation evidence resolver"
+    }
+  ],
+  "missingEvidence": [
+    "packaged-app pre-generation Codex OAuth image usage confirmation JSON",
+    "real image usage disclosure payload tied to the same packaged run",
+    "usage summary regenerated from the persisted confirmation record",
+    "manual QA screenshot or recording proving latency, retry, count, and confirmation display",
+    "evidence copied into docs/live-evidence and tied to the current package hash"
+  ]
+}

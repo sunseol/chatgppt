@@ -12,7 +12,18 @@ const INDEX_PATH = "docs/live-evidence/release/packaged-live-evidence-index.json
 
 const PackagedLiveEvidenceEntryArtifactSchema = z
   .object({
-    ticketId: z.enum(["DF-241", "DF-242", "DF-243", "DF-245", "DF-246", "DF-247"]),
+    ticketId: z.enum([
+      "DF-205",
+      "DF-233",
+      "DF-235",
+      "DF-241",
+      "DF-242",
+      "DF-243",
+      "DF-244",
+      "DF-245",
+      "DF-246",
+      "DF-247",
+    ]),
     issueNumber: z.number().int().positive(),
     status: z.enum(["ready", "blocked"]),
     validationKind: z.enum(["ready", "blocked"]),
@@ -48,15 +59,19 @@ describe("packaged live evidence index artifact", () => {
     if (result.kind !== "blocked") return;
     expect(result.issues.map((issue) => issue.code)).toEqual(["packaged_live_ticket_blocked"]);
     expect(result.issues[0]?.refs).toEqual([
+      "DF-205",
+      "DF-233",
+      "DF-235",
       "DF-241",
       "DF-242",
       "DF-243",
+      "DF-244",
       "DF-245",
       "DF-246",
       "DF-247",
     ]);
     expect(mismatchedDigests).toEqual([]);
-    expect(summary.includes("Ready tickets: 0 of 6")).toBe(true);
+    expect(summary.includes("Ready tickets: 0 of 10")).toBe(true);
   });
 });
 

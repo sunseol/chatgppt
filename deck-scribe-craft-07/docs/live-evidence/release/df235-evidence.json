@@ -1,0 +1,36 @@
+{
+  "ticketId": "DF-235",
+  "issueNumber": 149,
+  "status": "blocked",
+  "validationKind": "blocked",
+  "generatedAt": "2026-06-21T19:14:59Z",
+  "packageArchiveSha256": "74804249a251f29186ea6e0bf9391293ba788a5167b100abf4e81497d59bcb0d",
+  "summary": "A real v2 regenerated image and static before/after preservation evidence exist, but the packaged Review-stage UI has not recorded approval and failed-regeneration preservation through the product surface.",
+  "currentEvidence": [
+    {
+      "path": "docs/live-slide-regeneration.md",
+      "kind": "selected-slide regeneration contract"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df235-selected-slide-regeneration-summary.json",
+      "kind": "live regenerated image summary"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/lane-d-live-app-surface-20260621/df235-before-after-review.html",
+      "sha256": "8c170b78a077345816d39ec244711569082bb91152d09fa0b412a59403862a1b",
+      "kind": "static before/after review evidence"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/lane-d-live-app-surface-20260621/df235-preservation-record.json",
+      "sha256": "f3b3d5c3cf28f4ef7e49d31545f67e28ec7e724edcd1e0d51e65107360eb57f2",
+      "kind": "static preservation evidence"
+    }
+  ],
+  "missingEvidence": [
+    "packaged Review-stage UI run approving the v2 regenerated candidate",
+    "product-generated DF-235 review evidence JSON for approved candidate",
+    "failed live regeneration run proving the approved original remains selected and exportable",
+    "product-generated preserved_after_failure or preserved_after_approval_blocked evidence JSON",
+    "review evidence copied into docs/live-evidence and tied to the current package hash"
+  ]
+}

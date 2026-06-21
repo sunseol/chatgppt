@@ -4,7 +4,7 @@
   "status": "blocked",
   "validationKind": "blocked",
   "generatedAt": "2026-06-21T15:58:37Z",
-  "packageArchiveSha256": "d21d149aa545b9dd357ae29934c9339efb812eb03374197bb11be0bb32bf6dfd",
+  "packageArchiveSha256": "74804249a251f29186ea6e0bf9391293ba788a5167b100abf4e81497d59bcb0d",
   "summary": "Local Golden Path validators and partial Codex OAuth text/image evidence exist, but no packaged production Golden Path has completed from login through export.",
   "currentEvidence": [
     {

@@ -4,6 +4,29 @@ Date: 2026-06-19
 
 Scope: tracked GitHub issues `#126` through `#157` (`DF-200` through `DF-247`).
 
+## 2026-06-22 KST Packaged Evidence Index Covers All Open P0s
+
+DF-247 local update: the Packaged Live evidence index now requires blocked or
+ready JSON artifacts for all ten remaining open P0 tickets: DF-205, DF-233,
+DF-235, DF-241, DF-242, DF-243, DF-244, DF-245, DF-246, and DF-247. The branch
+now includes blocked release evidence artifacts for DF-205 auth/secret
+lifecycle, DF-233 image queue/retry/cancel/resume, DF-235 selected-slide
+regeneration approval/preservation, and DF-244 usage disclosure alongside the
+existing DF-241/242/243/245/246/247 artifacts.
+
+`src/lib/packaged-live-evidence-index.test.ts` now proves that a six-entry index
+which omits the still-open DF-205/233/235/244 tickets blocks with
+`missing_packaged_live_ticket`, and
+`src/lib/packaged-live-evidence-index-artifact.test.ts` verifies all ten
+committed entry SHA-256 digests. This still does not close any ticket; every
+entry remains `blocked` until the corresponding packaged/clean-machine/manual
+QA live evidence is genuinely produced.
+
+Current package basis for this index: `bun run package:dry-run` produced
+`dist/deckforge-macos-dry-run.tgz` with SHA-256
+`74804249a251f29186ea6e0bf9391293ba788a5167b100abf4e81497d59bcb0d`,
+287,552 bytes, 26 archive members, and 17 app files.
+
 ## 2026-06-22 KST DF-246 Canonical Slide Action Shape
 
 DF-246 local update: manual QA regeneration and title-edit slide action ids now
@@ -347,17 +370,18 @@ OAuth text/image runs.
 
 DF-247 local update: the shared Packaged Live evidence index now exists at
 `docs/live-evidence/release/packaged-live-evidence-index.json`, with per-ticket
-blocked evidence artifacts for DF-241, DF-242, DF-243, DF-245, DF-246, and
-DF-247 under `docs/live-evidence/release/`. The index records the current dry-run
-package SHA-256 and each evidence artifact SHA-256, and
+blocked evidence artifacts for DF-205, DF-233, DF-235, DF-241, DF-242, DF-243,
+DF-244, DF-245, DF-246, and DF-247 under `docs/live-evidence/release/`. The
+index records the current dry-run package SHA-256 and each evidence artifact SHA-256, and
 `src/lib/packaged-live-evidence-index-artifact.test.ts` verifies the committed
 index plus entry file digests.
 
 This is not a release approval. Every index entry remains `blocked` /
 `validationKind: blocked`, so DF-247 still requires ready upstream packaged
-Golden Path, benchmark, interruption, packaging trust/clean-machine, and
-non-developer manual QA evidence before the release decision can move from
-`Blocked` to approved.
+auth/secret lifecycle, image queue, slide-regeneration, usage, Golden Path,
+benchmark, interruption, packaging trust/clean-machine, and non-developer
+manual QA evidence before the release decision can move from `Blocked` to
+approved.
 
 ## 2026-06-21 Current Branch OAuth Image Route Recheck
 
@@ -369,7 +393,7 @@ DF-241 local update: review-gallery live composition validation now accepts stor
 
 DF-245 local packaging update: branch `jacobex/live-product-completion` now routes native Tauri release packaging through `bun run build:package`, which runs `vite build` and then `scripts/sanitize-package-build.mjs`. This fixes the previous false-clean path where `bun run package:dry-run` sanitized `dist/client` and `dist/server`, but `bun run tauri:build` recreated `dist/server` through the Tauri `beforeBuildCommand` and left generated TanStack manifest entries with developer-local absolute paths such as `/Users/jake/.../src/routes/__root.tsx`.
 
-Fresh evidence: `bun test scripts/package-path-sanitizer.test.mjs` passes and covers the Tauri build-command wiring. `bun run build:package` passes and fixed-string scans of `dist/client` plus `dist/server` report 0 hits for `mock-provider`, `MOCK MODE`, `.omx`, `.playwright-mcp`, `/Users/jake`, `CODEX_SESSION=`, `OPENAI_API_KEY=`, and `auth.json`. `bun run package:dry-run` regenerated `dist/deckforge-macos-dry-run.tgz` with SHA-256 `d21d149aa545b9dd357ae29934c9339efb812eb03374197bb11be0bb32bf6dfd`, 288,207 bytes, 26 archive members, and 17 extracted app files. `bun run tauri:build` regenerated the native binary with SHA-256 `f886f3dc8c9e5c968a7a5a80134814a72b629c9fdbf0bff05e570408a7003c65` and copied the DMG to `release-artifacts/DeckForge_0.1.0_aarch64.dmg`; `shasum -a 256 -c release-artifacts/DeckForge_0.1.0_aarch64.dmg.sha256` verifies DMG SHA-256 `d6849d24c5af4548b7b35e65a68a05c8d139be4b1b5504d7c3da3a3dc9e2d467`, 1,833,575 bytes. Scans of `dist/client`, `dist/server`, the dry-run app bundle, and native `.app` found 0 hits for mock provider markers, mock mode labels, `.omx`, `.playwright-mcp`, local workspace paths, assigned Codex/OpenAI secrets, and bundled auth files; `sk-*` regex hits were Tailwind CSS utility identifiers such as `sk-image-linear-from-pos`, not secrets.
+Fresh evidence: `bun test scripts/package-path-sanitizer.test.mjs` passes and covers the Tauri build-command wiring. `bun run build:package` passes and fixed-string scans of `dist/client` plus `dist/server` report 0 hits for `mock-provider`, `MOCK MODE`, `.omx`, `.playwright-mcp`, `/Users/jake`, `CODEX_SESSION=`, `OPENAI_API_KEY=`, and `auth.json`. `bun run package:dry-run` regenerated `dist/deckforge-macos-dry-run.tgz` with SHA-256 `74804249a251f29186ea6e0bf9391293ba788a5167b100abf4e81497d59bcb0d`, 287,552 bytes, 26 archive members, and 17 extracted app files. `bun run tauri:build` regenerated the native binary with SHA-256 `f886f3dc8c9e5c968a7a5a80134814a72b629c9fdbf0bff05e570408a7003c65` and copied the DMG to `release-artifacts/DeckForge_0.1.0_aarch64.dmg`; `shasum -a 256 -c release-artifacts/DeckForge_0.1.0_aarch64.dmg.sha256` verifies DMG SHA-256 `d6849d24c5af4548b7b35e65a68a05c8d139be4b1b5504d7c3da3a3dc9e2d467`, 1,833,575 bytes. Scans of `dist/client`, `dist/server`, the dry-run app bundle, and native `.app` found 0 hits for mock provider markers, mock mode labels, `.omx`, `.playwright-mcp`, local workspace paths, assigned Codex/OpenAI secrets, and bundled auth files; `sk-*` regex hits were Tailwind CSS utility identifiers such as `sk-image-linear-from-pos`, not secrets.
 
 DF-245 remains open because this is still a developer-machine unsigned package run. Developer ID signing, notarization, stapling, Gatekeeper acceptance, persisted release-trust assessment evidence, and clean macOS account install/login/image credential/project launch/live interview evidence are still missing.
 

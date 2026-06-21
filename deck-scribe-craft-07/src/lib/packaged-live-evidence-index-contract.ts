@@ -1,7 +1,11 @@
 export const PACKAGED_LIVE_EVIDENCE_TICKET_IDS = [
+  "DF-205",
+  "DF-233",
+  "DF-235",
   "DF-241",
   "DF-242",
   "DF-243",
+  "DF-244",
   "DF-245",
   "DF-246",
   "DF-247",
@@ -54,9 +58,13 @@ export type PackagedLiveEvidenceIndexResult =
   | { readonly kind: "blocked"; readonly issues: readonly PackagedLiveEvidenceIndexIssue[] };
 
 export const PACKAGED_LIVE_EVIDENCE_ISSUE_NUMBERS = {
+  "DF-205": 131,
+  "DF-233": 147,
+  "DF-235": 149,
   "DF-241": 151,
   "DF-242": 152,
   "DF-243": 153,
+  "DF-244": 154,
   "DF-245": 155,
   "DF-246": 156,
   "DF-247": 157,

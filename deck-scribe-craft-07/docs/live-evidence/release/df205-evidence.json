@@ -1,0 +1,35 @@
+{
+  "ticketId": "DF-205",
+  "issueNumber": 131,
+  "status": "blocked",
+  "validationKind": "blocked",
+  "generatedAt": "2026-06-21T19:14:59Z",
+  "packageArchiveSha256": "74804249a251f29186ea6e0bf9391293ba788a5167b100abf4e81497d59bcb0d",
+  "summary": "Authenticated Codex runtime and local secret-lifecycle guards exist, but release evidence still lacks a clean-account login, logout/relogin, and packaged keychain lifecycle run.",
+  "currentEvidence": [
+    {
+      "path": "docs/live-auth-secret-lifecycle.md",
+      "kind": "auth and secret lifecycle contract"
+    },
+    {
+      "path": "docs/live-evidence/lane-e-20260621/auth-bootstrap-smoke.json",
+      "sha256": "4803348fa684e1eaeb6662be04d7877e180ce8178340db2d92049e2d1a465dff",
+      "kind": "authenticated Codex App Server smoke"
+    },
+    {
+      "path": "src/lib/live-auth-lifecycle.ts",
+      "kind": "auth logout and provider lock model"
+    },
+    {
+      "path": "src/lib/live-secret-material-candidates.ts",
+      "kind": "secret material redaction and candidate detection"
+    }
+  ],
+  "missingEvidence": [
+    "fresh login manual QA from an unauthenticated or clean macOS account",
+    "logout/relogin QA proving active live jobs cancel and provider actions stay locked until login is restored",
+    "packaged app Codex OAuth image capability confirmation",
+    "packaged OS keychain write/read/delete lifecycle proof for any installed API-key fallback",
+    "persisted secret leak scan from the same packaged run"
+  ]
+}
