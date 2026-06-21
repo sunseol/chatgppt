@@ -21,6 +21,8 @@ export function hasLiveFinalExportLineageArtifact(artifact: ProviderArtifactProv
     artifact.executionMode === "production" &&
     artifact.providerKind === "codex" &&
     artifact.authMode === "codex_session" &&
+    hasCanonicalText(artifact.modelOrRuntime) &&
+    hasCanonicalText(artifact.promptVersion) &&
     hasCanonicalText(artifact.threadId) &&
     hasCanonicalText(artifact.turnId)
   );

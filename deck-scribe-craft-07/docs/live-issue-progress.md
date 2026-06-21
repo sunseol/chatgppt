@@ -48,13 +48,15 @@ This still does not close DF-246. The ticket still needs a real
 non-developer, under-10-minute packaged-app session with a persisted
 non-synthetic manual QA session bundle and clean output/source/action evidence.
 
-## 2026-06-22 KST DF-247 Canonical Final Export Lineage Identities
+## 2026-06-22 KST DF-247 Complete Final Export Lineage Metadata
 
 DF-247 local update: the final release gate now requires the Golden Path final
-export lineage to carry canonical Codex `turnId` and `threadId` values before it
-can count as a production Codex session. A final export provenance row with
-`turnId: " turn_final "` now blocks with `golden_path_export_not_live` instead
-of trimming into release readiness. Regression coverage lives in
+export lineage to carry canonical Codex `turnId` and `threadId` values plus
+nonblank model/runtime and prompt-version metadata before it can count as a
+production Codex session. A final export provenance row with
+`turnId: " turn_final "` or empty `modelOrRuntime` / `promptVersion` now blocks
+with `golden_path_export_not_live` instead of trimming or under-specifying its
+way into release readiness. Regression coverage lives in
 `src/lib/live-release-gate-final-export.test.ts`.
 
 This still does not close DF-247. The release remains blocked until all P0 Live

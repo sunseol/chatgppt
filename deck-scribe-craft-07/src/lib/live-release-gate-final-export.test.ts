@@ -72,6 +72,34 @@ describe("live initial release gate final export evidence", () => {
     if (result.kind !== "blocked") return;
     expect(result.blockers.map((blocker) => blocker.code)).toEqual(["golden_path_export_not_live"]);
   });
+
+  test("blocks final export lineage with missing model and prompt metadata", () => {
+    // Given
+    const input = readyInputWithFinalExport("live_export_001");
+    const result = evaluateLiveInitialReleaseGate({
+      ...input,
+      goldenPathLineage: [
+        createProviderArtifactProvenance({
+          artifactId: "live_export_001",
+          executionMode: "production",
+          providerKind: "codex",
+          authMode: "codex_session",
+          modelOrRuntime: "",
+          promptVersion: "",
+          durationMs: 500,
+          inputArtifactIds: ["live_slide_1"],
+          turnId: "turn_final",
+          threadId: "thread_project",
+          fixture: false,
+        }),
+      ],
+    });
+
+    // When / Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.blockers.map((blocker) => blocker.code)).toEqual(["golden_path_export_not_live"]);
+  });
 });
 
 function readyInputWithFinalExport(finalExportArtifactId: string): LiveReleaseGateInput {
