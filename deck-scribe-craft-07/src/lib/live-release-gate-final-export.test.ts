@@ -19,6 +19,31 @@ describe("live initial release gate final export evidence", () => {
     expect(result.blockers.map((blocker) => blocker.code)).toEqual(["golden_path_export_missing"]);
     expect(result.blockers[0]?.refs).toEqual(["placeholder_export_artifact"]);
   });
+
+  test("blocks final export lineage outside the production Codex session", () => {
+    const input = readyInputWithFinalExport("live_export_001");
+    const result = evaluateLiveInitialReleaseGate({
+      ...input,
+      goldenPathLineage: [
+        createProviderArtifactProvenance({
+          artifactId: "live_export_001",
+          executionMode: "development",
+          providerKind: "local",
+          authMode: "local",
+          modelOrRuntime: "local-exporter",
+          promptVersion: "final_report@v1",
+          durationMs: 500,
+          inputArtifactIds: ["live_slide_1"],
+          fixture: false,
+        }),
+      ],
+    });
+
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.blockers.map((blocker) => blocker.code)).toEqual(["golden_path_export_not_live"]);
+    expect(result.blockers[0]?.refs).toEqual(["live_export_001:development/local/local"]);
+  });
 });
 
 function readyInputWithFinalExport(finalExportArtifactId: string): LiveReleaseGateInput {

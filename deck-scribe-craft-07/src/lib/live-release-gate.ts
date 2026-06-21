@@ -3,13 +3,10 @@ import {
   distinctCleanPassedBenchmarkCount,
 } from "./live-release-benchmark-gate";
 import { decisionBlockers } from "./live-release-decision-gate";
+import { lineageBlockers } from "./live-release-lineage-gate";
 import { p0Blockers } from "./live-release-p0-gate";
 import type { LiveTicketEvidence } from "./live-release-p0-gate";
-import {
-  collectLineageContamination,
-  type ProviderArtifactProvenance,
-} from "./provider-provenance";
-import { hasLiveFinalExportArtifactId } from "./live-release-final-export-gate";
+import type { ProviderArtifactProvenance } from "./provider-provenance";
 
 export { LIVE_P0_TICKET_IDS } from "./live-release-p0-gate";
 export type { LiveP0TicketId, LiveTicketEvidence, LiveTicketStatus } from "./live-release-p0-gate";
@@ -78,6 +75,7 @@ export type LiveReleaseBlockerCode =
   | "live_benchmark_shortfall"
   | "golden_path_lineage_missing"
   | "golden_path_export_missing"
+  | "golden_path_export_not_live"
   | "golden_path_contaminated"
   | "invalid_critical_defect_count"
   | "critical_defects_open"
@@ -151,48 +149,6 @@ function productionPackageBlockers(
             "production_package_contaminated",
             "Production package must pass fixture, mock, and secret scans.",
             ["DF-206", "DF-245"],
-          ),
-        ]),
-  ];
-}
-
-function lineageBlockers(
-  lineage: readonly ProviderArtifactProvenance[],
-  finalExportArtifactId: string,
-): readonly LiveReleaseBlocker[] {
-  if (lineage.length === 0) {
-    return [
-      blocker("golden_path_lineage_missing", "Golden Path lineage evidence is required.", [
-        "DF-241",
-      ]),
-    ];
-  }
-  const expectedFinalExportId = finalExportArtifactId.trim();
-  const hasCanonicalFinalExportId =
-    expectedFinalExportId.length > 0 &&
-    expectedFinalExportId === finalExportArtifactId &&
-    hasLiveFinalExportArtifactId(expectedFinalExportId);
-  const includesFinalExport =
-    hasCanonicalFinalExportId && lineage.some((item) => item.artifactId === expectedFinalExportId);
-  const contamination = collectLineageContamination(lineage);
-  const refs = [...contamination.mockArtifactIds, ...contamination.fixtureArtifactIds];
-  return [
-    ...(includesFinalExport
-      ? []
-      : [
-          blocker(
-            "golden_path_export_missing",
-            "Golden Path lineage must include the final export artifact.",
-            [expectedFinalExportId || "final export artifact"],
-          ),
-        ]),
-    ...(refs.length === 0
-      ? []
-      : [
-          blocker(
-            "golden_path_contaminated",
-            "Golden Path lineage must contain zero mock or fixture artifacts.",
-            refs,
           ),
         ]),
   ];
