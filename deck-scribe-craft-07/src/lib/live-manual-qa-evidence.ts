@@ -5,6 +5,7 @@ import {
   countDistinctApprovalTargetChecks,
 } from "./live-manual-qa-approval-targets";
 import { manualQaIssueLogIssues } from "./live-manual-qa-issue-log";
+import { liveManualQaSlideActionIssues, liveSlideIds } from "./live-manual-qa-slide-actions";
 import { realSourceOpenIssues } from "./live-manual-qa-source-evidence";
 import { sessionEvidenceIssues } from "./live-manual-qa-session-evidence";
 
@@ -15,17 +16,6 @@ export const MANUAL_QA_EXPORTS = ["png", "project", "report"] as const;
 export { MANUAL_QA_APPROVAL_TARGETS };
 
 export const MANUAL_QA_TESTER_ROLES = ["non_developer", "developer"] as const;
-
-const NON_LIVE_SLIDE_ID_MARKERS = [
-  "placeholder",
-  "template",
-  "sample",
-  "example",
-  "mock",
-  "fixture",
-  "test",
-  "fake",
-] as const;
 
 export type ManualQaSetupTask = (typeof MANUAL_QA_SETUP_TASKS)[number];
 export type ManualQaExport = (typeof MANUAL_QA_EXPORTS)[number];
@@ -74,6 +64,7 @@ export type LiveManualQaIssueCode =
   | "duplicate_approval_target_check"
   | "missing_slide_regeneration"
   | "missing_title_edit"
+  | "invalid_manual_qa_slide_action"
   | "missing_export_open"
   | "invalid_manual_qa_count"
   | "critical_issue_present"
@@ -103,16 +94,7 @@ export function evaluateLiveManualQaEvidence(
     ...setupIssues(evidence),
     ...approvalIssues(evidence.approvalTargetChecks),
     ...realSourceOpenIssues(evidence.openedRealSourceUrls, evidence.finalReportSourceUrls),
-    ...presenceIssue(
-      "missing_slide_regeneration",
-      evidence.regeneratedSlideIds,
-      "At least one slide must be regenerated during manual QA.",
-    ),
-    ...presenceIssue(
-      "missing_title_edit",
-      evidence.editedTitleSlideIds,
-      "At least one title edit must survive the QA flow.",
-    ),
+    ...liveManualQaSlideActionIssues(evidence.regeneratedSlideIds, evidence.editedTitleSlideIds),
     ...exportIssues(evidence.openedExports),
     ...manualQaCountShapeIssues(evidence),
     ...countIssue(
@@ -197,16 +179,6 @@ function exportIssues(exports: readonly ManualQaExport[]): readonly LiveManualQa
       ];
 }
 
-function presenceIssue(
-  code: LiveManualQaIssueCode,
-  values: readonly string[],
-  message: string,
-): readonly LiveManualQaIssue[] {
-  const liveIds = liveSlideIds(values);
-  const refs = nonEmpty(values);
-  return liveIds.length > 0 ? [] : [issue(code, message, refs.length > 0 ? refs : ["missing"])];
-}
-
 function countIssue(
   code: LiveManualQaIssueCode,
   count: number,
@@ -242,16 +214,6 @@ function severityCounts(
 
 function nonEmpty(values: readonly string[]): readonly string[] {
   return values.filter((value) => value.trim().length > 0);
-}
-
-function liveSlideIds(values: readonly string[]): readonly string[] {
-  return nonEmpty(values).filter((value) => {
-    const normalized = value.toLowerCase();
-    return (
-      value === value.trim() &&
-      !NON_LIVE_SLIDE_ID_MARKERS.some((marker) => normalized.includes(marker))
-    );
-  });
 }
 
 function issue(

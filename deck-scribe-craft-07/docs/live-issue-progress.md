@@ -4,6 +4,22 @@ Date: 2026-06-19
 
 Scope: tracked GitHub issues `#126` through `#157` (`DF-200` through `DF-247`).
 
+## 2026-06-22 KST DF-246 Contaminated Manual QA Slide Actions
+
+DF-246 local update: manual QA slide action evidence now rejects every
+non-empty invalid regeneration or title-edit slide id, even when another id in
+the same action list is canonical. A bundle with `slide-3` plus
+`placeholder-slide` or `template-title-slide` now blocks with
+`invalid_manual_qa_slide_action` instead of silently dropping the contaminated
+reference and reporting the evidence as ready. The slide-action checks were
+split into `src/lib/live-manual-qa-slide-actions.ts` to keep the manual QA
+evidence orchestrator below the 250 pure-LOC ceiling. Regression coverage lives
+in `src/lib/live-manual-qa-slide-actions.test.ts`.
+
+This still does not close DF-246. The ticket still needs a real
+non-developer, under-10-minute packaged-app session with a persisted
+non-synthetic manual QA session bundle and clean output/source/action evidence.
+
 ## 2026-06-22 KST DF-247 Canonical Final Export Lineage Identities
 
 DF-247 local update: the final release gate now requires the Golden Path final
