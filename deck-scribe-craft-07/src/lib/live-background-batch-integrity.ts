@@ -53,20 +53,43 @@ function duplicateProviderRequestIssues(
 ): readonly LiveBackgroundBatchIssue[] {
   const seen = new Set<string>();
   return batch.artifacts.flatMap((artifact) => {
-    const requestId = artifact.request?.requestId;
-    if (!requestId) return [];
-    if (!seen.has(requestId)) {
-      seen.add(requestId);
+    const identity = providerRequestIdentity(artifact);
+    if (!identity) return [];
+    if (!seen.has(identity)) {
+      seen.add(identity);
       return [];
     }
     return [
       {
         code: "duplicate_provider_request_metadata" as const,
         slideNumber: artifact.slideNumber,
-        message: "Live background provider request ids must be unique per slide.",
+        message: "Live background provider request metadata must be unique per slide.",
       },
     ];
   });
+}
+
+function providerRequestIdentity(
+  artifact: LiveBackgroundBatch["artifacts"][number],
+): string | undefined {
+  switch (artifact.providerId) {
+    case "codex":
+      return requestIdentity("codex", artifact.request?.turnId);
+    case "openaiImage":
+      return requestIdentity("openaiImage", artifact.request?.requestId);
+    case "mock":
+      return requestIdentity("mock", artifact.request?.requestId);
+    default:
+      return assertNever(artifact.providerId);
+  }
+}
+
+function requestIdentity(providerId: string, identity: string | undefined): string | undefined {
+  return identity === undefined ? undefined : `${providerId}:${identity}`;
+}
+
+function assertNever(value: never): never {
+  throw new Error(`Unexpected live background provider: ${String(value)}`);
 }
 
 function duplicateStoredArtifactIssues(

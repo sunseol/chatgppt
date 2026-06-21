@@ -10,6 +10,58 @@ import type { StoredSlideImageArtifact } from "./image-artifact-store";
 import type { SlideImageArtifact } from "./slide-image-provider";
 
 describe("live background batch uniqueness", () => {
+  test("blocks duplicate Codex OAuth turn evidence", () => {
+    // Given
+    const packages = slidePackages();
+    const artifacts = packages.map((pkg): SlideImageArtifact => {
+      const artifact = imageArtifact(pkg);
+      return {
+        ...artifact,
+        providerId: "codex",
+        request: {
+          model: "gpt-image-2",
+          threadId: "thread_codex_image_shared",
+          turnId: `turn_codex_image_${String(pkg.slideNumber).padStart(3, "0")}`,
+          usage: { imageCount: 1 },
+        },
+      };
+    });
+    const duplicateTurnArtifacts: readonly SlideImageArtifact[] = [
+      artifacts[0],
+      {
+        ...artifacts[1],
+        request: {
+          model: "gpt-image-2",
+          threadId: "thread_codex_image_shared",
+          turnId: "turn_codex_image_001",
+          usage: { imageCount: 1 },
+        },
+      },
+      artifacts[2],
+      artifacts[3],
+      artifacts[4],
+    ];
+
+    // When
+    const validation = validateLiveBackgroundBatch(
+      buildLiveBackgroundBatch({
+        batchId: "live_bg_batch_duplicate_codex_turn",
+        deckContextId: "deck_context_001",
+        designSystemId: "design_001",
+        artifacts: duplicateTurnArtifacts,
+        storedArtifacts: duplicateTurnArtifacts.map((artifact) => storedArtifact(artifact)),
+        promptPackages: packages,
+      }),
+    );
+
+    // Then
+    expect(validation.kind).toBe("blocked");
+    if (validation.kind !== "blocked") return;
+    expect(validation.issues.map((issue) => issue.code)).toEqual([
+      "duplicate_provider_request_metadata",
+    ]);
+  });
+
   test("blocks duplicate provider requests and stored binary artifacts", () => {
     // Given
     const packages = slidePackages();

@@ -669,3 +669,11 @@ approved slide, then carries the evidence path through
 `DeckProject.liveSlideRegenerationReviewEvidence`. DF-235 remains open until a
 real packaged review UI run proves candidate approval and failed-regeneration
 original preservation from the app surface.
+
+DF-241/DF-247 local update: live background batch uniqueness now treats Codex
+OAuth `turnId` values as provider request identities for duplicate detection.
+A five-slide batch can no longer reuse one Codex image turn as evidence for two
+backgrounds while passing only because OpenAI-style `requestId` is absent.
+DF-241 and DF-247 remain open until the signed packaged Golden Path and final
+release evidence index are produced from real app runs, but this removes one
+false-ready path for reusing packaged Codex image evidence.
