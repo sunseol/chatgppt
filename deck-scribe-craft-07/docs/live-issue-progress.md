@@ -33,6 +33,19 @@ This still does not close DF-244. Packaged app-surface manual QA still needs
 real Codex image usage disclosure payloads plus the persisted pre-generation
 confirmation JSON from the same run.
 
+## 2026-06-22 KST DF-246 Canonical Manual QA Slide Actions
+
+DF-246 local update: manual QA regeneration and title-edit slide ids now have to
+be canonical before they can count as required tester actions. A padded slide id
+such as ` slide-3 ` no longer satisfies the regeneration or title-edit
+requirement by trimming into a plausible slide id; it now leaves the evidence
+blocked with `missing_slide_regeneration` and `missing_title_edit`. Regression
+coverage lives in `src/lib/live-manual-qa-evidence.test.ts`.
+
+This still does not close DF-246. The ticket still needs a real
+non-developer, under-10-minute packaged-app session with a persisted
+non-synthetic manual QA session bundle and clean output/source/action evidence.
+
 ## 2026-06-22 KST DF-233 Stored Image Artifact Evidence Gate
 
 DF-233 local update: exported live image queue evidence now validates the stored

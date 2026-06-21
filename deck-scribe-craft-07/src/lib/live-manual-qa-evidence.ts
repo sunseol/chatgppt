@@ -248,7 +248,10 @@ function nonEmpty(values: readonly string[]): readonly string[] {
 function liveSlideIds(values: readonly string[]): readonly string[] {
   return nonEmpty(values).filter((value) => {
     const normalized = value.toLowerCase();
-    return !NON_LIVE_SLIDE_ID_MARKERS.some((marker) => normalized.includes(marker));
+    return (
+      value === value.trim() &&
+      !NON_LIVE_SLIDE_ID_MARKERS.some((marker) => normalized.includes(marker))
+    );
   });
 }
 
