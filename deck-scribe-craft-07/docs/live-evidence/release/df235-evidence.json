@@ -3,9 +3,9 @@
   "issueNumber": 149,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-21T21:07:26Z",
+  "generatedAt": "2026-06-21T22:15:06Z",
   "packageArchiveSha256": "aacadd4cd4546ce20b084b1fbf8018e9571a635983ad9aa30b07a123c705985e",
-  "summary": "A real v2 regenerated image and static before/after preservation evidence exist, and review evidence paths now reject scratch or observer-marked artifacts before project-state persistence, but the packaged Review-stage UI has not recorded approval and failed-regeneration preservation through the product surface.",
+  "summary": "A real v2 regenerated image and static before/after preservation evidence exist, and regeneration candidates now require input lineage to the approved original artifact, but the packaged Review-stage UI has not recorded approval and failed-regeneration preservation through the product surface.",
   "currentEvidence": [
     {
       "path": "docs/live-slide-regeneration.md",
@@ -30,8 +30,16 @@
       "kind": "review evidence path validator"
     },
     {
+      "path": "src/lib/live-slide-regeneration-input-lineage.ts",
+      "kind": "candidate input-lineage validator requiring the approved original artifact"
+    },
+    {
       "path": "src/lib/live-slide-regeneration-review-evidence.test.ts",
       "kind": "scratch review evidence path regression tests"
+    },
+    {
+      "path": "src/lib/live-slide-regeneration-provenance.test.ts",
+      "kind": "regression coverage for missing approved-original input lineage"
     }
   ],
   "missingEvidence": [

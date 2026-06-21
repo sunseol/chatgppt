@@ -17,6 +17,7 @@ describe("live full-slide regeneration slide spec lineage", () => {
       artifact: slideImageArtifactFixture(),
       version: 2,
       createdAt: 1_789_900_018,
+      extraInputArtifactIds: ["project_001_image_slide_003_v0"],
     });
 
     const result = createLiveSlideRegenerationCandidate({

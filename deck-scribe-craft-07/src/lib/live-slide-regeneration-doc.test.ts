@@ -29,10 +29,12 @@ describe("live full-slide regeneration documentation", () => {
     expect(slideRegeneration.includes("background_artifact_storage_path_mismatch")).toBe(true);
     expect(slideRegeneration.includes("provenance sidecar path")).toBe(true);
     expect(slideRegeneration.includes("provenance artifact id")).toBe(true);
+    expect(slideRegeneration.includes("canonical input lineage")).toBe(true);
     expect(slideRegeneration.includes("invalid_regeneration_background_hash")).toBe(true);
     expect(slideRegeneration.includes("mock_background_artifact")).toBe(true);
     expect(slideRegeneration.includes("regeneration_request_provenance_mismatch")).toBe(true);
     expect(slideRegeneration.includes("regeneration_background_not_live")).toBe(true);
+    expect(slideRegeneration.includes("regeneration_input_lineage_mismatch")).toBe(true);
     expect(slideRegeneration.includes("production `codex` with `codex_session` auth")).toBe(true);
     expect(slideRegeneration.includes("missing_regeneration_comparison")).toBe(true);
     expect(slideRegeneration.includes("candidate_not_ready_for_approval")).toBe(true);

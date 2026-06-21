@@ -1348,6 +1348,15 @@ readiness. DF-241 remains open until the packaged production Golden Path run
 captures the signed report, screenshots/recording, final validation bundle,
 restart/reopen evidence, and export lineage.
 
+DF-235 local update: selected-slide regeneration candidates now require the
+new background provenance to cite the approved original background artifact id
+as canonical input lineage. A live-looking regenerated background with a new
+provider request, matching sidecars, and valid storage paths now blocks with
+`regeneration_input_lineage_mismatch` if it was not produced from the selected
+approved original. DF-235 remains open until the packaged Review-stage UI run
+captures approval of the v2 candidate and failed-regeneration preservation
+evidence through the product surface.
+
 DF-205 local update: the production image generation gate now consumes current
 provider statuses in addition to the persisted image path decision. A locked
 `codex` / `codexOAuth` decision whose current Codex provider status is

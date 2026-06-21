@@ -4,6 +4,7 @@ import type {
   LiveSlideRegenerationIssue,
   LiveSlideRegenerationRequest,
 } from "./live-slide-regeneration";
+import { candidateInputLineageIssues } from "./live-slide-regeneration-input-lineage";
 import { collectRegenerationProviderEvidence } from "./live-slide-regeneration-provider-evidence";
 
 export function candidateIssues(input: {
@@ -67,6 +68,11 @@ export function candidateIssues(input: {
             message: "Live regeneration candidates must use a real image artifact.",
           },
         ]
+      : []),
+    ...(hasRequestEvidence &&
+    input.candidateBackground.metadata.providerId !== "mock" &&
+    providerEvidence.isLive
+      ? candidateInputLineageIssues(input)
       : []),
     ...(hasRequestEvidence &&
     input.candidateBackground.metadata.providerId !== "mock" &&

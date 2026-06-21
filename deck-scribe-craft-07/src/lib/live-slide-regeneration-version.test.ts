@@ -11,11 +11,7 @@ import {
 describe("live full-slide regeneration artifact version", () => {
   test("blocks a regenerated background whose stored version does not match the candidate slide", async () => {
     // Given
-    const store = createImageArtifactStore({ write: async () => undefined });
-    const candidateBackground = await storeSlideImageArtifact({
-      store,
-      projectId: "project_001",
-      artifact: slideImageArtifactFixture(),
+    const candidateBackground = await storedCandidateBackground({
       version: 1,
       createdAt: 1_789_900_010,
     });
@@ -42,12 +38,8 @@ describe("live full-slide regeneration artifact version", () => {
 
   test("blocks a regenerated background without provider turn evidence", async () => {
     // Given
-    const store = createImageArtifactStore({ write: async () => undefined });
-    const storedBackground = await storeSlideImageArtifact({
-      store,
-      projectId: "project_001",
+    const storedBackground = await storedCandidateBackground({
       artifact: slideImageArtifactFixture({ providerId: "codex" }),
-      version: 2,
       createdAt: 1_789_900_011,
     });
     const candidateBackground = {
@@ -80,12 +72,8 @@ describe("live full-slide regeneration artifact version", () => {
 
   test("blocks a regenerated background that reuses the original provider turn or request id", async () => {
     // Given
-    const store = createImageArtifactStore({ write: async () => undefined });
-    const candidateBackground = await storeSlideImageArtifact({
-      store,
-      projectId: "project_001",
+    const candidateBackground = await storedCandidateBackground({
       artifact: slideImageArtifactFixture({ requestId: "img_req_original" }),
-      version: 2,
       createdAt: 1_789_900_012,
     });
 
@@ -110,12 +98,8 @@ describe("live full-slide regeneration artifact version", () => {
 
   test("blocks regenerated background turn or request ids that disagree with stored provenance", async () => {
     // Given
-    const store = createImageArtifactStore({ write: async () => undefined });
-    const storedBackground = await storeSlideImageArtifact({
-      store,
-      projectId: "project_001",
+    const storedBackground = await storedCandidateBackground({
       artifact: slideImageArtifactFixture({ requestId: "img_req_revised" }),
-      version: 2,
       createdAt: 1_789_900_013,
     });
     const candidateBackground = {
@@ -144,12 +128,8 @@ describe("live full-slide regeneration artifact version", () => {
 
   test("blocks regenerated backgrounds with malformed stored hashes", async () => {
     // Given
-    const store = createImageArtifactStore({ write: async () => undefined });
-    const storedBackground = await storeSlideImageArtifact({
-      store,
-      projectId: "project_001",
+    const storedBackground = await storedCandidateBackground({
       artifact: slideImageArtifactFixture({ requestId: "img_req_revised" }),
-      version: 2,
       createdAt: 1_789_900_014,
     });
     const candidateBackground = {
@@ -178,12 +158,8 @@ describe("live full-slide regeneration artifact version", () => {
 
   test("blocks regenerated backgrounds with mismatched stored image paths", async () => {
     // Given
-    const store = createImageArtifactStore({ write: async () => undefined });
-    const storedBackground = await storeSlideImageArtifact({
-      store,
-      projectId: "project_001",
+    const storedBackground = await storedCandidateBackground({
       artifact: slideImageArtifactFixture({ requestId: "img_req_revised" }),
-      version: 2,
       createdAt: 1_789_900_017,
     });
     const candidateBackground = {
@@ -219,12 +195,8 @@ describe("live full-slide regeneration artifact version", () => {
 
   test("blocks regenerated backgrounds without production live provider provenance", async () => {
     // Given
-    const store = createImageArtifactStore({ write: async () => undefined });
-    const storedBackground = await storeSlideImageArtifact({
-      store,
-      projectId: "project_001",
+    const storedBackground = await storedCandidateBackground({
       artifact: slideImageArtifactFixture({ requestId: "img_req_revised" }),
-      version: 2,
       createdAt: 1_789_900_015,
     });
     const candidateBackground = {
@@ -257,11 +229,7 @@ describe("live full-slide regeneration artifact version", () => {
 
   test("blocks candidates built from a different approved slide or stale original version", async () => {
     // Given
-    const store = createImageArtifactStore({ write: async () => undefined });
-    const candidateBackground = await storeSlideImageArtifact({
-      store,
-      projectId: "project_001",
-      artifact: slideImageArtifactFixture(),
+    const candidateBackground = await storedCandidateBackground({
       version: 3,
       createdAt: 1_789_900_016,
     });
@@ -286,3 +254,19 @@ describe("live full-slide regeneration artifact version", () => {
     ]);
   });
 });
+
+async function storedCandidateBackground(options: {
+  readonly artifact?: ReturnType<typeof slideImageArtifactFixture>;
+  readonly version?: number;
+  readonly createdAt: number;
+}) {
+  const store = createImageArtifactStore({ write: async () => undefined });
+  return storeSlideImageArtifact({
+    store,
+    projectId: "project_001",
+    artifact: options.artifact ?? slideImageArtifactFixture(),
+    version: options.version ?? 2,
+    createdAt: options.createdAt,
+    extraInputArtifactIds: ["project_001_image_slide_003_v0"],
+  });
+}

@@ -9,6 +9,36 @@ import {
 } from "./live-slide-regeneration-test-fixtures";
 
 describe("live full-slide regeneration provenance sidecar", () => {
+  test("blocks regenerated backgrounds that do not cite the approved original as input lineage", async () => {
+    // Given
+    const store = createImageArtifactStore({ write: async () => undefined });
+    const candidateBackground = await storeSlideImageArtifact({
+      store,
+      projectId: "project_001",
+      artifact: slideImageArtifactFixture({ requestId: "img_req_revised" }),
+      version: 2,
+      createdAt: 1_789_900_018,
+    });
+
+    // When
+    const result = createLiveSlideRegenerationCandidate({
+      request: liveRegenerationRequestFixture(),
+      originalSlide: approvedSlideFixture(),
+      candidateBackground,
+      candidateDeckContextId: "deckctx_001",
+      candidateDesignSystemId: "design_001",
+      candidateSlideSpec: slideSpecFixture(),
+      candidateVersion: 2,
+    });
+
+    // Then
+    expect(result.kind).toBe("failed");
+    if (result.kind !== "failed") return;
+    expect(result.failure.issues.map((issue) => issue.code)).toEqual([
+      "regeneration_input_lineage_mismatch",
+    ]);
+  });
+
   test("blocks regenerated backgrounds whose provenance sidecar points at another artifact", async () => {
     // Given
     const store = createImageArtifactStore({ write: async () => undefined });
@@ -18,6 +48,7 @@ describe("live full-slide regeneration provenance sidecar", () => {
       artifact: slideImageArtifactFixture({ requestId: "img_req_revised" }),
       version: 2,
       createdAt: 1_789_900_019,
+      extraInputArtifactIds: ["project_001_image_slide_003_v0"],
     });
     const candidateBackground = {
       ...storedBackground,

@@ -61,6 +61,7 @@ async function readyCandidate(): Promise<LiveSlideRegenerationCandidate> {
     artifact: slideImageArtifactFixture({ requestId: "img_req_revised" }),
     version: 2,
     createdAt: 1_789_900_020,
+    extraInputArtifactIds: ["project_001_image_slide_003_v0"],
   });
   const result = createLiveSlideRegenerationCandidate({
     request: liveRegenerationRequestFixture(),

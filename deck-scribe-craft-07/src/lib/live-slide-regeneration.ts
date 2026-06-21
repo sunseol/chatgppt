@@ -31,6 +31,7 @@ export type LiveSlideRegenerationIssueCode =
   | "background_artifact_storage_path_mismatch"
   | "invalid_regeneration_background_hash"
   | "regeneration_background_not_live"
+  | "regeneration_input_lineage_mismatch"
   | "slide_id_mismatch"
   | "stale_candidate_version"
   | "missing_regeneration_request_id"

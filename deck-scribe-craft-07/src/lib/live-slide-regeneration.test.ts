@@ -130,7 +130,6 @@ describe("live full-slide regeneration", () => {
       originalBackgroundRequestId: stored.originalRequestId,
     });
     if (requestResult.kind !== "ready") throw new Error("Expected live regeneration request.");
-    const originalSlides = [approvedSlideFixture()];
 
     // When
     const candidateResult = createLiveSlideRegenerationCandidate({
@@ -146,7 +145,6 @@ describe("live full-slide regeneration", () => {
     // Then
     expect(candidateResult.kind).toBe("ready");
     if (candidateResult.kind !== "ready") return;
-    expect(originalSlides[0]).toEqual(approvedSlideFixture());
     expect(candidateResult.candidate.slide.status).toBe("ready");
     expect(candidateResult.candidate.slide.version).toBe(2);
     expect(candidateResult.candidate.originalBackgroundArtifactId).toBe(
@@ -262,6 +260,7 @@ async function storedBackgrounds(
         }),
         version: 2,
         createdAt: 1_789_900_002,
+        extraInputArtifactIds: [original.binary.artifactId],
       });
   const candidate =
     options.candidateProviderId === undefined ||
