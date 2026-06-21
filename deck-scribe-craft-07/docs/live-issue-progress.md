@@ -4,6 +4,26 @@ Date: 2026-06-19
 
 Scope: tracked GitHub issues `#126` through `#157` (`DF-200` through `DF-247`).
 
+## 2026-06-22 KST DF-243 Interrupted Artifact Gate Product Evidence Export
+
+DF-243 local update: the product now has a dedicated app-storage evidence writer
+for the `interrupted_artifact_gate` scenario.
+`writeLiveInterruptionGateEvidenceExport` persists three reviewable JSON
+artifacts for a real interrupted artifact gate run:
+`df243-interrupted-artifact-gate-recovery-snapshot-{jobId}.json`,
+`df243-interrupted-artifact-gate-approval-{jobId}.json`, and
+`df243-interrupted-artifact-gate-export-{jobId}.json`. The writer blocks if the
+interrupted artifact ids are missing/noncanonical, if completed artifacts are
+lost after restart, if approval/export gate evidence did not deny every
+interrupted artifact, or if an interrupted artifact remains approvable/exportable.
+Regression coverage lives in
+`src/lib/live-interruption-gate-evidence-export.test.ts`.
+
+This still does not close DF-243. The release closure artifact remains blocked
+until packaged/authenticated runs capture the product-generated image
+partial-resume, cancel, and interrupted-gate JSON artifacts under
+`docs/live-evidence`.
+
 ## 2026-06-22 KST DF-243 Image Partial Resume Product Evidence Export
 
 DF-243 local update: the product now also has a dedicated app-storage evidence
