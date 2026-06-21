@@ -5,6 +5,10 @@ import {
 import { decisionBlockers } from "./live-release-decision-gate";
 import { lineageBlockers } from "./live-release-lineage-gate";
 import { p0Blockers } from "./live-release-p0-gate";
+import type {
+  PackagedLiveEvidenceIndexIssueCode,
+  PackagedLiveEvidenceIndexResult,
+} from "./packaged-live-evidence-index";
 import type { LiveTicketEvidence } from "./live-release-p0-gate";
 import type { ProviderArtifactProvenance } from "./provider-provenance";
 
@@ -61,12 +65,14 @@ export type LiveReleaseGateInput = {
   readonly liveBenchmarks: readonly LiveBenchmarkEvidence[];
   readonly goldenPathLineage: readonly ProviderArtifactProvenance[];
   readonly goldenPathFinalExportArtifactId: string;
+  readonly packagedLiveEvidenceIndex: PackagedLiveEvidenceIndexResult;
   readonly criticalDefectCount: number;
   readonly unresolvedP1Risks: readonly UnresolvedP1Risk[];
   readonly releaseDecision: LiveReleaseDecisionEvidence;
 };
 
 export type LiveReleaseBlockerCode =
+  | PackagedLiveEvidenceIndexIssueCode
   | "p0_ticket_status_conflict"
   | "p0_not_live_verified"
   | "production_mock_enabled"
@@ -117,6 +123,7 @@ export function evaluateLiveInitialReleaseGate(input: LiveReleaseGateInput): Liv
     ...productionPackageBlockers(input.productionPackage),
     ...benchmarkBlockers(input.liveBenchmarks, passedBenchmarkCount),
     ...lineageBlockers(input.goldenPathLineage, input.goldenPathFinalExportArtifactId),
+    ...packagedLiveEvidenceIndexBlockers(input.packagedLiveEvidenceIndex),
     ...defectBlockers(input.criticalDefectCount),
     ...p1RiskBlockers(input.unresolvedP1Risks),
     ...decisionBlockers(input.releaseDecision),
@@ -153,6 +160,14 @@ function productionPackageBlockers(
           ),
         ]),
   ];
+}
+
+function packagedLiveEvidenceIndexBlockers(
+  result: PackagedLiveEvidenceIndexResult,
+): readonly LiveReleaseBlocker[] {
+  return result.kind === "ready"
+    ? []
+    : result.issues.map((issue) => blocker(issue.code, issue.message, issue.refs));
 }
 
 function defectBlockers(criticalDefectCount: number): readonly LiveReleaseBlocker[] {

@@ -105,6 +105,7 @@ function readyInputWithFinalExport(finalExportArtifactId: string): LiveReleaseGa
         fixture: false,
       }),
     ],
+    packagedLiveEvidenceIndex: { kind: "ready" },
     criticalDefectCount: 0,
     unresolvedP1Risks: [],
     releaseDecision: {

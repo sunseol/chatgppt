@@ -6,26 +6,32 @@ import {
 } from "./live-release-gate";
 import { createProviderArtifactProvenance } from "./provider-provenance";
 
-describe("live initial release gate benchmark failure domains", () => {
-  test("blocks benchmark failure domains outside the DF-242 taxonomy", () => {
+describe("live initial release gate packaged evidence index", () => {
+  test("blocks release when the packaged live evidence index is not ready", () => {
     // Given
     const input = readyInput();
     const result = evaluateLiveInitialReleaseGate({
       ...input,
-      liveBenchmarks: input.liveBenchmarks.map((benchmark) =>
-        benchmark.id === "revision_regeneration"
-          ? { ...benchmark, failureDomain: "billing" }
-          : benchmark,
-      ),
+      packagedLiveEvidenceIndex: {
+        kind: "blocked",
+        issues: [
+          {
+            code: "packaged_live_release_ready_before_upstream",
+            message:
+              "DF-247 release evidence cannot be ready while upstream packaged evidence is blocked.",
+            refs: ["DF-241", "DF-242", "DF-243"],
+          },
+        ],
+      },
     });
 
     // When / Then
     expect(result.kind).toBe("blocked");
     if (result.kind !== "blocked") return;
     expect(result.blockers.map((blocker) => blocker.code)).toEqual([
-      "live_benchmark_invalid_failure_domain",
+      "packaged_live_release_ready_before_upstream",
     ]);
-    expect(result.blockers[0]?.refs).toEqual(["revision_regeneration:billing"]);
+    expect(result.blockers[0]?.refs).toEqual(["DF-241", "DF-242", "DF-243"]);
   });
 });
 

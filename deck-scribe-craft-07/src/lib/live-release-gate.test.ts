@@ -264,6 +264,7 @@ function readyInput(): LiveReleaseGateInput {
         fixture: false,
       }),
     ],
+    packagedLiveEvidenceIndex: { kind: "ready" },
     criticalDefectCount: 0,
     unresolvedP1Risks: [],
     releaseDecision: {
