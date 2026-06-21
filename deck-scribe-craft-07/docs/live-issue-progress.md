@@ -75,6 +75,20 @@ This still does not close DF-246. The ticket still needs a real
 non-developer, under-10-minute packaged-app session with a persisted
 non-synthetic manual QA session bundle and clean output/source/action evidence.
 
+## 2026-06-22 KST DF-247 Same-Decision Release Payload
+
+DF-247 local update: the final release gate now requires the canonical
+`docs/live-release-decision.md` record to include a `live_release_decision`
+payload whose document path, approval state, recorded-decision flag, and known
+limits flag match the gate input. A copied payload from a blocked decision state
+now blocks with `missing_release_decision` instead of satisfying the final gate
+with optimistic booleans alone. Regression coverage lives in
+`src/lib/live-release-gate.test.ts`, with shared ready-state fixtures in
+`src/lib/live-release-gate-test-fixtures.ts`.
+
+This still does not close DF-247. The ticket still needs every upstream packaged
+evidence entry ready plus an actually approved release decision.
+
 ## 2026-06-22 KST DF-246 Canonical Slide Action Shape
 
 DF-246 local update: manual QA regeneration and title-edit slide action ids now

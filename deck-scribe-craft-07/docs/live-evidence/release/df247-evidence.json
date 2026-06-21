@@ -3,9 +3,9 @@
   "issueNumber": 157,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-21T15:58:37Z",
+  "generatedAt": "2026-06-21T21:52:15Z",
   "packageArchiveSha256": "aacadd4cd4546ce20b084b1fbf8018e9571a635983ad9aa30b07a123c705985e",
-  "summary": "The final release gate remains blocked because upstream packaged evidence entries are blocked and the release decision is not approved.",
+  "summary": "The final release gate remains blocked because upstream packaged evidence entries are blocked and the release decision is not approved; borrowed release decision payloads are also blocked before readiness.",
   "currentEvidence": [
     {
       "path": "docs/live-release-decision.md",
@@ -18,6 +18,14 @@
     {
       "path": "src/lib/packaged-live-evidence-index.ts",
       "kind": "packaged evidence index validator with ticket-token path binding"
+    },
+    {
+      "path": "src/lib/live-release-decision-gate.ts",
+      "kind": "release decision payload validator"
+    },
+    {
+      "path": "src/lib/live-release-gate.test.ts",
+      "kind": "borrowed release decision payload regression coverage"
     }
   ],
   "missingEvidence": [

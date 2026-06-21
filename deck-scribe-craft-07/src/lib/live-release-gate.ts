@@ -57,6 +57,7 @@ export type LiveReleaseDecisionEvidence = {
   readonly decision: LiveReleaseDecision;
   readonly decisionRecorded: boolean;
   readonly knownLimitsRecorded: boolean;
+  readonly decisionPayload?: unknown;
 };
 
 export type LiveReleaseGateInput = {

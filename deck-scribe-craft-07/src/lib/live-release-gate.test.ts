@@ -1,9 +1,9 @@
 import { describe, expect, test } from "bun:test";
+import { evaluateLiveInitialReleaseGate } from "./live-release-gate";
 import {
-  LIVE_P0_TICKET_IDS,
-  evaluateLiveInitialReleaseGate,
-  type LiveReleaseGateInput,
-} from "./live-release-gate";
+  readyLiveReleaseGateInput as readyInput,
+  releaseDecisionPayload,
+} from "./live-release-gate-test-fixtures";
 import { createProviderArtifactProvenance } from "./provider-provenance";
 
 describe("live initial release gate", () => {
@@ -93,6 +93,26 @@ describe("live initial release gate", () => {
       },
     });
 
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.blockers.map((blocker) => blocker.code)).toEqual(["missing_release_decision"]);
+  });
+
+  test("blocks release decisions whose payload is borrowed from another decision state", () => {
+    // Given
+    const input = readyInput();
+    const result = evaluateLiveInitialReleaseGate({
+      ...input,
+      releaseDecision: {
+        ...input.releaseDecision,
+        decisionPayload: {
+          ...releaseDecisionPayload(input.releaseDecision),
+          decision: "blocked",
+        },
+      },
+    });
+
+    // When / Then
     expect(result.kind).toBe("blocked");
     if (result.kind !== "blocked") return;
     expect(result.blockers.map((blocker) => blocker.code)).toEqual(["missing_release_decision"]);
@@ -232,46 +252,3 @@ describe("live initial release gate", () => {
     expect(result.blockers[0]?.refs).toEqual(["P1-security-summary"]);
   });
 });
-
-function readyInput(): LiveReleaseGateInput {
-  return {
-    p0Tickets: LIVE_P0_TICKET_IDS.map((id) => ({ id, status: "verified_live" })),
-    productionPackage: {
-      mockExecutionPathDisabled: true,
-      fixtureFree: true,
-      contentScanPassed: true,
-    },
-    liveBenchmarks: [
-      { id: "korean_business", status: "passed", failureDomain: "none" },
-      { id: "market_research", status: "passed", failureDomain: "none" },
-      { id: "chart_report", status: "passed", failureDomain: "none" },
-      { id: "image_intro", status: "passed", failureDomain: "none" },
-      { id: "revision_regeneration", status: "failed", failureDomain: "editor" },
-    ],
-    goldenPathFinalExportArtifactId: "live_export_001",
-    goldenPathLineage: [
-      createProviderArtifactProvenance({
-        artifactId: "live_export_001",
-        executionMode: "production",
-        providerKind: "codex",
-        authMode: "codex_session",
-        modelOrRuntime: "codex-cli 0.139.0",
-        promptVersion: "final_report@v1",
-        durationMs: 500,
-        inputArtifactIds: ["live_slide_1"],
-        turnId: "turn_final",
-        threadId: "thread_project",
-        fixture: false,
-      }),
-    ],
-    packagedLiveEvidenceIndex: { kind: "ready" },
-    criticalDefectCount: 0,
-    unresolvedP1Risks: [],
-    releaseDecision: {
-      documentPath: "docs/live-release-decision.md",
-      decision: "approved",
-      decisionRecorded: true,
-      knownLimitsRecorded: true,
-    },
-  };
-}

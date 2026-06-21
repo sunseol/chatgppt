@@ -1,9 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import {
-  LIVE_P0_TICKET_IDS,
-  evaluateLiveInitialReleaseGate,
-  type LiveReleaseGateInput,
-} from "./live-release-gate";
+import { evaluateLiveInitialReleaseGate, type LiveReleaseGateInput } from "./live-release-gate";
+import { readyLiveReleaseGateInput } from "./live-release-gate-test-fixtures";
 import { createProviderArtifactProvenance } from "./provider-provenance";
 
 describe("live initial release gate final export evidence", () => {
@@ -103,20 +100,9 @@ describe("live initial release gate final export evidence", () => {
 });
 
 function readyInputWithFinalExport(finalExportArtifactId: string): LiveReleaseGateInput {
+  const input = readyLiveReleaseGateInput();
   return {
-    p0Tickets: LIVE_P0_TICKET_IDS.map((id) => ({ id, status: "verified_live" })),
-    productionPackage: {
-      mockExecutionPathDisabled: true,
-      fixtureFree: true,
-      contentScanPassed: true,
-    },
-    liveBenchmarks: [
-      { id: "korean_business", status: "passed", failureDomain: "none" },
-      { id: "market_research", status: "passed", failureDomain: "none" },
-      { id: "chart_report", status: "passed", failureDomain: "none" },
-      { id: "image_intro", status: "passed", failureDomain: "none" },
-      { id: "revision_regeneration", status: "failed", failureDomain: "editor" },
-    ],
+    ...input,
     goldenPathFinalExportArtifactId: finalExportArtifactId,
     goldenPathLineage: [
       createProviderArtifactProvenance({
@@ -133,14 +119,5 @@ function readyInputWithFinalExport(finalExportArtifactId: string): LiveReleaseGa
         fixture: false,
       }),
     ],
-    packagedLiveEvidenceIndex: { kind: "ready" },
-    criticalDefectCount: 0,
-    unresolvedP1Risks: [],
-    releaseDecision: {
-      documentPath: "docs/live-release-decision.md",
-      decision: "approved",
-      decisionRecorded: true,
-      knownLimitsRecorded: true,
-    },
   };
 }
