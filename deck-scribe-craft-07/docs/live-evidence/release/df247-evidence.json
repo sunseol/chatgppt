@@ -4,7 +4,7 @@
   "status": "blocked",
   "validationKind": "blocked",
   "generatedAt": "2026-06-21T21:52:15Z",
-  "packageArchiveSha256": "aacadd4cd4546ce20b084b1fbf8018e9571a635983ad9aa30b07a123c705985e",
+  "packageArchiveSha256": "0354291e6c6ac847335ba5095e088d1122a3bf93937589021edabb3e4fbcc913",
   "summary": "The final release gate remains blocked because upstream packaged evidence entries are blocked and the release decision is not approved; borrowed release decision payloads are also blocked before readiness.",
   "currentEvidence": [
     {

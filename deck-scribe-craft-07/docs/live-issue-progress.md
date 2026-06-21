@@ -35,8 +35,8 @@ QA live evidence is genuinely produced.
 
 Current package basis for this index: `bun run package:dry-run` produced
 `dist/deckforge-macos-dry-run.tgz` with SHA-256
-`aacadd4cd4546ce20b084b1fbf8018e9571a635983ad9aa30b07a123c705985e`,
-283,066 bytes, 26 archive members, and 17 app files.
+`0354291e6c6ac847335ba5095e088d1122a3bf93937589021edabb3e4fbcc913`,
+284,301 bytes, 26 archive members, and 17 app files.
 The dry-run package path now writes a deterministic sorted tar/gzip archive and
 normalizes prerendered TanStack route-match `u:` timestamps; two consecutive
 `bun run package:dry-run` runs produced the same SHA-256 above.
@@ -1451,6 +1451,18 @@ the evidence write fails, the queued job is cancelled with
 `evidence_write_failed` instead of proceeding with usage confirmation that
 cannot be audited. DF-244 remains open until a packaged Codex image run captures
 that actual JSON and regenerates the Lane D usage bundle from it.
+
+DF-233/DF-243/DF-244 product update: local project folder export now includes
+project-scoped browser artifact writes from the image artifact store. The export
+preserves base64 image binaries, redacts text artifact payloads, filters out
+other projects, and carries paths such as
+`projects/<project>/live-evidence/df233-image-queue-<job>.json`,
+`projects/<project>/live-evidence/...interruption...json`, and
+`projects/<project>/usage/<project>/<job>/image-billing-confirmation.json` in a
+`projectArtifactWrites` section. This removes the app-surface extraction
+bottleneck for the next packaged QA run, but the three tickets remain open until
+those real packaged-run artifacts are produced and copied into
+`docs/live-evidence/...`.
 
 DF-245 local update: clean-machine step payloads now have to carry the same
 `macosUsername` and `homeDirectory` as the clean macOS account payload. A

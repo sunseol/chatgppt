@@ -4,7 +4,7 @@
   "status": "blocked",
   "validationKind": "blocked",
   "generatedAt": "2026-06-21T21:44:38Z",
-  "packageArchiveSha256": "aacadd4cd4546ce20b084b1fbf8018e9571a635983ad9aa30b07a123c705985e",
+  "packageArchiveSha256": "0354291e6c6ac847335ba5095e088d1122a3bf93937589021edabb3e4fbcc913",
   "summary": "Manual QA validator and checklist exist, and borrowed session JSON payloads from another evidence path are blocked before readiness, but no non-developer packaged-app manual QA session bundle has been recorded.",
   "currentEvidence": [
     {

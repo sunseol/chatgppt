@@ -3,9 +3,9 @@
   "issueNumber": 154,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-21T22:47:51Z",
-  "packageArchiveSha256": "aacadd4cd4546ce20b084b1fbf8018e9571a635983ad9aa30b07a123c705985e",
-  "summary": "Live text and image usage display contracts now require Codex OAuth-shaped image confirmation with apiKeyRequired false and confirmation evidence bound to the same provider job. The Generate stage now mirrors confirmed Codex OAuth image billing records into project artifact storage before generation, and Lane D shows real image latency/count display, but no packaged-app run has captured the pre-generation confirmation JSON from the same run.",
+  "generatedAt": "2026-06-21T22:55:19Z",
+  "packageArchiveSha256": "0354291e6c6ac847335ba5095e088d1122a3bf93937589021edabb3e4fbcc913",
+  "summary": "Live text and image usage display contracts now require Codex OAuth-shaped image confirmation with apiKeyRequired false and confirmation evidence bound to the same provider job. The Generate stage now mirrors confirmed Codex OAuth image billing records into project artifact storage before generation, local project folder export includes those project-scoped browser artifact writes, and Lane D shows real image latency/count display, but no packaged-app run has captured the pre-generation confirmation JSON from the same run.",
   "currentEvidence": [
     {
       "path": "docs/live-usage-summary.md",
@@ -42,6 +42,18 @@
       "kind": "Generate-stage wiring that shares the artifact store between billing evidence and live image generation"
     },
     {
+      "path": "src/lib/local-data-control.ts",
+      "kind": "project folder export includes project-scoped billing confirmation artifact writes"
+    },
+    {
+      "path": "src/lib/local-data-control.test.ts",
+      "kind": "project artifact write export, filtering, and redaction regression"
+    },
+    {
+      "path": "src/components/deck/HomeProjectList.tsx",
+      "kind": "project folder download wires current browser artifact writes into export"
+    },
+    {
       "path": "src/lib/live-usage-summary.test.ts",
       "kind": "non-image generate-stage and API-key-required usage regression"
     },
@@ -71,7 +83,7 @@
     }
   ],
   "missingEvidence": [
-    "packaged-app pre-generation Codex OAuth image usage confirmation JSON",
+    "packaged-app pre-generation Codex OAuth image usage confirmation JSON extracted from project folder export",
     "real image usage disclosure payload tied to the same packaged run",
     "usage summary regenerated from the persisted confirmation record",
     "manual QA screenshot or recording proving latency, retry, count, and confirmation display",

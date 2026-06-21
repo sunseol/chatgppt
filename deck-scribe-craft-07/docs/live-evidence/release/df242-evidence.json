@@ -4,7 +4,7 @@
   "status": "blocked",
   "validationKind": "blocked",
   "generatedAt": "2026-06-21T22:03:38Z",
-  "packageArchiveSha256": "aacadd4cd4546ce20b084b1fbf8018e9571a635983ad9aa30b07a123c705985e",
+  "packageArchiveSha256": "0354291e6c6ac847335ba5095e088d1122a3bf93937589021edabb3e4fbcc913",
   "summary": "The live benchmark validator is implemented and now rejects benchmark output bundle paths borrowed from another DF-242 scenario, but no five-scenario packaged benchmark output bundle set exists.",
   "currentEvidence": [
     {

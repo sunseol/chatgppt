@@ -4,7 +4,7 @@
   "status": "blocked",
   "validationKind": "blocked",
   "generatedAt": "2026-06-21T21:33:10Z",
-  "packageArchiveSha256": "aacadd4cd4546ce20b084b1fbf8018e9571a635983ad9aa30b07a123c705985e",
+  "packageArchiveSha256": "0354291e6c6ac847335ba5095e088d1122a3bf93937589021edabb3e4fbcc913",
   "summary": "Current package and DMG artifacts exist and scan clean locally, packaging evidence validates release-trust and clean-machine JSON payload shape, requires clean-machine step payloads to match the clean macOS account identity, and transient package/native bundle artifact paths are blocked before readiness. The DMG is still unsigned, not notarized, not stapled, and not accepted by Gatekeeper.",
   "currentEvidence": [
     {

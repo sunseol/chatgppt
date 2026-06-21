@@ -144,3 +144,16 @@ non-production markers such as `tmp`, `temp`, `sample`, `example`,
 `projects/tmp/slides/images/slide_001.v1.png` now blocks with
 `stored_image_artifact_path_invalid` instead of satisfying DF-233 completed-slide
 storage evidence.
+
+## Project Folder Evidence Export
+
+2026-06-22 KST product update: local project folder export now includes
+project-scoped browser image artifact writes in `projectArtifactWrites`. The
+export path captures DF-233 queue evidence written at
+`projects/{projectId}/live-evidence/df233-image-queue-{jobId}.json` alongside
+the stored PNG/metadata/provenance sidecars for the same project, redacts text
+artifact payloads, preserves base64 image binaries, and filters out other
+projects. This gives the next packaged Codex OAuth image run a product-supported
+way to hand auditors the queue artifact, but DF-233 remains open until that run
+contains genuine 429/5xx retry provenance, in-flight cancellation, and
+restart-resume evidence.

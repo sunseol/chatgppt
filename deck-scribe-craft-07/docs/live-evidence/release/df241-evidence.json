@@ -4,7 +4,7 @@
   "status": "blocked",
   "validationKind": "blocked",
   "generatedAt": "2026-06-21T22:08:40Z",
-  "packageArchiveSha256": "aacadd4cd4546ce20b084b1fbf8018e9571a635983ad9aa30b07a123c705985e",
+  "packageArchiveSha256": "0354291e6c6ac847335ba5095e088d1122a3bf93937589021edabb3e4fbcc913",
   "summary": "Local Golden Path validators now require regeneration-marked image evidence with canonical input lineage to an initial live image, and partial Codex OAuth text/image evidence exists, but no packaged production Golden Path has completed from login through export.",
   "currentEvidence": [
     {

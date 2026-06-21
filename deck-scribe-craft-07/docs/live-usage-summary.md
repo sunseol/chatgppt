@@ -176,6 +176,15 @@ Codex image job is cancelled as `evidence_write_failed`, so the app cannot run a
 live image generation whose usage summary claims confirmation without a matching
 persisted JSON evidence file.
 
+2026-06-22 KST product update: local project folder export now includes
+project-scoped browser artifact writes in `projectArtifactWrites`. That gives
+packaged QA a product path to extract the mirrored
+`projects/<project>/usage/<project>/<job>/image-billing-confirmation.json`
+record from the same project export as the generated images and queue evidence.
+Text artifact payloads are redacted during export while base64 image binaries
+are preserved. DF-244 still requires a packaged Codex image run that actually
+produces and exports this confirmation JSON.
+
 ## Generate Stage Live Image Path
 
 2026-06-21 KST product update: after the confirmation record is attached, the

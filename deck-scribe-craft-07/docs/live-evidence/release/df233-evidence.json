@@ -3,9 +3,9 @@
   "issueNumber": 147,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-21T21:03:04Z",
-  "packageArchiveSha256": "aacadd4cd4546ce20b084b1fbf8018e9571a635983ad9aa30b07a123c705985e",
-  "summary": "Queue throttling, retry, cancellation, resume, and product evidence writers are implemented, stored image artifact evidence now rejects scratch/template-like project paths, and restart-resume proof rejects resumed/completed-before artifact overlap, but no packaged Codex OAuth image run has captured genuine retry, cancellation, and restart-resume evidence.",
+  "generatedAt": "2026-06-21T22:55:19Z",
+  "packageArchiveSha256": "0354291e6c6ac847335ba5095e088d1122a3bf93937589021edabb3e4fbcc913",
+  "summary": "Queue throttling, retry, cancellation, resume, and product evidence writers are implemented, stored image artifact evidence now rejects scratch/template-like project paths, restart-resume proof rejects resumed/completed-before artifact overlap, and local project folder export now includes project-scoped browser artifact writes. No packaged Codex OAuth image run has captured genuine retry, cancellation, and restart-resume evidence.",
   "currentEvidence": [
     {
       "path": "docs/live-image-queue-controls.md",
@@ -28,6 +28,18 @@
       "kind": "restart-resume artifact overlap regression tests"
     },
     {
+      "path": "src/lib/local-data-control.ts",
+      "kind": "project folder export includes project-scoped browser artifact writes"
+    },
+    {
+      "path": "src/lib/local-data-control.test.ts",
+      "kind": "project artifact write export, filtering, and redaction regression"
+    },
+    {
+      "path": "src/components/deck/HomeProjectList.tsx",
+      "kind": "project folder download wires current browser artifact writes into export"
+    },
+    {
       "path": "docs/live-evidence/codex-image/lane-g-closure-recheck-20260621/issue-closure-evidence.json",
       "sha256": "cce49011bc94260509f1f4c4e0fb8753ecaff53e8a4313206cea8de1b718f13d",
       "kind": "blocked image/export/usage closure recheck"
@@ -38,6 +50,6 @@
     "in-flight user cancellation evidence from a real provider job",
     "restart-resume evidence proving completed slides are not regenerated",
     "stored versioned PNG artifact paths for every completed queue slide",
-    "product-generated DF-233 queue evidence JSON copied into docs/live-evidence"
+    "product-generated DF-233 queue evidence JSON exported through project folder and copied into docs/live-evidence"
   ]
 }

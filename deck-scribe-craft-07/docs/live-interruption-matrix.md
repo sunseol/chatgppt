@@ -129,3 +129,15 @@ This does not close DF-243. It gives the packaged QA lane one canonical JSON
 shape to fill, and the validator rejects the manifest until those paths are
 persisted, copied into `docs/live-evidence/...`, and match the corresponding
 matrix scenario evidence.
+
+## Project Folder Evidence Export
+
+2026-06-22 KST product update: local project folder export now includes
+project-scoped browser artifact writes in `projectArtifactWrites`. The same
+export can carry DF-243 product-writer outputs under
+`projects/{projectId}/live-evidence/...` for image partial resume, app-storage
+cancel snapshots, cancel signals, and interrupted approval/export gate checks.
+Text JSON payloads are redacted during export, base64 image artifacts are
+preserved, and writes from other projects are filtered out. DF-243 remains open
+until a packaged run produces those artifacts and they are copied into committed
+`docs/live-evidence/...` closure evidence.
