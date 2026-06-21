@@ -39,6 +39,8 @@ export type LiveImageQueueEvidenceIssueCode =
   | "stored_image_artifact_path_invalid"
   | "stored_image_artifact_duplicate"
   | "stored_image_artifact_unmatched"
+  | "missing_restart_resume_evidence"
+  | "invalid_restart_resume_evidence"
   | "noncanonical_queue_evidence_identity";
 
 export type LiveImageQueueEvidenceIssue = {

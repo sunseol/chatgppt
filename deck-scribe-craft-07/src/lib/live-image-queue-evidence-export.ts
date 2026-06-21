@@ -5,6 +5,10 @@ import {
   type LiveImageQueueEvidenceIssue,
   type LiveImageQueueEvidenceValidation,
 } from "./live-image-queue-evidence";
+import {
+  restartResumeEvidenceIssues,
+  type LiveImageQueueRestartResumeEvidence,
+} from "./live-image-queue-restart-resume-evidence";
 import type { ProviderJob } from "./provider-job-manager";
 import type { SlideGenerationQueueResult } from "./slide-generation-queue";
 
@@ -45,6 +49,7 @@ export type LiveImageQueueEvidenceExport = {
   readonly concurrency: ReadySlideGenerationQueueResult["concurrency"];
   readonly progress: ReadySlideGenerationQueueResult["progress"];
   readonly storedImageArtifactPaths: readonly string[];
+  readonly restartResumeEvidence?: LiveImageQueueRestartResumeEvidence;
   readonly validation: LiveImageQueueEvidenceValidation;
 };
 
@@ -60,6 +65,7 @@ export async function writeLiveImageQueueEvidenceExport(input: {
   readonly exportedAt: number;
   readonly result: ReadySlideGenerationQueueResult;
   readonly storedImageArtifactPaths: readonly string[];
+  readonly restartResumeEvidence?: LiveImageQueueRestartResumeEvidence;
 }): Promise<StoredLiveImageQueueEvidenceExport> {
   const evidence = liveImageQueueEvidenceExport(input);
   const path = liveImageQueueEvidencePath(input.projectId, input.jobId);
@@ -76,6 +82,7 @@ function liveImageQueueEvidenceExport(input: {
   readonly exportedAt: number;
   readonly result: ReadySlideGenerationQueueResult;
   readonly storedImageArtifactPaths: readonly string[];
+  readonly restartResumeEvidence?: LiveImageQueueRestartResumeEvidence;
 }): LiveImageQueueEvidenceExport {
   return {
     schemaVersion: 1,
@@ -93,6 +100,9 @@ function liveImageQueueEvidenceExport(input: {
     concurrency: input.result.concurrency,
     progress: input.result.progress,
     storedImageArtifactPaths: input.storedImageArtifactPaths,
+    ...(input.restartResumeEvidence === undefined
+      ? {}
+      : { restartResumeEvidence: input.restartResumeEvidence }),
     validation: evaluateLiveImageQueueExportEvidence(input),
   };
 }
@@ -101,6 +111,7 @@ function evaluateLiveImageQueueExportEvidence(input: {
   readonly projectId: string;
   readonly result: ReadySlideGenerationQueueResult;
   readonly storedImageArtifactPaths: readonly string[];
+  readonly restartResumeEvidence?: LiveImageQueueRestartResumeEvidence;
 }): LiveImageQueueEvidenceValidation {
   const queueValidation = evaluateLiveImageQueueEvidence(input.result);
   const queueIssues = queueValidation.kind === "blocked" ? queueValidation.issues : [];
@@ -109,7 +120,15 @@ function evaluateLiveImageQueueExportEvidence(input: {
     input.result.slides,
     input.storedImageArtifactPaths,
   );
-  const issues = [...queueIssues, ...storedArtifactIssues];
+  const issues = [
+    ...queueIssues,
+    ...storedArtifactIssues,
+    ...restartResumeEvidenceIssues({
+      projectId: input.projectId,
+      result: input.result,
+      evidence: input.restartResumeEvidence,
+    }),
+  ];
   return issues.length === 0 ? { kind: "ready" } : { kind: "blocked", issues };
 }
 
