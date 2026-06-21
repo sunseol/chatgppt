@@ -168,6 +168,14 @@ from producing a valid DF-244 confirmation record, but it still requires one
 packaged-app Codex image run to capture the actual persisted record and update
 the Lane D evidence bundle.
 
+2026-06-22 KST product update: the same pre-generation confirmation record is
+now mirrored into the project artifact store at
+`projects/<project>/usage/<project>/<job>/image-billing-confirmation.json`
+before the Codex image session starts. If that evidence write fails, the queued
+Codex image job is cancelled as `evidence_write_failed`, so the app cannot run a
+live image generation whose usage summary claims confirmation without a matching
+persisted JSON evidence file.
+
 ## Generate Stage Live Image Path
 
 2026-06-21 KST product update: after the confirmation record is attached, the

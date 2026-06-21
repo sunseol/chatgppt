@@ -15,6 +15,8 @@ import { fakeAsync } from "@/components/deck/stage-timing";
 import { invalidateDownstream, updateProject } from "@/lib/deck-store";
 import type { DeckProject, GeneratedSlide } from "@/lib/deck-types";
 import { readGenerateRecovery, writeGenerateRecovery } from "@/lib/generate-stage-recovery";
+import { createBrowserImageArtifactStore } from "@/lib/browser-image-artifact-store";
+import type { ImageArtifactStore } from "@/lib/image-artifact-store";
 import { prepareCodexImageBillingJob } from "@/lib/live-image-billing-job";
 import { mockSlides } from "@/lib/mock-ai";
 import {
@@ -64,20 +66,23 @@ export function GenerateStage({
       capability: "imageGeneration",
       description: "슬라이드 이미지 생성",
     });
+    let evidenceStore: ImageArtifactStore | undefined;
     if (imageGenerationGate.providerId === "codex") {
+      evidenceStore = createBrowserImageArtifactStore();
       const billing = await prepareCodexImageBillingJob({
         projectId: project.id,
         jobId: queued.id,
         providerId: imageGenerationGate.providerId,
         slideCount: project.plan.slides.length,
         manager,
+        evidenceStore,
       });
       syncJob(project.id, manager, billing.job, setJob, setRecovered);
       if (billing.kind !== "confirmed") return;
     } else {
       syncJob(project.id, manager, queued, setJob, setRecovered);
     }
-    await runGeneration(queued.id);
+    await runGeneration(queued.id, evidenceStore);
   };
 
   const retry = async () => {
@@ -93,7 +98,7 @@ export function GenerateStage({
     syncJob(project.id, manager, cancelled, setJob, setRecovered);
   };
 
-  const runGeneration = async (jobId: string) => {
+  const runGeneration = async (jobId: string, evidenceStore?: ImageArtifactStore) => {
     if (!project.plan || !project.design || imageGenerationGate.kind !== "ready") return;
     setBusy(true);
     setProgress(0);
@@ -102,6 +107,7 @@ export function GenerateStage({
         project,
         jobId,
         manager,
+        ...(evidenceStore === undefined ? {} : { store: evidenceStore }),
         onJob: (nextJob) => syncJob(project.id, manager, nextJob, setJob, setRecovered),
         onSlides: (nextSlides) => setSlides([...nextSlides]),
         onProgress: setProgress,

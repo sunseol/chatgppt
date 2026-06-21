@@ -1,7 +1,9 @@
 import {
   confirmAndPersistLiveImageBilling,
   type LiveImageBillingConfirmationResult,
+  writeLiveImageBillingConfirmationEvidence,
 } from "./live-image-billing-confirmation";
+import { ImageArtifactStoreError, type ImageArtifactStore } from "./image-artifact-store";
 import {
   ProviderJobCancelledError,
   type ProviderJob,
@@ -10,12 +12,13 @@ import {
 import type { SlideImageProviderId } from "./slide-image-provider";
 
 type CancelledBillingKind = Exclude<LiveImageBillingConfirmationResult["kind"], "confirmed">;
+type CancelledCodexImageBillingKind = CancelledBillingKind | "evidence_write_failed";
 
 export type PreparedCodexImageBillingJob =
   | { readonly kind: "confirmed"; readonly job: ProviderJob }
   | {
       readonly kind: "cancelled";
-      readonly reason: CancelledBillingKind;
+      readonly reason: CancelledCodexImageBillingKind;
       readonly job: ProviderJob;
     };
 
@@ -25,6 +28,7 @@ export async function prepareCodexImageBillingJob(input: {
   readonly providerId: Extract<SlideImageProviderId, "codex">;
   readonly slideCount: number;
   readonly manager: ProviderJobManager;
+  readonly evidenceStore?: ImageArtifactStore;
   readonly storage?: Storage;
   readonly confirm?: (message: string) => boolean;
   readonly now?: () => number;
@@ -43,6 +47,23 @@ export async function prepareCodexImageBillingJob(input: {
       throw new ProviderJobCancelledError(input.jobId);
     });
     return { kind: "cancelled", reason: confirmation.kind, job: cancelled };
+  }
+
+  if (input.evidenceStore !== undefined) {
+    try {
+      await writeLiveImageBillingConfirmationEvidence({
+        store: input.evidenceStore,
+        record: confirmation.record,
+      });
+    } catch (error) {
+      if (error instanceof ImageArtifactStoreError) {
+        const cancelled = await input.manager.run(input.jobId, async () => {
+          throw new ProviderJobCancelledError(input.jobId);
+        });
+        return { kind: "cancelled", reason: "evidence_write_failed", job: cancelled };
+      }
+      throw error;
+    }
   }
 
   return {

@@ -1441,6 +1441,17 @@ confirmed`. A copied confirmation path such as
 packaged app captures real image usage payloads and the persisted pre-generation
 confirmation JSON from the same run.
 
+DF-244 product update: `prepareCodexImageBillingJob` now writes the confirmed
+Codex OAuth image billing record into the shared project artifact store before
+starting generation, using
+`projects/<project>/usage/<project>/<job>/image-billing-confirmation.json`.
+`GenerateStage` shares that store with the live Codex image runner, so packaged
+runs can export the confirmation JSON alongside image and queue artifacts. If
+the evidence write fails, the queued job is cancelled with
+`evidence_write_failed` instead of proceeding with usage confirmation that
+cannot be audited. DF-244 remains open until a packaged Codex image run captures
+that actual JSON and regenerates the Lane D usage bundle from it.
+
 DF-245 local update: clean-machine step payloads now have to carry the same
 `macosUsername` and `homeDirectory` as the clean macOS account payload. A
 `codex_login` or `project_launch` step that only points at the canonical

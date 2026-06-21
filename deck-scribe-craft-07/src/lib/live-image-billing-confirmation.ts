@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { ImageArtifactStore, ImageArtifactStoreWrite } from "./image-artifact-store";
 import type { ProviderImageBillingDisclosure } from "./provider-job-manager";
 import type { SlideImageProviderId } from "./slide-image-provider";
 
@@ -88,6 +89,18 @@ export function readLiveImageBillingConfirmationRecord(
   );
 }
 
+export async function writeLiveImageBillingConfirmationEvidence(input: {
+  readonly store: ImageArtifactStore;
+  readonly record: LiveImageBillingConfirmationRecord;
+}): Promise<ImageArtifactStoreWrite> {
+  const write = {
+    path: confirmationArtifactPath(input.record),
+    content: JSON.stringify(input.record, null, 2),
+  };
+  await input.store.write(write);
+  return write;
+}
+
 function createLiveImageBillingConfirmationRecord(input: {
   readonly projectId: string;
   readonly jobId: string;
@@ -157,6 +170,10 @@ function disclosureFromRecord(
     label: record.label,
     confirmationEvidencePath: record.evidencePath,
   };
+}
+
+function confirmationArtifactPath(record: LiveImageBillingConfirmationRecord): string {
+  return ["projects", safeEvidenceSegment(record.projectId), record.evidencePath].join("/");
 }
 
 function safeEvidenceSegment(value: string): string {
