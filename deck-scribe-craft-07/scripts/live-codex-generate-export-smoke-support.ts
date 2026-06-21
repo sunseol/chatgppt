@@ -90,9 +90,14 @@ export function createLiveCodexImageClient(): CodexImageClient & {
   };
 }
 
-export function approvedProject(projectId: string, now: number): DeckProject {
+export function approvedProject(
+  projectId: string,
+  now: number,
+  options: { readonly slideCount?: number } = {},
+): DeckProject {
+  const slideCount = options.slideCount ?? 1;
   const brief = {
-    ...mockBrief("Codex generate export smoke", 1, "16:9"),
+    ...mockBrief("Codex generate export smoke", slideCount, "16:9"),
     id: "brief_generate_export_smoke",
     approvedHash: "sha256:brief-generate-export-smoke",
   };

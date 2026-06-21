@@ -170,3 +170,25 @@ captured slide-generation prompt usage, preserved concurrency evidence, and
 validated the queue bundle as `ready` for the successful one-slide path. This
 does not exercise transient 429/5xx retry, in-flight cancellation, or
 restart-resume, so DF-233 remains open for those real packaged-run events.
+
+## Product Queue-Control Smoke
+
+2026-06-22 KST product queue-control smoke:
+`scripts/run-df233-queue-controls-product-evidence-smoke.ts` runs the product
+queue and DF-233 writer in two deterministic scenarios. The retry run throws
+two `server` / upstream `503` failures, records retry provenance
+`server:1:100` and `server:2:200`, succeeds on attempt 3, and writes ready
+queue evidence at
+`projects/df233_queue_retry_smoke_20260622/live-evidence/df233-image-queue-retry_product_run_20260622.json`
+(`sha256:b162c6c406778b43449bbfd84f6e30a9cc76896d853b57e40f8f314464856ffe`).
+The restart-resume run starts with slide 1 completed, generates only slide 2,
+includes restart-resume proof for the pending/resumed slide 2 artifact, and
+writes ready queue evidence at
+`projects/df233_queue_resume_smoke_20260622/live-evidence/df233-image-queue-resume_product_run_20260622.json`
+(`sha256:4c9916e639dbf0b8c07ff62713ea31abec9d5a09a9376fd1ca0fa30a1ae5f4ab`).
+The summary at
+`docs/live-evidence/codex-image/df233-queue-controls-smoke-20260622/summary.json`
+(`sha256:078631d92f8276e6e47fd77b872e81faebae04966a4258dbcd3733b954a3a7b7`)
+proves both exported evidence files validate as `ready`. DF-233 remains open
+until equivalent retry, cancellation, and restart-resume evidence is captured
+from a packaged Codex OAuth image run against real provider jobs.
