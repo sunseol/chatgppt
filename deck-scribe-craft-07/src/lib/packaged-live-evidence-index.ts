@@ -19,7 +19,7 @@ export function evaluatePackagedLiveEvidenceIndex(
   const issues = [
     ...indexIdentityIssues(index),
     ...ticketCoverageIssues(index.entries),
-    ...entryIssues(index.entries),
+    ...entryIssues(index.packageArchiveSha256, index.entries),
     ...packagedLiveEvidenceReadinessIssues(index.entries),
   ];
   return issues.length === 0 ? { kind: "ready" } : { kind: "blocked", issues };
@@ -106,12 +106,14 @@ function ticketCoverageIssues(
 }
 
 function entryIssues(
+  packageArchiveSha256: string,
   entries: readonly PackagedLiveEvidenceEntry[],
 ): readonly PackagedLiveEvidenceIndexIssue[] {
   return [
     ...entries.flatMap(issueNumberIssues),
     ...entries.flatMap(artifactPathIssues),
     ...duplicatePathIssues(entries),
+    ...entries.flatMap((entry) => artifactPackageIssues(entry, packageArchiveSha256)),
     ...entries.flatMap(artifactHashIssues),
     ...entries.flatMap(readyValidationIssues),
   ];
@@ -182,6 +184,21 @@ function artifactHashIssues(
         issue(
           "invalid_packaged_live_artifact_hash",
           "Packaged Live evidence entries must carry a SHA-256 digest for review.",
+          [entry.ticketId],
+        ),
+      ];
+}
+
+function artifactPackageIssues(
+  entry: PackagedLiveEvidenceEntry,
+  packageArchiveSha256: string,
+): readonly PackagedLiveEvidenceIndexIssue[] {
+  return entry.packageArchiveSha256 === packageArchiveSha256 && isSha256(entry.packageArchiveSha256)
+    ? []
+    : [
+        issue(
+          "packaged_live_artifact_package_mismatch",
+          "Packaged Live evidence entries must cite the same package archive as the index.",
           [entry.ticketId],
         ),
       ];

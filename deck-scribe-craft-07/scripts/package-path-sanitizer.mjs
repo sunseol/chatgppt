@@ -20,5 +20,8 @@ export function sanitizePackageBuildDirectory(directory, workspaceRoot) {
 
 export function sanitizePackageBuildText(text, workspaceRoot) {
   const normalizedRoot = workspaceRoot.replaceAll("\\", "/").replace(/\/+$/, "");
-  return text.replaceAll(`file://${normalizedRoot}/`, "").replaceAll(`${normalizedRoot}/`, "");
+  return text
+    .replaceAll(`file://${normalizedRoot}/`, "")
+    .replaceAll(`${normalizedRoot}/`, "")
+    .replace(/,u:\d{13}(?=,s:"success",ssr:!0)/g, ",u:0");
 }

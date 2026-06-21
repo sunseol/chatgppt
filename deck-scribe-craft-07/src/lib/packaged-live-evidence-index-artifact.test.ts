@@ -27,6 +27,7 @@ const PackagedLiveEvidenceEntryArtifactSchema = z
     issueNumber: z.number().int().positive(),
     status: z.enum(["ready", "blocked"]),
     validationKind: z.enum(["ready", "blocked"]),
+    packageArchiveSha256: z.string(),
     artifactPath: z.string(),
     artifactSha256: z.string(),
   })
@@ -41,6 +42,10 @@ const PackagedLiveEvidenceIndexArtifactSchema = z
   })
   .strict();
 
+const ChildEvidencePackageSchema = z.object({
+  packageArchiveSha256: z.string(),
+});
+
 describe("packaged live evidence index artifact", () => {
   test("validates the committed release evidence index and entry digests", () => {
     // Given
@@ -50,6 +55,9 @@ describe("packaged live evidence index artifact", () => {
     const result = evaluatePackagedLiveEvidenceIndex(index);
     const mismatchedDigests = index.entries
       .filter((entry) => sha256File(entry.artifactPath) !== entry.artifactSha256)
+      .map((entry) => entry.ticketId);
+    const mismatchedPackageHashes = index.entries
+      .filter((entry) => readChildPackageHash(entry.artifactPath) !== entry.packageArchiveSha256)
       .map((entry) => entry.ticketId);
     const summary = formatPackagedLiveEvidenceIndexSummary(index);
 
@@ -71,6 +79,7 @@ describe("packaged live evidence index artifact", () => {
       "DF-247",
     ]);
     expect(mismatchedDigests).toEqual([]);
+    expect(mismatchedPackageHashes).toEqual([]);
     expect(summary.includes("Ready tickets: 0 of 10")).toBe(true);
   });
 });
@@ -82,4 +91,9 @@ function readIndexArtifact(path: string): PackagedLiveEvidenceIndex {
 
 function sha256File(path: string): string {
   return createHash("sha256").update(readFileSync(path)).digest("hex");
+}
+
+function readChildPackageHash(path: string): string {
+  const parsed: unknown = JSON.parse(readFileSync(path, "utf8"));
+  return ChildEvidencePackageSchema.parse(parsed).packageArchiveSha256;
 }

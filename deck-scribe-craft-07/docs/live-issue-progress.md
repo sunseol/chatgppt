@@ -24,8 +24,20 @@ QA live evidence is genuinely produced.
 
 Current package basis for this index: `bun run package:dry-run` produced
 `dist/deckforge-macos-dry-run.tgz` with SHA-256
-`74804249a251f29186ea6e0bf9391293ba788a5167b100abf4e81497d59bcb0d`,
-287,552 bytes, 26 archive members, and 17 app files.
+`aacadd4cd4546ce20b084b1fbf8018e9571a635983ad9aa30b07a123c705985e`,
+283,066 bytes, 26 archive members, and 17 app files.
+The dry-run package path now writes a deterministic sorted tar/gzip archive and
+normalizes prerendered TanStack route-match `u:` timestamps; two consecutive
+`bun run package:dry-run` runs produced the same SHA-256 above.
+
+DF-247 local update: each Packaged Live evidence index entry now carries the
+same `packageArchiveSha256` as the top-level index. A child entry whose package
+hash drifts from the current candidate blocks with
+`packaged_live_artifact_package_mismatch`, and
+`src/lib/packaged-live-evidence-index-artifact.test.ts` verifies that each
+committed child evidence JSON also names the same package hash. This prevents a
+future ready index from mixing current release metadata with evidence artifacts
+captured against an older package archive.
 
 ## 2026-06-22 KST DF-246 Canonical Slide Action Shape
 
@@ -393,7 +405,7 @@ DF-241 local update: review-gallery live composition validation now accepts stor
 
 DF-245 local packaging update: branch `jacobex/live-product-completion` now routes native Tauri release packaging through `bun run build:package`, which runs `vite build` and then `scripts/sanitize-package-build.mjs`. This fixes the previous false-clean path where `bun run package:dry-run` sanitized `dist/client` and `dist/server`, but `bun run tauri:build` recreated `dist/server` through the Tauri `beforeBuildCommand` and left generated TanStack manifest entries with developer-local absolute paths such as `/Users/jake/.../src/routes/__root.tsx`.
 
-Fresh evidence: `bun test scripts/package-path-sanitizer.test.mjs` passes and covers the Tauri build-command wiring. `bun run build:package` passes and fixed-string scans of `dist/client` plus `dist/server` report 0 hits for `mock-provider`, `MOCK MODE`, `.omx`, `.playwright-mcp`, `/Users/jake`, `CODEX_SESSION=`, `OPENAI_API_KEY=`, and `auth.json`. `bun run package:dry-run` regenerated `dist/deckforge-macos-dry-run.tgz` with SHA-256 `74804249a251f29186ea6e0bf9391293ba788a5167b100abf4e81497d59bcb0d`, 287,552 bytes, 26 archive members, and 17 extracted app files. `bun run tauri:build` regenerated the native binary with SHA-256 `f886f3dc8c9e5c968a7a5a80134814a72b629c9fdbf0bff05e570408a7003c65` and copied the DMG to `release-artifacts/DeckForge_0.1.0_aarch64.dmg`; `shasum -a 256 -c release-artifacts/DeckForge_0.1.0_aarch64.dmg.sha256` verifies DMG SHA-256 `d6849d24c5af4548b7b35e65a68a05c8d139be4b1b5504d7c3da3a3dc9e2d467`, 1,833,575 bytes. Scans of `dist/client`, `dist/server`, the dry-run app bundle, and native `.app` found 0 hits for mock provider markers, mock mode labels, `.omx`, `.playwright-mcp`, local workspace paths, assigned Codex/OpenAI secrets, and bundled auth files; `sk-*` regex hits were Tailwind CSS utility identifiers such as `sk-image-linear-from-pos`, not secrets.
+Fresh evidence: `bun test scripts/package-path-sanitizer.test.mjs` passes and covers the Tauri build-command wiring. `bun run build:package` passes and fixed-string scans of `dist/client` plus `dist/server` report 0 hits for `mock-provider`, `MOCK MODE`, `.omx`, `.playwright-mcp`, `/Users/jake`, `CODEX_SESSION=`, `OPENAI_API_KEY=`, and `auth.json`. `bun run package:dry-run` regenerated `dist/deckforge-macos-dry-run.tgz` with SHA-256 `aacadd4cd4546ce20b084b1fbf8018e9571a635983ad9aa30b07a123c705985e`, 283,066 bytes, 26 archive members, and 17 extracted app files. `bun run tauri:build` regenerated the native binary with SHA-256 `f886f3dc8c9e5c968a7a5a80134814a72b629c9fdbf0bff05e570408a7003c65` and copied the DMG to `release-artifacts/DeckForge_0.1.0_aarch64.dmg`; `shasum -a 256 -c release-artifacts/DeckForge_0.1.0_aarch64.dmg.sha256` verifies DMG SHA-256 `d6849d24c5af4548b7b35e65a68a05c8d139be4b1b5504d7c3da3a3dc9e2d467`, 1,833,575 bytes. Scans of `dist/client`, `dist/server`, the dry-run app bundle, and native `.app` found 0 hits for mock provider markers, mock mode labels, `.omx`, `.playwright-mcp`, local workspace paths, assigned Codex/OpenAI secrets, and bundled auth files; `sk-*` regex hits were Tailwind CSS utility identifiers such as `sk-image-linear-from-pos`, not secrets.
 
 DF-245 remains open because this is still a developer-machine unsigned package run. Developer ID signing, notarization, stapling, Gatekeeper acceptance, persisted release-trust assessment evidence, and clean macOS account install/login/image credential/project launch/live interview evidence are still missing.
 

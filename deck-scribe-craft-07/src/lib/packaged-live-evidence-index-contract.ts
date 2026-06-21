@@ -20,6 +20,7 @@ export type PackagedLiveEvidenceEntry = {
   readonly issueNumber: number;
   readonly status: PackagedLiveEvidenceEntryStatus;
   readonly validationKind: "ready" | "blocked";
+  readonly packageArchiveSha256: string;
   readonly artifactPath: string;
   readonly artifactSha256: string;
 };
@@ -42,6 +43,7 @@ export type PackagedLiveEvidenceIndexIssueCode =
   | "noncanonical_packaged_live_artifact_path"
   | "packaged_live_ticket_path_mismatch"
   | "duplicate_packaged_live_artifact_path"
+  | "packaged_live_artifact_package_mismatch"
   | "invalid_packaged_live_artifact_hash"
   | "packaged_live_ready_validation_blocked"
   | "packaged_live_ticket_blocked"

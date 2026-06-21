@@ -4,7 +4,7 @@
   "status": "blocked",
   "validationKind": "blocked",
   "generatedAt": "2026-06-21T15:58:37Z",
-  "packageArchiveSha256": "74804249a251f29186ea6e0bf9391293ba788a5167b100abf4e81497d59bcb0d",
+  "packageArchiveSha256": "aacadd4cd4546ce20b084b1fbf8018e9571a635983ad9aa30b07a123c705985e",
   "summary": "Manual QA validator and checklist exist, but no non-developer packaged-app manual QA session bundle has been recorded.",
   "currentEvidence": [
     {

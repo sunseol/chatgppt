@@ -74,6 +74,32 @@ describe("packaged live evidence index", () => {
     ]);
   });
 
+  test("blocks entries whose child artifact package hash does not match the index package", () => {
+    // Given
+    const index = completeIndex({
+      entries: PACKAGED_LIVE_EVIDENCE_TICKET_IDS.map((ticketId) =>
+        ticketId === "DF-242"
+          ? {
+              ...entry(ticketId),
+              packageArchiveSha256:
+                "1111111111111111111111111111111111111111111111111111111111111111",
+            }
+          : entry(ticketId),
+      ),
+    });
+
+    // When
+    const result = evaluatePackagedLiveEvidenceIndex(index);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "packaged_live_artifact_package_mismatch",
+    ]);
+    expect(result.issues[0]?.refs).toEqual(["DF-242"]);
+  });
+
   test("blocks ready claims when child validation or release dependencies are blocked", () => {
     const index = completeIndex({
       entries: PACKAGED_LIVE_EVIDENCE_TICKET_IDS.map((ticketId) =>
@@ -131,6 +157,7 @@ function entry(ticketId: PackagedLiveEvidenceTicketId) {
     issueNumber: issueNumber(ticketId),
     status: "ready" as const,
     validationKind: "ready" as const,
+    packageArchiveSha256: PACKAGE_SHA,
     artifactPath: `docs/live-evidence/release/${ticketId.toLowerCase()}-evidence.json`,
     artifactSha256: EVIDENCE_SHA,
   };

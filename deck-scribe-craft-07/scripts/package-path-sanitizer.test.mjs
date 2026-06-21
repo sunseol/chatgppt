@@ -20,6 +20,17 @@ describe("package path sanitizer", () => {
     expect(sanitized.includes("/Users/jake")).toBe(false);
   });
 
+  test("normalizes prerendered route match timestamps", () => {
+    const html =
+      'matches:$R[10]=[$R[11]={i:"__root__\0",u:1782070489501,s:"success",ssr:!0},$R[12]={i:"\0\0",u:1782070489556,s:"success",ssr:!0}]';
+
+    const sanitized = sanitizePackageBuildText(html, root);
+
+    expect(sanitized).toBe(
+      'matches:$R[10]=[$R[11]={i:"__root__\0",u:0,s:"success",ssr:!0},$R[12]={i:"\0\0",u:0,s:"success",ssr:!0}]',
+    );
+  });
+
   test("routes native package builds through the sanitizer", () => {
     const packageJson = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));
     const tauriConfig = JSON.parse(readFileSync(join(root, "src-tauri/tauri.conf.json"), "utf8"));
