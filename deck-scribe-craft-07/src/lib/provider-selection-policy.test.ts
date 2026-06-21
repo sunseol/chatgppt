@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { selectProviderOptionsForRuntime } from "./provider-selection-policy";
 
 describe("provider selection policy", () => {
-  test("removes mock providers from production choices", () => {
+  test("keeps only Codex OAuth providers in production choices", () => {
     const options = selectProviderOptionsForRuntime({
       executionMode: "production",
       providers: [
@@ -12,7 +12,7 @@ describe("provider selection policy", () => {
       ],
     });
 
-    expect(options.map((option) => option.providerId)).toEqual(["codex", "openaiImage"]);
+    expect(options.map((option) => option.providerId)).toEqual(["codex"]);
   });
 
   test("keeps mock providers selectable outside production", () => {

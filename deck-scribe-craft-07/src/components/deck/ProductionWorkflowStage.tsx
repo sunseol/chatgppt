@@ -64,7 +64,7 @@ const PRODUCTION_STEP_COPY: Record<StepKey, ProductionStepCopy> = {
     num: "07",
     sub: "Generate",
     title: "슬라이드 이미지 생성",
-    status: "Production job은 OpenAI Image provider 연결 후에만 시작됩니다.",
+    status: "Production job은 Codex OAuth 이미지 capability 확인 후에만 시작됩니다.",
   },
   review: {
     num: "08",

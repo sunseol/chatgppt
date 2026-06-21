@@ -173,52 +173,35 @@ function createRevisionGenerationRow(
 }
 
 function imageFallbackRow(fallback: OpenAIImageFallbackPublicState): ProviderCapabilityRow {
+  if (fallback.providerId !== "codex" || fallback.authMode !== "codexOAuth") {
+    return codexImageCapabilityLockedRow();
+  }
+
   switch (fallback.setup) {
     case "ready":
-      if (fallback.providerId === "codex") {
-        return availableRow(
-          "image_generation",
-          "이미지 생성",
-          "Codex image generation is confirmed for this runtime.",
-        );
-      }
-      if (fallback.credentialState === "sessionConfigured") {
-        return availableRow(
-          "image_generation",
-          "이미지 생성",
-          "OpenAI image fallback is configured for this session.",
-        );
-      }
-      return lockedRow(
+      return availableRow(
         "image_generation",
         "이미지 생성",
-        "OpenAI image fallback requires a session API key.",
-        "세션 API Key 입력",
+        "Codex image generation is confirmed for this runtime.",
       );
     case "requiresApiCredential":
-      return lockedRow(
-        "image_generation",
-        "이미지 생성",
-        "OpenAI image fallback requires a session API key.",
-        "세션 API Key 입력",
-      );
+      return codexImageCapabilityLockedRow();
     case "requiresOrganizationVerification":
-      return lockedRow(
-        "image_generation",
-        "이미지 생성",
-        "OpenAI organization verification is required for the selected image model.",
-        "OpenAI 조직 인증 확인",
-      );
+      return codexImageCapabilityLockedRow();
     case "requiresCodexImageCapability":
-      return lockedRow(
-        "image_generation",
-        "이미지 생성",
-        "Codex image generation must be confirmed for this runtime.",
-        "Codex 이미지 생성 확인",
-      );
+      return codexImageCapabilityLockedRow();
     default:
       return assertNever(fallback.setup);
   }
+}
+
+function codexImageCapabilityLockedRow(): ProviderCapabilityRow {
+  return lockedRow(
+    "image_generation",
+    "이미지 생성",
+    "Codex image generation must be confirmed for this runtime.",
+    "Codex 이미지 생성 확인",
+  );
 }
 
 function availableRow(

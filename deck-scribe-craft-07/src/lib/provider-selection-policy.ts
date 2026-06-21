@@ -12,5 +12,5 @@ export function selectProviderOptionsForRuntime(input: {
   readonly providers: readonly ProviderSelectionOption[];
 }): readonly ProviderSelectionOption[] {
   if (input.executionMode !== "production") return input.providers;
-  return input.providers.filter((provider) => provider.providerKind !== "mock");
+  return input.providers.filter((provider) => provider.providerKind === "codex");
 }

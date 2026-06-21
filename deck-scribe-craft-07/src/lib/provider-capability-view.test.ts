@@ -162,4 +162,42 @@ describe("provider capability matrix view", () => {
       },
     ]);
   });
+
+  test("keeps legacy OpenAI image fallback states off the product capability path", () => {
+    const view = createProviderCapabilityMatrixView({
+      providerName: "Codex",
+      authMode: "codex_session",
+      status: {
+        kind: "connected",
+        providerId: "codex",
+        message: "Codex connected",
+      },
+      capabilities: ["deckPlan", "research", "editableLayers"],
+      imageFallback: {
+        providerId: "openaiImage",
+        authMode: "openaiApiKey",
+        targetModel: "gpt-image-2",
+        setup: "requiresApiCredential",
+        fallbackMode: true,
+        credentialState: "missing",
+        connectionCopy: "OpenAI image fallback requires a session API key.",
+        billingCopy: "OpenAI image fallback uses API-key billing.",
+        permissionCopy: "OpenAI organization verification is required.",
+      },
+    });
+
+    const imageGenerationRow = view.rows.find((row) => row.key === "image_generation");
+
+    expect(imageGenerationRow).toEqual({
+      key: "image_generation",
+      label: "이미지 생성",
+      status: "locked",
+      stateLabel: "잠김",
+      reason: "Codex image generation must be confirmed for this runtime.",
+      actionLabel: "Codex 이미지 생성 확인",
+    });
+    expect(JSON.stringify(view).includes("API Key")).toBe(false);
+    expect(JSON.stringify(view).includes("API key")).toBe(false);
+    expect(JSON.stringify(view).includes("api key")).toBe(false);
+  });
 });

@@ -16,7 +16,7 @@ Scope: DF-205 / GitHub issue `#131`, Live authentication and secret lifecycle.
 
 ## Codex OAuth image route guard
 
-The product production route is Codex OAuth image generation, not OpenAI API-key image generation. `decideImageProviderFeasibility` selects `codex` / `codexOAuth` and records `openaiApiKey` as an excluded route. `createProductionImageGenerationGate` now also rejects an old persisted locked `openaiImage` / `openaiApiKey` decision with `production_codex_oauth_required`, so a project reload cannot turn legacy API-key image evidence into a production-ready generation route.
+The product production route is Codex OAuth image generation, not OpenAI API-key image generation. `decideImageProviderFeasibility` selects `codex` / `codexOAuth` and records `openaiApiKey` as an excluded route. `selectProviderOptionsForRuntime` now filters production provider choices to Codex-only, and `createProviderCapabilityMatrixView` turns legacy `openaiImage` / `openaiApiKey` fallback states into a Codex image capability lock instead of showing session API-key remediation. `createProductionImageGenerationGate` also rejects an old persisted locked `openaiImage` / `openaiApiKey` decision with `production_codex_oauth_required`, so a project reload cannot turn legacy API-key image evidence into a production-ready generation route.
 
 The `connectImageApiKeySecret` secret-store contract remains as a defensive legacy/fallback guard: if a non-production or compatibility path ever stores a key, it must use the injected OS keychain store and must not leak raw, encoded, wrong-scope, stale, or non-keychain secret references. It is not the production image-generation direction.
 

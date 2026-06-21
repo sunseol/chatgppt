@@ -106,6 +106,22 @@ describe("production workflow stage", () => {
       markup.includes("Production research failures must not be replaced with mock sources."),
     ).toBe(true);
   });
+
+  test("describes production image generation through Codex OAuth", () => {
+    // Given
+    const project = projectFixture();
+
+    // When
+    const markup = renderToStaticMarkup(
+      <ProductionWorkflowStage project={project} step="generate" />,
+    );
+
+    // Then
+    expect(
+      markup.includes("Production job은 Codex OAuth 이미지 capability 확인 후에만 시작됩니다."),
+    ).toBe(true);
+    expect(markup.includes("OpenAI Image provider")).toBe(false);
+  });
 });
 
 function projectFixture(patch: Partial<DeckProject> = {}): DeckProject {
