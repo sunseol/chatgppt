@@ -19,6 +19,7 @@ export type LiveImageQueueEvidenceIssueCode =
   | "retry_attempt_count_mismatch"
   | "retry_attempt_sequence_mismatch"
   | "retry_slide_mismatch"
+  | "retry_delay_invalid"
   | "retry_delay_history_mismatch"
   | "retry_prompt_usage_missing"
   | "retry_bundle_mismatch"
