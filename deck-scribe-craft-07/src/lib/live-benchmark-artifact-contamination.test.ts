@@ -30,6 +30,28 @@ describe("live benchmark artifact contamination", () => {
       "output_bundle_synthetic_artifact_reference",
     ]);
   });
+
+  test("blocks source and image artifact ids that only become valid after trimming", () => {
+    // Given
+    const result = evaluateLiveBenchmarkEvidence({
+      reportPath: "docs/live-benchmark-report.md",
+      packageArchiveSha256: PACKAGE_SHA,
+      runs: [
+        withPaddedArtifactRefs(run("korean_business", "passed")),
+        run("market_research", "passed"),
+        run("chart_report", "passed"),
+        run("image_intro", "passed"),
+        run("revision_regeneration", "failed"),
+      ],
+    });
+
+    // When / Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "output_bundle_golden_path_evidence_missing",
+    ]);
+  });
 });
 
 function run(id: LiveBenchmarkRun["id"], status: "passed" | "failed"): LiveBenchmarkRun {
@@ -97,6 +119,29 @@ function withSyntheticRefs(run: LiveBenchmarkRun): LiveBenchmarkRun {
         "korean_business_request_4",
         "korean_business_request_5",
       ],
+    },
+  };
+}
+
+function withPaddedArtifactRefs(run: LiveBenchmarkRun): LiveBenchmarkRun {
+  return {
+    ...run,
+    outputBundle: {
+      ...run.outputBundle,
+      sourceArtifactIds: [
+        " korean_business_source_1 ",
+        " korean_business_source_2 ",
+        " korean_business_source_3 ",
+      ],
+      liveImageArtifactIds: [
+        " korean_business_image_1 ",
+        " korean_business_image_2 ",
+        " korean_business_image_3 ",
+        " korean_business_image_4 ",
+        " korean_business_image_5 ",
+        " korean_business_image_regenerated ",
+      ],
+      regeneratedLiveImageArtifactIds: [" korean_business_image_regenerated "],
     },
   };
 }

@@ -724,3 +724,11 @@ both carry ` turn_codex_image_001 ` now blocks as
 cannot inherit malformed browser storage identity. DF-235 and DF-241 still
 require packaged app runs to capture the real regeneration and Golden Path
 evidence.
+
+DF-242 local update: Live benchmark Golden Path evidence now counts source
+artifact ids, initial live image artifact ids, and regenerated image artifact
+ids only when those ids are already canonical nonblank values. A benchmark
+bundle whose source/image ids are valid only after trimming whitespace now
+blocks as `output_bundle_golden_path_evidence_missing` instead of satisfying
+the source/image floors. DF-242 remains open until real non-synthetic benchmark
+output bundles are produced.

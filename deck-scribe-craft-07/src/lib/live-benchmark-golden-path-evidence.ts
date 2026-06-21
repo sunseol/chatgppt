@@ -91,12 +91,18 @@ function hasRegeneratedImageEvidence(bundle: LiveBenchmarkOutputBundleManifest):
 }
 
 function normalizedIds(artifactIds: readonly string[]): ReadonlySet<string> {
-  return new Set(artifactIds.map((artifactId) => artifactId.trim()).filter(Boolean));
+  return new Set(canonicalArtifactIds(artifactIds));
 }
 
 function hasDistinctArtifactEvidence(artifactIds: Iterable<string>, minimumCount: number): boolean {
-  const normalized = [...artifactIds].map((artifactId) => artifactId.trim()).filter(Boolean);
-  return normalized.length >= minimumCount && new Set(normalized).size >= minimumCount;
+  const canonical = canonicalArtifactIds([...artifactIds]);
+  return canonical.length >= minimumCount && new Set(canonical).size >= minimumCount;
+}
+
+function canonicalArtifactIds(artifactIds: readonly string[]): readonly string[] {
+  return artifactIds.filter(
+    (artifactId) => artifactId.length > 0 && artifactId === artifactId.trim(),
+  );
 }
 
 function validEvidenceReportPath(value: string, expectedSuffix: string): boolean {
