@@ -32,6 +32,30 @@ describe("project thread stale context hash", () => {
       jobs,
     });
 
-    expect(staleJobIds).toEqual(["job_same_id_old_hash"]);
+    expect(staleJobIds).toEqual(["job_same_id_old_hash", "job_same_id_missing_hash"]);
+  });
+
+  test("keeps hashless legacy checks id-only when the current context hash is unknown", () => {
+    const jobs: readonly LiveContextJobSnapshot[] = [
+      {
+        jobId: "job_same_id_missing_hash",
+        providerId: "codex",
+        deckContextId: "deckctx_001",
+        status: "running",
+      },
+      {
+        jobId: "job_old_id_missing_hash",
+        providerId: "codex",
+        deckContextId: "deckctx_old",
+        status: "running",
+      },
+    ];
+
+    const staleJobIds = findStaleLiveContextJobs({
+      currentDeckContextId: "deckctx_001",
+      jobs,
+    });
+
+    expect(staleJobIds).toEqual(["job_old_id_missing_hash"]);
   });
 });

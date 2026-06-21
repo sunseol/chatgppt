@@ -63,6 +63,8 @@ describe("live text smoke documentation", () => {
       "raw conversation source-of-truth",
       "non-canonical approved artifact ids",
       "context hash changes under the same `deckContextId`",
+      "missing recorded hashes as stale when the current hash is known",
+      "id-only stale checks only when the current hash is unknown",
       "same-context-id context-hash drift",
       "019edc28-bf27-7380-b7d2-65405e6c6758",
       "packaged desktop restart/reopen run",

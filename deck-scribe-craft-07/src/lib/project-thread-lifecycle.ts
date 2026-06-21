@@ -254,6 +254,9 @@ function isStaleContextJob(
   job: LiveContextJobSnapshot,
 ): boolean {
   if (job.deckContextId !== current.currentDeckContextId) return true;
+  if (current.currentDeckContextHash !== undefined && job.deckContextHash === undefined) {
+    return true;
+  }
   return (
     current.currentDeckContextHash !== undefined &&
     job.deckContextHash !== undefined &&
