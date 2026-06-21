@@ -361,3 +361,27 @@ Assigned issue disposition from this recheck:
   with cost hidden because the provider sidecars did not supply cost, but there
   is no persisted pre-generation user-confirmation record from the packaged app
   surface.
+
+## 2026-06-21 Generate Stage Live Image Product Hook
+
+The current product branch now connects the production `codex` Generate stage
+to the live Codex image path instead of the mock slide loop. The new runner
+creates generating placeholders, runs approved slide bundles through the live
+queue, uses the desktop Codex App Server image-generation bridge, stores PNG,
+metadata, and provenance sidecars through the image artifact store contract, and
+reports `live_slide_images` progress to the provider job surface. This path uses
+the signed-in Codex OAuth session and does not introduce OpenAI API-key image
+generation.
+
+Assigned issue disposition:
+
+- DF-233 / `#147`: remains open. The local production route now exercises the
+  queue/session boundary, but closure still needs packaged-app real 429/5xx
+  retry, in-flight cancellation, and restart-resume evidence.
+- DF-241 / `#151`: remains open. The Generate-stage mock-loop blocker is
+  reduced, but the signed packaged Golden Path bundle is still missing.
+- DF-244 / `#154`: remains open. Generate-stage billing confirmation can now
+  precede a real Codex image session, but packaged usage-summary QA with real
+  image usage payloads and the persisted confirmation JSON is still missing.
+- DF-247 / `#157`: remains blocked by the remaining open P0 tickets and the
+  missing release evidence set.

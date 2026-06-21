@@ -3,6 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { GateBar } from "@/components/deck/GateBar";
 import { GeneratedSlideGrid } from "@/components/deck/GeneratedSlideGrid";
 import { ProviderJobProgressPanel } from "@/components/deck/ProviderJobProgressPanel";
+import { runCodexGenerateStageJob } from "@/components/deck/generate-stage-codex-runner";
 import {
   EmptyAction,
   StageErrorBanner,
@@ -105,6 +106,22 @@ export function GenerateStage({
     if (!project.plan || !project.design || imageGenerationGate.kind !== "ready") return;
     setBusy(true);
     setProgress(0);
+    if (imageGenerationGate.providerId === "codex") {
+      const completed = await runCodexGenerateStageJob({
+        project,
+        jobId,
+        manager,
+        onJob: (nextJob) => syncJob(project.id, manager, nextJob, setJob, setRecovered),
+        onSlides: (nextSlides) => setSlides([...nextSlides]),
+        onProgress: setProgress,
+      });
+      syncJob(project.id, manager, completed, setJob, setRecovered);
+      setBusy(false);
+      if (completed.status !== "succeeded" || completed.output === undefined) return;
+      updateProject(project.id, { slides: [...completed.output], stage: "SLIDE_REVIEW_PENDING" });
+      invalidateDownstream(project.id, "generate");
+      return;
+    }
     const target = mockSlides(project.plan);
     const draft: GeneratedSlide[] = target.map((slide) => ({ ...slide, status: "generating" }));
     setSlides(draft);

@@ -139,3 +139,15 @@ before generation. This closes the local product gap that prevented the app
 from producing a valid DF-244 confirmation record, but it still requires one
 packaged-app Codex image run to capture the actual persisted record and update
 the Lane D evidence bundle.
+
+## Generate Stage Live Image Path
+
+2026-06-21 KST product update: after the confirmation record is attached, the
+production `codex` Generate-stage job now runs the live Codex image session
+instead of the mock slide loop. Each successful slide records a stored artifact
+path and the outer job publishes a `live_slide_images` partial result, so the
+usage/progress surface can distinguish a real Codex image run from mock preview
+generation.
+
+DF-244 still requires packaged-app manual QA with real image usage payloads and
+the persisted pre-generation confirmation JSON captured from the same run.

@@ -48,3 +48,18 @@ DF-233 remains open for true queue-control evidence: actual rate-limit or 5xx re
 `docs/live-evidence/codex-image/lane-g-closure-recheck-20260621/issue-closure-evidence.json`.
 No new real provider 429/5xx, in-flight cancellation, or packaged restart-resume
 artifact was found. The issue remains blocked on those live queue-control events.
+
+## Generate Stage Product Hook
+
+2026-06-21 KST product update: production `codex` Generate-stage runs now enter
+`runCodexGenerateStageJob`, which creates live slide placeholders, routes each
+approved layout bundle through `runCodexLiveSlideGenerationSession`, stores PNG,
+metadata, and provenance sidecars through the image artifact store contract, and
+reports live queue progress back into the outer provider job. The desktop image
+client maps Codex App Server image-generation notifications into Codex OAuth
+image responses; it does not use OpenAI API keys.
+
+This closes the local product gap where the production Codex route could pass
+the image gate but still fall back to the mock slide loop. DF-233 remains open
+until a packaged app run captures real 429/5xx retry provenance, in-flight user
+cancellation, and restart-resume evidence against real provider jobs.
