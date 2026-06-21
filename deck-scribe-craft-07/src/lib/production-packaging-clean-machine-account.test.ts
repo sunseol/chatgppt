@@ -52,4 +52,21 @@ describe("production packaging clean-machine account evidence", () => {
       "missing_clean_machine_account_evidence",
     ]);
   });
+
+  test("blocks clean-machine account evidence paths that rely on boundary whitespace", () => {
+    // Given
+    const result = evaluateProductionPackagingEvidence(
+      completeProductionPackagingEvidence({
+        cleanMachineAccountEvidencePath:
+          " release-evidence/clean-machine/clean-macos-account.json ",
+      }),
+    );
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "missing_clean_machine_account_evidence",
+    ]);
+  });
 });

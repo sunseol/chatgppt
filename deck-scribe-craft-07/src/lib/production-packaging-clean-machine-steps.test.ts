@@ -92,6 +92,26 @@ describe("production packaging clean-machine step evidence", () => {
     expect(result.issues[0]?.refs).toEqual(["codex_login"]);
   });
 
+  test("blocks clean-machine step evidence paths that rely on boundary whitespace", () => {
+    // Given
+    const result = evaluateProductionPackagingEvidence(
+      completeProductionPackagingEvidence({
+        cleanMachineStepEvidencePaths: {
+          ...productionCleanMachineStepEvidencePaths(),
+          install_app: " release-evidence/clean-machine/install-app.json ",
+        },
+      }),
+    );
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "missing_clean_machine_step_evidence",
+    ]);
+    expect(result.issues[0]?.refs).toEqual(["install_app"]);
+  });
+
   test("blocks one clean-machine evidence path reused for every step", () => {
     // Given
     const reusedPath =

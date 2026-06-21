@@ -107,12 +107,14 @@ export function cleanMachineAccountEvidencePathIssues(
 
 function hasStepSpecificEvidencePath(step: CleanMachineStep, path: string | undefined): boolean {
   if (path === undefined) return false;
+  if (path.trim() !== path) return false;
   if (!hasNonSyntheticJsonEvidencePath(path)) return false;
   const normalizedPath = path.toLowerCase();
   return CLEAN_MACHINE_STEP_PATH_MARKERS[step].some((marker) => normalizedPath.includes(marker));
 }
 
 function hasCleanMacosAccountEvidencePath(path: string | undefined): boolean {
+  if (path === undefined || path.trim() !== path) return false;
   const normalizedPath = path?.toLowerCase() ?? "";
   return (
     hasNonSyntheticJsonEvidencePath(path) &&

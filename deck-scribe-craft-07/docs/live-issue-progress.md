@@ -606,3 +606,14 @@ whitespace. A padded `manual-qa/session-20260619.json` path blocks as
 claimed from a non-canonical persisted bundle path. DF-246 remains open until a
 real non-developer packaged-app session produces the required under-10-minute
 manual QA evidence.
+
+DF-245 local update: clean-machine step evidence paths and the separate
+`cleanMachineAccountEvidencePath` now reject values that only become valid after
+trimming boundary whitespace. Padded paths such as
+` release-evidence/clean-machine/install-app.json ` and
+` release-evidence/clean-machine/clean-macos-account.json ` block as
+`missing_clean_machine_step_evidence` or
+`missing_clean_machine_account_evidence`, so clean-machine release readiness
+cannot be claimed from non-canonical persisted path strings. DF-245 remains open
+until real clean macOS account validation, Developer ID signing, notarization,
+stapling, Gatekeeper acceptance, and release-trust evidence are recorded.
