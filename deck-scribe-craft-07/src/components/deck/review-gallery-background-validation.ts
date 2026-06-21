@@ -43,7 +43,10 @@ export function backgroundIssues(
       },
     ];
   }
-  if (composition.backgroundProviderId !== "openaiImage") {
+  if (
+    composition.backgroundProviderId !== "openaiImage" &&
+    composition.backgroundProviderId !== "codex"
+  ) {
     return [
       {
         code: "background_provider_not_live_image",

@@ -103,3 +103,17 @@ but it does not itself satisfy DF-241. The issue still requires the packaged
 production Golden Path bundle with signed report, screenshots/recording, final
 validation archive, live Research sources, five initial live images, one
 approved regeneration, title edit, export, and restart/reopen evidence.
+
+## 2026-06-21 Review Gallery Codex Background Hook
+
+The review-gallery live composition validator now accepts stored `codex` Codex
+OAuth image backgrounds as live image backgrounds. The previous local rule only
+accepted `openaiImage`, so a future Golden Path run could generate real Codex
+OAuth images and still block before review/gallery approval. The validator still
+blocks mock backgrounds, missing stored PNG artifacts, compositor SVG/background
+identity drift, duplicate stored background identities, missing editable overlay
+bounds, invalid previews, title-edit re-export gaps, and generated-text
+collisions.
+
+This removes a review-stage local product blocker for DF-241, but it does not
+replace the required packaged Golden Path evidence bundle.

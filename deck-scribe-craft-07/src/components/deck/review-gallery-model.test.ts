@@ -87,27 +87,25 @@ describe("review gallery live composition validation", () => {
     ]);
   });
 
-  test("blocks non-image live providers as compositor backgrounds", () => {
+  test("accepts Codex OAuth image providers as compositor backgrounds", () => {
     // Given
+    const composition = { ...validComposition(), backgroundProviderId: "codex" as const };
     const items = buildReviewGalleryItems({
       slides: [{ number: 1, version: 1, status: "ready", imageDescriptor: "slide 1" }],
       specs: [slideSpec()],
       selectedSlideNumber: 1,
-      compositions: [{ ...validComposition(), backgroundProviderId: "codex" }],
+      compositions: [composition],
     });
 
     // When
     const validation = validateReviewGalleryLiveCompositions({
       items,
       expectedSlideCount: 1,
+      titleEditReexportEvidence: validTitleEditEvidence(composition),
     });
 
     // Then
-    expect(validation.kind).toBe("blocked");
-    if (validation.kind !== "blocked") return;
-    expect(validation.issues.map((issue) => issue.code)).toEqual([
-      "background_provider_not_live_image",
-    ]);
+    expect(validation.kind).toBe("ready");
   });
 
   test("blocks duplicate review items that hide a missing compositor slide", () => {
@@ -232,6 +230,26 @@ function validComposition(
       height: 1,
       color: { r: 240 + slideNumber, g: 246, b: 248, a: 255 },
     }),
+  };
+}
+
+function validTitleEditEvidence(composition: FinalSlideComposition) {
+  const artifact = composition.backgroundArtifact;
+  if (artifact === undefined) throw new Error("Expected stored background artifact.");
+  const editedTitle = "시장 기회";
+  return {
+    slideNumber: composition.slideNumber,
+    originalTitle: "시장",
+    editedTitle,
+    exportedSvgPath: "projects/project/exports/svg/slide_01.svg",
+    exportedSvgContent: [
+      `<svg data-export-basis="${composition.exportBasis}"`,
+      `data-background-artifact-id="${artifact.artifactId}"`,
+      `data-background-artifact-path="${artifact.path}"`,
+      `data-background-artifact-hash="${artifact.hash}">`,
+      `<text>${editedTitle}</text>`,
+      "</svg>",
+    ].join(" "),
   };
 }
 
