@@ -4,6 +4,27 @@ Date: 2026-06-19
 
 Scope: tracked GitHub issues `#126` through `#157` (`DF-200` through `DF-247`).
 
+## 2026-06-22 KST DF-243 Cancel Job Product Evidence Export
+
+DF-243 local update: the product now has a dedicated app-storage evidence
+writer for the `cancel_job` interruption scenario.
+`writeLiveInterruptionCancelEvidenceExport` turns a real cancelled image queue
+job into two persisted JSON artifacts:
+`projects/{projectId}/live-evidence/df243-cancel-job-recovery-snapshot-{jobId}.json`
+and
+`projects/{projectId}/live-evidence/df243-cancel-job-cancel-signal-{jobId}.json`.
+The writer refuses to emit evidence unless the cancelled queue failure, provider
+job, preserved `cancelRequested` signal, matching retry attempt, and
+slide-generation prompt usage all line up. Regression coverage lives in
+`src/lib/live-interruption-cancel-evidence-export.test.ts`, including a
+matrix-ready `cancel_job` scenario and the false-ready path where a cancelled
+job lacks a preserved cancel signal.
+
+This still does not close DF-243. The release closure artifact remains blocked
+until a packaged/authenticated run captures the generated app-storage cancel
+snapshot and cancel-signal JSON, plus the remaining `image_partial_resume` and
+`interrupted_artifact_gate` recovery/gate artifacts.
+
 ## 2026-06-22 KST DF-243 Observed Snapshot Materialization
 
 DF-243 local update: the blocked closure manifest now points at committed
