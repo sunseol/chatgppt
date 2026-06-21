@@ -21,9 +21,11 @@ describe("live auth secret lifecycle documentation", () => {
     expect(authSecretLifecycle.includes("hex-encoded image API key")).toBe(true);
     expect(authSecretLifecycle.includes("live-auth-secret-reference-encoding.test.ts")).toBe(true);
     expect(authSecretLifecycle.includes("live-auth-keychain-store.test.ts")).toBe(true);
+    expect(authSecretLifecycle.includes("live-auth-secret-reference-identity.test.ts")).toBe(true);
     expect(authSecretLifecycle.includes("live-auth-secret-reference-scope.test.ts")).toBe(true);
     expect(authSecretLifecycle.includes("live-auth-secret-reference-timestamp.test.ts")).toBe(true);
     expect(authSecretLifecycle.includes("LiveSecretReferenceError")).toBe(true);
+    expect(authSecretLifecycle.includes("reference identity")).toBe(true);
     expect(authSecretLifecycle.includes("LiveSecretReferenceScopeError")).toBe(true);
     expect(authSecretLifecycle.includes("LiveSecretReferenceTimestampError")).toBe(true);
     expect(authSecretLifecycle.includes("wrong service or account scope")).toBe(true);
@@ -39,7 +41,9 @@ describe("live auth secret lifecycle documentation", () => {
     expect(authSecretLifecycle.includes('"sessionToken":"..."')).toBe(true);
     expect(authSecretLifecycle.includes('"clientSecret":"..."')).toBe(true);
     expect(authSecretLifecycle.includes("disconnectImageApiKeySecret")).toBe(true);
-    expect(authSecretLifecycle.includes("rejects store-kind mismatch before delete")).toBe(true);
+    expect(
+      authSecretLifecycle.includes("rejects store-kind mismatch or invalid reference identity"),
+    ).toBe(true);
     expect(authSecretLifecycle.includes("classifyLiveAuthFailure")).toBe(true);
     expect(authSecretLifecycle.includes("login_expired")).toBe(true);
     expect(authSecretLifecycle.includes("Session expired")).toBe(true);

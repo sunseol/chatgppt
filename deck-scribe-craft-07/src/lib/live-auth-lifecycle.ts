@@ -91,6 +91,13 @@ export class LiveSecretReferenceTimestampError extends Error {
   }
 }
 
+export class LiveSecretReferenceIdentityError extends Error {
+  constructor() {
+    super("Secret store returned an invalid reference identity.");
+    this.name = "LiveSecretReferenceIdentityError";
+  }
+}
+
 export class LiveSecretStoreKindError extends Error {
   constructor() {
     super("Secret store returned an unsupported store kind.");
@@ -122,6 +129,8 @@ export async function connectImageApiKeySecret(input: {
   )
     throw new LiveSecretReferenceScopeError();
   if (secretReference.createdAt !== createdAt) throw new LiveSecretReferenceTimestampError();
+  if (!hasCanonicalSecretReferenceIdentity(secretReference))
+    throw new LiveSecretReferenceIdentityError();
   if (secretReferenceContainsRawSecret(secretReference, trimmed))
     throw new LiveSecretReferenceError();
 
@@ -138,6 +147,8 @@ export async function disconnectImageApiKeySecret(input: {
 }): Promise<ImageApiKeyDisconnectedState> {
   if (!isExpectedStoreKind(input.reference.storeKind, input.store.kind))
     throw new LiveSecretStoreKindError();
+  if (!hasCanonicalSecretReferenceIdentity(input.reference))
+    throw new LiveSecretReferenceIdentityError();
   await input.store.deleteSecret(input.reference);
   return {
     credentialState: "missing",
@@ -241,6 +252,14 @@ function isActiveJob(status: ProviderJobStatus): boolean {
 
 function isExpectedStoreKind(value: string, expected: LiveSecretStoreKind): boolean {
   return value === "os_keychain" && expected === "os_keychain";
+}
+
+function hasCanonicalSecretReferenceIdentity(reference: LiveSecretReference): boolean {
+  return [reference.service, reference.account, reference.secretId].every(isCanonicalReferenceText);
+}
+
+function isCanonicalReferenceText(value: string): boolean {
+  return value.trim() !== "" && value === value.trim();
 }
 
 function secretReferenceContainsRawSecret(
