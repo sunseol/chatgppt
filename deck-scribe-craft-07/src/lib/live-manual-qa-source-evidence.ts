@@ -6,13 +6,13 @@ export function realSourceOpenIssues(
   finalReportSourceUrls: readonly string[],
 ): readonly LiveManualQaIssue[] {
   const present = openedUrls.filter((url) => url.trim().length > 0);
-  const invalid = present.filter((url) => !isHttpUrl(url));
+  const invalid = present.filter((url) => !isCanonicalHttpUrl(url));
   const placeholder = present.filter((url) => isPlaceholderSourceUrl(url));
   const reportSourceUrlSet = new Set(
-    finalReportSourceUrls.flatMap((url) => normalizedHttpUrl(url)),
+    finalReportSourceUrls.filter(isCanonicalHttpUrl).flatMap((url) => normalizedHttpUrl(url)),
   );
   const openedReportSources = present
-    .filter((url) => isHttpUrl(url) && !isPlaceholderSourceUrl(url))
+    .filter((url) => isCanonicalHttpUrl(url) && !isPlaceholderSourceUrl(url))
     .filter((url) => {
       const [normalized] = normalizedHttpUrl(url);
       return normalized !== undefined && reportSourceUrlSet.has(normalized);
@@ -58,6 +58,10 @@ export function realSourceOpenIssues(
           ),
         ]),
   ];
+}
+
+function isCanonicalHttpUrl(value: string): boolean {
+  return value.trim() === value && isHttpUrl(value);
 }
 
 function issue(

@@ -43,7 +43,7 @@ Within 10 minutes, the tester must:
 - `testerRole` set to `non_developer`
 - `sessionEvidencePath` pointing to a persisted non-synthetic `manual-qa` session JSON bundle for the observed QA session, not a boundary-whitespace-padded path, generic session or notes JSON such as `manual-qa/session-generic-20260619.json` or `manual-qa/session-notes-20260619.json`, template/sample/example/placeholder bundle, developer-local absolute, or `file://` path
 - distinct approval target checks for `research_pack`, `slide_generation`, and `export`, with every target understood
-- at least one opened real HTTP(S) source URL that also appears in the final report sources, excluding placeholder, reserved documentation, private-network, or local domains/IPs
+- at least one opened canonical real HTTP(S) source URL that also appears in canonical final report sources, excluding boundary-whitespace-padded source URLs, placeholder, reserved documentation, private-network, or local domains/IPs
 - at least one canonical non-placeholder regenerated slide id and one canonical non-placeholder edited title slide id; boundary-whitespace-padded slide ids and `placeholder`, `template`, `sample`, `example`, `mock`, `fixture`, `test`, or `fake` slide ids do not count
 - opened export artifacts `png`, `project`, and `report`
 - non-negative integer counters for critical errors, mock indicators, and placeholder outputs
@@ -87,6 +87,13 @@ Local update: `src/lib/live-manual-qa-evidence.ts` now also requires the
 observed manual QA session duration to be a positive value. A default
 `sessionDurationMs: 0` no longer satisfies the under-10-minute setup requirement
 without proving that an observed session actually happened.
+
+Local update: `src/lib/live-manual-qa-source-evidence.ts` now also requires
+opened source URLs and final report source URLs to be canonical before they can
+match. A padded source such as ` https://www.w3.org/TR/WCAG22/ ` blocks with
+`invalid_real_source_url` when opened, and cannot satisfy
+`opened_source_not_in_report` when it appears only as a padded final report
+source.
 
 ## 2026-06-21 Lane F Recheck
 

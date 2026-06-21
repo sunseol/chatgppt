@@ -97,21 +97,21 @@ describe("live readiness documentation", () => {
     expect(runbook.includes("package_content_contaminated")).toBe(true);
     expect(runbook.includes("missing_clean_machine_step")).toBe(true);
     expect(runbook.includes("10-character uppercase alphanumeric Apple TeamIdentifier")).toBe(true);
-    expect(runbook.includes("releaseTrustEvidencePath")).toBe(true);
-    expect(runbook.includes("not set")).toBe(true);
-    expect(manualQa.includes("DF-246")).toBe(true);
-    expect(manualQa.includes("10 minutes")).toBe(true);
+    expect(runbook.includes("releaseTrustEvidencePath") && runbook.includes("not set")).toBe(true);
+    expect(manualQa.includes("DF-246") && manualQa.includes("sessionEvidencePath")).toBe(true);
+    expect(manualQa.includes("10 minutes") && manualQa.includes("setup_over_time")).toBe(true);
     expect(manualQa.includes("tester_not_non_developer")).toBe(true);
     expect(manualQa.includes("missing_manual_qa_session_evidence")).toBe(true);
-    expect(manualQa.includes("invalid_real_source_url")).toBe(true);
+    expect(
+      manualQa.includes("invalid_real_source_url") &&
+        manualQa.includes("boundary-whitespace-padded source URLs"),
+    ).toBe(true);
     expect(manualQa.includes("invalid_manual_qa_count")).toBe(true);
-    expect(manualQa.includes("setup_over_time")).toBe(true);
     expect(manualQa.includes("critical_issue_present")).toBe(true);
     expect(manualQa.includes("placeholder_output_present")).toBe(true);
     expect(manualQa.includes("manual-qa/session-notes-20260619.json")).toBe(true);
     expect(manualQa.includes("severity issue list")).toBe(true);
     expect(manualQa.includes("invalid_manual_qa_issue_log")).toBe(true);
-    expect(manualQa.includes("sessionEvidencePath")).toBe(true);
     expect(decision.includes("Release decision: Blocked")).toBe(true);
     expect(decision.includes("docs/live-release-decision.md")).toBe(true);
     expect(decision.includes("canonical release decision path")).toBe(true);

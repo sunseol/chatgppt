@@ -85,6 +85,19 @@ This still does not close DF-246. The ticket still needs a real
 non-developer, under-10-minute packaged-app session with a persisted
 non-synthetic manual QA session bundle and clean output/source/action evidence.
 
+## 2026-06-22 KST DF-246 Canonical Manual QA Source URLs
+
+DF-246 local update: manual QA source-open evidence now requires both the opened
+source URL and final-report source URL to be canonical before they can match. A
+padded opened source such as ` https://www.w3.org/TR/WCAG22/ ` now blocks with
+`invalid_real_source_url`, and a padded final-report source can no longer match
+a clean opened URL after trimming. Regression coverage lives in
+`src/lib/live-manual-qa-source-evidence.test.ts`.
+
+This still does not close DF-246. The ticket still needs a real
+non-developer, under-10-minute packaged-app session with a persisted
+non-synthetic manual QA session bundle and clean output/source/action evidence.
+
 ## 2026-06-22 KST DF-246 Positive Manual QA Duration Gate
 
 DF-246 local update: manual QA session duration now has to be greater than zero
