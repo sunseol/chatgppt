@@ -55,6 +55,36 @@ describe("live golden path text lineage", () => {
       "live_layout_ir",
     ]);
   });
+
+  test("blocks text stage turn ids that only become valid after trimming", () => {
+    // Given
+    const bundle = completeBundle();
+
+    // When
+    const result = evaluateLiveGoldenPathE2EBundle({
+      ...bundle,
+      lineage: [
+        textArtifact("live_interview", " turn_interview "),
+        textArtifact("live_research", " turn_research "),
+        textArtifact("live_deck_plan", " turn_deck_plan "),
+        textArtifact("live_design_system", " turn_design_system "),
+        textArtifact("live_layout_ir", " turn_layout_ir "),
+        ...bundle.imageArtifacts,
+      ],
+    });
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual(["missing_live_text_artifact"]);
+    expect(result.issues[0]?.refs).toEqual([
+      "live_interview",
+      "live_research",
+      "live_deck_plan",
+      "live_design_system",
+      "live_layout_ir",
+    ]);
+  });
 });
 
 function completeBundle(): LiveGoldenPathE2EBundle {

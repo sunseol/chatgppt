@@ -29,11 +29,11 @@ The `completedSteps` evidence must match this canonical sequence exactly; a bund
 - Step-level screenshots and a recording at observed, non-synthetic, non-local, non-URL evidence paths
 - Final validation bundle at an observed, non-synthetic, non-local, non-URL `.zip` or `.json` path whose manifest references the final export artifact id, signed report digest, every step screenshot, the recording, valid source artifact ids, and nonblank live image artifact ids without duplicate or unexpected references
 - Observed Golden Path report, screenshot, recording, and validation bundle paths must not be marked `template`, `sample`, `example`, or `placeholder`
-- Production Codex provider lineage for live interview, live research, live Deck Plan, live Design System, and live Layout IR text stages, with stage-specific Deck Plan, Design System, and Layout IR markers rather than generic `plan`, `design`, or `layout` labels
+- Production Codex provider lineage for live interview, live research, live Deck Plan, live Design System, and live Layout IR text stages, with canonical nonblank thread/turn ids and stage-specific Deck Plan, Design System, and Layout IR markers rather than generic `plan`, `design`, or `layout` labels
 - Zero mock or fixture artifacts in Golden Path lineage
 - At least three distinct normalized real source URLs with distinct source artifact ids, excluding placeholder, reserved documentation, local, or private-network hosts
 - At least one primary or official source URL
-- At least five distinct initial production `codex` image artifacts with nonblank artifact ids, model/runtime, prompt version, `codex_session` auth, and distinct provider turn ids
+- At least five distinct initial production `codex` image artifacts with nonblank artifact ids, model/runtime, prompt version, `codex_session` auth, and canonical distinct provider turn ids
 - One approved live full-slide regeneration image artifact, separate from the five initial images, either marked as regeneration evidence or citing another live image artifact as input
 - Restart/reopen evidence proving the same project reloads with a parseable `reopenedAt` timestamp at or after the signed report timestamp and the same final export artifact
 - Redacted report summary with no raw secret-like text
@@ -57,7 +57,7 @@ The local gate returns these issue codes:
 - `validation_bundle_missing_image_artifact`: final validation bundle does not include every nonblank live image artifact id.
 - `validation_bundle_duplicate_reference`: final validation bundle repeats screenshot, source artifact, or image artifact references.
 - `validation_bundle_unexpected_reference`: final validation bundle includes screenshot, source artifact, or image artifact references outside the validated Golden Path evidence.
-- `missing_live_text_artifact`: completed text stages lack matching production Codex provider lineage, including cases where Deck Plan, Design System, or Layout IR evidence only uses generic `plan`, `design`, or `layout` labels.
+- `missing_live_text_artifact`: completed text stages lack matching production Codex provider lineage, including cases where thread/turn ids are non-canonical or Deck Plan, Design System, or Layout IR evidence only uses generic `plan`, `design`, or `layout` labels.
 - `mock_lineage_contamination`: Golden Path lineage includes mock artifacts.
 - `fixture_lineage_contamination`: Golden Path lineage includes fixture artifacts.
 - `duplicate_live_source`: repeated normalized source URLs or artifact ids cannot satisfy the three-source requirement.
@@ -65,7 +65,7 @@ The local gate returns these issue codes:
 - `missing_primary_source`: no primary or official source URL is present.
 - `duplicate_live_image_artifact`: repeated live image artifact ids cannot satisfy the five-image requirement.
 - `duplicate_live_image_request`: repeated provider turn ids cannot satisfy the five-image requirement.
-- `insufficient_live_image_artifacts`: fewer than five distinct initial production image artifacts with nonblank ids, model/runtime, prompt version, Codex session auth, and Codex turn ids are present before regeneration.
+- `insufficient_live_image_artifacts`: fewer than five distinct initial production image artifacts with nonblank ids, model/runtime, prompt version, Codex session auth, and canonical Codex turn ids are present before regeneration.
 - `missing_regenerated_live_image_artifact`: no approved live full-slide regeneration image artifact is present after the initial five-image requirement is met.
 - `missing_restart_reopen_evidence`: app restart/reopen evidence does not include a parseable timestamp at or after the signed report timestamp, or does not match the final project/export artifact.
 - `secret_leak`: report content contains secret-like text.

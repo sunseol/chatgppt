@@ -206,9 +206,13 @@ function isProductionCodexTextArtifact(artifact: ProviderArtifactProvenance): bo
     artifact.modelOrRuntime.trim().length > 0 &&
     artifact.promptVersion.trim().length > 0 &&
     artifact.fixture === false &&
-    Boolean(artifact.turnId?.trim()) &&
-    Boolean(artifact.threadId?.trim())
+    hasCanonicalIdentity(artifact.turnId) &&
+    hasCanonicalIdentity(artifact.threadId)
   );
+}
+
+function hasCanonicalIdentity(value: string | undefined): boolean {
+  return value !== undefined && value.length > 0 && value === value.trim();
 }
 
 function textArtifactMatchesStage(

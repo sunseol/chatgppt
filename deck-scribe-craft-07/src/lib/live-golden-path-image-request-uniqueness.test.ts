@@ -41,6 +41,26 @@ describe("live golden path image request uniqueness", () => {
       "insufficient_live_image_artifacts",
     ]);
   });
+
+  test("blocks Codex image turn ids that only become valid after trimming", () => {
+    // Given
+    const imageArtifacts = [
+      ...Array.from({ length: 5 }, (_, index) =>
+        liveImageArtifact(`live_image_${index + 1}`, ` turn_image_${index + 1} `),
+      ),
+      liveImageArtifact("live_regenerated_slide_003", " turn_image_regenerated "),
+    ];
+    const bundle = completeBundle({ imageArtifacts });
+
+    // When
+    const result = evaluateLiveGoldenPathE2EBundle(bundle);
+
+    // Then
+    expect(result.kind === "blocked" ? result.issues.map((issue) => issue.code) : []).toEqual([
+      "validation_bundle_unexpected_reference",
+      "insufficient_live_image_artifacts",
+    ]);
+  });
 });
 
 function completeBundle(

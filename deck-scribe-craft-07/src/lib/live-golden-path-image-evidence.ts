@@ -77,9 +77,13 @@ function hasRegenerationMarker(value: string): boolean {
 }
 
 function imageProviderRunId(artifact: ProviderArtifactProvenance): string {
-  return artifact.providerKind === "codex"
-    ? (artifact.turnId?.trim() ?? "")
-    : (artifact.requestId?.trim() ?? "");
+  return canonicalProviderIdentity(
+    artifact.providerKind === "codex" ? artifact.turnId : artifact.requestId,
+  );
+}
+
+function canonicalProviderIdentity(value: string | undefined): string {
+  return value !== undefined && value.length > 0 && value === value.trim() ? value : "";
 }
 
 function duplicateValues(values: readonly string[]): readonly string[] {

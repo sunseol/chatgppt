@@ -74,9 +74,13 @@ export function liveImageArtifacts(
       artifact.modelOrRuntime.trim().length > 0 &&
       artifact.promptVersion.trim().length > 0 &&
       !artifact.fixture &&
-      Boolean(artifact.threadId?.trim()) &&
-      Boolean(artifact.turnId?.trim()),
+      hasCanonicalIdentity(artifact.threadId) &&
+      hasCanonicalIdentity(artifact.turnId),
   );
+}
+
+function hasCanonicalIdentity(value: string | undefined): boolean {
+  return value !== undefined && value.length > 0 && value === value.trim();
 }
 
 function manifestDuplicateIssues(

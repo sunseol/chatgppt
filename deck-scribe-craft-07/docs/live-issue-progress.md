@@ -705,3 +705,12 @@ request ids, while cross-run duplicate detection resolves the same provider
 identity list before checking reuse. DF-242 remains open until five real
 benchmark output bundles are produced and at least four named packaged Live
 Golden Path runs pass.
+
+DF-241 local update: Golden Path E2E provider lineage now rejects text-stage
+thread/turn ids and Codex image turn ids that only become valid after trimming
+boundary whitespace. Padded text turns no longer satisfy production text
+lineage, and padded image turns are excluded from the validated image set,
+causing `insufficient_live_image_artifacts` plus validation bundle reference
+drift when the bundle cites those unvalidated image artifacts. DF-241 remains
+open until the real packaged Golden Path report, screenshots, recording,
+validation bundle, export, and restart/reopen evidence are captured.
