@@ -59,6 +59,7 @@ Signing state remains release-blocking: `codesign -dv --verbose=4` reports `Sign
 - `duplicate_clean_machine_step`
 - `missing_clean_machine_step`
 - `missing_clean_machine_step_evidence`
+- `missing_clean_machine_account_evidence`
 - `missing_runtime_absence_remediation`
 - `missing_clean_machine_runbook`
 
@@ -67,6 +68,8 @@ Package archive and native macOS bundle paths must be persisted non-synthetic, n
 Native macOS release trust evidence must include a Developer ID team signature, a 10-character uppercase alphanumeric Apple TeamIdentifier, notarization, stapling, Gatekeeper acceptance, and a persisted non-synthetic, non-local `releaseTrustEvidencePath` JSON bundle whose path identifies a release-trust bundle containing the codesign, notarytool, stapler, and `spctl` assessment records. The path itself must carry the `release-trust`, `codesign`, `notarytool`, `stapler`, and `spctl` markers so a generic `macos-release-trust.json` claim cannot stand in for the full assessment bundle. Ad-hoc signatures, missing TeamIdentifier values, placeholder values such as `not set`, missing, generically named, or developer-local release-trust evidence bundles, unstapled notarization tickets, or rejected `spctl` assessments block DF-245.
 
 The clean-machine checklist must include distinct evidence events for install, Codex login, image credential setup, project launch, and first live interview. Each step must cite its own persisted non-synthetic, non-local JSON evidence path whose path identifies that specific checklist step; for example, `codex_login` cannot point at `install-app.json`, and one shared evidence path that names every step cannot satisfy the whole checklist. Repeating one step, adding an unsupported runtime step name, listing step labels without persisted evidence paths, reusing another step's evidence path, or reusing one multi-step evidence path cannot inflate the completed step count or replace a missing clean-machine action.
+
+Clean-machine validation also requires a separate persisted non-synthetic, non-local `cleanMachineAccountEvidencePath` JSON record whose path identifies both `clean-machine` and `macos-account` evidence. Generic account files, developer-local account records, or step-only evidence paths cannot prove that the checklist ran from a fresh macOS account instead of the developer user.
 
 ## Clean account validation
 
@@ -169,5 +172,6 @@ Lane I rechecked packaging from developer worktree
 
 DF-245 remains open. Lane I produced fresh package/hash/scan evidence, but no
 Developer ID signature, notarization/stapling, Gatekeeper acceptance, persisted
-release-trust assessment bundle, or clean macOS account install/login/image
-credential/project-launch/live-interview evidence exists.
+release-trust assessment bundle, clean macOS account proof, or clean macOS
+account install/login/image credential/project-launch/live-interview evidence
+exists.

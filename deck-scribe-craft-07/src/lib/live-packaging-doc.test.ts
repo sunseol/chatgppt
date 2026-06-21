@@ -35,7 +35,10 @@ describe("live packaging documentation", () => {
       true,
     );
     expect(runbook.includes("missing_clean_machine_step_evidence")).toBe(true);
+    expect(runbook.includes("missing_clean_machine_account_evidence")).toBe(true);
     expect(runbook.includes("one shared evidence path that names every step")).toBe(true);
+    expect(runbook.includes("cleanMachineAccountEvidencePath")).toBe(true);
+    expect(runbook.includes("macos-account")).toBe(true);
     expect(progress.includes("unsupported-step inflation")).toBe(true);
     expect(progress.includes("valid distinct checklist steps")).toBe(true);
     expect(progress.includes("developer-local package archive")).toBe(true);
@@ -50,6 +53,7 @@ describe("live packaging documentation", () => {
     expect(decision.includes("developer-local persisted `releaseTrustEvidencePath`")).toBe(true);
     expect(decision.includes("generic release-trust paths without codesign")).toBe(true);
     expect(decision.includes("release-trust evidence paths")).toBe(true);
+    expect(decision.includes("clean macOS account evidence")).toBe(true);
     expect(decision.includes("991 tests")).toBe(true);
   });
 });

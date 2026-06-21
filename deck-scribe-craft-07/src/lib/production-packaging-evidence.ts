@@ -1,15 +1,25 @@
-import { hasNonSyntheticEvidencePath, hasNonSyntheticJsonEvidencePath } from "./live-evidence-path";
+import { hasNonSyntheticEvidencePath } from "./live-evidence-path";
 import {
   CLEAN_MACHINE_STEPS,
+  cleanMachineAccountEvidencePathIssues,
   cleanMachineStepEvidencePathIssues,
   cleanMachineStepIssues,
   countDistinctCleanMachineSteps,
   type CleanMachineStep,
   type CleanMachineStepEvidencePaths,
 } from "./production-packaging-clean-machine";
+import {
+  macosReleaseTrustIssues,
+  macosReleaseTrustLabel,
+  type NativeMacosReleaseTrust,
+} from "./production-packaging-release-trust";
 
 export { CLEAN_MACHINE_STEPS };
 export type { CleanMachineStep, CleanMachineStepEvidencePaths };
+export type {
+  NativeMacosReleaseTrust,
+  NativeMacosSignature,
+} from "./production-packaging-release-trust";
 
 export type PackageContentScan = {
   readonly mockResourceHits: readonly string[];
@@ -17,17 +27,6 @@ export type PackageContentScan = {
   readonly secretHits: readonly string[];
   readonly testFileHits: readonly string[];
   readonly localPathHits: readonly string[];
-};
-
-export type NativeMacosSignature = "developer_id" | "adhoc" | "unsigned";
-
-export type NativeMacosReleaseTrust = {
-  readonly signature: NativeMacosSignature;
-  readonly teamIdentifier: string;
-  readonly notarized: boolean;
-  readonly stapled: boolean;
-  readonly gatekeeperAccepted: boolean;
-  readonly releaseTrustEvidencePath?: string;
 };
 
 export type ProductionPackagingEvidence = {
@@ -40,6 +39,7 @@ export type ProductionPackagingEvidence = {
   readonly contentScan: PackageContentScan;
   readonly cleanMachineSteps: readonly CleanMachineStep[];
   readonly cleanMachineStepEvidencePaths?: CleanMachineStepEvidencePaths;
+  readonly cleanMachineAccountEvidencePath?: string;
   readonly runtimeAbsenceRemediationShown: boolean;
   readonly runbookPath: string;
 };
@@ -58,6 +58,7 @@ export type ProductionPackagingIssueCode =
   | "duplicate_clean_machine_step"
   | "missing_clean_machine_step"
   | "missing_clean_machine_step_evidence"
+  | "missing_clean_machine_account_evidence"
   | "missing_runtime_absence_remediation"
   | "missing_clean_machine_runbook";
 
@@ -71,14 +72,6 @@ export type ProductionPackagingEvidenceResult =
   | { readonly kind: "ready" }
   | { readonly kind: "blocked"; readonly issues: readonly ProductionPackagingIssue[] };
 
-const RELEASE_TRUST_EVIDENCE_PATH_MARKERS = [
-  "release-trust",
-  "codesign",
-  "notarytool",
-  "stapler",
-  "spctl",
-] as const;
-
 export function evaluateProductionPackagingEvidence(
   evidence: ProductionPackagingEvidence,
 ): ProductionPackagingEvidenceResult {
@@ -88,6 +81,7 @@ export function evaluateProductionPackagingEvidence(
     ...contentScanIssues(evidence.contentScan),
     ...cleanMachineStepIssues(evidence.cleanMachineSteps),
     ...cleanMachineStepEvidencePathIssues(evidence.cleanMachineStepEvidencePaths),
+    ...cleanMachineAccountEvidencePathIssues(evidence.cleanMachineAccountEvidencePath),
     ...runtimeRemediationIssues(evidence.runtimeAbsenceRemediationShown),
     ...runbookIssues(evidence.runbookPath),
   ];
@@ -148,49 +142,6 @@ function packageIssues(evidence: ProductionPackagingEvidence): readonly Producti
   ];
 }
 
-function macosReleaseTrustIssues(
-  trust: NativeMacosReleaseTrust,
-): readonly ProductionPackagingIssue[] {
-  const teamIdentifier = trust.teamIdentifier.trim();
-  return [
-    ...(trust.signature === "developer_id" && isDeveloperTeamIdentifier(teamIdentifier)
-      ? []
-      : [
-          issue(
-            "missing_developer_id_signature",
-            "Native macOS release must be signed with a Developer ID team identity.",
-            [trust.signature, teamIdentifier || "missing_team_identifier"],
-          ),
-        ]),
-    ...(trust.notarized && trust.stapled
-      ? []
-      : [
-          issue("missing_notarization", "Native macOS release must be notarized and stapled.", [
-            trust.notarized ? "notarized" : "not_notarized",
-            trust.stapled ? "stapled" : "not_stapled",
-          ]),
-        ]),
-    ...(trust.gatekeeperAccepted
-      ? []
-      : [
-          issue(
-            "missing_gatekeeper_acceptance",
-            "Native macOS release must pass Gatekeeper assessment.",
-            ["spctl"],
-          ),
-        ]),
-    ...(hasReleaseTrustEvidencePath(trust.releaseTrustEvidencePath)
-      ? []
-      : [
-          issue(
-            "missing_release_trust_evidence",
-            "Native macOS release trust must cite persisted codesign, notarization, stapling, and Gatekeeper evidence.",
-            [trust.releaseTrustEvidencePath || "missing"],
-          ),
-        ]),
-  ];
-}
-
 function contentScanIssues(scan: PackageContentScan): readonly ProductionPackagingIssue[] {
   const refs = [
     ...scan.mockResourceHits,
@@ -233,16 +184,6 @@ function runbookIssues(runbookPath: string): readonly ProductionPackagingIssue[]
       ];
 }
 
-function macosReleaseTrustLabel(trust: NativeMacosReleaseTrust): string {
-  return [
-    trust.signature,
-    trust.teamIdentifier.trim() || "missing-team",
-    trust.notarized ? "notarized" : "not-notarized",
-    trust.stapled ? "stapled" : "not-stapled",
-    trust.gatekeeperAccepted ? "gatekeeper-accepted" : "gatekeeper-blocked",
-  ].join(" | ");
-}
-
 function hasNativeMacosBundle(evidence: ProductionPackagingEvidence): boolean {
   return (
     hasNonSyntheticEvidencePath(evidence.nativeMacosBundlePath, [".dmg", ".app"]) &&
@@ -251,16 +192,6 @@ function hasNativeMacosBundle(evidence: ProductionPackagingEvidence): boolean {
 }
 
 const isSha256 = (value: string): boolean => /^[a-f0-9]{64}$/.test(value);
-
-const isDeveloperTeamIdentifier = (value: string): boolean => /^[A-Z0-9]{10}$/.test(value);
-
-function hasReleaseTrustEvidencePath(value: string | undefined): boolean {
-  const normalized = value?.toLowerCase() ?? "";
-  return (
-    hasNonSyntheticJsonEvidencePath(value) &&
-    RELEASE_TRUST_EVIDENCE_PATH_MARKERS.every((marker) => normalized.includes(marker))
-  );
-}
 
 function issue(
   code: ProductionPackagingIssueCode,

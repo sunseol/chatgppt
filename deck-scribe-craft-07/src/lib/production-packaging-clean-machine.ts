@@ -15,6 +15,8 @@ export type CleanMachineStepEvidencePaths = {
   readonly [Step in CleanMachineStep]?: string;
 };
 
+const CLEAN_MACHINE_ACCOUNT_PATH_MARKERS = ["clean-machine", "macos-account"] as const;
+
 const CLEAN_MACHINE_STEP_PATH_MARKERS = {
   install_app: ["install-app", "install_app"],
   codex_login: ["codex-login", "codex_login"],
@@ -89,11 +91,33 @@ export function cleanMachineStepEvidencePathIssues(
       ];
 }
 
+export function cleanMachineAccountEvidencePathIssues(
+  evidencePath: string | undefined,
+): readonly ProductionPackagingIssue[] {
+  return hasCleanMacosAccountEvidencePath(evidencePath)
+    ? []
+    : [
+        issue(
+          "missing_clean_machine_account_evidence",
+          "Clean-machine validation must cite persisted clean macOS account evidence.",
+          [evidencePath || "missing"],
+        ),
+      ];
+}
+
 function hasStepSpecificEvidencePath(step: CleanMachineStep, path: string | undefined): boolean {
   if (path === undefined) return false;
   if (!hasNonSyntheticJsonEvidencePath(path)) return false;
   const normalizedPath = path.toLowerCase();
   return CLEAN_MACHINE_STEP_PATH_MARKERS[step].some((marker) => normalizedPath.includes(marker));
+}
+
+function hasCleanMacosAccountEvidencePath(path: string | undefined): boolean {
+  const normalizedPath = path?.toLowerCase() ?? "";
+  return (
+    hasNonSyntheticJsonEvidencePath(path) &&
+    CLEAN_MACHINE_ACCOUNT_PATH_MARKERS.every((marker) => normalizedPath.includes(marker))
+  );
 }
 
 function duplicatedStepEvidencePathSteps(

@@ -32,6 +32,7 @@ export function completeProductionPackagingEvidence(
     },
     cleanMachineSteps: CLEAN_MACHINE_STEPS,
     cleanMachineStepEvidencePaths: productionCleanMachineStepEvidencePaths(),
+    cleanMachineAccountEvidencePath: "release-evidence/clean-machine/clean-macos-account.json",
     runtimeAbsenceRemediationShown: true,
     runbookPath: "docs/production-clean-machine-runbook.md",
     ...patch,
