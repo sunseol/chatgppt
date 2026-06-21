@@ -9,6 +9,7 @@ import {
   type PackagedLiveEvidenceIndexResult,
   type PackagedLiveEvidenceTicketId,
 } from "./packaged-live-evidence-index-contract";
+import { packagedLiveEvidenceReadinessIssues } from "./packaged-live-evidence-index-readiness";
 
 export * from "./packaged-live-evidence-index-contract";
 
@@ -19,7 +20,7 @@ export function evaluatePackagedLiveEvidenceIndex(
     ...indexIdentityIssues(index),
     ...ticketCoverageIssues(index.entries),
     ...entryIssues(index.entries),
-    ...releaseDependencyIssues(index.entries),
+    ...packagedLiveEvidenceReadinessIssues(index.entries),
   ];
   return issues.length === 0 ? { kind: "ready" } : { kind: "blocked", issues };
 }
@@ -198,26 +199,6 @@ function readyValidationIssues(
         ),
       ]
     : [];
-}
-
-function releaseDependencyIssues(
-  entries: readonly PackagedLiveEvidenceEntry[],
-): readonly PackagedLiveEvidenceIndexIssue[] {
-  const releaseEntry = entries.find((entry) => entry.ticketId === "DF-247");
-  if (releaseEntry?.status !== "ready") return [];
-  const blockedUpstream = entries
-    .filter((entry) => entry.ticketId !== "DF-247")
-    .filter((entry) => entry.status !== "ready" || entry.validationKind !== "ready")
-    .map((entry) => entry.ticketId);
-  return blockedUpstream.length === 0
-    ? []
-    : [
-        issue(
-          "packaged_live_release_ready_before_upstream",
-          "DF-247 release evidence cannot be ready while upstream packaged evidence is blocked.",
-          blockedUpstream,
-        ),
-      ];
 }
 
 function duplicateTickets(entries: readonly PackagedLiveEvidenceEntry[]): readonly string[] {

@@ -40,6 +40,7 @@ export type PackagedLiveEvidenceIndexIssueCode =
   | "duplicate_packaged_live_artifact_path"
   | "invalid_packaged_live_artifact_hash"
   | "packaged_live_ready_validation_blocked"
+  | "packaged_live_ticket_blocked"
   | "packaged_live_release_ready_before_upstream";
 
 export type PackagedLiveEvidenceIndexIssue = {

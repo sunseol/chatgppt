@@ -64,8 +64,29 @@ describe("packaged live evidence index", () => {
     if (result.kind !== "blocked") return;
     expect(result.issues.map((issue) => issue.code)).toEqual([
       "packaged_live_ready_validation_blocked",
+      "packaged_live_ticket_blocked",
       "packaged_live_release_ready_before_upstream",
     ]);
+  });
+
+  test("blocks indexes while any packaged evidence ticket remains blocked", () => {
+    // Given
+    const index = completeIndex({
+      entries: PACKAGED_LIVE_EVIDENCE_TICKET_IDS.map((ticketId) =>
+        ticketId === "DF-245" || ticketId === "DF-247"
+          ? { ...entry(ticketId), status: "blocked" }
+          : entry(ticketId),
+      ),
+    });
+
+    // When
+    const result = evaluatePackagedLiveEvidenceIndex(index);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual(["packaged_live_ticket_blocked"]);
+    expect(result.issues[0]?.refs).toEqual(["DF-245", "DF-247"]);
   });
 });
 

@@ -44,7 +44,17 @@ describe("packaged live evidence index artifact", () => {
 
     // Then
     expect(index.path).toBe(INDEX_PATH);
-    expect(result).toEqual({ kind: "ready" });
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual(["packaged_live_ticket_blocked"]);
+    expect(result.issues[0]?.refs).toEqual([
+      "DF-241",
+      "DF-242",
+      "DF-243",
+      "DF-245",
+      "DF-246",
+      "DF-247",
+    ]);
     expect(mismatchedDigests).toEqual([]);
     expect(summary.includes("Ready tickets: 0 of 6")).toBe(true);
   });
