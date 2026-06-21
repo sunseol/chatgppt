@@ -19,7 +19,7 @@ Status: Closed on GitHub with live Codex OAuth evidence
 - `src/lib/production-image-generation-gate.ts` allows the `mock` provider only in development mode.
 - Production generation is blocked with `missing_image_path_decision` until `DeckProject.imagePathDecision` contains a locked decision record.
 - A blocked decision forwards `image_path_not_locked` plus the underlying decision blockers to the Generate stage.
-- The production gate revalidates persisted locked decisions before use: fixture fallback flags block with `fixture_fallback_enabled`, blank Codex image turn/thread ids block with `missing_turn_id` or `missing_thread_id`, padded persisted Codex turn/thread ids block with `provenance_turn_id_mismatch` or `provenance_thread_id_mismatch`, padded persisted binary/provenance artifact paths block instead of being trimmed into readiness, non-versioned binary paths block with `invalid_binary_artifact_path`, non-versioned provenance sidecars block with `invalid_provenance_artifact_path`, and binary/provenance version drift blocks with `provenance_artifact_path_mismatch`.
+- The production gate revalidates persisted locked decisions before use: OpenAI API-key image routes block with `production_codex_oauth_required`, fixture fallback flags block with `fixture_fallback_enabled`, blank Codex image turn/thread ids block with `missing_turn_id` or `missing_thread_id`, padded persisted Codex turn/thread ids block with `provenance_turn_id_mismatch` or `provenance_thread_id_mismatch`, padded persisted binary/provenance artifact paths block instead of being trimmed into readiness, non-versioned binary paths block with `invalid_binary_artifact_path`, non-versioned provenance sidecars block with `invalid_provenance_artifact_path`, and binary/provenance version drift blocks with `provenance_artifact_path_mismatch`.
 - `src/components/deck/GenerateStage.tsx` disables the production image generation action when this gate is blocked, so the stage cannot return mock preview output as a fixture fallback.
 
 ## Decision inputs recorded
@@ -36,7 +36,7 @@ Status: Closed on GitHub with live Codex OAuth evidence
 
 - `bun test src/lib/image-path-decision.test.ts src/lib/image-path-decision-metadata.test.ts src/lib/image-path-decision-request-model.test.ts src/lib/image-path-decision-slide-path.test.ts src/lib/image-path-decision-provenance.test.ts src/lib/image-path-decision-prompt-provenance.test.ts src/lib/image-path-decision-doc.test.ts` passes: 20 tests.
 - `bun test src/lib/image-path-decision.test.ts src/lib/image-path-decision-request-model.test.ts src/lib/image-provider-feasibility.test.ts src/lib/slide-image-provider.test.ts` passes: 18 tests.
-- `bun test src/lib/production-image-generation-gate.test.ts src/components/deck/GenerateStage.integration.test.tsx` passes: 8 tests. The SSR GenerateStage test emits the existing TanStack Router context warning but verifies the production image path Lock blocker markup.
+- `bun test src/lib/production-image-generation-gate-oauth-route.test.ts src/lib/production-image-generation-gate.test.ts src/components/deck/GenerateStage.integration.test.tsx` passes: 11 tests. The SSR GenerateStage test emits the existing TanStack Router context warning but verifies the production image path Lock blocker markup.
 - `bun run typecheck` passes.
 - `bun run lint` passes with the existing six React Fast Refresh warnings only.
 
@@ -60,4 +60,4 @@ Status: Closed on GitHub with live Codex OAuth evidence
 - Evidence summary: `docs/live-evidence/codex-image/df230-df231-live-artifact-summary.json`
 - Local pixel probe: `sips -g pixelWidth -g pixelHeight` returned `1672 x 941`.
 
-The production route remains Codex OAuth only. The OpenAI API-key route is not used for production and remains excluded from the locked route decision.
+The production route remains Codex OAuth only. The OpenAI API-key route is not used for production, remains excluded from route decisions, and is blocked again by the production generation gate if an old persisted locked decision tries to re-enter after project reload.

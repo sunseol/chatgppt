@@ -14,6 +14,12 @@ Scope: DF-205 / GitHub issue `#131`, Live authentication and secret lifecycle.
 | Distinguish login expiry, 401, permission, and organization verification states | `classifyLiveAuthFailure` normalizes provider reason/message evidence and maps `session_expired`, `login_expired`, and `Session expired` 401 failures separately from generic 401 unauthorized failures. It also keeps 403 organization-verification evidence, including `verify your organization` messages, separate from generic insufficient-permission failures. |
 | Logout cancels related live jobs and locks UI                                   | `cancelLiveJobsForAuthLogout` requests cancellation for active live jobs, and `createLiveAuthLogoutLockState` returns `uiLocked: true` with `requiresAuth` provider statuses.                                                                                                                           |
 
+## Codex OAuth image route guard
+
+The product production route is Codex OAuth image generation, not OpenAI API-key image generation. `decideImageProviderFeasibility` selects `codex` / `codexOAuth` and records `openaiApiKey` as an excluded route. `createProductionImageGenerationGate` now also rejects an old persisted locked `openaiImage` / `openaiApiKey` decision with `production_codex_oauth_required`, so a project reload cannot turn legacy API-key image evidence into a production-ready generation route.
+
+The `connectImageApiKeySecret` secret-store contract remains as a defensive legacy/fallback guard: if a non-production or compatibility path ever stores a key, it must use the injected secret store and must not leak raw, encoded, wrong-scope, or stale secret references. It is not the production image-generation direction.
+
 ## Local package and secret scan
 
 Command evidence from 2026-06-19:
@@ -81,7 +87,7 @@ DF-205 should remain open until the missing Live evidence is produced:
 
 - Fresh login manual QA from an unauthenticated account or clean macOS account.
 - Logout/relogin QA that proves live jobs cancel and provider actions stay locked until login is restored.
-- Packaged app image credential setup through the OS keychain or equivalent desktop secret store.
+- Packaged app Codex OAuth image capability confirmation, plus any compatibility secret-store lifecycle proof if an API-key fallback remains installed outside the production route.
 
 ## 2026-06-21 Runtime Recheck
 

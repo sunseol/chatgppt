@@ -4,6 +4,10 @@ Date: 2026-06-19
 
 Scope: tracked GitHub issues `#126` through `#157` (`DF-200` through `DF-247`).
 
+## 2026-06-21 Current Branch OAuth Image Route Recheck
+
+DF-205/DF-230 local update: production image generation now rejects old persisted OpenAI API-key image decisions even if they were previously marked `locked` and contain binary/provenance artifact paths. `src/lib/production-image-generation-gate.ts` returns `production_codex_oauth_required` unless the persisted route is `codex` with `codexOAuth`; `src/lib/production-image-generation-gate-oauth-route.test.ts` covers the false-ready reload case. This aligns the product with the current direction that image generation uses the signed-in Codex OAuth image capability, not API-key based image generation. DF-205 remains open because fresh login, logout/relogin, and clean packaged Codex OAuth image capability evidence still require a clean account or clean machine.
+
 ## 2026-06-21 Current Branch Packaging Sanitizer Recheck
 
 DF-245 local packaging update: branch `jacobex/live-product-completion` now routes native Tauri release packaging through `bun run build:package`, which runs `vite build` and then `scripts/sanitize-package-build.mjs`. This fixes the previous false-clean path where `bun run package:dry-run` sanitized `dist/client` and `dist/server`, but `bun run tauri:build` recreated `dist/server` through the Tauri `beforeBuildCommand` and left generated TanStack manifest entries with developer-local absolute paths such as `/Users/jake/.../src/routes/__root.tsx`.

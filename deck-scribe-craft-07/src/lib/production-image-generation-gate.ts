@@ -15,6 +15,7 @@ type PersistedImagePathDecisionRecord = Omit<ImagePathDecisionRecord, "fixtureFa
 export type ProductionImageGenerationIssueCode =
   | "missing_image_path_decision"
   | "image_path_not_locked"
+  | "production_codex_oauth_required"
   | "fixture_fallback_enabled"
   | ImagePathBlockerCode;
 
@@ -150,6 +151,7 @@ function decisionIssues(
     persistedRequestId.trim().length > 0 &&
     persistedRequestId !== requestId;
   return [
+    ...productionRouteIssues(decision),
     ...(decision.status === "locked"
       ? []
       : [
@@ -220,6 +222,18 @@ function decisionIssues(
           },
         ]
       : []),
+  ];
+}
+
+function productionRouteIssues(
+  decision: PersistedImagePathDecisionRecord,
+): readonly ProductionImageGenerationIssue[] {
+  if (decision.providerId === "codex" && decision.authMode === "codexOAuth") return [];
+  return [
+    {
+      code: "production_codex_oauth_required",
+      message: "Production image generation must use Codex OAuth image generation.",
+    },
   ];
 }
 

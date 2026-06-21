@@ -58,6 +58,10 @@ describe("production image generation gate", () => {
       providerId: "openaiImage",
       issues: [
         {
+          code: "production_codex_oauth_required",
+          message: "Production image generation must use Codex OAuth image generation.",
+        },
+        {
           code: "image_path_not_locked",
           message: "Production image generation is blocked until the image path is locked.",
         },
@@ -69,7 +73,7 @@ describe("production image generation gate", () => {
     });
   });
 
-  test("uses the locked real provider route after binary artifact evidence exists", () => {
+  test("blocks locked OpenAI API-key routes even when binary artifact evidence exists", () => {
     // Given / When
     const gate = createProductionImageGenerationGate({
       executionMode: "production",
@@ -78,13 +82,15 @@ describe("production image generation gate", () => {
 
     // Then
     expect(gate).toEqual({
-      kind: "ready",
+      kind: "blocked",
       executionMode: "production",
       providerId: "openaiImage",
-      decisionId: "image_path_df230",
-      binaryArtifactPath: "projects/project_001/slides/images/slide_001.v1.png",
-      provenanceArtifactPath: "projects/project_001/slides/images/slide_001.v1.provenance.json",
-      requestId: "img_req_001",
+      issues: [
+        {
+          code: "production_codex_oauth_required",
+          message: "Production image generation must use Codex OAuth image generation.",
+        },
+      ],
     });
   });
 
@@ -108,10 +114,9 @@ describe("production image generation gate", () => {
 
   test("revalidates persisted locked decisions before production image generation", () => {
     const decision = {
-      ...lockedDecision(),
+      ...codexLockedDecision(),
       fixtureFallbackAllowed: true,
       binaryArtifactPath: "fixtures/mock-slide.png",
-      requestId: " ",
     };
 
     const gate = createProductionImageGenerationGate({
@@ -122,7 +127,7 @@ describe("production image generation gate", () => {
     expect(gate).toEqual({
       kind: "blocked",
       executionMode: "production",
-      providerId: "openaiImage",
+      providerId: "codex",
       issues: [
         {
           code: "fixture_fallback_enabled",
@@ -132,10 +137,6 @@ describe("production image generation gate", () => {
           code: "invalid_binary_artifact_path",
           message: "Production image generation requires versioned project image artifact storage.",
         },
-        {
-          code: "missing_request_id",
-          message: "OpenAI image production generation requires a provider request id.",
-        },
       ],
     });
   });
@@ -144,7 +145,7 @@ describe("production image generation gate", () => {
     const gate = createProductionImageGenerationGate({
       executionMode: "production",
       imagePathDecision: {
-        ...lockedDecision(),
+        ...codexLockedDecision(),
         provenanceArtifactPath: "projects/project_001/slides/images/slide_001.v2.provenance.json",
       },
     });
@@ -152,7 +153,7 @@ describe("production image generation gate", () => {
     expect(gate).toEqual({
       kind: "blocked",
       executionMode: "production",
-      providerId: "openaiImage",
+      providerId: "codex",
       issues: [
         {
           code: "provenance_artifact_path_mismatch",
@@ -178,6 +179,10 @@ describe("production image generation gate", () => {
       providerId: "openaiImage",
       issues: [
         {
+          code: "production_codex_oauth_required",
+          message: "Production image generation must use Codex OAuth image generation.",
+        },
+        {
           code: "provenance_request_id_mismatch",
           message: "OpenAI image production generation requires a canonical provider request id.",
         },
@@ -189,7 +194,7 @@ describe("production image generation gate", () => {
     const gate = createProductionImageGenerationGate({
       executionMode: "production",
       imagePathDecision: {
-        ...lockedDecision(),
+        ...codexLockedDecision(),
         binaryArtifactPath: " projects/project_001/slides/images/slide_001.v1.png ",
         provenanceArtifactPath: " projects/project_001/slides/images/slide_001.v1.provenance.json ",
       },
@@ -198,7 +203,7 @@ describe("production image generation gate", () => {
     expect(gate).toEqual({
       kind: "blocked",
       executionMode: "production",
-      providerId: "openaiImage",
+      providerId: "codex",
       issues: [
         {
           code: "invalid_binary_artifact_path",
