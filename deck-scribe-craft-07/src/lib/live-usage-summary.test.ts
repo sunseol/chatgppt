@@ -178,7 +178,8 @@ describe("live usage summary", () => {
             apiKeyRequired: true,
             userConfirmed: true,
             label: "Codex image usage confirmed",
-            confirmationEvidencePath: "usage/image-billing-confirmation.json",
+            confirmationEvidencePath:
+              "usage/project-alpha/job-generate/image-billing-confirmation.json",
           },
         },
         costLabel: "estimate",
@@ -208,7 +209,8 @@ describe("live usage summary", () => {
           apiKeyRequired: true,
           userConfirmed: true,
           label: "Codex image usage confirmed",
-          confirmationEvidencePath: "usage/image-billing-confirmation.json",
+          confirmationEvidencePath:
+            "usage/project-alpha/job-generate/image-billing-confirmation.json",
         },
       }),
     ];
@@ -228,7 +230,7 @@ describe("live usage summary", () => {
       apiKeyRequired: true,
       userConfirmed: true,
       label: "Codex image usage confirmed",
-      confirmationEvidencePath: "usage/image-billing-confirmation.json",
+      confirmationEvidencePath: "usage/project-alpha/job-generate/image-billing-confirmation.json",
     };
     const stages = [
       stage("plan", {
@@ -275,7 +277,8 @@ function completeStages(): readonly LiveUsageStageSummary[] {
           apiKeyRequired: true,
           userConfirmed: true,
           label: "Codex image usage confirmed",
-          confirmationEvidencePath: "usage/image-billing-confirmation.json",
+          confirmationEvidencePath:
+            "usage/project-alpha/job-generate/image-billing-confirmation.json",
         },
       },
       costLabel: "estimate",

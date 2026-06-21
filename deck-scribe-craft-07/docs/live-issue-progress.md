@@ -422,6 +422,13 @@ Assigned issue disposition:
 - DF-247 / `#157`: remains blocked by the remaining open P0 tickets and the
   missing release evidence set.
 
+DF-244 local update: image usage confirmation evidence now requires the exact
+product storage shape `usage/<project>/<job>/image-billing-confirmation.json`.
+A generic `usage/image-billing-confirmation.json` filename no longer satisfies
+the summary/progress/report confirmation gate, so closure evidence must be tied
+to a specific packaged app project and provider job before `Codex image usage
+confirmed` can render.
+
 ## 2026-06-21 Generate Stage Queue Evidence Export
 
 The current product branch now persists a DF-233 queue evidence JSON bundle for

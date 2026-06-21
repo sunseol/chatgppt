@@ -22,7 +22,8 @@ describe("provider job progress view redaction", () => {
           apiKeyRequired: true,
           userConfirmed: true,
           label: "Codex image usage confirmed OPENAI_API_KEY=sk-live-secret123",
-          confirmationEvidencePath: "usage/image-billing-confirmation.json",
+          confirmationEvidencePath:
+            "usage/project-alpha/job-generate/image-billing-confirmation.json",
         },
       },
     };

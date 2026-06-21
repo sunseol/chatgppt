@@ -107,7 +107,8 @@ describe("full audit log", () => {
           apiKeyRequired: true,
           userConfirmed: true,
           label: "Codex image usage confirmed",
-          confirmationEvidencePath: "usage/image-billing-confirmation.json",
+          confirmationEvidencePath:
+            "usage/project-alpha/job-generate/image-billing-confirmation.json",
         },
       },
     });
@@ -118,7 +119,7 @@ describe("full audit log", () => {
       apiKeyRequired: true,
       userConfirmed: true,
       label: "Codex image usage confirmed",
-      confirmationEvidencePath: "usage/image-billing-confirmation.json",
+      confirmationEvidencePath: "usage/project-alpha/job-generate/image-billing-confirmation.json",
     });
     expect(report.includes("images 5")).toBe(true);
     expect(report.includes("Codex image usage confirmed")).toBe(true);

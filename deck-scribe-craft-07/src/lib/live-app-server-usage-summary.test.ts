@@ -72,7 +72,8 @@ describe("Codex App Server usage summary", () => {
                 apiKeyRequired: false,
                 userConfirmed: true,
                 label: "Codex image usage confirmed",
-                confirmationEvidencePath: "usage/df244-image-billing-confirmation.json",
+                confirmationEvidencePath:
+                  "usage/project-alpha/job-generate/image-billing-confirmation.json",
               },
             },
           },
@@ -96,7 +97,8 @@ describe("Codex App Server usage summary", () => {
         apiKeyRequired: false,
         userConfirmed: true,
         label: "Codex image usage confirmed",
-        confirmationEvidencePath: "usage/df244-image-billing-confirmation.json",
+        confirmationEvidencePath:
+          "usage/project-alpha/job-generate/image-billing-confirmation.json",
       },
     });
     expect(summary.includes("input 1024 · output 256 · images 5")).toBe(true);

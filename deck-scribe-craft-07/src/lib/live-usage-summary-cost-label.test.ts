@@ -18,7 +18,8 @@ describe("live usage summary cost label taxonomy", () => {
             apiKeyRequired: true,
             userConfirmed: true,
             label: "Codex image usage confirmed",
-            confirmationEvidencePath: "usage/image-billing-confirmation.json",
+            confirmationEvidencePath:
+              "usage/project-alpha/job-generate/image-billing-confirmation.json",
           },
         },
         costLabel: "approximate",
