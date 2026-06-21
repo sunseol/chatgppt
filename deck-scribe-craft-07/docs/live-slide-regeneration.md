@@ -8,7 +8,7 @@ Status: Partial, external evidence required
 
 ## Contract Summary
 
-DF-235 requires selected-slide regeneration to create a full new slide background from the approved original context instead of local inpainting. The local contract now requires the selected original slide to already be approved, preserves the selected slide spec hash, `deckContextId`, and `designSystemId`, requires a non-blank edit instruction plus non-empty, non-blank, non-duplicated, non-overlapping, and canonical `must_keep` and `must_change`, requires canonical original background artifact and Codex turn evidence before provider submission, stores the regenerated background as a newer versioned production Codex image artifact with matching Codex OAuth provenance, exact storage paths, matching provenance sidecar identity, and metadata/provenance provider turn evidence that differs from the original turn, keeps the already approved slide unchanged until the user approves the candidate, and requires matching before/after comparison evidence including requested/preserved target lists before approval can replace the original.
+DF-235 requires selected-slide regeneration to create a full new slide background from the approved original context instead of local inpainting. The local contract now requires the selected original slide to already be approved, preserves the selected slide spec hash, `deckContextId`, and `designSystemId`, requires a non-blank edit instruction plus non-empty, non-blank, non-duplicated, non-overlapping, and canonical `must_keep` and `must_change`, requires canonical original background artifact and Codex turn evidence before provider submission, stores the regenerated background as a newer versioned production Codex image artifact with matching Codex OAuth provenance, exact storage paths, matching provenance sidecar identity, and metadata/provenance provider turn evidence that differs from the original turn, keeps the already approved slide unchanged until the user approves the candidate, and requires matching before/after comparison evidence including exact canonical requested/preserved target lists before approval can replace the original.
 
 ## Local Evidence
 
@@ -28,7 +28,7 @@ DF-235 requires selected-slide regeneration to create a full new slide backgroun
 - `regeneration_background_not_live` blocks a candidate when the regenerated background provenance is not production `codex` with `codex_session` auth and non-fixture output.
 - A ready candidate points at the new versioned background artifact id, keeps the original background artifact id plus `mustKeep`/`mustChange` provenance, and remains `ready` until explicitly approved.
 - Failed candidates return the preserved approved slide so the previous accepted version remains available for review and export.
-- `src/lib/live-slide-regeneration-approval.ts` blocks approval with `missing_regeneration_comparison`, `candidate_not_ready_for_approval`, or `regeneration_comparison_mismatch` unless the candidate is still `ready`, the current slide is the approved original, and before/after comparison evidence matches the original descriptor, regenerated descriptor, slide versions, selected slide, new background artifact id, `requestedChanges`, and `preservedTargets`.
+- `src/lib/live-slide-regeneration-approval.ts` blocks approval with `missing_regeneration_comparison`, `candidate_not_ready_for_approval`, or `regeneration_comparison_mismatch` unless the candidate is still `ready`, the current slide is the approved original, and before/after comparison evidence matches the original descriptor, regenerated descriptor, slide versions, selected slide, new background artifact id, exact canonical `requestedChanges`, and exact canonical `preservedTargets`.
 - `approveLiveSlideRegenerationCandidate` preserves the approved original when approval evidence is missing or mismatched, and only replaces the selected slide once matching before/after comparison evidence is present.
 - `src/lib/live-slide-regeneration-review-evidence.ts` writes portable DF-235 review evidence at `projects/{projectId}/live-evidence/df235-slide-regeneration-review-{eventId}.json` for approved candidates, approval-blocked attempts that preserve the original, and failed live regeneration attempts that preserve the original.
 - `src/components/deck/review-stage-regeneration-evidence.ts` connects the Review-stage approval button to that writer, and `src/components/deck/review-stage-regeneration.ts` records failure-preservation evidence instead of silently falling back to local mock regeneration when an eligible live Codex regeneration fails or is blocked.
@@ -127,6 +127,12 @@ string trimming.
 boundary whitespace with `revision_target_not_canonical`. A request whose target
 list contains values like ` title text ` no longer reaches provider submission
 or later comparison matching by relying on normalized target equality.
+
+2026-06-22 KST product hardening: approval comparison matching now treats
+`requestedChanges` and `preservedTargets` as exact canonical evidence instead of
+trimming them during equality checks. A before/after comparison whose target
+list only matches after boundary whitespace is removed now blocks with
+`regeneration_comparison_mismatch`, preserving the approved original slide.
 
 DF-235 remains open until this artifact is produced by a real packaged app
 review run and attached to the Lane D evidence bundle.

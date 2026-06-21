@@ -71,14 +71,14 @@ function comparisonMatchesCandidate(
 }
 
 function targetsMatch(expected: readonly string[], actual: readonly string[]): boolean {
-  const expectedTargets = normalizedTargets(expected);
-  const actualTargets = normalizedTargets(actual);
+  const expectedTargets = sortedTargets(expected);
+  const actualTargets = sortedTargets(actual);
   return (
     expectedTargets.length === actualTargets.length &&
     expectedTargets.every((target, index) => target === actualTargets[index])
   );
 }
 
-function normalizedTargets(values: readonly string[]): readonly string[] {
-  return values.map((value) => value.trim()).sort();
+function sortedTargets(values: readonly string[]): readonly string[] {
+  return [...values].sort();
 }

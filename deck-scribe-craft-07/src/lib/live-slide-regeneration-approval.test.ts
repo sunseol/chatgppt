@@ -94,6 +94,29 @@ describe("live full-slide regeneration approval evidence", () => {
       }).map((issue) => issue.code),
     ).toEqual(["regeneration_comparison_mismatch"]);
   });
+
+  test("preserves the approved original when comparison targets are not canonical", async () => {
+    // Given
+    const candidate = await readyCandidate();
+    const originalSlides = [approvedSlideFixture()];
+    const comparison = {
+      ...matchingComparison(candidate),
+      preservedTargets: candidate.mustKeep.map((target) => ` ${target} `),
+    };
+
+    // When
+    const approved = approveLiveSlideRegenerationCandidate(originalSlides, candidate, comparison);
+
+    // Then
+    expect(approved).toEqual(originalSlides);
+    expect(
+      liveSlideRegenerationApprovalIssues({
+        slides: originalSlides,
+        candidate,
+        comparison,
+      }).map((issue) => issue.code),
+    ).toEqual(["regeneration_comparison_mismatch"]);
+  });
 });
 
 async function readyCandidate() {

@@ -4,6 +4,21 @@ Date: 2026-06-19
 
 Scope: tracked GitHub issues `#126` through `#157` (`DF-200` through `DF-247`).
 
+## 2026-06-22 KST DF-235 Canonical Comparison Target Gate
+
+DF-235 local update: before/after approval comparison evidence now has to carry
+exact canonical `requestedChanges` and `preservedTargets`. The approval matcher
+no longer trims target strings before comparing them with the regenerated
+candidate's `mustChange` and `mustKeep` request provenance, so a comparison
+bundle with values such as ` title text ` blocks with
+`regeneration_comparison_mismatch` and preserves the approved original slide.
+Regression coverage lives in
+`src/lib/live-slide-regeneration-approval.test.ts`.
+
+This still does not close DF-235. A real packaged Review-stage run still needs
+to approve the regenerated v2 candidate from the app surface and capture
+failed-regeneration original-preservation evidence in the Lane D bundle.
+
 ## 2026-06-22 KST DF-233 Stored Image Artifact Evidence Gate
 
 DF-233 local update: exported live image queue evidence now validates the stored
