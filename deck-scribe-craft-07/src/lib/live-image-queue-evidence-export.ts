@@ -1,6 +1,7 @@
 import { ImageArtifactStoreError, type ImageArtifactStore } from "./image-artifact-store";
 import {
   evaluateLiveImageQueueEvidence,
+  type LiveImageQueueEvidenceIssue,
   type LiveImageQueueEvidenceValidation,
 } from "./live-image-queue-evidence";
 import type { ProviderJob } from "./provider-job-manager";
@@ -91,8 +92,106 @@ function liveImageQueueEvidenceExport(input: {
     concurrency: input.result.concurrency,
     progress: input.result.progress,
     storedImageArtifactPaths: input.storedImageArtifactPaths,
-    validation: evaluateLiveImageQueueEvidence(input.result),
+    validation: evaluateLiveImageQueueExportEvidence(input),
   };
+}
+
+function evaluateLiveImageQueueExportEvidence(input: {
+  readonly projectId: string;
+  readonly result: ReadySlideGenerationQueueResult;
+  readonly storedImageArtifactPaths: readonly string[];
+}): LiveImageQueueEvidenceValidation {
+  const queueValidation = evaluateLiveImageQueueEvidence(input.result);
+  const queueIssues = queueValidation.kind === "blocked" ? queueValidation.issues : [];
+  const storedArtifactIssues = storedImageArtifactIssues(
+    input.projectId,
+    input.result.slides,
+    input.storedImageArtifactPaths,
+  );
+  const issues = [...queueIssues, ...storedArtifactIssues];
+  return issues.length === 0 ? { kind: "ready" } : { kind: "blocked", issues };
+}
+
+function storedImageArtifactIssues(
+  projectId: string,
+  slides: ReadySlideGenerationQueueResult["slides"],
+  storedImageArtifactPaths: readonly string[],
+): readonly LiveImageQueueEvidenceIssue[] {
+  const expectedPaths = slides.map((slide) =>
+    expectedStoredImageArtifactPath(projectId, slide.number, slide.version),
+  );
+  const storedPaths = new Set(storedImageArtifactPaths);
+  return [
+    ...invalidStoredImageArtifactPathIssues(projectId, storedImageArtifactPaths),
+    ...duplicateStoredImageArtifactPathIssues(storedImageArtifactPaths),
+    ...expectedPaths
+      .filter((path) => !storedPaths.has(path))
+      .map((path) => ({
+        code: "stored_image_artifact_missing" as const,
+        message: `Completed image artifact is missing from queue evidence: ${path}.`,
+      })),
+    ...storedImageArtifactPaths
+      .filter(
+        (path) => isVersionedImageArtifactPath(projectId, path) && !expectedPaths.includes(path),
+      )
+      .map((path) => ({
+        code: "stored_image_artifact_unmatched" as const,
+        message: `Stored image artifact path does not match a completed queue slide: ${path}.`,
+      })),
+  ];
+}
+
+function invalidStoredImageArtifactPathIssues(
+  projectId: string,
+  storedImageArtifactPaths: readonly string[],
+): readonly LiveImageQueueEvidenceIssue[] {
+  return storedImageArtifactPaths
+    .filter((path) => !isVersionedImageArtifactPath(projectId, path))
+    .map((path) => ({
+      code: "stored_image_artifact_path_invalid" as const,
+      message: `Stored image artifact path must point to versioned project image storage: ${path}.`,
+    }));
+}
+
+function duplicateStoredImageArtifactPathIssues(
+  storedImageArtifactPaths: readonly string[],
+): readonly LiveImageQueueEvidenceIssue[] {
+  const seen = new Set<string>();
+  const duplicates = new Set<string>();
+  for (const path of storedImageArtifactPaths) {
+    if (seen.has(path)) duplicates.add(path);
+    seen.add(path);
+  }
+  return Array.from(duplicates).map((path) => ({
+    code: "stored_image_artifact_duplicate" as const,
+    message: `Stored image artifact path is duplicated in queue evidence: ${path}.`,
+  }));
+}
+
+function isVersionedImageArtifactPath(projectId: string, path: string): boolean {
+  if (path.length === 0 || path !== path.trim()) return false;
+  if (hasSyntheticEvidenceMarker(path)) return false;
+  return (
+    /^projects\/[A-Za-z0-9_-]+\/slides\/images\/slide_\d{3}\.v\d+\.png$/.test(path) &&
+    path.startsWith(`projects/${projectId}/slides/images/`)
+  );
+}
+
+function expectedStoredImageArtifactPath(
+  projectId: string,
+  slideNumber: number,
+  version: number,
+): string {
+  return `projects/${projectId}/slides/images/slide_${pad3(slideNumber)}.v${version}.png`;
+}
+
+function pad3(value: number): string {
+  return String(value).padStart(3, "0");
+}
+
+function hasSyntheticEvidenceMarker(value: string): boolean {
+  const normalized = value.toLowerCase();
+  return ["mock", "fixture", "test", "fake"].some((marker) => normalized.includes(marker));
 }
 
 function evidenceJob(job: ProviderJob): LiveImageQueueEvidenceJob {

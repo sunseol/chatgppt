@@ -47,6 +47,35 @@ describe("live image queue evidence export", () => {
     ]);
     expect(stored.evidence.jobs.map((job) => job.id)).toEqual(["slide_job_1"]);
   });
+
+  test("blocks ready queue evidence when a completed slide lacks stored image artifact path", async () => {
+    // Given
+    const writes: ImageArtifactStoreWrite[] = [];
+
+    // When
+    const stored = await writeLiveImageQueueEvidenceExport({
+      store: {
+        write: async (entry) => {
+          writes.push(entry);
+        },
+      },
+      projectId: "project_001",
+      jobId: "job_generate_missing_store",
+      exportedAt: 1_789_940_101,
+      result: readyStoredQueueResult(),
+      storedImageArtifactPaths: [],
+    });
+
+    // Then
+    expect(writes.map((write) => write.path)).toEqual([stored.path]);
+    expect(stored.evidence.validation.kind).toBe("blocked");
+    if (stored.evidence.validation.kind !== "blocked") {
+      throw new Error("Expected missing stored image path to block export evidence.");
+    }
+    expect(stored.evidence.validation.issues.map((issue) => issue.code)).toEqual([
+      "stored_image_artifact_missing",
+    ]);
+  });
 });
 
 function readyQueueResult(): Extract<SlideGenerationQueueResult, { readonly kind: "ready" }> {
@@ -122,5 +151,58 @@ function readyQueueResult(): Extract<SlideGenerationQueueResult, { readonly kind
       observedMaxRunning: 2,
     },
     progress: { completed: 1, failed: 1, total: 2, percent: 100 },
+  };
+}
+
+function readyStoredQueueResult(): Extract<SlideGenerationQueueResult, { readonly kind: "ready" }> {
+  return {
+    kind: "ready",
+    status: "succeeded",
+    context: {
+      deckContextId: "deckctx_001",
+      deckContextHash: "sha256:deck",
+      designSystemId: "design_001",
+      designTokenHash: "sha256:design",
+      layoutPrototypeId: "layout_001",
+      slideCount: 1,
+    },
+    slides: [
+      {
+        number: 1,
+        version: 1,
+        status: "ready",
+        imageDescriptor: "codex|16:9|slide_01_layout.png|slide_generation@v1",
+      },
+    ],
+    failures: [],
+    jobs: [
+      {
+        id: "slide_job_1",
+        providerId: "codex",
+        capability: "imageGeneration",
+        description: "Generate slide 1",
+        status: "succeeded",
+        createdAt: 1_789_940_100,
+        startedAt: 1_789_940_101,
+        finishedAt: 1_789_940_110,
+        attempt: 1,
+        cancelRequested: false,
+      },
+    ],
+    promptUsages: [
+      createPromptUsageRecord({
+        promptId: "slide_generation",
+        artifactId: "bundle_slide_001",
+        jobId: "slide_job_1",
+        recordedAt: 1_789_940_100,
+      }),
+    ],
+    retryProvenance: [],
+    concurrency: {
+      requestedMaxParallel: 3,
+      effectiveMaxParallel: 1,
+      observedMaxRunning: 1,
+    },
+    progress: { completed: 1, failed: 0, total: 1, percent: 100 },
   };
 }

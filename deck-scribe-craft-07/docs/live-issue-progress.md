@@ -4,6 +4,22 @@ Date: 2026-06-19
 
 Scope: tracked GitHub issues `#126` through `#157` (`DF-200` through `DF-247`).
 
+## 2026-06-22 KST DF-233 Stored Image Artifact Evidence Gate
+
+DF-233 local update: exported live image queue evidence now validates the stored
+image artifact paths that prove completed slides were actually persisted.
+`src/lib/live-image-queue-evidence-export.ts` blocks otherwise ready queue
+evidence when a completed slide is missing its
+`projects/{projectId}/slides/images/slide_{number}.v{version}.png` path, when a
+stored image path is invalid or duplicated, or when a stored image path does not
+match any completed queue slide. Regression coverage lives in
+`src/lib/live-image-queue-evidence-export.test.ts`, including a false-ready
+bundle with one completed slide and no stored PNG path.
+
+This still does not close DF-233. A packaged Codex OAuth image run still needs
+real 429/5xx retry provenance, in-flight cancellation evidence, and
+restart-resume evidence against real provider jobs.
+
 ## 2026-06-22 KST DF-243 Interrupted Artifact Gate Product Evidence Export
 
 DF-243 local update: the product now has a dedicated app-storage evidence writer

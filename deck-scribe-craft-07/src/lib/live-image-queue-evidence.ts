@@ -35,6 +35,10 @@ export type LiveImageQueueEvidenceIssueCode =
   | "cancel_bundle_mismatch"
   | "cancel_attempt_count_mismatch"
   | "cancel_failure_without_cancel_signal"
+  | "stored_image_artifact_missing"
+  | "stored_image_artifact_path_invalid"
+  | "stored_image_artifact_duplicate"
+  | "stored_image_artifact_unmatched"
   | "noncanonical_queue_evidence_identity";
 
 export type LiveImageQueueEvidenceIssue = {
