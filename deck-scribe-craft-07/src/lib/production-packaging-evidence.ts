@@ -14,6 +14,8 @@ import {
   type NativeMacosReleaseTrust,
 } from "./production-packaging-release-trust";
 
+const DRY_RUN_PACKAGE_MARKER = "dry-run";
+
 export { CLEAN_MACHINE_STEPS };
 export type { CleanMachineStep, CleanMachineStepEvidencePaths };
 export type {
@@ -132,7 +134,7 @@ function packageIssues(evidence: ProductionPackagingEvidence): readonly Producti
             [evidence.nativeMacosBundlePath || "missing"],
           ),
         ]),
-    ...(evidence.productionMode
+    ...(evidence.productionMode && !isDryRunPackagePath(evidence.packagePath)
       ? []
       : [
           issue("package_not_production_mode", "Package evidence must be production mode.", [
@@ -192,6 +194,10 @@ function hasNativeMacosBundle(evidence: ProductionPackagingEvidence): boolean {
 }
 
 const isSha256 = (value: string): boolean => /^[a-f0-9]{64}$/.test(value);
+
+function isDryRunPackagePath(value: string): boolean {
+  return value.toLowerCase().includes(DRY_RUN_PACKAGE_MARKER);
+}
 
 function issue(
   code: ProductionPackagingIssueCode,

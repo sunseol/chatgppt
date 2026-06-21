@@ -29,7 +29,7 @@ describe("production packaging evidence", () => {
 
     // Then
     expect(summary.includes("DF-245 Production Packaging")).toBe(true);
-    expect(summary.includes("dist/deckforge-macos-dry-run.tgz")).toBe(true);
+    expect(summary.includes("dist/deckforge-macos-release.tgz")).toBe(true);
     expect(
       summary.includes("Native macOS bundle: release-artifacts/DeckForge_0.1.0_aarch64.dmg"),
     ).toBe(true);
@@ -105,10 +105,27 @@ describe("production packaging evidence", () => {
     ]);
   });
 
+  test("blocks dry-run archives from satisfying production package evidence", () => {
+    // Given
+    const evidence = completeProductionPackagingEvidence({
+      packagePath: "dist/deckforge-macos-dry-run.tgz",
+      productionMode: true,
+    });
+
+    // When
+    const result = evaluateProductionPackagingEvidence(evidence);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual(["package_not_production_mode"]);
+    expect(result.issues[0]?.refs).toEqual(["dist/deckforge-macos-dry-run.tgz"]);
+  });
+
   test("blocks package artifact, native bundle, and runbook file URL evidence paths", () => {
     // Given
     const evidence = completeProductionPackagingEvidence({
-      packagePath: "file:///Users/jake/chatgppt/dist/deckforge-macos-dry-run.tgz",
+      packagePath: "file:///Users/jake/chatgppt/dist/deckforge-macos-release.tgz",
       nativeMacosBundlePath: "file:///Users/jake/chatgppt/release-artifacts/DeckForge.dmg",
       runbookPath: "file:///Users/jake/chatgppt/docs/production-clean-machine-runbook.md",
     });

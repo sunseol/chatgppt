@@ -946,6 +946,14 @@ cannot be claimed from non-canonical persisted path strings. DF-245 remains open
 until real clean macOS account validation, Developer ID signing, notarization,
 stapling, Gatekeeper acceptance, and release-trust evidence are recorded.
 
+DF-245 local update: `src/lib/production-packaging-evidence.ts` now rejects
+dry-run archive paths as `package_not_production_mode`, even when the evidence
+sets `productionMode: true`. `dist/deckforge-macos-dry-run.tgz` can still be
+recorded as internal scan evidence, but it cannot satisfy production package
+readiness. DF-245 remains open until a real signed/notarized production package,
+Gatekeeper acceptance, release-trust evidence, and clean-machine run are
+recorded.
+
 DF-242 local update: the release gate now rejects benchmark summary rows whose
 `failureDomain` is outside the DF-242 taxonomy with
 `live_benchmark_invalid_failure_domain`. A malformed benchmark row such as

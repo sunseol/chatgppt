@@ -10,7 +10,7 @@ export function completeProductionPackagingEvidence(
   patch: Partial<ProductionPackagingEvidence> = {},
 ): ProductionPackagingEvidence {
   return {
-    packagePath: "dist/deckforge-macos-dry-run.tgz",
+    packagePath: "dist/deckforge-macos-release.tgz",
     packageSha256: "3c15121b7fd11559b98c4ba751ccdac89a9990a669b7612e95b3cdfd94d0edf3",
     nativeMacosBundlePath: "release-artifacts/DeckForge_0.1.0_aarch64.dmg",
     nativeMacosBundleSha256: "ad8b11dee61a15c193fabfc3a7bf85110b116db65098bd2a845c2533a25dae5d",
