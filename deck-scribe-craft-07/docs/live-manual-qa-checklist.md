@@ -41,7 +41,7 @@ Within 10 minutes, the tester must:
 
 - `sessionDurationMs` greater than 0 and at or below 600000, plus completed setup tasks `new_project`, `login_check`, `prompt_input`
 - `testerRole` set to `non_developer`
-- `sessionEvidencePath` pointing to a persisted non-synthetic `manual-qa` session JSON bundle for the observed QA session, not a boundary-whitespace-padded path, generic session or notes JSON such as `manual-qa/session-generic-20260619.json` or `manual-qa/session-notes-20260619.json`, template/sample/example/placeholder bundle, developer-local absolute, or `file://` path
+- `sessionEvidencePath` pointing to a persisted non-synthetic `docs/live-evidence/.../manual-qa` session JSON bundle for the observed QA session, not an uncommitted product-local path such as `manual-qa/session-20260619.json`, boundary-whitespace-padded path, generic session or notes JSON such as `manual-qa/session-generic-20260619.json` or `manual-qa/session-notes-20260619.json`, template/sample/example/placeholder bundle, developer-local absolute, or `file://` path
 - distinct approval target checks for `research_pack`, `slide_generation`, and `export`, with every target understood
 - at least one opened canonical real HTTP(S) source URL that also appears in canonical final report sources, excluding boundary-whitespace-padded source URLs, placeholder, reserved documentation, private-network, or local domains/IPs
 - at least one canonical non-placeholder regenerated slide id and one canonical non-placeholder edited title slide id; boundary-whitespace-padded slide ids and `placeholder`, `template`, `sample`, `example`, `mock`, `fixture`, `test`, or `fake` slide ids do not count
@@ -73,9 +73,15 @@ Not run. This checklist and the local evidence validator are ready for execution
 
 Local update: `src/lib/live-manual-qa-session-evidence.ts` now also rejects
 `sessionEvidencePath` values that only become valid after trimming boundary
-whitespace. A padded `manual-qa/session-20260619.json` path remains
+whitespace. A padded `docs/live-evidence/manual-qa/session-20260619.json` path remains
 `missing_manual_qa_session_evidence` instead of satisfying the observed session
 bundle requirement.
+
+Local update: `src/lib/live-manual-qa-session-evidence.ts` now also requires
+the observed session bundle to live under committed `docs/live-evidence/...`
+paths. A product-local-looking `manual-qa/session-20260619.json` path remains
+`missing_manual_qa_session_evidence` until the non-developer QA bundle is copied
+into the reviewable release evidence tree.
 
 Local update: `src/lib/live-manual-qa-evidence.ts` now also requires
 regenerated and title-edited slide ids to be canonical before they can count as

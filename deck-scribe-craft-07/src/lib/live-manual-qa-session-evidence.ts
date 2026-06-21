@@ -27,6 +27,7 @@ function validSessionEvidencePath(value: string): boolean {
   const normalized = value.toLowerCase();
   return (
     hasNonSyntheticJsonEvidencePath(value) &&
+    normalized.startsWith("docs/live-evidence/") &&
     normalized.includes("manual-qa") &&
     normalized.includes("session") &&
     !NON_OBSERVED_SESSION_MARKERS.some((marker) => normalized.includes(marker))

@@ -921,11 +921,19 @@ Assigned issue disposition:
 
 DF-246 local update: `src/lib/live-manual-qa-session-evidence.ts` now rejects
 `sessionEvidencePath` values that only become valid after trimming boundary
-whitespace. A padded `manual-qa/session-20260619.json` path blocks as
+whitespace. A padded `docs/live-evidence/manual-qa/session-20260619.json` path blocks as
 `missing_manual_qa_session_evidence`, so a non-developer QA session cannot be
 claimed from a non-canonical persisted bundle path. DF-246 remains open until a
 real non-developer packaged-app session produces the required under-10-minute
 manual QA evidence.
+
+DF-246 local update: `src/lib/live-manual-qa-session-evidence.ts` now also
+requires the observed session JSON to be copied into the committed
+`docs/live-evidence/...` tree before it can count. A product-local-looking
+`manual-qa/session-20260619.json` path blocks as
+`missing_manual_qa_session_evidence`, preventing an unreviewable local bundle
+from satisfying the release manual QA requirement. DF-246 remains open until a
+real non-developer packaged-app session produces the required evidence bundle.
 
 DF-245 local update: clean-machine step evidence paths and the separate
 `cleanMachineAccountEvidencePath` now reject values that only become valid after

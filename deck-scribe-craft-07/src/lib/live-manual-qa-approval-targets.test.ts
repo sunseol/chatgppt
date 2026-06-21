@@ -48,7 +48,7 @@ describe("live manual QA approval target evidence", () => {
 function completeEvidence(patch: Partial<LiveManualQaEvidence> = {}): LiveManualQaEvidence {
   return {
     testerRole: "non_developer",
-    sessionEvidencePath: "manual-qa/session-20260619.json",
+    sessionEvidencePath: "docs/live-evidence/manual-qa/session-20260619.json",
     sessionDurationMs: 540_000,
     setupTasks: MANUAL_QA_SETUP_TASKS,
     approvalTargetChecks: [
