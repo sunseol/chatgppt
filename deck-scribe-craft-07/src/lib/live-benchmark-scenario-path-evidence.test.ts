@@ -11,6 +11,32 @@ import { LIVE_GOLDEN_PATH_E2E_STEPS } from "./live-golden-path-e2e-contract";
 const PACKAGE_SHA = "83032811d035f19bc7ac6d1837f137d535e011334197e6b18ae8f9477e342df7";
 
 describe("live benchmark scenario path evidence", () => {
+  test("blocks passed benchmark bundles that borrow another scenario's output bundle path", () => {
+    // Given
+    const bundle = completeBundle({
+      runs: [
+        withBorrowedOutputBundlePath(run("korean_business", "passed"), "market_research"),
+        run("market_research", "passed"),
+        run("chart_report", "passed"),
+        run("image_intro", "passed"),
+        run("revision_regeneration", "failed", "editor"),
+      ],
+    });
+
+    // When
+    const result = evaluateLiveBenchmarkEvidence(bundle);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "output_bundle_scenario_evidence_mismatch",
+    ]);
+    expect(result.issues[0]?.refs).toEqual([
+      "korean_business:bundles/market_research-live-output.zip",
+    ]);
+  });
+
   test("blocks passed benchmark bundles that borrow another scenario's report paths", () => {
     // Given
     const bundle = completeBundle({
@@ -119,6 +145,21 @@ function withBorrowedScenarioPaths(
       screenshotPaths: LIVE_GOLDEN_PATH_E2E_STEPS.map(
         (step) => `screenshots/${borrowedScenario}/borrowed/${step}.png`,
       ),
+    },
+  };
+}
+
+function withBorrowedOutputBundlePath(
+  benchmarkRun: LiveBenchmarkRun,
+  borrowedScenario: LiveBenchmarkId,
+): LiveBenchmarkRun {
+  const outputBundlePath = `bundles/${borrowedScenario}-live-output.zip`;
+  return {
+    ...benchmarkRun,
+    outputBundlePath,
+    outputBundle: {
+      ...benchmarkRun.outputBundle,
+      path: outputBundlePath,
     },
   };
 }

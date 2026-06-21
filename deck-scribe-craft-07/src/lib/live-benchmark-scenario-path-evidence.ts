@@ -29,10 +29,18 @@ export function scenarioPathEvidenceIssues(
 
 function scenarioPathMismatchRefs(run: LiveBenchmarkRun): readonly string[] {
   return [
+    ...outputBundlePathMismatchRefs(run),
     ...scenarioReportMismatchRefs(run),
     ...goldenPathReportMismatchRefs(run),
     ...screenshotPathMismatchRefs(run),
   ];
+}
+
+function outputBundlePathMismatchRefs(run: LiveBenchmarkRun): readonly string[] {
+  const refs = [run.outputBundlePath, run.outputBundle.path]
+    .filter((path) => validOutputBundlePath(path) && referencesOtherBenchmarkId(run.id, path))
+    .map((path) => `${run.id}:${path}`);
+  return [...new Set(refs)];
 }
 
 function scenarioReportMismatchRefs(run: LiveBenchmarkRun): readonly string[] {
@@ -64,6 +72,10 @@ function referencesOtherBenchmarkId(runId: string, value: string): boolean {
 
 function validEvidenceReportPath(value: string): boolean {
   return hasObservedBenchmarkEvidencePath(value, [".md"]);
+}
+
+function validOutputBundlePath(value: string): boolean {
+  return hasObservedBenchmarkEvidencePath(value, [".zip", ".json"]);
 }
 
 function validGoldenPathReportPath(value: string): boolean {

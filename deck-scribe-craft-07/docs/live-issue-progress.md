@@ -1331,6 +1331,14 @@ blocks as `output_bundle_golden_path_evidence_missing` instead of satisfying
 the source/image floors. DF-242 remains open until real non-synthetic benchmark
 output bundles are produced.
 
+DF-242 local update: passed benchmark bundles now reject output bundle paths
+that borrow another DF-242 scenario id. A `korean_business` run with a distinct
+`bundles/market_research-live-output.zip` bundle path now blocks as
+`output_bundle_scenario_evidence_mismatch` instead of satisfying readiness with
+otherwise valid report, screenshot, source, image, and export evidence. DF-242
+remains open until five real benchmark output bundles are produced and at least
+four named packaged Live Golden Path runs pass.
+
 DF-205 local update: the production image generation gate now consumes current
 provider statuses in addition to the persisted image path decision. A locked
 `codex` / `codexOAuth` decision whose current Codex provider status is

@@ -15,6 +15,9 @@ describe("live benchmark documentation", () => {
     expect(benchmark.includes("output_bundle_regeneration_image_missing")).toBe(true);
     expect(benchmark.includes("output_bundle_step_screenshot_missing")).toBe(true);
     expect(benchmark.includes("output_bundle_scenario_evidence_mismatch")).toBe(true);
+    expect(benchmark.includes("no output bundle, report, Golden Path, or screenshot path")).toBe(
+      true,
+    );
     expect(benchmark.includes("exact committed `docs/live-benchmark-report.md`")).toBe(true);
     expect(benchmark.includes("same-named report in `tmp/`")).toBe(true);
     expect(benchmark.includes("name every Golden Path step")).toBe(true);
