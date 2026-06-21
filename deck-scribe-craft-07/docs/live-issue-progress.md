@@ -598,3 +598,11 @@ Assigned issue disposition:
 - DF-247 / `#157`: remains blocked by the same open P0 evidence requirements,
   but can now reject a final release index that points at missing, duplicated,
   wrong-ticket, or still-blocked upstream evidence.
+
+DF-246 local update: `src/lib/live-manual-qa-session-evidence.ts` now rejects
+`sessionEvidencePath` values that only become valid after trimming boundary
+whitespace. A padded `manual-qa/session-20260619.json` path blocks as
+`missing_manual_qa_session_evidence`, so a non-developer QA session cannot be
+claimed from a non-canonical persisted bundle path. DF-246 remains open until a
+real non-developer packaged-app session produces the required under-10-minute
+manual QA evidence.

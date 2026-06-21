@@ -23,6 +23,7 @@ export function sessionEvidenceIssues(sessionEvidencePath: string): readonly Liv
 }
 
 function validSessionEvidencePath(value: string): boolean {
+  if (value.trim() !== value) return false;
   const normalized = value.toLowerCase();
   return (
     hasNonSyntheticJsonEvidencePath(value) &&

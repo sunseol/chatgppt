@@ -97,6 +97,21 @@ describe("live manual QA session evidence", () => {
       "missing_manual_qa_session_evidence",
     ]);
   });
+
+  test("blocks session evidence paths that rely on boundary whitespace", () => {
+    // Given
+    const evidence = completeEvidence({
+      sessionEvidencePath: " manual-qa/session-20260619.json ",
+    });
+
+    // When
+    const result = evaluateLiveManualQaEvidence(evidence);
+
+    // Then
+    expect(result.kind === "blocked" ? result.issues.map((issue) => issue.code) : []).toEqual([
+      "missing_manual_qa_session_evidence",
+    ]);
+  });
 });
 
 function completeEvidence(patch: Partial<LiveManualQaEvidence> = {}): LiveManualQaEvidence {

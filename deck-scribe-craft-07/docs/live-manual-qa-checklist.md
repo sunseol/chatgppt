@@ -41,7 +41,7 @@ Within 10 minutes, the tester must:
 
 - `sessionDurationMs` at or below 600000 and completed setup tasks `new_project`, `login_check`, `prompt_input`
 - `testerRole` set to `non_developer`
-- `sessionEvidencePath` pointing to a persisted non-synthetic `manual-qa` session JSON bundle for the observed QA session, not a generic session or notes JSON such as `manual-qa/session-generic-20260619.json` or `manual-qa/session-notes-20260619.json`, template/sample/example/placeholder bundle, developer-local absolute, or `file://` path
+- `sessionEvidencePath` pointing to a persisted non-synthetic `manual-qa` session JSON bundle for the observed QA session, not a boundary-whitespace-padded path, generic session or notes JSON such as `manual-qa/session-generic-20260619.json` or `manual-qa/session-notes-20260619.json`, template/sample/example/placeholder bundle, developer-local absolute, or `file://` path
 - distinct approval target checks for `research_pack`, `slide_generation`, and `export`, with every target understood
 - at least one opened real HTTP(S) source URL that also appears in the final report sources, excluding placeholder, reserved documentation, private-network, or local domains/IPs
 - at least one non-placeholder regenerated slide id and one non-placeholder edited title slide id; `placeholder`, `template`, `sample`, `example`, `mock`, `fixture`, `test`, or `fake` slide ids do not count
@@ -70,6 +70,12 @@ Not run. This checklist and the local evidence validator are ready for execution
 ## Current blocker evidence
 
 2026-06-21 KST Release/Packaging lane recheck found GitHub issue #156 still open with `status:needs-live-evidence`. The current session is an autonomous developer worker running as user `jake` in `/Users/jake/chatgppt-lane-release-qa`, not a non-developer tester on a clean production candidate. DF-245 is still blocked by missing Developer ID signing/notarization, Gatekeeper acceptance, clean-machine execution, and image credentials, so DF-246 cannot honestly record a 10-minute non-developer manual QA session yet.
+
+Local update: `src/lib/live-manual-qa-session-evidence.ts` now also rejects
+`sessionEvidencePath` values that only become valid after trimming boundary
+whitespace. A padded `manual-qa/session-20260619.json` path remains
+`missing_manual_qa_session_evidence` instead of satisfying the observed session
+bundle requirement.
 
 ## 2026-06-21 Lane F Recheck
 
