@@ -101,6 +101,29 @@ describe("live image queue evidence export", () => {
       "stored_image_artifact_path_invalid",
     ]);
   });
+
+  test("blocks temporary project image artifact paths", async () => {
+    // Given / When
+    const stored = await writeLiveImageQueueEvidenceExport({
+      store: {
+        write: async () => undefined,
+      },
+      projectId: "tmp",
+      jobId: "job_generate_tmp_store",
+      exportedAt: 1_789_940_301,
+      result: readyStoredQueueResult(),
+      storedImageArtifactPaths: ["projects/tmp/slides/images/slide_001.v1.png"],
+    });
+
+    // Then
+    expect(stored.evidence.validation.kind).toBe("blocked");
+    if (stored.evidence.validation.kind !== "blocked") {
+      throw new Error("Expected temporary stored image artifact paths to block export evidence.");
+    }
+    expect(stored.evidence.validation.issues.map((issue) => issue.code)).toEqual([
+      "stored_image_artifact_path_invalid",
+    ]);
+  });
 });
 
 function readyQueueResult(): Extract<SlideGenerationQueueResult, { readonly kind: "ready" }> {

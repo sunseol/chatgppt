@@ -12,6 +12,20 @@ import {
 import type { ProviderJob } from "./provider-job-manager";
 import type { SlideGenerationQueueResult } from "./slide-generation-queue";
 
+const NON_PRODUCTION_IMAGE_ARTIFACT_MARKERS = [
+  "mock",
+  "fixture",
+  "test",
+  "fake",
+  "tmp",
+  "temp",
+  "sample",
+  "example",
+  "placeholder",
+  "generic",
+  "observer",
+] as const;
+
 type ReadySlideGenerationQueueResult = Extract<
   SlideGenerationQueueResult,
   { readonly kind: "ready" }
@@ -210,7 +224,7 @@ function pad3(value: number): string {
 
 function hasSyntheticEvidenceMarker(value: string): boolean {
   const normalized = value.toLowerCase();
-  return ["mock", "fixture", "test", "fake"].some((marker) => normalized.includes(marker));
+  return NON_PRODUCTION_IMAGE_ARTIFACT_MARKERS.some((marker) => normalized.includes(marker));
 }
 
 function evidenceJob(job: ProviderJob): LiveImageQueueEvidenceJob {
