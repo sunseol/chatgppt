@@ -1232,3 +1232,12 @@ after restart; that evidence blocks with `invalid_restart_resume_evidence`.
 DF-233 remains open until a packaged Codex OAuth image run captures genuine
 429/5xx retry provenance, in-flight user cancellation, and restart-resume
 evidence against real provider jobs.
+
+DF-243 local update: interruption matrix evidence now rejects cancellation
+records that reuse the app-storage recovery snapshot JSON path as the cancel
+signal evidence path. The cancel scenario must carry two distinct persisted
+JSON artifacts: one recovery snapshot and one cancel signal targeting the same
+live job id. A path alias now blocks with `duplicate_cancel_evidence_path`
+instead of looking ready. DF-243 remains open until the packaged app captures
+image partial-resume, app-storage cancel snapshot, cancel signal, and
+interrupted approval/export evidence from real live jobs.

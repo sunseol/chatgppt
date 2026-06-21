@@ -224,6 +224,7 @@ describe("live readiness documentation", () => {
     expectDocIncludes(interruptionMatrix, "interruption_evidence_path_scenario_mismatch");
     expect(interruptionMatrix.includes("duplicate_recovery_snapshot")).toBe(true);
     expect(interruptionMatrix.includes("missing_cancel_signal_evidence")).toBe(true);
+    expect(interruptionMatrix.includes("duplicate_cancel_evidence_path")).toBe(true);
     expect(interruptionMatrix.includes("persisted approval/export gate JSON paths")).toBe(true);
     expect(interruptionMatrix.includes("duplicate_interrupted_gate_evidence")).toBe(true);
     expect(interruptionMatrix.includes("invalid_recovered_job_state")).toBe(true);

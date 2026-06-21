@@ -132,6 +132,26 @@ describe("live interruption matrix", () => {
     expect(result.issues[0]?.refs).toEqual(["live_job_other"]);
   });
 
+  test("blocks cancellation records that reuse the recovery snapshot path for cancel signal evidence", () => {
+    const matrix = completeMatrix({
+      scenarios: LIVE_INTERRUPTION_SCENARIOS.map((id) =>
+        id === "cancel_job"
+          ? scenario(id, {
+              recoverySnapshotPath: "recovery/cancel-job.json",
+              cancelSignalEvidencePath: "recovery/cancel-job.json",
+            })
+          : scenario(id),
+      ),
+    });
+
+    const result = evaluateLiveInterruptionMatrix(matrix);
+
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual(["duplicate_cancel_evidence_path"]);
+    expect(result.issues[0]?.refs).toEqual(["recovery/cancel-job.json"]);
+  });
+
   test("blocks synthetic interruption evidence without live job snapshots", () => {
     const matrix = completeMatrix({
       scenarios: LIVE_INTERRUPTION_SCENARIOS.map((id) =>

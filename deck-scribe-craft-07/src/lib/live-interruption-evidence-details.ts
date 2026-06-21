@@ -45,6 +45,15 @@ export function scenarioEvidenceDetailIssues(
         scenario.cancelSignalJobId !== scenario.liveJobId,
     )
     .map((scenario) => scenario.cancelSignalJobId ?? "missing");
+  const duplicateCancelEvidencePaths = scenarios
+    .filter(
+      (scenario) =>
+        scenario.id === "cancel_job" &&
+        isPersistedJsonEvidencePath(scenario.recoverySnapshotPath) &&
+        isPersistedJsonEvidencePath(scenario.cancelSignalEvidencePath) &&
+        scenario.recoverySnapshotPath.trim() === scenario.cancelSignalEvidencePath?.trim(),
+    )
+    .map((scenario) => scenario.recoverySnapshotPath.trim());
   const missingApprovalGateChecks = scenarios
     .filter(
       (scenario) =>
@@ -142,6 +151,15 @@ export function scenarioEvidenceDetailIssues(
             "cancel_signal_job_mismatch",
             "Cancellation signal evidence must target the same live job id.",
             cancelSignalJobMismatches,
+          ),
+        ]),
+    ...(duplicateCancelEvidencePaths.length === 0
+      ? []
+      : [
+          issue(
+            "duplicate_cancel_evidence_path",
+            "Cancellation recovery snapshot and cancel signal require distinct evidence paths.",
+            duplicateCancelEvidencePaths,
           ),
         ]),
     ...(missingApprovalGateChecks.length === 0
