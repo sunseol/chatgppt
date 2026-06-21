@@ -19,6 +19,7 @@ import {
 } from "./production-packaging-release-trust";
 
 const DRY_RUN_PACKAGE_MARKER = "dry-run";
+const TRANSIENT_ARTIFACT_PATH_SEGMENTS = ["tmp", "temp", "observer", "observers"] as const;
 
 export { CLEAN_MACHINE_STEPS };
 export type { CleanMachineStep, CleanMachineStepEvidencePaths };
@@ -115,7 +116,7 @@ export function formatProductionPackagingEvidenceSummary(
 
 function packageIssues(evidence: ProductionPackagingEvidence): readonly ProductionPackagingIssue[] {
   return [
-    ...(hasNonSyntheticEvidencePath(evidence.packagePath, [".tgz", ".zip"])
+    ...(hasProductionArtifactPath(evidence.packagePath, [".tgz", ".zip"])
       ? []
       : [
           issue(
@@ -194,12 +195,23 @@ function runbookIssues(runbookPath: string): readonly ProductionPackagingIssue[]
 
 function hasNativeMacosBundle(evidence: ProductionPackagingEvidence): boolean {
   return (
-    hasNonSyntheticEvidencePath(evidence.nativeMacosBundlePath, [".dmg", ".app"]) &&
+    hasProductionArtifactPath(evidence.nativeMacosBundlePath, [".dmg", ".app"]) &&
     isSha256(evidence.nativeMacosBundleSha256)
   );
 }
 
 const isSha256 = (value: string): boolean => /^[a-f0-9]{64}$/.test(value);
+
+function hasProductionArtifactPath(value: string, allowedExtensions: readonly string[]): boolean {
+  return (
+    hasNonSyntheticEvidencePath(value, allowedExtensions) && !hasTransientArtifactPathSegment(value)
+  );
+}
+
+function hasTransientArtifactPathSegment(value: string): boolean {
+  const segments = value.toLowerCase().split(/[/\\]+/);
+  return TRANSIENT_ARTIFACT_PATH_SEGMENTS.some((segment) => segments.includes(segment));
+}
 
 function isDryRunPackagePath(value: string): boolean {
   return value.toLowerCase().includes(DRY_RUN_PACKAGE_MARKER);

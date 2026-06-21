@@ -1276,6 +1276,15 @@ structurally incomplete, developer-account, or cross-step payloads now block as
 ID signing, notarization, stapling, Gatekeeper acceptance, and clean macOS
 account evidence are captured from a packaged run.
 
+DF-245 local update: production package archive and native macOS bundle paths
+now reject transient `tmp`/`temp`/observer artifact paths before packaging
+evidence can count as ready. A same-named candidate such as
+`tmp/deckforge-macos-release.tgz` or `tmp/DeckForge_0.1.0_aarch64.dmg` now
+blocks with `missing_production_package` or `missing_native_macos_bundle`
+instead of passing as non-synthetic release evidence. DF-245 remains open until
+real Developer ID signing, notarization, stapling, Gatekeeper acceptance, and
+clean macOS account evidence are captured from a packaged run.
+
 DF-233 local update: restart-resume queue evidence now rejects overlap between
 `resumedArtifactIds` and `completedArtifactIdsBefore`. A restart proof can no
 longer claim an image that was already completed before restart was also resumed
