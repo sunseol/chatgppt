@@ -96,4 +96,34 @@ describe("live slide regeneration review evidence state", () => {
     expect(genericPatch).toEqual({ slides });
     expect(localPatch).toEqual({ slides });
   });
+
+  test("does not persist review evidence paths that rely on boundary whitespace", () => {
+    // Given
+    const project = createDeckProject(
+      {
+        name: "DF-235 review evidence",
+        initialPrompt: "Reject padded regeneration review evidence",
+        slideCount: 5,
+        aspectRatio: "16:9",
+        language: "ko",
+      },
+      { createId: () => "project_001", now: () => 1_789_930_000 },
+    );
+    const slides: readonly GeneratedSlide[] = [
+      { number: 3, version: 2, status: "approved", imageDescriptor: "live-regeneration|v2" },
+    ];
+
+    // When
+    const patch = createReviewEvidenceProjectPatch({
+      project,
+      slides,
+      reviewEvidencePath:
+        " projects/project_001/live-evidence/df235-slide-regeneration-review-rev_235.json ",
+      slideNumber: 3,
+      outcome: "approved",
+    });
+
+    // Then
+    expect(patch).toEqual({ slides });
+  });
 });

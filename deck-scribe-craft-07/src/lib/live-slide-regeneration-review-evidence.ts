@@ -63,12 +63,11 @@ export async function writeLiveSlideRegenerationReviewEvidence(input: {
 }
 
 export function hasLiveSlideRegenerationReviewEvidencePath(path: string | undefined): boolean {
-  if (path === undefined) return false;
+  if (path === undefined || path.trim() !== path) return false;
   if (!hasNonSyntheticJsonEvidencePath(path)) return false;
-  const trimmed = path.trim();
-  const normalized = trimmed.toLowerCase();
+  const normalized = path.toLowerCase();
   return (
-    REVIEW_EVIDENCE_PATH.test(trimmed) &&
+    REVIEW_EVIDENCE_PATH.test(path) &&
     !TEMPLATE_EVIDENCE_MARKERS.some((marker) => normalized.includes(marker))
   );
 }

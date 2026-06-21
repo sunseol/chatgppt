@@ -45,6 +45,10 @@ describe("live full-slide regeneration documentation", () => {
     expect(slideRegeneration.includes("review-stage-regeneration-evidence.ts")).toBe(true);
     expect(slideRegeneration.includes("df235-slide-regeneration-review")).toBe(true);
     expect(slideRegeneration.includes("liveSlideRegenerationReviewEvidence")).toBe(true);
+    expect(slideRegeneration.includes("boundary whitespace")).toBe(true);
+    expect(slideRegeneration.includes("boundary-whitespace-padded review evidence paths")).toBe(
+      true,
+    );
     expect(slideRegeneration.includes("project DB serialization")).toBe(true);
     expect(slideRegeneration.includes("preserved_after_failure")).toBe(true);
     expect(slideRegeneration.includes("local mock regeneration")).toBe(true);

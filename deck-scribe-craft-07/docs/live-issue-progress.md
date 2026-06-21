@@ -504,6 +504,16 @@ developer-local paths no longer persist into project state, so a packaged review
 run must keep approval or failure-preservation evidence tied to the product
 writer output before it can count toward closure.
 
+DF-235 local update: `reviewEvidencePath` values now also reject boundary
+whitespace before they can persist into
+`DeckProject.liveSlideRegenerationReviewEvidence`. A padded path such as
+` projects/{projectId}/live-evidence/df235-slide-regeneration-review-{eventId}.json `
+no longer becomes valid through trimming, so the project state cannot treat a
+non-canonical persisted review artifact path as packaged approval or
+failure-preservation evidence. The issue remains open until packaged-app live
+full-slide regeneration before/after approval QA and failed-regeneration
+original-preservation evidence are captured from the real review UI.
+
 ## 2026-06-21 Interruption Closure Manifest
 
 The current product branch now has a DF-243 closure manifest validator in

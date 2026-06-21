@@ -32,7 +32,7 @@ DF-235 requires selected-slide regeneration to create a full new slide backgroun
 - `approveLiveSlideRegenerationCandidate` preserves the approved original when approval evidence is missing or mismatched, and only replaces the selected slide once matching before/after comparison evidence is present.
 - `src/lib/live-slide-regeneration-review-evidence.ts` writes portable DF-235 review evidence at `projects/{projectId}/live-evidence/df235-slide-regeneration-review-{eventId}.json` for both approved candidates and failed live regeneration attempts that preserve the original.
 - `src/components/deck/review-stage-regeneration-evidence.ts` connects the Review-stage approval button to that writer, and `src/components/deck/review-stage-regeneration.ts` records failure-preservation evidence instead of silently falling back to local mock regeneration when an eligible live Codex regeneration fails or is blocked.
-- `src/lib/live-slide-regeneration-review-state.ts` carries returned `reviewEvidencePath` values into `DeckProject.liveSlideRegenerationReviewEvidence` alongside the slide update patch only when they match the canonical DF-235 writer path `projects/{projectId}/live-evidence/df235-slide-regeneration-review-{eventId}.json`, so approved-candidate and preserved-after-failure evidence survives project DB serialization and restart recovery without accepting generic or local review evidence paths.
+- `src/lib/live-slide-regeneration-review-state.ts` carries returned `reviewEvidencePath` values into `DeckProject.liveSlideRegenerationReviewEvidence` alongside the slide update patch only when they match the canonical DF-235 writer path `projects/{projectId}/live-evidence/df235-slide-regeneration-review-{eventId}.json`, so approved-candidate and preserved-after-failure evidence survives project DB serialization and restart recovery without accepting generic, local, or boundary-whitespace-padded review evidence paths.
 
 ## Verification
 
@@ -105,6 +105,13 @@ approval/failure-preservation artifact.
 and are non-synthetic, non-local JSON evidence. Generic
 `df235-slide-regeneration-review.json`, template/sample/example/placeholder, or
 developer-local paths no longer inflate `DeckProject.liveSlideRegenerationReviewEvidence`.
+
+2026-06-21 KST product hardening: `reviewEvidencePath` values now also must be
+canonical without boundary whitespace. A padded path such as
+` projects/{projectId}/live-evidence/df235-slide-regeneration-review-{eventId}.json `
+does not persist into `DeckProject.liveSlideRegenerationReviewEvidence`, so
+project state cannot make a non-canonical review artifact path look ready after
+string trimming.
 
 DF-235 remains open until this artifact is produced by a real packaged app
 review run and attached to the Lane D evidence bundle.
