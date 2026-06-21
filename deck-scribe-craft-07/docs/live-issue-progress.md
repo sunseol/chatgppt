@@ -46,6 +46,17 @@ This still does not close DF-246. The ticket still needs a real
 non-developer, under-10-minute packaged-app session with a persisted
 non-synthetic manual QA session bundle and clean output/source/action evidence.
 
+## 2026-06-22 KST DF-246 Positive Manual QA Duration Gate
+
+DF-246 local update: manual QA session duration now has to be greater than zero
+before the under-10-minute setup requirement can pass. A default
+`sessionDurationMs: 0` no longer satisfies observed non-developer QA evidence.
+Regression coverage lives in `src/lib/live-manual-qa-duration-evidence.test.ts`.
+
+This still does not close DF-246. The ticket still needs a real
+non-developer, under-10-minute packaged-app session with a persisted
+non-synthetic manual QA session bundle and clean output/source/action evidence.
+
 ## 2026-06-22 KST DF-233 Stored Image Artifact Evidence Gate
 
 DF-233 local update: exported live image queue evidence now validates the stored

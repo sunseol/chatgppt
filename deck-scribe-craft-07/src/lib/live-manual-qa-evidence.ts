@@ -171,8 +171,7 @@ function testerIssues(evidence: LiveManualQaEvidence): readonly LiveManualQaIssu
 function setupIssues(evidence: LiveManualQaEvidence): readonly LiveManualQaIssue[] {
   const present = new Set(evidence.setupTasks);
   const missing = MANUAL_QA_SETUP_TASKS.filter((task) => !present.has(task));
-  const withinTime =
-    evidence.sessionDurationMs <= TEN_MINUTES_MS && evidence.sessionDurationMs >= 0;
+  const withinTime = evidence.sessionDurationMs <= TEN_MINUTES_MS && evidence.sessionDurationMs > 0;
   return missing.length === 0 && withinTime
     ? []
     : [

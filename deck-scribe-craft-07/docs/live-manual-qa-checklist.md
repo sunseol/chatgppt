@@ -39,7 +39,7 @@ Within 10 minutes, the tester must:
 
 `src/lib/live-manual-qa-evidence.ts` validates the manual QA result after the session. The saved evidence must include:
 
-- `sessionDurationMs` at or below 600000 and completed setup tasks `new_project`, `login_check`, `prompt_input`
+- `sessionDurationMs` greater than 0 and at or below 600000, plus completed setup tasks `new_project`, `login_check`, `prompt_input`
 - `testerRole` set to `non_developer`
 - `sessionEvidencePath` pointing to a persisted non-synthetic `manual-qa` session JSON bundle for the observed QA session, not a boundary-whitespace-padded path, generic session or notes JSON such as `manual-qa/session-generic-20260619.json` or `manual-qa/session-notes-20260619.json`, template/sample/example/placeholder bundle, developer-local absolute, or `file://` path
 - distinct approval target checks for `research_pack`, `slide_generation`, and `export`, with every target understood
@@ -82,6 +82,11 @@ regenerated and title-edited slide ids to be canonical before they can count as
 manual QA actions. A padded slide id such as ` slide-3 ` no longer satisfies
 `missing_slide_regeneration` or `missing_title_edit` by trimming into a plausible
 slide id.
+
+Local update: `src/lib/live-manual-qa-evidence.ts` now also requires the
+observed manual QA session duration to be a positive value. A default
+`sessionDurationMs: 0` no longer satisfies the under-10-minute setup requirement
+without proving that an observed session actually happened.
 
 ## 2026-06-21 Lane F Recheck
 
