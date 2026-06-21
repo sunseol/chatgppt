@@ -202,6 +202,23 @@ describe("live benchmark evidence", () => {
     if (result.kind !== "blocked") return;
     expect(result.issues.map((issue) => issue.code)).toEqual(["output_bundle_package_mismatch"]);
   });
+
+  test("blocks package hashes that only match after case normalization", () => {
+    // Given
+    const upperCasePackageSha = PACKAGE_SHA.toUpperCase();
+    const bundle = completeBundle({
+      packageArchiveSha256: upperCasePackageSha,
+      runs: completeBundle().runs.map((item) => withPackageSha(item, upperCasePackageSha)),
+    });
+
+    // When
+    const result = evaluateLiveBenchmarkEvidence(bundle);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual(["invalid_benchmark_package_hash"]);
+  });
 });
 
 function completeBundle(
@@ -277,5 +294,12 @@ function withOutputBundlePath(run: LiveBenchmarkRun, path: string): LiveBenchmar
     ...run,
     outputBundlePath: path,
     outputBundle: { ...run.outputBundle, path },
+  };
+}
+
+function withPackageSha(run: LiveBenchmarkRun, packageArchiveSha256: string): LiveBenchmarkRun {
+  return {
+    ...run,
+    outputBundle: { ...run.outputBundle, packageArchiveSha256 },
   };
 }

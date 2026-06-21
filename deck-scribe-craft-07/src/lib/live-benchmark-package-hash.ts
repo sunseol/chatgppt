@@ -3,13 +3,12 @@ import type {
   LiveBenchmarkEvidenceIssueCode,
 } from "./live-benchmark-evidence";
 
-const SHA_256_HEX_PATTERN = /^[a-f0-9]{64}$/i;
+const SHA_256_HEX_PATTERN = /^[a-f0-9]{64}$/;
 
 export function packageHashIssues(
   packageArchiveSha256: string,
 ): readonly LiveBenchmarkEvidenceIssue[] {
-  const normalized = packageArchiveSha256.trim();
-  if (!normalized) {
+  if (!packageArchiveSha256.trim()) {
     return [
       issue(
         "missing_benchmark_package_hash",
@@ -18,13 +17,13 @@ export function packageHashIssues(
       ),
     ];
   }
-  return SHA_256_HEX_PATTERN.test(normalized)
+  return SHA_256_HEX_PATTERN.test(packageArchiveSha256)
     ? []
     : [
         issue(
           "invalid_benchmark_package_hash",
           "Live benchmark evidence must use a 64-character SHA-256 package digest.",
-          [normalized],
+          [packageArchiveSha256],
         ),
       ];
 }
