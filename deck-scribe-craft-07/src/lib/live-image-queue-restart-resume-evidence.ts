@@ -50,6 +50,7 @@ function validRestartResumeEvidence(
   evidence: LiveImageQueueRestartResumeEvidence,
 ): boolean {
   const completedAfter = new Set(evidence.completedArtifactIdsAfter);
+  const completedBefore = new Set(evidence.completedArtifactIdsBefore);
   const resumed = new Set(evidence.resumedArtifactIds);
   return (
     isRecoverySnapshotPath(projectId, evidence.recoverySnapshotPath) &&
@@ -60,6 +61,7 @@ function validRestartResumeEvidence(
     artifactGroupsAreCanonical(evidence) &&
     artifactGroupsHaveUniqueIds(evidence) &&
     evidence.completedArtifactIdsBefore.every((artifactId) => completedAfter.has(artifactId)) &&
+    evidence.resumedArtifactIds.every((artifactId) => !completedBefore.has(artifactId)) &&
     evidence.pendingImageArtifactIds.every((artifactId) => resumed.has(artifactId))
   );
 }

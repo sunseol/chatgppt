@@ -1,5 +1,9 @@
 import { hasNonSyntheticEvidencePath } from "./live-evidence-path";
 import {
+  productionPackagingPayloadIssues,
+  type ProductionPackagingEvidencePayloads,
+} from "./production-packaging-evidence-payload";
+import {
   CLEAN_MACHINE_STEPS,
   cleanMachineAccountEvidencePathIssues,
   cleanMachineStepEvidencePathIssues,
@@ -42,6 +46,7 @@ export type ProductionPackagingEvidence = {
   readonly cleanMachineSteps: readonly CleanMachineStep[];
   readonly cleanMachineStepEvidencePaths?: CleanMachineStepEvidencePaths;
   readonly cleanMachineAccountEvidencePath?: string;
+  readonly evidencePayloads?: ProductionPackagingEvidencePayloads;
   readonly runtimeAbsenceRemediationShown: boolean;
   readonly runbookPath: string;
 };
@@ -77,7 +82,7 @@ export type ProductionPackagingEvidenceResult =
 export function evaluateProductionPackagingEvidence(
   evidence: ProductionPackagingEvidence,
 ): ProductionPackagingEvidenceResult {
-  const issues = [
+  const baseIssues = [
     ...packageIssues(evidence),
     ...macosReleaseTrustIssues(evidence.nativeMacosReleaseTrust),
     ...contentScanIssues(evidence.contentScan),
@@ -87,6 +92,7 @@ export function evaluateProductionPackagingEvidence(
     ...runtimeRemediationIssues(evidence.runtimeAbsenceRemediationShown),
     ...runbookIssues(evidence.runbookPath),
   ];
+  const issues = [...baseIssues, ...productionPackagingPayloadIssues(evidence, baseIssues)];
   return issues.length === 0 ? { kind: "ready" } : { kind: "blocked", issues };
 }
 

@@ -85,6 +85,34 @@ describe("live image queue restart-resume evidence export", () => {
     ]);
   });
 
+  test("blocks restart-resume evidence when a resumed artifact was completed before restart", async () => {
+    // Given / When
+    const stored = await writeLiveImageQueueEvidenceExport({
+      store: { write: async () => undefined },
+      projectId: "project_001",
+      jobId: "job_generate_resumed",
+      exportedAt: 1_789_941_181,
+      result: resumedQueueResult(),
+      storedImageArtifactPaths: [
+        "projects/project_001/slides/images/slide_001.v1.png",
+        "projects/project_001/slides/images/slide_002.v1.png",
+      ],
+      restartResumeEvidence: {
+        ...restartResumeEvidence(),
+        resumedArtifactIds: ["slide_001_v1", "slide_002_v1"],
+      },
+    });
+
+    // Then
+    expect(stored.evidence.validation.kind).toBe("blocked");
+    if (stored.evidence.validation.kind !== "blocked") {
+      throw new Error("Expected restart proof with reused resumed artifact ids to block.");
+    }
+    expect(stored.evidence.validation.issues.map((issue) => issue.code)).toEqual([
+      "invalid_restart_resume_evidence",
+    ]);
+  });
+
   test("persists restart-resume evidence when proof matches the resumed queue", async () => {
     // Given / When
     const stored = await writeLiveImageQueueEvidenceExport({

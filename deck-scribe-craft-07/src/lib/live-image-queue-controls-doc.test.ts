@@ -23,7 +23,10 @@ describe("live image queue controls documentation", () => {
       imageQueueControls.includes("queue evidence `validation` result") &&
       imageQueueControls.includes("Queue Evidence Identity Gate") &&
       imageQueueControls.includes("Queue Retry Delay Validity Gate") &&
-      imageQueueControls.includes("Recovery Snapshot Evidence Gate");
+      imageQueueControls.includes("Recovery Snapshot Evidence Gate") &&
+      imageQueueControls.includes("resumedArtifactIds") &&
+      imageQueueControls.includes("completedArtifactIdsBefore") &&
+      imageQueueControls.includes("live-image-queue-evidence-export-resume.test.ts");
 
     // Then
     expect(hasProviderFailureGate).toBe(true);

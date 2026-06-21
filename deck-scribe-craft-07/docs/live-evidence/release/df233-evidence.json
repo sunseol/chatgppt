@@ -3,9 +3,9 @@
   "issueNumber": 147,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-21T19:14:59Z",
+  "generatedAt": "2026-06-21T20:06:01Z",
   "packageArchiveSha256": "aacadd4cd4546ce20b084b1fbf8018e9571a635983ad9aa30b07a123c705985e",
-  "summary": "Queue throttling, retry, cancellation, resume, and product evidence writers are implemented, but no packaged Codex OAuth image run has captured genuine retry, cancellation, and restart-resume evidence.",
+  "summary": "Queue throttling, retry, cancellation, resume, and product evidence writers are implemented, and restart-resume proof now rejects resumed/completed-before artifact overlap, but no packaged Codex OAuth image run has captured genuine retry, cancellation, and restart-resume evidence.",
   "currentEvidence": [
     {
       "path": "docs/live-image-queue-controls.md",
@@ -17,7 +17,11 @@
     },
     {
       "path": "src/lib/live-image-queue-restart-resume-evidence.ts",
-      "kind": "restart-resume evidence validator with duplicate artifact id blocking"
+      "kind": "restart-resume evidence validator with duplicate and overlap artifact id blocking"
+    },
+    {
+      "path": "src/lib/live-image-queue-evidence-export-resume.test.ts",
+      "kind": "restart-resume artifact overlap regression tests"
     },
     {
       "path": "docs/live-evidence/codex-image/lane-g-closure-recheck-20260621/issue-closure-evidence.json",

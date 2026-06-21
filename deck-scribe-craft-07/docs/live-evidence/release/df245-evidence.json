@@ -3,9 +3,9 @@
   "issueNumber": 155,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-21T15:58:37Z",
+  "generatedAt": "2026-06-21T20:06:01Z",
   "packageArchiveSha256": "aacadd4cd4546ce20b084b1fbf8018e9571a635983ad9aa30b07a123c705985e",
-  "summary": "Current package and DMG artifacts exist and scan clean locally, but the DMG is unsigned, not notarized, not stapled, and not accepted by Gatekeeper.",
+  "summary": "Current package and DMG artifacts exist and scan clean locally, and packaging evidence now validates release-trust and clean-machine JSON payload shape, but the DMG is unsigned, not notarized, not stapled, and not accepted by Gatekeeper.",
   "currentEvidence": [
     {
       "path": "dist/deckforge-macos-dry-run.tgz",
@@ -20,6 +20,14 @@
     {
       "path": "docs/production-clean-machine-runbook.md",
       "kind": "clean-machine runbook and current blocked signing state"
+    },
+    {
+      "path": "src/lib/production-packaging-evidence-payload.ts",
+      "kind": "release-trust and clean-machine payload validator"
+    },
+    {
+      "path": "src/lib/production-packaging-evidence-payload.test.ts",
+      "kind": "payload false-ready regression tests"
     }
   ],
   "missingEvidence": [

@@ -1209,3 +1209,26 @@ ready instead of blocking with `missing_image_usage_count` and
 DF-244 remains open until packaged app usage-summary manual QA captures real
 image usage payloads and the matching persisted confirmation JSON from the same
 run.
+
+DF-245 local update: production packaging evidence now validates persisted JSON
+payload shape in addition to evidence paths. A release-trust path only counts
+when the payload is `macos_release_trust`, matches the evaluated package and
+native bundle hashes, records the same Developer ID TeamIdentifier, and carries
+passed zero-exit `codesign`, `notarytool`, `stapler`, and `spctl` assessment
+records. Clean-machine account evidence only counts when the payload is
+`clean_macos_account` with `developerAccount: false`, and each checklist path
+must carry a matching `clean_machine_step` payload whose step, path, account
+path, status, and timestamp align with that checklist event. Path-only,
+structurally incomplete, developer-account, or cross-step payloads now block as
+`missing_release_trust_evidence`, `missing_clean_machine_account_evidence`, or
+`missing_clean_machine_step_evidence`. DF-245 remains open until real Developer
+ID signing, notarization, stapling, Gatekeeper acceptance, and clean macOS
+account evidence are captured from a packaged run.
+
+DF-233 local update: restart-resume queue evidence now rejects overlap between
+`resumedArtifactIds` and `completedArtifactIdsBefore`. A restart proof can no
+longer claim an image that was already completed before restart was also resumed
+after restart; that evidence blocks with `invalid_restart_resume_evidence`.
+DF-233 remains open until a packaged Codex OAuth image run captures genuine
+429/5xx retry provenance, in-flight user cancellation, and restart-resume
+evidence against real provider jobs.
