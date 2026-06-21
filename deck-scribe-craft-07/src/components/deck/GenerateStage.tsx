@@ -15,7 +15,7 @@ import { fakeAsync } from "@/components/deck/stage-timing";
 import { invalidateDownstream, updateProject } from "@/lib/deck-store";
 import type { DeckProject, GeneratedSlide } from "@/lib/deck-types";
 import { readGenerateRecovery, writeGenerateRecovery } from "@/lib/generate-stage-recovery";
-import { confirmAndPersistLiveImageBilling } from "@/lib/live-image-billing-confirmation";
+import { prepareCodexImageBillingJob } from "@/lib/live-image-billing-job";
 import { mockSlides } from "@/lib/mock-ai";
 import {
   createProductionImageGenerationGate,
@@ -61,28 +61,15 @@ export function GenerateStage({
       description: "슬라이드 이미지 생성",
     });
     if (imageGenerationGate.providerId === "codex") {
-      const confirmation = confirmAndPersistLiveImageBilling({
+      const billing = await prepareCodexImageBillingJob({
         projectId: project.id,
         jobId: queued.id,
         providerId: imageGenerationGate.providerId,
-      });
-      if (confirmation.kind !== "confirmed") {
-        const cancelled = await manager.run(queued.id, async () => {
-          throw new ProviderJobCancelledError(queued.id);
-        });
-        syncJob(project.id, manager, cancelled, setJob, setRecovered);
-        return;
-      }
-      syncJob(
-        project.id,
+        slideCount: project.plan.slides.length,
         manager,
-        manager.recordUsageSummary(queued.id, {
-          imageCount: project.plan.slides.length,
-          imageBillingDisclosure: confirmation.disclosure,
-        }),
-        setJob,
-        setRecovered,
-      );
+      });
+      syncJob(project.id, manager, billing.job, setJob, setRecovered);
+      if (billing.kind !== "confirmed") return;
     } else {
       syncJob(project.id, manager, queued, setJob, setRecovered);
     }
