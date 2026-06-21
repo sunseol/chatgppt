@@ -240,7 +240,7 @@ function isActiveJob(status: ProviderJobStatus): boolean {
 }
 
 function isExpectedStoreKind(value: string, expected: LiveSecretStoreKind): boolean {
-  return (value === "os_keychain" || value === "equivalent_secret_store") && value === expected;
+  return value === "os_keychain" && expected === "os_keychain";
 }
 
 function secretReferenceContainsRawSecret(

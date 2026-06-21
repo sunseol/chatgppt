@@ -20,6 +20,7 @@ describe("live auth secret lifecycle documentation", () => {
     expect(authSecretLifecycle.includes("base64url, or hex key material")).toBe(true);
     expect(authSecretLifecycle.includes("hex-encoded image API key")).toBe(true);
     expect(authSecretLifecycle.includes("live-auth-secret-reference-encoding.test.ts")).toBe(true);
+    expect(authSecretLifecycle.includes("live-auth-keychain-store.test.ts")).toBe(true);
     expect(authSecretLifecycle.includes("live-auth-secret-reference-scope.test.ts")).toBe(true);
     expect(authSecretLifecycle.includes("live-auth-secret-reference-timestamp.test.ts")).toBe(true);
     expect(authSecretLifecycle.includes("LiveSecretReferenceError")).toBe(true);
@@ -56,5 +57,6 @@ describe("live auth secret lifecycle documentation", () => {
     expect(authSecretLifecycle.includes("Fresh login manual QA")).toBe(true);
     expect(authSecretLifecycle.includes("Logout/relogin QA")).toBe(true);
     expect(authSecretLifecycle.includes("OS keychain")).toBe(true);
+    expect(authSecretLifecycle.includes("equivalent_secret_store")).toBe(true);
   });
 });
