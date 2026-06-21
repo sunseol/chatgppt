@@ -8,7 +8,7 @@ Ticket: DF-244
 
 Live jobs must show enough usage context for a user to understand what ran under their account. Each stage row must have a unique, canonical, displayable stage id and include provider, duration, and retry count.
 
-When a provider supplies usage or cost data, the project summary records it. Cost is displayed only when it can be labelled as exact or estimated; otherwise it remains hidden. Estimated values render as `cost estimate`.
+When a provider supplies usage or cost data, the project summary records it. Cost is displayed only when it can be labelled as exact or estimated; otherwise it remains hidden. Estimated values render as `cost estimate`. Malformed supplied numeric usage or cost fields are preserved as invalid evidence and blocked instead of being silently dropped from the summary.
 
 Before image generation, the UI must make Codex account image usage visible and require confirmation because generation runs through the user's authenticated Codex session. Image usage confirmation must carry a canonical persisted `confirmationEvidencePath` JSON record under the product path `usage/<project>/<job>/image-billing-confirmation.json`, is not synthetic, is not boundary-whitespace-padded, does not use fallback `unknown` project or job segments, is not template/sample/example/placeholder evidence, and is not a developer-local absolute path; `userConfirmed: true` plus display copy alone is not enough Live evidence.
 
@@ -23,10 +23,10 @@ Before image generation, the UI must make Codex account image usage visible and 
 - `invalid_usage_provider_kind`: a usage summary row reports a provider outside the DeckForge provider taxonomy.
 - `incomplete_text_token_usage`: Codex text usage evidence is missing either input or output token counts.
 - `missing_image_usage_count`: image generation usage evidence is missing the generated image count.
-- `invalid_usage_amount`: token or image usage counts are negative, fractional, or not finite.
+- `invalid_usage_amount`: token or image usage counts are negative, fractional, malformed, or not finite.
 - `invalid_duration`: stage duration is missing, negative, or not finite.
 - `invalid_retry_count`: retry count is missing, negative, or not an integer.
-- `invalid_cost_amount`: cost amounts are negative or not finite.
+- `invalid_cost_amount`: cost amounts are negative, malformed, or not finite.
 - `invalid_cost_label`: cost label values outside `actual`, `estimate`, or `hidden` are rejected before display.
 - `unlabelled_estimated_cost`: cost is present but neither labelled exact nor labelled estimated.
 - `estimated_cost_marked_actual`: estimated provider cost is displayed as an exact charge.
@@ -35,7 +35,7 @@ Before image generation, the UI must make Codex account image usage visible and 
 ## Local Evidence
 
 - `src/lib/live-usage-summary.test.ts` verifies stage-level provider/duration/retry display, estimated cost formatting, usage recording, empty usage-object blockers, incomplete text/image usage blockers, invalid usage/cost amount blockers, estimated-cost-as-actual blockers, persisted Codex image usage confirmation evidence blockers, developer-local confirmation evidence path blockers, and image usage confirmation blockers. `src/lib/live-usage-summary-stage-identity.test.ts` verifies that blank, boundary-whitespace-padded, or duplicated stage ids and unsupported runtime provider kinds cannot pass as displayable Live usage rows. `src/lib/live-usage-summary-billing-evidence.test.ts` verifies that confirmed-looking image usage payloads without persisted confirmation evidence, with template confirmation evidence, with generic confirmation JSON filenames, with fallback `unknown` project/job segments, or with a confirmation filename that is not bound to both project and job stay blocked and render as not confirmed. `src/lib/live-usage-billing-evidence-identity.test.ts` verifies that boundary-whitespace-padded confirmation paths also stay blocked and render as not confirmed. `src/lib/live-usage-billing-evidence.ts` centralizes that confirmation evidence path rule for summary approval, formatted summaries, and the progress view. `src/lib/live-usage-summary-cost-label.test.ts` verifies that unsupported runtime cost labels cannot render provider costs as if they were valid estimates. `src/lib/live-usage-summary-redaction.test.ts` verifies that image usage labels are redacted before summary display.
-- `src/lib/live-app-server-usage-summary.ts` converts `thread/tokenUsage/updated` notifications from `codex app-server --stdio` into `LiveUsageStageSummary.usage`, preserves richer App Server `usageSummary` or `usage` payload fields such as `imageCount`, `estimatedCostUsd`, and `imageBillingDisclosure`, and deliberately leaves `usage` empty when the provider supplied a malformed usage notification so `missing_provider_usage_summary` blocks the summary.
+- `src/lib/live-app-server-usage-summary.ts` converts `thread/tokenUsage/updated` notifications from `codex app-server --stdio` into `LiveUsageStageSummary.usage`, preserves richer App Server `usageSummary` or `usage` payload fields such as `imageCount`, `estimatedCostUsd`, and `imageBillingDisclosure`, and preserves malformed supplied numeric fields as invalid values so `invalid_usage_amount` or `invalid_cost_amount` blocks the summary.
 - `src/lib/live-image-billing-confirmation.ts` persists the pre-generation Codex OAuth image usage confirmation record into product storage as `usage/<project>/<job>/image-billing-confirmation.json`, returns the matching `ProviderImageBillingDisclosure`, and refuses to treat a declined or unpersisted confirmation as evidence.
 - `src/lib/generate-stage-recovery.ts` owns Generate-stage job recovery storage, and `src/components/deck/GenerateStage.tsx` now records the persisted Codex image confirmation disclosure on Codex image-generation jobs before the job starts.
 - `src/lib/provider-job-progress-view.ts` and `src/components/deck/ProviderJobProgressPanel.tsx` expose app-surface provider id, execution duration, retry count, valid token/image usage, and finite estimated provider cost as `cost estimate` while still preserving job status, retry availability, recovered state, partial artifacts, redacted failure messages, and redacted image usage labels.
@@ -66,8 +66,9 @@ when the notification supplies image usage evidence. Preserved fields include
 `costLabel` to `estimate`, so display surfaces render `cost estimate` and never
 turn an App Server estimate into an exact charge.
 
-Malformed provider payloads still leave `usage` unset and block as
-`missing_provider_usage_summary`. This does not close DF-244 by itself; the
+Malformed provider numeric payloads are preserved as invalid usage evidence and
+block as `invalid_usage_amount` or `invalid_cost_amount` instead of being hidden
+from the summary. This does not close DF-244 by itself; the
 remaining closure evidence is still packaged-app manual QA with real image
 usage payloads and the persisted pre-generation confirmation JSON from the same
 Codex OAuth image run.
@@ -96,7 +97,7 @@ The same integration surface now blocks misleading confirmation copy when the im
 
 ## Remaining Live Evidence
 
-The local contract, one live Codex text usage probe, App Server rich usage payload preservation, app progress-panel usage display with invalid provider payload omission, blank, boundary-whitespace-padded, or duplicated stage-id and unsupported provider-kind blockers, incomplete text/image usage blockers, invalid usage/cost amount and cost-label blockers, persisted Codex image usage confirmation evidence blockers, developer-local, template, generic, boundary-whitespace-padded, fallback-unknown, and non-project/job-bound confirmation evidence path blockers, Generate-stage Codex OAuth confirmation persistence, and secret-redacted formatted-summary/progress/report image usage disclosure display are ready, but DF-244 still needs manual QA against the packaged app surface with real provider image Codex usage disclosure payloads.
+The local contract, one live Codex text usage probe, App Server rich usage payload preservation including malformed numeric usage/cost blockers, app progress-panel usage display with invalid provider payload omission, blank, boundary-whitespace-padded, or duplicated stage-id and unsupported provider-kind blockers, incomplete text/image usage blockers, invalid usage/cost amount and cost-label blockers, persisted Codex image usage confirmation evidence blockers, developer-local, template, generic, boundary-whitespace-padded, fallback-unknown, and non-project/job-bound confirmation evidence path blockers, Generate-stage Codex OAuth confirmation persistence, and secret-redacted formatted-summary/progress/report image usage disclosure display are ready, but DF-244 still needs manual QA against the packaged app surface with real provider image Codex usage disclosure payloads.
 
 ## Lane D Image Usage Recheck
 

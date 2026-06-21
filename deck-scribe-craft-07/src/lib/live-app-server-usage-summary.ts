@@ -85,8 +85,9 @@ function numberField(
   record: Readonly<Record<string, unknown>> | undefined,
   key: string,
 ): number | undefined {
+  if (record === undefined || !(key in record)) return undefined;
   const value = record?.[key];
-  return typeof value === "number" && Number.isFinite(value) ? value : undefined;
+  return typeof value === "number" && Number.isFinite(value) ? value : Number.NaN;
 }
 
 function imageBillingDisclosureField(

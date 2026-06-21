@@ -19,8 +19,10 @@ describe("live usage summary documentation", () => {
     expect(usageSummary.includes("usageSummary")).toBe(true);
     expect(usageSummary.includes("imageBillingDisclosure")).toBe(true);
     expect(usageSummary.includes("estimatedCostUsd")).toBe(true);
+    expect(usageSummary.includes("Malformed supplied numeric usage or cost fields")).toBe(true);
     expect(usageSummary.includes("`costLabel` to `estimate`")).toBe(true);
     expect(usageSummary.includes("missing_provider_usage_summary")).toBe(true);
+    expect(usageSummary.includes("invalid_cost_amount")).toBe(true);
     expect(usageSummary.includes("cost estimate $0.0400")).toBe(true);
     expect(usageSummary.includes("Codex image usage confirmed")).toBe(true);
     expect(usageSummary.includes("Codex image usage not confirmed")).toBe(true);
@@ -56,7 +58,9 @@ describe("live usage summary documentation", () => {
     expect(usageSummary.includes("manual QA against the packaged app surface")).toBe(true);
 
     expect(progress.includes("DF-244 live update")).toBe(true);
+    expect(progress.includes("DF-244 Malformed App Server Usage Gate")).toBe(true);
     expect(progress.includes("DF-244 App Server rich usage update")).toBe(true);
+    expect(progress.includes("malformed supplied numeric usage and cost fields")).toBe(true);
     expect(progress.includes("thread/tokenUsage/updated")).toBe(true);
     expect(progress.includes("imageBillingDisclosure.confirmationEvidencePath")).toBe(true);
     expect(progress.includes("estimatedCostUsd` only as `cost estimate")).toBe(true);
@@ -76,6 +80,7 @@ describe("live usage summary documentation", () => {
     expect(progress.includes("real provider image Codex usage disclosure payloads")).toBe(true);
 
     expect(decision.includes("ProviderJobProgressPanel.tsx")).toBe(true);
+    expect(decision.includes("malformed supplied numeric usage/cost fields")).toBe(true);
     expect(decision.includes("confirmationEvidencePath")).toBe(true);
     expect(decision.includes("template/sample/example/placeholder")).toBe(true);
     expect(decision.includes("boundary-whitespace-padded")).toBe(true);

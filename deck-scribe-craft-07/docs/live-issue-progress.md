@@ -19,6 +19,20 @@ This still does not close DF-235. A real packaged Review-stage run still needs
 to approve the regenerated v2 candidate from the app surface and capture
 failed-regeneration original-preservation evidence in the Lane D bundle.
 
+## 2026-06-22 KST DF-244 Malformed App Server Usage Gate
+
+DF-244 local update: App Server `thread/tokenUsage/updated` usage parsing now
+preserves malformed supplied numeric usage and cost fields as invalid evidence
+instead of silently dropping them. A rich image usage payload with
+`imageCount`, valid billing confirmation evidence, and malformed
+`estimatedCostUsd` now blocks with `invalid_cost_amount`; malformed token counts
+block as invalid supplied usage instead of becoming an unrecorded usage summary.
+Regression coverage lives in `src/lib/live-app-server-usage-summary.test.ts`.
+
+This still does not close DF-244. Packaged app-surface manual QA still needs
+real Codex image usage disclosure payloads plus the persisted pre-generation
+confirmation JSON from the same run.
+
 ## 2026-06-22 KST DF-233 Stored Image Artifact Evidence Gate
 
 DF-233 local update: exported live image queue evidence now validates the stored

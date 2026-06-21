@@ -106,7 +106,42 @@ describe("Codex App Server usage summary", () => {
     expect(summary.includes("Codex image usage confirmed")).toBe(true);
   });
 
-  test("blocks malformed token usage notifications as supplied but unrecorded usage", () => {
+  test("blocks malformed App Server cost payloads instead of silently hiding them", () => {
+    // Given
+    const stage = createCodexAppServerUsageStageSummary({
+      stageId: "generate",
+      durationMs: 197_953,
+      retryCount: 2,
+      notifications: [
+        {
+          method: "thread/tokenUsage/updated",
+          params: {
+            usageSummary: {
+              imageCount: 5,
+              estimatedCostUsd: "0.18",
+              imageBillingDisclosure: {
+                apiKeyRequired: false,
+                userConfirmed: true,
+                label: "Codex image usage confirmed",
+                confirmationEvidencePath:
+                  "usage/project-alpha/job-generate/image-billing-confirmation.json",
+              },
+            },
+          },
+        },
+      ],
+    });
+
+    // When
+    const gate = evaluateLiveUsageSummary([stage]);
+
+    // Then
+    expect(gate.kind).toBe("blocked");
+    if (gate.kind !== "blocked") return;
+    expect(gate.issues.map((issue) => issue.code)).toEqual(["invalid_cost_amount"]);
+  });
+
+  test("blocks malformed token usage notifications as invalid supplied usage", () => {
     // Given
     const stage = createCodexAppServerUsageStageSummary({
       stageId: "df244_usage_probe",
@@ -132,6 +167,9 @@ describe("Codex App Server usage summary", () => {
     // Then
     expect(gate.kind).toBe("blocked");
     if (gate.kind !== "blocked") return;
-    expect(gate.issues.map((issue) => issue.code)).toEqual(["missing_provider_usage_summary"]);
+    expect(gate.issues.map((issue) => issue.code)).toEqual([
+      "incomplete_text_token_usage",
+      "invalid_usage_amount",
+    ]);
   });
 });
