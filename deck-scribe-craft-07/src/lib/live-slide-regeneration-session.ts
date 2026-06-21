@@ -45,6 +45,7 @@ export type CodexLiveSlideRegenerationSessionResult =
     }
   | {
       readonly kind: "failed";
+      readonly requestId?: string;
       readonly preservedSlide: GeneratedSlide;
       readonly issues: readonly string[];
       readonly userMessage: string;
@@ -102,6 +103,7 @@ export async function runCodexLiveSlideRegenerationSession(
   if (storedResult.kind === "failed") {
     return {
       kind: "failed",
+      requestId: requestResult.request.requestId,
       preservedSlide: lookup.originalSlide,
       issues: [storedResult.failure.errorMessage],
       userMessage: storedResult.failure.userMessage,
@@ -120,6 +122,7 @@ export async function runCodexLiveSlideRegenerationSession(
   if (candidateResult.kind === "failed") {
     return {
       kind: "failed",
+      requestId: requestResult.request.requestId,
       preservedSlide: candidateResult.preservedSlide,
       issues: candidateResult.failure.issues.map((issue) => issue.message),
       userMessage: candidateResult.failure.userMessage,

@@ -7,10 +7,10 @@ import { ReviewSlideList } from "@/components/deck/ReviewSlideList";
 import { SlidePreview } from "@/components/deck/SlidePreview";
 import { SlidePreviewDialog } from "@/components/deck/SlidePreviewDialog";
 import {
-  approveReviewStageRevision,
   approveSelectedReviewSlide,
   runReviewStageSlideRegeneration,
 } from "@/components/deck/review-stage-regeneration";
+import { approveReviewStageRevisionWithEvidence } from "@/components/deck/review-stage-regeneration-evidence";
 import { StageHeader, StageScroll, StageShell } from "@/components/deck/stage-shared";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -60,15 +60,16 @@ export function ReviewStage({ project }: { readonly project: DeckProject }) {
     }
   };
 
-  const approveRevision = () => {
+  const approveRevision = async () => {
     if (!revisionComparison) return;
-    const approved = approveReviewStageRevision({
+    const result = await approveReviewStageRevisionWithEvidence({
+      projectId: project.id,
       slides,
       comparison: revisionComparison,
       liveCandidate: liveRegenerationCandidate,
     });
-    setSlides([...approved]);
-    updateProject(project.id, { slides: [...approved] });
+    setSlides([...result.slides]);
+    updateProject(project.id, { slides: [...result.slides] });
     setRevisionComparison(null);
     setLiveRegenerationCandidate(null);
   };

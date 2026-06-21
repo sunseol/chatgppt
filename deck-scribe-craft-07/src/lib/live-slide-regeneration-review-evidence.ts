@@ -1,0 +1,72 @@
+import { ImageArtifactStoreError, type ImageArtifactStore } from "./image-artifact-store";
+import type { GeneratedSlide } from "./deck-types";
+import type { LiveSlideRegenerationCandidate } from "./live-slide-regeneration";
+import type { SlideRevisionComparison } from "./slide-revision-generation";
+
+export type LiveSlideRegenerationReviewEvent =
+  | {
+      readonly outcome: "approved";
+      readonly candidate: LiveSlideRegenerationCandidate;
+      readonly comparison: SlideRevisionComparison;
+      readonly approvedSlide: GeneratedSlide;
+    }
+  | {
+      readonly outcome: "preserved_after_failure";
+      readonly slideNumber: number;
+      readonly originalSlideVersion: number;
+      readonly instruction: string;
+      readonly issues: readonly string[];
+      readonly userMessage: string;
+      readonly preservedSlide: GeneratedSlide;
+    };
+
+export type LiveSlideRegenerationReviewEvidence = {
+  readonly schemaVersion: 1;
+  readonly issue: "DF-235";
+  readonly projectId: string;
+  readonly eventId: string;
+  readonly exportedAt: number;
+  readonly event: LiveSlideRegenerationReviewEvent;
+};
+
+export type StoredLiveSlideRegenerationReviewEvidence = {
+  readonly path: string;
+  readonly evidence: LiveSlideRegenerationReviewEvidence;
+};
+
+export async function writeLiveSlideRegenerationReviewEvidence(input: {
+  readonly store: ImageArtifactStore;
+  readonly projectId: string;
+  readonly eventId: string;
+  readonly exportedAt: number;
+  readonly event: LiveSlideRegenerationReviewEvent;
+}): Promise<StoredLiveSlideRegenerationReviewEvidence> {
+  const evidence = {
+    schemaVersion: 1,
+    issue: "DF-235",
+    projectId: input.projectId,
+    eventId: input.eventId,
+    exportedAt: input.exportedAt,
+    event: input.event,
+  } satisfies LiveSlideRegenerationReviewEvidence;
+  const path = liveSlideRegenerationReviewEvidencePath(input.projectId, input.eventId);
+  await input.store.write({
+    path,
+    content: JSON.stringify(evidence, null, 2),
+  });
+  return { path, evidence };
+}
+
+function liveSlideRegenerationReviewEvidencePath(projectId: string, eventId: string): string {
+  return `projects/${safeSegment(
+    projectId,
+    "project id",
+  )}/live-evidence/df235-slide-regeneration-review-${safeSegment(eventId, "event id")}.json`;
+}
+
+function safeSegment(value: string, label: string): string {
+  if (/^[A-Za-z0-9_-]+$/.test(value)) return value;
+  throw new ImageArtifactStoreError(
+    `Live slide regeneration review evidence ${label} must be safe.`,
+  );
+}

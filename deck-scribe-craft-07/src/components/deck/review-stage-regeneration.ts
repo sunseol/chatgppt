@@ -11,12 +11,14 @@ import {
 import { runCodexLiveSlideRegenerationSession } from "@/lib/live-slide-regeneration-session";
 import type { SlideRevisionComparison } from "@/lib/slide-revision-generation";
 import { fakeAsync } from "@/components/deck/stage-timing";
+import { preservedLiveRegenerationFailure } from "./review-stage-regeneration-evidence";
 
 export type ReviewStageRegenerationResult = {
   readonly slides: readonly GeneratedSlide[];
   readonly comparison: SlideRevisionComparison | null;
   readonly liveCandidate: LiveSlideRegenerationCandidate | null;
   readonly editConsumed: boolean;
+  readonly reviewEvidencePath: string | null;
 };
 
 export async function runReviewStageSlideRegeneration(input: {
@@ -83,6 +85,7 @@ async function runCodexReviewRegeneration(input: {
 }): Promise<ReviewStageRegenerationResult | undefined> {
   const evidence = readBrowserStoredImageArtifactEvidence(input.original.notes, input.storage);
   if (evidence.kind !== "ready" || evidence.evidence.providerId !== "codex") return undefined;
+  const store = input.store ?? createBrowserImageArtifactStore(input.storage);
   const result = await runCodexLiveSlideRegenerationSession({
     project: { ...input.project, slides: [...input.slides] },
     slideNumber: input.original.number,
@@ -92,17 +95,36 @@ async function runCodexReviewRegeneration(input: {
       providerRunId: evidence.evidence.providerRunId,
     },
     client: input.client ?? createDesktopCodexImageClient(),
-    store: input.store ?? createBrowserImageArtifactStore(input.storage),
+    store,
     now: input.now,
     createId: input.createId,
   });
-  if (result.kind !== "ready") return undefined;
-  return {
-    slides: input.slides,
-    comparison: result.comparison,
-    liveCandidate: result.candidate,
-    editConsumed: true,
-  };
+  switch (result.kind) {
+    case "ready":
+      return {
+        slides: input.slides,
+        comparison: result.comparison,
+        liveCandidate: result.candidate,
+        editConsumed: true,
+        reviewEvidencePath: null,
+      };
+    case "failed":
+      return preservedLiveRegenerationFailure(input, store, {
+        eventId: result.requestId ?? fallbackReviewEventId(input),
+        issues: result.issues,
+        userMessage: result.userMessage,
+        preservedSlide: result.preservedSlide,
+      });
+    case "blocked":
+      return preservedLiveRegenerationFailure(input, store, {
+        eventId: fallbackReviewEventId(input),
+        issues: result.issues,
+        userMessage: "Live regeneration was blocked before provider submission.",
+        preservedSlide: input.original,
+      });
+    default:
+      return assertNever(result);
+  }
 }
 
 function canRunCodexLiveRegeneration(project: DeckProject, slide: GeneratedSlide): boolean {
@@ -135,11 +157,29 @@ function runLocalReviewRegeneration(
       revised === undefined ? null : createReviewRevisionComparison(original, revised, instruction),
     liveCandidate: null,
     editConsumed: true,
+    reviewEvidencePath: null,
   };
 }
 
 function unchanged(slides: readonly GeneratedSlide[]): ReviewStageRegenerationResult {
-  return { slides, comparison: null, liveCandidate: null, editConsumed: false };
+  return {
+    slides,
+    comparison: null,
+    liveCandidate: null,
+    editConsumed: false,
+    reviewEvidencePath: null,
+  };
+}
+
+function fallbackReviewEventId(input: {
+  readonly original: GeneratedSlide;
+  readonly now?: () => number;
+}): string {
+  return `slide_${String(input.original.number).padStart(3, "0")}_${input.now?.() ?? Date.now()}`;
+}
+
+function assertNever(value: never): never {
+  throw new Error(`Unhandled review stage regeneration result: ${String(value)}`);
 }
 
 function createReviewRevisionComparison(

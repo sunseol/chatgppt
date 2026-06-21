@@ -408,3 +408,24 @@ Assigned issue disposition:
   queue evidence artifact from Generate, but the signed packaged Golden Path
   bundle is still missing.
 - DF-247 / `#157`: remains blocked by the remaining P0 evidence requirements.
+
+## 2026-06-21 Review Stage Regeneration Evidence Export
+
+The current product branch now persists DF-235 Review-stage evidence for
+selected-slide live regeneration approval and failure preservation. Approved
+live candidates write
+`projects/{projectId}/live-evidence/df235-slide-regeneration-review-{requestId}.json`
+with outcome `approved`, the live candidate, the before/after comparison, and
+the approved slide. Eligible live Codex regeneration failures no longer fall
+back to the local mock revision path; they preserve the approved original and
+write outcome `preserved_after_failure` with the provider or validation issues.
+
+Assigned issue disposition:
+
+- DF-235 / `#149`: remains open. The local product path now produces the
+  approval/failure-preservation artifact that packaged QA was missing, but the
+  artifact still must be captured from a real packaged review UI run.
+- DF-241 / `#151`: remains open. Golden Path can now include concrete
+  selected-slide regeneration review evidence, but the signed packaged Golden
+  Path bundle is still missing.
+- DF-247 / `#157`: remains blocked by the remaining P0 evidence requirements.
