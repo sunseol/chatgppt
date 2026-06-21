@@ -52,8 +52,9 @@ function isLiveCodexBackground(candidateBackground: StoredSlideImageArtifact): b
 }
 
 function canonicalText(value: string | undefined): string | undefined {
-  const trimmed = value?.trim();
-  return trimmed && trimmed.length > 0 ? trimmed : undefined;
+  if (value === undefined) return undefined;
+  const trimmed = value.trim();
+  return trimmed.length > 0 && value === trimmed ? value : undefined;
 }
 
 function assertNever(value: never): never {

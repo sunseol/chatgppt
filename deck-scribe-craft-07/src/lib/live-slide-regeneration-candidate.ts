@@ -86,7 +86,7 @@ export function candidateIssues(input: {
           {
             code: "missing_regeneration_request_id" as const,
             slideNumber: input.request.slideNumber,
-            message: "Regenerated background must preserve a provider request id.",
+            message: "Regenerated background must preserve a provider turn/request id.",
           },
         ]),
     ...(hasRequestEvidence && !requestEvidenceMatches
@@ -94,7 +94,7 @@ export function candidateIssues(input: {
           {
             code: "regeneration_request_provenance_mismatch" as const,
             slideNumber: input.request.slideNumber,
-            message: "Regenerated background request metadata must match stored provenance.",
+            message: "Regenerated background turn/request metadata must match stored provenance.",
           },
         ]
       : []),
@@ -106,7 +106,7 @@ export function candidateIssues(input: {
           {
             code: "regeneration_request_id_not_new" as const,
             slideNumber: input.request.slideNumber,
-            message: "Regenerated background must use a new provider request id.",
+            message: "Regenerated background must use a new provider turn/request id.",
           },
         ]
       : []),

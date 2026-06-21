@@ -147,7 +147,7 @@ function originalBackgroundIssues(input: {
           {
             code: "missing_original_background_request" as const,
             slideNumber: input.revisionRequest.slideNumber,
-            message: "Live regeneration requires the approved original provider request id.",
+            message: "Live regeneration requires the approved original provider turn/request id.",
           },
         ]),
   ];

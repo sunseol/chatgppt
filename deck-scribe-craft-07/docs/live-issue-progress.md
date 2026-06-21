@@ -687,3 +687,12 @@ and final export reports aligned with the Codex OAuth image route instead of
 making reviewers populate OpenAI API-style request-id fields for Codex image
 turns. DF-240/DF-241 still require the real packaged production report/export
 and Golden Path bundles.
+
+DF-235/DF-241 local update: selected-slide live regeneration provider evidence
+now treats padded Codex image turn ids or legacy request ids as missing instead
+of trimming them into canonical identity. A regenerated background whose
+metadata/provenance sidecars both contain ` turn_codex_image_revised ` now
+blocks as `missing_regeneration_request_id`, so packaged review or Golden Path
+evidence cannot claim a regenerated image from trim-only provider identity.
+DF-235 and DF-241 still require the packaged review UI and signed Golden Path
+runs to capture the real approval/export evidence.

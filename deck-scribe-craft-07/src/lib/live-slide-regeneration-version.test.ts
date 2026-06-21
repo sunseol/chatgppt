@@ -78,7 +78,7 @@ describe("live full-slide regeneration artifact version", () => {
     ]);
   });
 
-  test("blocks a regenerated background that reuses the original provider request id", async () => {
+  test("blocks a regenerated background that reuses the original provider turn or request id", async () => {
     // Given
     const store = createImageArtifactStore({ write: async () => undefined });
     const candidateBackground = await storeSlideImageArtifact({
@@ -108,7 +108,7 @@ describe("live full-slide regeneration artifact version", () => {
     ]);
   });
 
-  test("blocks regenerated background request ids that disagree with stored provenance", async () => {
+  test("blocks regenerated background turn or request ids that disagree with stored provenance", async () => {
     // Given
     const store = createImageArtifactStore({ write: async () => undefined });
     const storedBackground = await storeSlideImageArtifact({
@@ -217,7 +217,7 @@ describe("live full-slide regeneration artifact version", () => {
     ]);
   });
 
-  test("blocks regenerated backgrounds without production OpenAI API provenance", async () => {
+  test("blocks regenerated backgrounds without production live provider provenance", async () => {
     // Given
     const store = createImageArtifactStore({ write: async () => undefined });
     const storedBackground = await storeSlideImageArtifact({
