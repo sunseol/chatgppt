@@ -6,6 +6,7 @@ const NON_OBSERVED_SESSION_MARKERS = [
   "sample",
   "example",
   "placeholder",
+  "generic",
   "notes",
 ] as const;
 

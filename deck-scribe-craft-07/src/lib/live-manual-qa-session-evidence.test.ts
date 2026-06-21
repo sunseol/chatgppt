@@ -68,6 +68,21 @@ describe("live manual QA session evidence", () => {
     ]);
   });
 
+  test("blocks generic manual QA session paths as observed-session evidence", () => {
+    // Given
+    const evidence = completeEvidence({
+      sessionEvidencePath: "manual-qa/session-generic-20260619.json",
+    });
+
+    // When
+    const result = evaluateLiveManualQaEvidence(evidence);
+
+    // Then
+    expect(result.kind === "blocked" ? result.issues.map((issue) => issue.code) : []).toEqual([
+      "missing_manual_qa_session_evidence",
+    ]);
+  });
+
   test("blocks template session evidence paths", () => {
     // Given
     const evidence = completeEvidence({
