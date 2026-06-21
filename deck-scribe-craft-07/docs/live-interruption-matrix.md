@@ -50,6 +50,8 @@ Required scenarios:
 - `src/lib/live-interruption-matrix.test.ts`, `src/lib/live-interruption-scenario-uniqueness.test.ts`, `src/lib/live-interruption-template-evidence.test.ts`, `src/lib/live-interruption-image-resume.test.ts`, `src/lib/live-interruption-image-artifact-identity.test.ts`, `src/lib/live-interruption-evidence-identity.test.ts`, `src/lib/live-interruption-state-taxonomy.test.ts`, `src/lib/live-interruption-gate-evidence-uniqueness.test.ts`, and `src/lib/live-interruption-report-path.test.ts` verify safe recovery, recovered job state taxonomy, summary formatting, exact scenario coverage with no unknown scenario rows, distinct canonical live job/snapshot/app-storage cancel snapshot/cancel signal path and job-id matching requirements, distinct persisted interrupted approval/export gate JSON paths, fixture/test/fake/template interruption evidence rejection, synthetic and developer-local matrix report/evidence path rejection, unsafe restart/resume/cancel/approval/export blockers, blank/duplicate/untracked image resume rejection, and cancellation attempts that still complete artifacts after cancellation.
 - `src/lib/provider-job-recovery.ts` preserves job snapshots for restart recovery.
 - `src/lib/slide-generation-queue-live-controls.test.ts` already covers retry, partial image resume, and cancellation behavior at the queue level.
+- `src/lib/live-interruption-closure-evidence.ts` validates the DF-243 closure manifest that ties `#153`, `DF-243`, `docs/live-interruption-matrix.md`, the matrix JSON bundle, and the required image partial-resume, app cancel snapshot, cancel signal, approval-gate, and export-gate JSON artifacts back to the same evaluated matrix scenarios.
+- `src/lib/live-interruption-closure-evidence.test.ts` verifies that closure remains blocked when those required artifacts are missing or drift from the matrix.
 
 ## Live Text Turn Interrupt Evidence
 
@@ -107,3 +109,18 @@ The production app-surface text recheck did not reach Plan/Design/Layout jobs be
 Lane F did not produce new live interruption matrix artifacts. The package and local test gates pass, but no packaged app-level persisted recovery snapshot set, cancel-signal JSON targeting the same live job id, image partial-resume evidence, or interrupted approval/export gate JSON evidence was generated.
 
 DF-243 remains open. Next evidence needed: the full five-scenario live matrix with distinct live job ids, distinct persisted recovery snapshots, app-storage cancel snapshot plus cancel signal, image partial-resume proof, and distinct interrupted approval/export gate evidence paths.
+
+## Closure Manifest Handoff
+
+2026-06-21 KST product update: DF-243 now has a machine-checkable closure
+manifest shape in `src/lib/live-interruption-closure-evidence.ts`. The current
+handoff manifest is stored at
+`docs/live-evidence/lane-h-20260621/df243-closure-evidence.json` with status
+`blocked`. It records the direct text-turn and fetch-abort observations that
+exist today, but leaves the required closure artifact paths empty for image
+partial resume, app-storage cancel snapshot, cancel-signal JSON, approval-gate
+JSON, and export-gate JSON.
+
+This does not close DF-243. It gives the packaged QA lane one canonical JSON
+shape to fill, and the validator rejects the manifest until those paths are
+persisted and match the corresponding matrix scenario evidence.

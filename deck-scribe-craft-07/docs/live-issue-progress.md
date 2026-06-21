@@ -429,3 +429,24 @@ Assigned issue disposition:
   selected-slide regeneration review evidence, but the signed packaged Golden
   Path bundle is still missing.
 - DF-247 / `#157`: remains blocked by the remaining P0 evidence requirements.
+
+## 2026-06-21 Interruption Closure Manifest
+
+The current product branch now has a DF-243 closure manifest validator in
+`src/lib/live-interruption-closure-evidence.ts` and a blocked handoff manifest
+at `docs/live-evidence/lane-h-20260621/df243-closure-evidence.json`. The
+validator reuses the existing interruption matrix evaluator and additionally
+checks that the closure manifest's image partial-resume, app cancel snapshot,
+cancel-signal, approval-gate, and export-gate JSON paths match the evaluated
+matrix scenarios.
+
+Assigned issue disposition:
+
+- DF-243 / `#153`: remains open. The current manifest deliberately stays
+  `blocked` because the required live image partial-resume, app-storage cancel
+  snapshot, cancel-signal, approval-gate, and export-gate artifacts are still
+  missing. The local improvement is that packaged QA now has one canonical JSON
+  shape to fill and one validator to reject drift.
+- DF-241 / `#151` and DF-247 / `#157`: remain blocked by the missing full
+  Golden Path/release evidence, but can now reference a single DF-243 closure
+  manifest when the live interruption matrix is eventually captured.
