@@ -110,7 +110,9 @@ export function createImagePathDecisionRecord(input: {
 export function getProductionImageProviderChoices(
   record: ImagePathDecisionRecord,
 ): readonly ImageProviderId[] {
-  return record.status === "locked" ? [record.providerId] : [];
+  if (record.status !== "locked") return [];
+  if (record.providerId !== "codex" || record.authMode !== "codexOAuth") return [];
+  return ["codex"];
 }
 
 function imagePathBlockers(input: {
