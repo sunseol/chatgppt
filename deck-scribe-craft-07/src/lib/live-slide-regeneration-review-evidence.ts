@@ -1,7 +1,12 @@
 import { ImageArtifactStoreError, type ImageArtifactStore } from "./image-artifact-store";
 import type { GeneratedSlide } from "./deck-types";
+import { hasNonSyntheticJsonEvidencePath } from "./live-evidence-path";
 import type { LiveSlideRegenerationCandidate } from "./live-slide-regeneration";
 import type { SlideRevisionComparison } from "./slide-revision-generation";
+
+const REVIEW_EVIDENCE_PATH =
+  /^projects\/[A-Za-z0-9_-]+\/live-evidence\/df235-slide-regeneration-review-[A-Za-z0-9_-]+\.json$/;
+const TEMPLATE_EVIDENCE_MARKERS = ["template", "sample", "example", "placeholder"] as const;
 
 export type LiveSlideRegenerationReviewEvent =
   | {
@@ -55,6 +60,17 @@ export async function writeLiveSlideRegenerationReviewEvidence(input: {
     content: JSON.stringify(evidence, null, 2),
   });
   return { path, evidence };
+}
+
+export function hasLiveSlideRegenerationReviewEvidencePath(path: string | undefined): boolean {
+  if (path === undefined) return false;
+  if (!hasNonSyntheticJsonEvidencePath(path)) return false;
+  const trimmed = path.trim();
+  const normalized = trimmed.toLowerCase();
+  return (
+    REVIEW_EVIDENCE_PATH.test(trimmed) &&
+    !TEMPLATE_EVIDENCE_MARKERS.some((marker) => normalized.includes(marker))
+  );
 }
 
 function liveSlideRegenerationReviewEvidencePath(projectId: string, eventId: string): string {

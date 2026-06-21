@@ -478,6 +478,14 @@ Assigned issue disposition:
   Path bundle is still missing.
 - DF-247 / `#157`: remains blocked by the remaining P0 evidence requirements.
 
+DF-235 local update: `DeckProject.liveSlideRegenerationReviewEvidence` now
+accepts only canonical DF-235 writer paths shaped as
+`projects/{projectId}/live-evidence/df235-slide-regeneration-review-{eventId}.json`.
+Generic review filenames, template/sample/example/placeholder evidence, and
+developer-local paths no longer persist into project state, so a packaged review
+run must keep approval or failure-preservation evidence tied to the product
+writer output before it can count toward closure.
+
 ## 2026-06-21 Interruption Closure Manifest
 
 The current product branch now has a DF-243 closure manifest validator in

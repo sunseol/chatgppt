@@ -3,6 +3,7 @@ import type {
   GeneratedSlide,
   LiveSlideRegenerationReviewEvidenceRef,
 } from "./deck-types";
+import { hasLiveSlideRegenerationReviewEvidencePath } from "./live-slide-regeneration-review-evidence";
 
 export function createReviewEvidenceProjectPatch(input: {
   readonly project: DeckProject;
@@ -15,7 +16,13 @@ export function createReviewEvidenceProjectPatch(input: {
   readonly liveSlideRegenerationReviewEvidence?: readonly LiveSlideRegenerationReviewEvidenceRef[];
 } {
   const slides = [...input.slides];
-  if (input.reviewEvidencePath === null || input.slideNumber === null) return { slides };
+  if (
+    input.reviewEvidencePath === null ||
+    input.slideNumber === null ||
+    !hasLiveSlideRegenerationReviewEvidencePath(input.reviewEvidencePath)
+  ) {
+    return { slides };
+  }
   return {
     slides,
     liveSlideRegenerationReviewEvidence: appendReviewEvidenceRef(
