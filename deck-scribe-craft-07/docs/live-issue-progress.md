@@ -714,3 +714,13 @@ causing `insufficient_live_image_artifacts` plus validation bundle reference
 drift when the bundle cites those unvalidated image artifacts. DF-241 remains
 open until the real packaged Golden Path report, screenshots, recording,
 validation bundle, export, and restart/reopen evidence are captured.
+
+DF-235/DF-241 local update: browser-stored image artifact evidence now rejects
+metadata/provenance provider run ids that only become valid after trimming
+boundary whitespace. A stored Codex image whose metadata and provenance sidecars
+both carry ` turn_codex_image_001 ` now blocks as
+`Stored image provider run id is missing.` instead of returning a padded
+`providerRunId`, so review-stage regeneration and Golden Path image evidence
+cannot inherit malformed browser storage identity. DF-235 and DF-241 still
+require packaged app runs to capture the real regeneration and Golden Path
+evidence.

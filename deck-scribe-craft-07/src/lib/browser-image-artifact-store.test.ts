@@ -118,6 +118,46 @@ describe("browser image artifact store", () => {
       },
     });
   });
+
+  test("blocks stored Codex image evidence with padded turn ids", async () => {
+    // Given
+    const storage = new MemoryStorage();
+    const store = createBrowserImageArtifactStore(storage);
+    await store.write({
+      path: "projects/project_001/slides/images/slide_001.v1.png",
+      content: new Uint8Array([1, 2, 3]),
+    });
+    await store.write({
+      path: "projects/project_001/slides/images/slide_001.v1.metadata.json",
+      content: JSON.stringify({
+        path: "projects/project_001/slides/images/slide_001.v1.metadata.json",
+        providerId: "codex",
+        slideNumber: 1,
+        request: { model: "gpt-image-2", turnId: " turn_codex_image_001 " },
+      }),
+    });
+    await store.write({
+      path: "projects/project_001/slides/images/slide_001.v1.provenance.json",
+      content: JSON.stringify({
+        path: "projects/project_001/slides/images/slide_001.v1.provenance.json",
+        artifactId: "project_001_image_slide_001_v1",
+        providerKind: "codex",
+        turnId: " turn_codex_image_001 ",
+      }),
+    });
+
+    // When
+    const evidence = readBrowserStoredImageArtifactEvidence(
+      "projects/project_001/slides/images/slide_001.v1.png",
+      storage,
+    );
+
+    // Then
+    expect(evidence).toEqual({
+      kind: "blocked",
+      issues: ["Stored image provider run id is missing."],
+    });
+  });
 });
 
 class MemoryStorage implements Storage {

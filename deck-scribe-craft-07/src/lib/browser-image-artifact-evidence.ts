@@ -165,11 +165,17 @@ function providerRunIdFor(
   metadata: BrowserStoredImageMetadataEvidence,
   provenance: BrowserStoredImageProvenanceEvidence,
 ): string | undefined {
-  const candidate =
-    metadata.providerId === "codex" ? metadata.request.turnId : metadata.request.requestId;
-  const provenanceRunId =
-    metadata.providerId === "codex" ? provenance.turnId : provenance.requestId;
-  return candidate?.trim() && candidate === provenanceRunId ? candidate : undefined;
+  const candidate = canonicalProviderRunId(
+    metadata.providerId === "codex" ? metadata.request.turnId : metadata.request.requestId,
+  );
+  const provenanceRunId = canonicalProviderRunId(
+    metadata.providerId === "codex" ? provenance.turnId : provenance.requestId,
+  );
+  return candidate !== undefined && candidate === provenanceRunId ? candidate : undefined;
+}
+
+function canonicalProviderRunId(value: string | undefined): string | undefined {
+  return value !== undefined && value.length > 0 && value === value.trim() ? value : undefined;
 }
 
 function metadataPathFor(binaryPath: string): string {
