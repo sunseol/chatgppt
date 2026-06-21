@@ -37,6 +37,7 @@ describe("live usage summary documentation", () => {
     expect(usageSummary.includes("template/sample/example/placeholder")).toBe(true);
     expect(usageSummary.includes("generic confirmation JSON filenames")).toBe(true);
     expect(usageSummary.includes("live-usage-billing-evidence-identity.test.ts")).toBe(true);
+    expect(usageSummary.includes("live-usage-billing-same-job.test.ts")).toBe(true);
     expect(usageSummary.includes("live-usage-billing-evidence.ts")).toBe(true);
     expect(usageSummary.includes("formatted summaries")).toBe(true);
     expect(
@@ -84,6 +85,7 @@ describe("live usage summary documentation", () => {
     expect(progress.includes("fallback")).toBe(true);
     expect(progress.includes("usage/unknown/unknown/image-billing-confirmation.json")).toBe(true);
     expect(progress.includes("missing_image_billing_confirmation")).toBe(true);
+    expect(progress.includes("current provider job id")).toBe(true);
     expect(progress.includes("confirmed-looking audit payload without valid")).toBe(true);
     expect(progress.includes("real provider image Codex usage disclosure payloads")).toBe(true);
     expect(progress.includes("apiKeyRequired: true")).toBe(true);
@@ -95,6 +97,7 @@ describe("live usage summary documentation", () => {
     expect(decision.includes("boundary-whitespace-padded")).toBe(true);
     expect(decision.includes("fallback `unknown` project/job")).toBe(true);
     expect(decision.includes("generic/non-canonical Codex image usage status")).toBe(true);
+    expect(decision.includes("wrong-job confirmation status")).toBe(true);
     expect(decision.includes("image-billing-confirmation.json")).toBe(true);
     expect(decision.includes("apiKeyRequired: false")).toBe(true);
     expect(

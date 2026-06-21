@@ -10,6 +10,7 @@ export type LiveImageBillingDisclosure = ProviderImageBillingDisclosure;
 
 export type LiveUsageStageSummary = {
   readonly stageId: string;
+  readonly jobId?: string;
   readonly providerKind: ProviderKind;
   readonly durationMs: number;
   readonly retryCount: number;
@@ -178,7 +179,8 @@ function costLabelIssues(stage: LiveUsageStageSummary): readonly LiveUsageSummar
 function imageBillingIssues(stage: LiveUsageStageSummary): readonly LiveUsageSummaryIssue[] {
   if (!isImageGenerationStage(stage)) return [];
   const disclosure = imageBillingDisclosure(stage);
-  return hasConfirmedCodexImageBillingDisclosure(disclosure)
+  return stage.jobId !== undefined &&
+    hasConfirmedCodexImageBillingDisclosure(disclosure, { expectedJobId: stage.jobId })
     ? []
     : [
         issue(

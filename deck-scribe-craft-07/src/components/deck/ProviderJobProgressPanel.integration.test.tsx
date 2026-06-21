@@ -103,7 +103,7 @@ describe("provider job progress panel", () => {
               userConfirmed: true,
               label: "Codex image usage confirmed",
               confirmationEvidencePath:
-                "usage/project-alpha/job-generate/image-billing-confirmation.json",
+                "usage/project-alpha/job_panel_running/image-billing-confirmation.json",
             },
           },
         }}

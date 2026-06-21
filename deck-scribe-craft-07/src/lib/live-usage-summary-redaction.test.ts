@@ -7,6 +7,7 @@ describe("live usage summary redaction", () => {
     const stages = [
       {
         stageId: "generate",
+        jobId: "job-generate",
         providerKind: "openaiImage",
         durationMs: 1200,
         retryCount: 0,

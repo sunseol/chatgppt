@@ -38,7 +38,10 @@ function isDisplayableCostLabel(value: string): boolean {
 function billingText(stage: LiveUsageStageSummary): string {
   const disclosure = stage.imageBillingDisclosure ?? stage.usage?.imageBillingDisclosure;
   if (disclosure === undefined) return "";
-  if (!hasConfirmedCodexImageBillingDisclosure(disclosure)) {
+  if (
+    stage.jobId === undefined ||
+    !hasConfirmedCodexImageBillingDisclosure(disclosure, { expectedJobId: stage.jobId })
+  ) {
     return " · Codex image usage not confirmed";
   }
   return ` · ${redactSensitiveText(disclosure.label.trim())}`;

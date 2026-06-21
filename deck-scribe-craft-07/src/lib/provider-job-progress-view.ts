@@ -44,7 +44,7 @@ export function createProviderJobProgressView(input: {
     providerLabel: input.job.providerId,
     durationLabel: durationLabel(input.job),
     retryLabel: `retries ${Math.max(0, input.job.attempt - 1)}`,
-    usageItems: usageItems(input.job.usageSummary),
+    usageItems: usageItems(input.job.usageSummary, input.job.id),
     canCancel:
       (input.job.status === "queued" || input.job.status === "running") &&
       !input.job.cancelRequested,
@@ -112,14 +112,17 @@ function durationLabel(job: ProviderJob): string {
     : "duration unavailable";
 }
 
-function usageItems(usageSummary: ProviderUsageSummary | undefined): readonly string[] {
+function usageItems(
+  usageSummary: ProviderUsageSummary | undefined,
+  jobId: string,
+): readonly string[] {
   if (usageSummary === undefined) return [];
   return [
     usageAmountItem("input", usageSummary.inputTokens),
     usageAmountItem("output", usageSummary.outputTokens),
     usageAmountItem("images", usageSummary.imageCount),
     costEstimateItem(usageSummary.estimatedCostUsd),
-    imageBillingDisclosureItem(usageSummary),
+    imageBillingDisclosureItem(usageSummary, jobId),
   ].filter(isNonEmpty);
 }
 
@@ -133,10 +136,10 @@ function costEstimateItem(cost: number | undefined): string {
     : `cost estimate $${cost.toFixed(4)}`;
 }
 
-function imageBillingDisclosureItem(usageSummary: ProviderUsageSummary): string {
+function imageBillingDisclosureItem(usageSummary: ProviderUsageSummary, jobId: string): string {
   const disclosure = usageSummary.imageBillingDisclosure;
   if (disclosure === undefined) return "";
-  if (!hasConfirmedCodexImageBillingDisclosure(disclosure)) {
+  if (!hasConfirmedCodexImageBillingDisclosure(disclosure, { expectedJobId: jobId })) {
     return "Codex image usage not confirmed";
   }
   return redactSensitiveText(disclosure.label.trim());

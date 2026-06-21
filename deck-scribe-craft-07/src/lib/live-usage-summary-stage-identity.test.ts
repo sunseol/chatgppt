@@ -50,6 +50,7 @@ describe("live usage summary stage identity", () => {
     const stages = [
       runtimeStage({
         stageId: "generate",
+        jobId: "job-generate",
         providerKind: "openaiImage",
         durationMs: 1200,
         retryCount: 0,
@@ -60,6 +61,7 @@ describe("live usage summary stage identity", () => {
       }),
       runtimeStage({
         stageId: "generate",
+        jobId: "job-generate",
         providerKind: "openaiImage",
         durationMs: 1400,
         retryCount: 1,

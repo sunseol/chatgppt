@@ -12,15 +12,22 @@ export type ImageBillingDisclosureEvidence = {
   readonly confirmationEvidencePath?: string;
 };
 
+export type ImageBillingDisclosureEvidenceOptions = {
+  readonly expectedJobId?: string;
+};
+
 export function hasConfirmedCodexImageBillingDisclosure(
   disclosure: ImageBillingDisclosureEvidence | undefined,
+  options: ImageBillingDisclosureEvidenceOptions = {},
 ): boolean {
+  const path = disclosure?.confirmationEvidencePath;
   return (
     disclosure !== undefined &&
     disclosure.apiKeyRequired === false &&
     disclosure.userConfirmed === true &&
     disclosure.label.trim().length > 0 &&
-    hasBillingConfirmationEvidencePath(disclosure.confirmationEvidencePath)
+    hasBillingConfirmationEvidencePath(path) &&
+    billingConfirmationEvidenceMatchesJob(path, options.expectedJobId)
   );
 }
 
@@ -48,6 +55,17 @@ function hasProductBillingConfirmationPath(path: string): boolean {
     filename === BILLING_CONFIRMATION_FILENAME &&
     extraSegments.length === 0
   );
+}
+
+function billingConfirmationEvidenceMatchesJob(
+  path: string | undefined,
+  expectedJobId: string | undefined,
+): boolean {
+  if (expectedJobId === undefined) return true;
+  if (!SAFE_EVIDENCE_SEGMENT.test(expectedJobId) || isFallbackEvidenceSegment(expectedJobId)) {
+    return false;
+  }
+  return path?.split("/")[2] === expectedJobId;
 }
 
 function isFallbackEvidenceSegment(value: string): boolean {

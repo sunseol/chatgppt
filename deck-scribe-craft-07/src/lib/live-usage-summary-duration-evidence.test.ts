@@ -7,6 +7,7 @@ describe("live usage summary duration evidence", () => {
     const stages: readonly LiveUsageStageSummary[] = [
       {
         stageId: "generate",
+        jobId: "job-generate",
         providerKind: "openaiImage",
         durationMs: 0,
         retryCount: 0,

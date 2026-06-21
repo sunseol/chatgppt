@@ -72,6 +72,7 @@ function imageUsageStage(
 ): LiveUsageStageSummary {
   return {
     stageId: "generate",
+    jobId: "job_live_image",
     providerKind: "codex",
     durationMs: 1200,
     retryCount: 0,

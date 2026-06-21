@@ -7,6 +7,7 @@ describe("live usage summary cost label taxonomy", () => {
     const stages = [
       runtimeStage({
         stageId: "generate",
+        jobId: "job-generate",
         providerKind: "openaiImage",
         durationMs: 1_200,
         retryCount: 0,

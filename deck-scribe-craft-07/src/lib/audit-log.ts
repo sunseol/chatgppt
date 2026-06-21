@@ -29,6 +29,7 @@ export type AuditLogEvent = {
   readonly traceId: string;
   readonly timestamp: number;
   readonly stage: StepKey;
+  readonly providerJobId?: string;
   readonly artifactLineage?: AuditArtifactLineage;
   readonly usageSummary?: ProviderUsageSummary;
   readonly message?: string;
@@ -40,6 +41,7 @@ export type AuditLogEventInput = {
   readonly traceId: string;
   readonly timestamp: number;
   readonly stage: StepKey;
+  readonly providerJobId?: string;
   readonly artifactLineage?: AuditArtifactLineage;
   readonly usageSummary?: ProviderUsageSummary;
   readonly message?: string;
@@ -64,6 +66,7 @@ export function createAuditLogEvent(input: AuditLogEventInput): AuditLogEvent {
     traceId: input.traceId,
     timestamp: input.timestamp,
     stage: input.stage,
+    ...(input.providerJobId === undefined ? {} : { providerJobId: input.providerJobId }),
     ...(artifactLineage === undefined ? {} : { artifactLineage }),
     ...(usageSummary === undefined ? {} : { usageSummary }),
     ...(input.message === undefined ? {} : { message: redactSensitiveText(input.message) }),
@@ -80,6 +83,7 @@ export function createProviderJobSummaryAuditEvent(
     traceId: input.traceId,
     timestamp: input.timestamp,
     stage: input.stage,
+    providerJobId: job.id,
     ...(input.artifactLineage === undefined ? {} : { artifactLineage: input.artifactLineage }),
     ...(job.usageSummary === undefined ? {} : { usageSummary: job.usageSummary }),
     ...(job.errorMessage === undefined ? {} : { message: job.errorMessage }),
@@ -106,7 +110,7 @@ export function formatAuditLogForReport(events: readonly AuditLogEvent[]): strin
       out.push(`  - Upstream: ${artifact.upstreamArtifactIds.join(", ")}`);
     }
     if (event.usageSummary !== undefined) {
-      out.push(`  - Usage: ${formatUsageSummary(event.usageSummary)}`);
+      out.push(`  - Usage: ${formatUsageSummary(event.usageSummary, event.providerJobId)}`);
     }
     if (event.message !== undefined) {
       out.push(`  - Message: ${event.message}`);
@@ -151,7 +155,10 @@ function copyImageBillingDisclosure(
   };
 }
 
-function formatUsageSummary(summary: ProviderUsageSummary): string {
+function formatUsageSummary(
+  summary: ProviderUsageSummary,
+  providerJobId: string | undefined,
+): string {
   const parts = [
     summary.inputTokens === undefined ? "" : `input ${summary.inputTokens}`,
     summary.outputTokens === undefined ? "" : `output ${summary.outputTokens}`,
@@ -159,15 +166,21 @@ function formatUsageSummary(summary: ProviderUsageSummary): string {
     summary.estimatedCostUsd === undefined
       ? ""
       : `cost estimate $${summary.estimatedCostUsd.toFixed(4)}`,
-    imageBillingDisclosureText(summary),
+    imageBillingDisclosureText(summary, providerJobId),
   ].filter((part) => part.length > 0);
   return parts.length === 0 ? "none" : parts.join(" · ");
 }
 
-function imageBillingDisclosureText(summary: ProviderUsageSummary): string {
+function imageBillingDisclosureText(
+  summary: ProviderUsageSummary,
+  providerJobId: string | undefined,
+): string {
   const disclosure = summary.imageBillingDisclosure;
   if (disclosure === undefined) return "";
-  if (!hasConfirmedCodexImageBillingDisclosure(disclosure)) {
+  if (
+    providerJobId === undefined ||
+    !hasConfirmedCodexImageBillingDisclosure(disclosure, { expectedJobId: providerJobId })
+  ) {
     return "Codex image usage not confirmed";
   }
   return redactSensitiveText(disclosure.label.trim());

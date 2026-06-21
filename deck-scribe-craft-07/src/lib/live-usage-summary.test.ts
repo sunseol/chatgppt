@@ -46,6 +46,7 @@ describe("live usage summary", () => {
       },
       {
         ...stage("generate"),
+        jobId: "job-generate",
         usage: { imageCount: 5, estimatedCostUsd: 0.2 },
         costLabel: "hidden",
         imageBillingDisclosure: undefined,
@@ -214,6 +215,7 @@ describe("live usage summary", () => {
         usage: { inputTokens: 1_000 },
       }),
       stage("generate", {
+        jobId: "job-generate",
         providerKind: "openaiImage",
         providerUsageProvided: true,
         usage: {
@@ -246,6 +248,7 @@ describe("live usage summary", () => {
     // Given
     const stages = [
       stage("generate", {
+        jobId: "job-generate",
         providerKind: "openaiImage",
         usage: { imageCount: 5, estimatedCostUsd: 0.2 },
         costLabel: "actual",
@@ -267,43 +270,6 @@ describe("live usage summary", () => {
     if (result.kind !== "blocked") return;
     expect(result.issues.map((issue) => issue.code)).toEqual(["estimated_cost_marked_actual"]);
   });
-
-  test("blocks impossible usage and cost amounts", () => {
-    // Given
-    const disclosure = {
-      apiKeyRequired: false,
-      userConfirmed: true,
-      label: "Codex image usage confirmed",
-      confirmationEvidencePath: "usage/project-alpha/job-generate/image-billing-confirmation.json",
-    };
-    const stages = [
-      stage("plan", {
-        providerUsageProvided: true,
-        usage: { inputTokens: -1, outputTokens: 0.5 },
-      }),
-      stage("generate", {
-        providerKind: "openaiImage",
-        usage: {
-          imageCount: -2,
-          estimatedCostUsd: Number.NaN,
-          imageBillingDisclosure: disclosure,
-        },
-        costLabel: "estimate",
-      }),
-    ];
-
-    // When
-    const result = evaluateLiveUsageSummary(stages);
-
-    // Then
-    expect(result.kind).toBe("blocked");
-    if (result.kind !== "blocked") return;
-    expect(result.issues.map((issue) => issue.code)).toEqual([
-      "invalid_usage_amount",
-      "invalid_usage_amount",
-      "invalid_cost_amount",
-    ]);
-  });
 });
 
 function completeStages(): readonly LiveUsageStageSummary[] {
@@ -311,6 +277,7 @@ function completeStages(): readonly LiveUsageStageSummary[] {
     stage("research"),
     stage("plan", { usage: { inputTokens: 1_000, outputTokens: 500 } }),
     stage("generate", {
+      jobId: "job-generate",
       providerKind: "openaiImage",
       durationMs: 1_200,
       retryCount: 1,

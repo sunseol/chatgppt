@@ -1347,3 +1347,14 @@ live job id. A path alias now blocks with `duplicate_cancel_evidence_path`
 instead of looking ready. DF-243 remains open until the packaged app captures
 image partial-resume, app-storage cancel snapshot, cancel signal, and
 interrupted approval/export evidence from real live jobs.
+
+DF-244 local update: image billing confirmation evidence now has to match the
+current provider job id before summary approval, formatted summaries, progress
+view usage items, or audit report lines can render `Codex image usage
+confirmed`. A copied confirmation path such as
+`usage/project-alpha/job_previous/image-billing-confirmation.json` on
+`job_current` now blocks as `missing_image_billing_confirmation` and renders as
+`Codex image usage not confirmed`. Regression coverage lives in
+`src/lib/live-usage-billing-same-job.test.ts`. DF-244 remains open until the
+packaged app captures real image usage payloads and the persisted pre-generation
+confirmation JSON from the same run.

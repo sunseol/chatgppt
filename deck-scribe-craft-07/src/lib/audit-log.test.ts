@@ -100,6 +100,7 @@ describe("full audit log", () => {
       traceId: "trace_provider_image_billing",
       timestamp: 2_600,
       stage: "generate",
+      providerJobId: "job-generate",
       usageSummary: {
         imageCount: 5,
         estimatedCostUsd: 0.18,

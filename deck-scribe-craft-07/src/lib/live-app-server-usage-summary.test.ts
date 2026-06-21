@@ -53,6 +53,7 @@ describe("Codex App Server usage summary", () => {
     // Given
     const stage = createCodexAppServerUsageStageSummary({
       stageId: "generate",
+      jobId: "job-generate",
       durationMs: 197_953,
       retryCount: 2,
       notifications: [
@@ -110,6 +111,7 @@ describe("Codex App Server usage summary", () => {
     // Given
     const stage = createCodexAppServerUsageStageSummary({
       stageId: "generate",
+      jobId: "job-generate",
       durationMs: 197_953,
       retryCount: 2,
       notifications: [

@@ -4,6 +4,7 @@ import type { ProviderImageBillingDisclosure, ProviderUsageSummary } from "./pro
 
 export type CodexAppServerUsageStageSummaryInput = {
   readonly stageId: string;
+  readonly jobId?: string;
   readonly durationMs: number;
   readonly retryCount: number;
   readonly notifications: readonly CodexAppServerJsonRpcNotification[];
@@ -17,6 +18,7 @@ export function createCodexAppServerUsageStageSummary(
     usageNotification === undefined ? undefined : providerUsageSummary(usageNotification);
   return {
     stageId: input.stageId,
+    ...(input.jobId === undefined ? {} : { jobId: input.jobId }),
     providerKind: "codex",
     durationMs: input.durationMs,
     retryCount: input.retryCount,
