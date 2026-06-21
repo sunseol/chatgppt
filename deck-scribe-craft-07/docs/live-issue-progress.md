@@ -870,6 +870,15 @@ rejects closure manifests whose required artifact paths point at generic
 copy captured interruption artifacts into `docs/live-evidence/...` before the
 closure manifest can become `ready_for_close`.
 
+DF-243 local update: `src/lib/live-interruption-closure-evidence.ts` now also
+validates closure manifest identity at runtime. A manifest that names another
+GitHub issue or ticket blocks with `interruption_closure_issue_mismatch` or
+`interruption_closure_ticket_mismatch`, even if the matrix and artifact paths
+otherwise look ready. `src/lib/live-interruption-closure-identity.ts` owns that
+small guard, and `src/lib/live-interruption-closure-evidence.test.ts` covers the
+false-ready path. The issue remains open until the missing packaged-app
+interruption scenarios are captured as real evidence.
+
 Assigned issue disposition:
 
 - DF-243 / `#153`: remains open. The current manifest deliberately stays

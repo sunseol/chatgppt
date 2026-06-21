@@ -1,3 +1,7 @@
+import {
+  liveInterruptionClosureIdentityIssues,
+  type LiveInterruptionClosureIdentityIssue,
+} from "./live-interruption-closure-identity";
 import { hasObservedInterruptionEvidencePath } from "./live-interruption-evidence-path";
 import {
   evaluateLiveInterruptionMatrix,
@@ -17,8 +21,8 @@ export type LiveInterruptionClosureRequiredArtifacts = {
 };
 
 export type LiveInterruptionClosureEvidence = {
-  readonly issue: "#153";
-  readonly ticket: "DF-243";
+  readonly issue: string;
+  readonly ticket: string;
   readonly status: LiveInterruptionClosureStatus;
   readonly reportPath: string;
   readonly matrixEvidencePath: string;
@@ -28,6 +32,7 @@ export type LiveInterruptionClosureEvidence = {
 
 export type LiveInterruptionClosureIssueCode =
   | LiveInterruptionIssue["code"]
+  | LiveInterruptionClosureIdentityIssue["code"]
   | "interruption_closure_not_ready"
   | "missing_interruption_matrix_evidence"
   | "interruption_matrix_report_mismatch"
@@ -52,6 +57,7 @@ export function evaluateLiveInterruptionClosureEvidence(
   const matrixIssues = matrixResult.kind === "ready" ? [] : matrixResult.issues;
   const issues = [
     ...matrixIssues,
+    ...liveInterruptionClosureIdentityIssues(evidence),
     ...statusIssues(evidence),
     ...matrixEvidencePathIssues(evidence),
     ...reportPathIssues(evidence),
@@ -226,15 +232,7 @@ function isCommittedEvidenceBundlePath(value: string): boolean {
   );
 }
 
-function pair(
-  label: string,
-  actual: string,
-  expected: string | undefined,
-): {
-  readonly label: string;
-  readonly actual: string;
-  readonly expected: string;
-} {
+function pair(label: string, actual: string, expected: string | undefined) {
   return { label, actual, expected: expected ?? "missing" };
 }
 

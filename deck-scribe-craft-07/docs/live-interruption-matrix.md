@@ -46,7 +46,7 @@ Required scenarios:
 - `interrupted_artifact_approvable`: interrupted artifact is approvable or exportable.
 - `missing_interruption_report`: `docs/live-interruption-matrix.md` evidence path is missing, synthetic, or developer-local.
 
-`src/lib/live-interruption-closure-evidence.ts` additionally returns `interruption_closure_artifact_outside_evidence_bundle` when a closure manifest points at generic recovery JSON paths instead of committed `docs/live-evidence/...` bundle artifacts.
+`src/lib/live-interruption-closure-evidence.ts` additionally returns `interruption_closure_issue_mismatch` or `interruption_closure_ticket_mismatch` when a closure manifest does not identify issue `#153` and ticket `DF-243`, and `interruption_closure_artifact_outside_evidence_bundle` when a closure manifest points at generic recovery JSON paths instead of committed `docs/live-evidence/...` bundle artifacts.
 
 ## Local Evidence
 
@@ -54,7 +54,7 @@ Required scenarios:
 - `src/lib/provider-job-recovery.ts` preserves job snapshots for restart recovery.
 - `src/lib/slide-generation-queue-live-controls.test.ts` already covers retry, partial image resume, and cancellation behavior at the queue level.
 - `src/lib/live-interruption-closure-evidence.ts` validates the DF-243 closure manifest that ties `#153`, `DF-243`, `docs/live-interruption-matrix.md`, the matrix JSON bundle, and the required image partial-resume, app cancel snapshot, cancel signal, approval-gate, and export-gate JSON artifacts back to the same evaluated matrix scenarios, and requires closure artifacts to live under committed `docs/live-evidence/...` bundle paths.
-- `src/lib/live-interruption-closure-evidence.test.ts` verifies that closure remains blocked when those required artifacts are missing, drift from the matrix, or point at generic recovery-local JSON paths outside the evidence bundle.
+- `src/lib/live-interruption-closure-evidence.test.ts` verifies that closure remains blocked when the manifest names another issue or ticket, omits required artifacts, drifts from the matrix, or points at generic recovery-local JSON paths outside the evidence bundle.
 
 ## Live Text Turn Interrupt Evidence
 

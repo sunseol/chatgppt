@@ -72,6 +72,23 @@ describe("live interruption closure evidence", () => {
     expect(result.issues[0]?.refs).toEqual(["cancelSignalEvidencePath"]);
   });
 
+  test("blocks closure manifests for a different issue or ticket", () => {
+    // Given
+    const evidence = closureEvidence({ issue: "#999", ticket: "DF-999" });
+
+    // When
+    const result = evaluateLiveInterruptionClosureEvidence(evidence);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "interruption_closure_issue_mismatch",
+      "interruption_closure_ticket_mismatch",
+    ]);
+    expect(result.issues.flatMap((issue) => issue.refs)).toEqual(["#999", "DF-999"]);
+  });
+
   test("blocks closure manifests that use generic recovery paths outside the evidence bundle", () => {
     // Given
     const evidence = closureEvidence({
