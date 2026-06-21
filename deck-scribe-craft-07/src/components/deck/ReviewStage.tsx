@@ -1,17 +1,23 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { Maximize2 } from "lucide-react";
+import { Check, Maximize2 } from "lucide-react";
 import { GateBar } from "@/components/deck/GateBar";
 import { RevisionComparePanel } from "@/components/deck/RevisionComparePanel";
+import { ReviewSlideList } from "@/components/deck/ReviewSlideList";
 import { SlidePreview } from "@/components/deck/SlidePreview";
 import { SlidePreviewDialog } from "@/components/deck/SlidePreviewDialog";
+import {
+  approveReviewStageRevision,
+  approveSelectedReviewSlide,
+  runReviewStageSlideRegeneration,
+} from "@/components/deck/review-stage-regeneration";
 import { StageHeader, StageScroll, StageShell } from "@/components/deck/stage-shared";
-import { fakeAsync } from "@/components/deck/stage-timing";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { approveStage, updateProject } from "@/lib/deck-store";
 import { hash } from "@/lib/mock-ai";
 import type { DeckProject, GeneratedSlide } from "@/lib/deck-types";
+import type { LiveSlideRegenerationCandidate } from "@/lib/live-slide-regeneration";
 import type { SlideRevisionComparison } from "@/lib/slide-revision-generation";
 
 export function ReviewStage({ project }: { readonly project: DeckProject }) {
@@ -24,51 +30,63 @@ export function ReviewStage({ project }: { readonly project: DeckProject }) {
   const [revisionComparison, setRevisionComparison] = useState<SlideRevisionComparison | null>(
     null,
   );
+  const [liveRegenerationCandidate, setLiveRegenerationCandidate] =
+    useState<LiveSlideRegenerationCandidate | null>(null);
 
-  useEffect(() => setSlides(project.slides ?? []), [project.slides]);
+  useEffect(() => {
+    setSlides(project.slides ?? []);
+    setRevisionComparison(null);
+    setLiveRegenerationCandidate(null);
+  }, [project.slides]);
 
   const regenSelected = async () => {
-    if (selected == null) return;
-    const original = slides.find((slide) => slide.number === selected);
     const instruction = edit.trim();
-    if (!original || !instruction) return;
+    if (selected == null || !instruction) return;
     setBusy(true);
-    await fakeAsync(null, 800);
-    const next = slides.map((slide) =>
-      slide.number === selected
-        ? {
-            ...slide,
-            version: slide.version + 1,
-            imageDescriptor: `${slide.imageDescriptor}|revision:v${slide.version + 1}|${instruction}`,
-            notes: instruction,
-          }
-        : slide,
-    );
-    const revised = next.find((slide) => slide.number === selected);
-    if (revised)
-      setRevisionComparison(createReviewRevisionComparison(original, revised, instruction));
-    setSlides(next);
-    updateProject(project.id, { slides: next });
-    setEdit("");
-    setBusy(false);
+    try {
+      const result = await runReviewStageSlideRegeneration({
+        project,
+        slides,
+        selected,
+        instruction,
+      });
+      setSlides([...result.slides]);
+      updateProject(project.id, { slides: [...result.slides] });
+      setRevisionComparison(result.comparison);
+      setLiveRegenerationCandidate(result.liveCandidate);
+      if (result.editConsumed) setEdit("");
+    } finally {
+      setBusy(false);
+    }
   };
 
   const approveRevision = () => {
     if (!revisionComparison) return;
-    const approved = slides.map((slide) =>
-      slide.number === revisionComparison.slideNumber
-        ? { ...slide, status: "approved" as const }
-        : slide,
-    );
-    setSlides(approved);
-    updateProject(project.id, { slides: approved });
+    const approved = approveReviewStageRevision({
+      slides,
+      comparison: revisionComparison,
+      liveCandidate: liveRegenerationCandidate,
+    });
+    setSlides([...approved]);
+    updateProject(project.id, { slides: [...approved] });
     setRevisionComparison(null);
+    setLiveRegenerationCandidate(null);
   };
 
   const requestRevisionAgain = () => {
     if (!revisionComparison) return;
     setEdit(revisionComparison.requestedChanges.join(" "));
     setRevisionComparison(null);
+    setLiveRegenerationCandidate(null);
+  };
+
+  const approveSelectedOriginal = () => {
+    if (selected == null) return;
+    const approved = approveSelectedReviewSlide(slides, selected);
+    setSlides([...approved]);
+    updateProject(project.id, { slides: [...approved] });
+    setRevisionComparison(null);
+    setLiveRegenerationCandidate(null);
   };
 
   const approveAll = () => {
@@ -89,7 +107,12 @@ export function ReviewStage({ project }: { readonly project: DeckProject }) {
       <StageScroll className="mx-auto max-w-7xl px-8">
         <StageHeader num="07" sub="Review" title="슬라이드 검토" />
         <div className="grid min-h-[520px] grid-cols-[220px_minmax(0,1fr)_300px] gap-5">
-          <SlideList slides={slides} selected={selected} project={project} onSelect={setSelected} />
+          <ReviewSlideList
+            slides={slides}
+            selected={selected}
+            project={project}
+            onSelect={setSelected}
+          />
           <section className="border border-border bg-paper">
             <div className="flex items-center justify-between border-b border-border px-3 py-2">
               <div className="text-xs text-muted-foreground">
@@ -109,8 +132,10 @@ export function ReviewStage({ project }: { readonly project: DeckProject }) {
           <ReviewRequestPanel
             edit={edit}
             busy={busy}
+            slide={slide}
             onEdit={setEdit}
             onRegenerate={regenSelected}
+            onApproveOriginal={approveSelectedOriginal}
           />
         </div>
         {revisionComparison && revisionComparison.slideNumber === selected ? (
@@ -140,55 +165,20 @@ export function ReviewStage({ project }: { readonly project: DeckProject }) {
   );
 }
 
-function SlideList({
-  slides,
-  selected,
-  project,
-  onSelect,
-}: {
-  readonly slides: readonly GeneratedSlide[];
-  readonly selected: number | null;
-  readonly project: DeckProject;
-  readonly onSelect: (slideNumber: number) => void;
-}) {
-  return (
-    <ul className="desktop-scroll space-y-1">
-      {slides.map((slide) => {
-        const spec = project.plan?.slides.find((item) => item.number === slide.number);
-        return (
-          <li key={slide.number}>
-            <button
-              type="button"
-              onClick={() => onSelect(slide.number)}
-              className={`flex w-full items-center gap-3 border px-3 py-2 text-left text-xs ${
-                selected === slide.number
-                  ? "border-foreground bg-paper"
-                  : "border-transparent hover:bg-paper"
-              }`}
-            >
-              <span className="font-mono text-muted-foreground">
-                {String(slide.number).padStart(2, "0")}
-              </span>
-              <span className="flex-1 truncate">{spec?.title}</span>
-              <span className="text-muted-foreground">v{slide.version}</span>
-            </button>
-          </li>
-        );
-      })}
-    </ul>
-  );
-}
-
 function ReviewRequestPanel({
   edit,
   busy,
+  slide,
   onEdit,
   onRegenerate,
+  onApproveOriginal,
 }: {
   readonly edit: string;
   readonly busy: boolean;
+  readonly slide: GeneratedSlide | undefined;
   readonly onEdit: (value: string) => void;
   readonly onRegenerate: () => void;
+  readonly onApproveOriginal: () => void;
 }) {
   return (
     <aside className="space-y-4">
@@ -213,6 +203,16 @@ function ReviewRequestPanel({
           <li>승인한 색상</li>
         </ul>
       </div>
+      {slide?.status !== "approved" ? (
+        <Button
+          onClick={onApproveOriginal}
+          disabled={slide === undefined || busy}
+          className="w-full"
+        >
+          <Check className="h-4 w-4" />
+          선택 원본 승인
+        </Button>
+      ) : null}
       <Button
         onClick={onRegenerate}
         disabled={!edit.trim() || busy}
@@ -223,27 +223,4 @@ function ReviewRequestPanel({
       </Button>
     </aside>
   );
-}
-
-function createReviewRevisionComparison(
-  original: GeneratedSlide,
-  revised: GeneratedSlide,
-  instruction: string,
-): SlideRevisionComparison {
-  const preservedTargets = ["제목", "주요 수치", "출처 캡션", "승인한 색상"];
-  return {
-    slideNumber: original.number,
-    originalSlideVersion: original.version,
-    revisedSlideVersion: revised.version,
-    beforeImageDescriptor: original.imageDescriptor,
-    afterImageDescriptor: revised.imageDescriptor,
-    requestedChanges: [instruction],
-    preservedTargets,
-    preservationChecks: preservedTargets.map((target) => ({
-      target,
-      status: "kept",
-      message: `${target} 유지`,
-    })),
-    summary: `${original.number}번 슬라이드 수정본이 요청 내용을 반영했습니다.`,
-  };
 }

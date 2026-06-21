@@ -55,10 +55,11 @@ export async function storeSlideImageArtifact(input: {
   readonly artifact: SlideImageArtifact;
   readonly version: number;
   readonly createdAt: number;
+  readonly extraInputArtifactIds?: readonly string[];
 }): Promise<StoredSlideImageArtifact> {
   assertLiveImageProviderArtifact(input.artifact);
   assertSafeStorageAddress(input);
-  assertImageInputLineage(input.artifact);
+  assertImageInputLineage(input.artifact, input.extraInputArtifactIds ?? []);
   const imageBytes = pngBytesFromDataUrl(input.artifact.imageDataUrl);
   const request = requireImageRequestMetadata(input.artifact);
   const binary = {
@@ -104,7 +105,10 @@ function assertSafeStorageAddress(input: {
   }
 }
 
-function assertImageInputLineage(artifact: SlideImageArtifact): void {
+function assertImageInputLineage(
+  artifact: SlideImageArtifact,
+  extraInputArtifactIds: readonly string[],
+): void {
   if (
     !canonicalNonEmpty(artifact.prompt.id) ||
     !canonicalNonEmpty(artifact.prompt.version) ||
@@ -114,6 +118,9 @@ function assertImageInputLineage(artifact: SlideImageArtifact): void {
   }
   if (!canonicalNonEmpty(artifact.layoutReference.screenshot)) {
     throw new ImageArtifactStoreError("Image artifact layout reference is required.");
+  }
+  if (!extraInputArtifactIds.every(canonicalNonEmpty)) {
+    throw new ImageArtifactStoreError("Image artifact extra input lineage is required.");
   }
 }
 
@@ -147,6 +154,7 @@ function imageProvenance(
     readonly projectId: string;
     readonly artifact: SlideImageArtifact;
     readonly version: number;
+    readonly extraInputArtifactIds?: readonly string[];
   },
   binary: StoredImageBinary,
   request: SlideImageRequestMetadata,
@@ -160,12 +168,25 @@ function imageProvenance(
     modelOrRuntime: request.model,
     promptVersion: `${input.artifact.prompt.id}@${input.artifact.prompt.version}`,
     durationMs: request.latencyMs ?? 0,
-    inputArtifactIds: [input.artifact.prompt.hash, input.artifact.layoutReference.screenshot],
+    inputArtifactIds: imageInputArtifactIds(input),
     fixture: false,
     ...(request.requestId === undefined ? {} : { requestId: request.requestId }),
     ...(request.threadId === undefined ? {} : { threadId: request.threadId }),
     ...(request.turnId === undefined ? {} : { turnId: request.turnId }),
   };
+}
+
+function imageInputArtifactIds(input: {
+  readonly artifact: SlideImageArtifact;
+  readonly extraInputArtifactIds?: readonly string[];
+}): readonly string[] {
+  return [
+    ...new Set([
+      input.artifact.prompt.hash,
+      input.artifact.layoutReference.screenshot,
+      ...(input.extraInputArtifactIds ?? []),
+    ]),
+  ];
 }
 
 function positiveInteger(value: number): boolean {

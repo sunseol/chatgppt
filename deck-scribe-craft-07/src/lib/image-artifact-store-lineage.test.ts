@@ -85,6 +85,38 @@ describe("image artifact store input lineage", () => {
     expect(paddedPrompt).toBe("Image artifact prompt lineage is required.");
     expect(paddedLayoutReference).toBe("Image artifact layout reference is required.");
   });
+
+  test("records regeneration input artifact ids in provider provenance", async () => {
+    // Given
+    const writes: { readonly path: string; readonly content: string | Uint8Array }[] = [];
+    const store = createImageArtifactStore({
+      write: async (entry) => {
+        writes.push(entry);
+      },
+    });
+
+    // When
+    const stored = await storeSlideImageArtifact({
+      store,
+      projectId: "project_001",
+      artifact: imageArtifact(),
+      version: 2,
+      createdAt: 1_789_800_016,
+      extraInputArtifactIds: ["project_001_image_slide_001_v1"],
+    });
+
+    // Then
+    expect(stored.provenance.inputArtifactIds).toEqual([
+      "sha256:prompt",
+      "slide_001_layout.png",
+      "project_001_image_slide_001_v1",
+    ]);
+    expect(
+      writes
+        .map((write) => write.path)
+        .includes("projects/project_001/slides/images/slide_001.v2.provenance.json"),
+    ).toBe(true);
+  });
 });
 
 async function rejectionMessage(promise: Promise<unknown>): Promise<string> {

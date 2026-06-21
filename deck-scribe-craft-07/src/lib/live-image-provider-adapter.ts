@@ -31,6 +31,7 @@ export async function generateAndStoreSlideImageArtifact(input: {
   readonly projectId: string;
   readonly version: number;
   readonly createdAt: number;
+  readonly extraInputArtifactIds?: readonly string[];
 }): Promise<StoredLiveSlideImageResult> {
   if (input.provider.id === "mock") {
     return {
@@ -75,6 +76,7 @@ async function storeProviderArtifactResult(
     readonly projectId: string;
     readonly version: number;
     readonly createdAt: number;
+    readonly extraInputArtifactIds?: readonly string[];
   },
   artifact: SlideImageArtifact,
 ): Promise<StoreProviderArtifactResult> {
@@ -85,6 +87,9 @@ async function storeProviderArtifactResult(
       artifact,
       version: input.version,
       createdAt: input.createdAt,
+      ...(input.extraInputArtifactIds === undefined
+        ? {}
+        : { extraInputArtifactIds: input.extraInputArtifactIds }),
     });
     return { kind: "ready", stored };
   } catch (error) {
