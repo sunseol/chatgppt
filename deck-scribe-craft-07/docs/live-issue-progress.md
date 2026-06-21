@@ -390,6 +390,19 @@ This still does not close DF-243. The real packaged Live interruption matrix
 still needs app-produced image partial-resume, cancel snapshot/cancel-signal,
 and interrupted approval/export evidence under `docs/live-evidence`.
 
+## 2026-06-22 KST DF-243 Exact Matrix Report Path Gate
+
+DF-243 local update: the interruption matrix report path must now be the exact
+committed `docs/live-interruption-matrix.md` path before a matrix can count as
+ready. Same-named reports in temporary or observer paths, such as
+`tmp/live-interruption-matrix.md`, now block with
+`missing_interruption_report`. Regression coverage lives in
+`src/lib/live-interruption-report-path.test.ts`.
+
+This still does not close DF-243. The real packaged Live interruption matrix
+still needs app-produced image partial-resume, cancel snapshot/cancel-signal,
+and interrupted approval/export evidence under `docs/live-evidence`.
+
 ## 2026-06-22 KST GitHub Open Issue Recheck
 
 GitHub REST recheck confirms `#148` / DF-234 is already `closed` with

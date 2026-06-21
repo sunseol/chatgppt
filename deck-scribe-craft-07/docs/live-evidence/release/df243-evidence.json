@@ -3,9 +3,9 @@
   "issueNumber": 153,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-21T20:15:50Z",
+  "generatedAt": "2026-06-21T20:45:56Z",
   "packageArchiveSha256": "aacadd4cd4546ce20b084b1fbf8018e9571a635983ad9aa30b07a123c705985e",
-  "summary": "The interruption closure manifest materializes the observed text-turn and fetch-shutdown recovery snapshots, the product can persist app-storage cancel-job, image partial-resume, and interrupted approval/export gate JSON from real queue/gate evidence, and the matrix now rejects cancel recovery/cancel-signal path aliasing. The release remains blocked until those generated artifacts are captured from a packaged run.",
+  "summary": "The interruption closure manifest materializes the observed text-turn and fetch-shutdown recovery snapshots, the product can persist app-storage cancel-job, image partial-resume, and interrupted approval/export gate JSON from real queue/gate evidence, and the matrix now rejects cancel recovery/cancel-signal path aliasing plus same-named report paths outside exact docs/live-interruption-matrix.md. The release remains blocked until those generated artifacts are captured from a packaged run.",
   "currentEvidence": [
     {
       "path": "docs/live-evidence/lane-h-20260621/df243-closure-evidence.json",
@@ -32,12 +32,20 @@
       "kind": "contract"
     },
     {
+      "path": "src/lib/live-interruption-report-path.ts",
+      "kind": "exact committed matrix report path validator"
+    },
+    {
       "path": "src/lib/live-interruption-evidence-details.ts",
       "kind": "cancel evidence path alias validator"
     },
     {
       "path": "src/lib/live-interruption-matrix.test.ts",
       "kind": "cancel recovery and signal path alias regression coverage"
+    },
+    {
+      "path": "src/lib/live-interruption-report-path.test.ts",
+      "kind": "exact committed matrix report path regression coverage"
     },
     {
       "path": "src/lib/live-interruption-cancel-evidence-export.ts",

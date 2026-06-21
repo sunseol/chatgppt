@@ -35,6 +35,19 @@ describe("live interruption report path evidence", () => {
     ]);
   });
 
+  test("blocks interruption matrix reports outside the committed docs location", () => {
+    // Given
+    const matrix = completeMatrix({ reportPath: "tmp/live-interruption-matrix.md" });
+
+    // When
+    const result = evaluateLiveInterruptionMatrix(matrix);
+
+    // Then
+    expect(result.kind === "blocked" ? result.issues.map((issue) => issue.code) : []).toEqual([
+      "missing_interruption_report",
+    ]);
+  });
+
   test("blocks developer-local interruption evidence JSON paths", () => {
     // Given
     const matrix = completeMatrix({
