@@ -27,18 +27,22 @@ import {
   type ProviderJob,
   type ProviderJobManager,
 } from "@/lib/provider-job-manager";
+import type { ProviderStatus } from "@/lib/provider-types";
 
 export function GenerateStage({
   project,
   executionMode = defaultExecutionMode(),
+  providerStatuses = [],
 }: {
   readonly project: DeckProject;
   readonly executionMode?: ImageGenerationExecutionMode;
+  readonly providerStatuses?: readonly ProviderStatus[];
 }) {
   const navigate = useNavigate();
   const imageGenerationGate = createProductionImageGenerationGate({
     executionMode,
     imagePathDecision: project.imagePathDecision,
+    providerStatuses,
   });
   const initialRecovery = readGenerateRecovery(project.id);
   const [manager] = useState<ProviderJobManager>(() =>

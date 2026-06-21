@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { ImagePathDecisionRecord } from "./image-path-decision";
 import { createProductionImageGenerationGate } from "./production-image-generation-gate";
+import type { ProviderStatus } from "./provider-types";
 
 describe("production image generation gate", () => {
   test("allows mock image generation only in development mode", () => {
@@ -109,6 +110,37 @@ describe("production image generation gate", () => {
       decisionId: "image_path_codex_oauth",
       binaryArtifactPath: "projects/project_001/slides/images/slide_001.v1.png",
       provenanceArtifactPath: "projects/project_001/slides/images/slide_001.v1.provenance.json",
+    });
+  });
+
+  test("blocks locked Codex OAuth decisions when current auth requires login", () => {
+    // Given
+    const providerStatuses: readonly ProviderStatus[] = [
+      {
+        kind: "requiresAuth",
+        providerId: "codex",
+        message: "Live auth disconnected. Sign in again before continuing.",
+      },
+    ];
+
+    // When
+    const gate = createProductionImageGenerationGate({
+      executionMode: "production",
+      imagePathDecision: codexLockedDecision(),
+      providerStatuses,
+    });
+
+    // Then
+    expect(gate).toEqual({
+      kind: "blocked",
+      executionMode: "production",
+      providerId: "codex",
+      issues: [
+        {
+          code: "provider_auth_required",
+          message: "Live auth disconnected. Sign in again before continuing.",
+        },
+      ],
     });
   });
 

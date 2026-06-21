@@ -198,8 +198,8 @@ function billingConfirmationHasEvidence(disclosure: LiveImageBillingDisclosure):
 function isImageGenerationStage(stage: LiveUsageStageSummary): boolean {
   return (
     stage.providerKind === "openaiImage" ||
-    stage.stageId === "generate" ||
-    stage.usage?.imageCount !== undefined
+    stage.usage?.imageCount !== undefined ||
+    imageBillingDisclosure(stage) !== undefined
   );
 }
 

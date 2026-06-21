@@ -49,6 +49,8 @@ describe("live auth secret lifecycle documentation", () => {
     expect(authSecretLifecycle.includes("Session expired")).toBe(true);
     expect(authSecretLifecycle.includes("verify your organization")).toBe(true);
     expect(authSecretLifecycle.includes("createLiveAuthLogoutLockState")).toBe(true);
+    expect(authSecretLifecycle.includes("provider_auth_required")).toBe(true);
+    expect(authSecretLifecycle.includes("GenerateStage")).toBe(true);
     expect(
       authSecretLifecycle.includes(
         "a9d25b2840b2ae41b15db3ec7dace158748a467febd1643eb46a390028c97272",

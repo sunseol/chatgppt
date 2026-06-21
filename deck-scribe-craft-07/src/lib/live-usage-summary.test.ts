@@ -92,6 +92,23 @@ describe("live usage summary", () => {
     ]);
   });
 
+  test("does not require image billing confirmation for text usage on a generate stage", () => {
+    // Given
+    const stages = [
+      stage("generate", {
+        providerKind: "codex",
+        providerUsageProvided: true,
+        usage: { inputTokens: 1_000, outputTokens: 250 },
+      }),
+    ];
+
+    // When
+    const result = evaluateLiveUsageSummary(stages);
+
+    // Then
+    expect(result).toEqual({ kind: "ready" });
+  });
+
   test("blocks Codex image usage confirmation backed only by a developer-local path", () => {
     // Given
     const stages = [

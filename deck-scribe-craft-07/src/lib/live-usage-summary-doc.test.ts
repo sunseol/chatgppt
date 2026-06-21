@@ -28,6 +28,8 @@ describe("live usage summary documentation", () => {
     expect(usageSummary.includes("Codex image usage not confirmed")).toBe(true);
     expect(usageSummary.includes("confirmationEvidencePath")).toBe(true);
     expect(usageSummary.includes("image-billing-confirmation.json")).toBe(true);
+    expect(usageSummary.includes('bare `stageId: "generate"` is not sufficient')).toBe(true);
+    expect(usageSummary.includes("non-image generate-stage regression")).toBe(true);
     expect(usageSummary.includes("boundary-whitespace-padded")).toBe(true);
     expect(usageSummary.includes("fallback `unknown` project/job")).toBe(true);
     expect(usageSummary.includes("template/sample/example/placeholder")).toBe(true);

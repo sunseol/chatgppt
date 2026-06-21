@@ -5,6 +5,7 @@ import {
   type VersionedProjectImageArtifactAddress,
 } from "./image-artifact-path";
 import type { SlideImageProviderId } from "./slide-image-provider";
+import type { ProviderStatus } from "./provider-types";
 
 export type ImageGenerationExecutionMode = "development" | "production";
 
@@ -16,6 +17,7 @@ export type ProductionImageGenerationIssueCode =
   | "missing_image_path_decision"
   | "image_path_not_locked"
   | "production_codex_oauth_required"
+  | "provider_auth_required"
   | "fixture_fallback_enabled"
   | ImagePathBlockerCode;
 
@@ -49,6 +51,7 @@ export type ProductionImageGenerationGate =
 export function createProductionImageGenerationGate(input: {
   readonly executionMode: ImageGenerationExecutionMode;
   readonly imagePathDecision?: PersistedImagePathDecisionRecord;
+  readonly providerStatuses?: readonly ProviderStatus[];
 }): ProductionImageGenerationGate {
   if (input.executionMode === "development") {
     return {
@@ -78,6 +81,7 @@ export function createProductionImageGenerationGate(input: {
   const requestId = persistedRequestId?.trim();
   const issues = decisionIssues(
     decision,
+    input.providerStatuses ?? [],
     binaryArtifactPath,
     provenanceArtifactPath,
     requestId,
@@ -132,6 +136,7 @@ export function createProductionImageGenerationGate(input: {
 
 function decisionIssues(
   decision: PersistedImagePathDecisionRecord,
+  providerStatuses: readonly ProviderStatus[],
   binaryArtifactPath: string | undefined,
   provenanceArtifactPath: string | undefined,
   requestId: string | undefined,
@@ -152,6 +157,7 @@ function decisionIssues(
     persistedRequestId !== requestId;
   return [
     ...productionRouteIssues(decision),
+    ...providerStatusIssues(decision, providerStatuses),
     ...(decision.status === "locked"
       ? []
       : [
@@ -233,6 +239,20 @@ function productionRouteIssues(
     {
       code: "production_codex_oauth_required",
       message: "Production image generation must use Codex OAuth image generation.",
+    },
+  ];
+}
+
+function providerStatusIssues(
+  decision: PersistedImagePathDecisionRecord,
+  providerStatuses: readonly ProviderStatus[],
+): readonly ProductionImageGenerationIssue[] {
+  const status = providerStatuses.find((candidate) => candidate.providerId === decision.providerId);
+  if (status?.kind !== "requiresAuth") return [];
+  return [
+    {
+      code: "provider_auth_required",
+      message: status.message,
     },
   ];
 }

@@ -3,9 +3,9 @@
   "issueNumber": 154,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-21T19:14:59Z",
+  "generatedAt": "2026-06-21T19:56:04Z",
   "packageArchiveSha256": "aacadd4cd4546ce20b084b1fbf8018e9571a635983ad9aa30b07a123c705985e",
-  "summary": "Live text and image usage display contracts exist, and Lane D shows real image latency/count display, but no packaged-app run has captured the pre-generation Codex OAuth image usage confirmation JSON from the same run.",
+  "summary": "Live text and image usage display contracts exist, Lane D shows real image latency/count display, and non-image generate-stage text usage no longer triggers image billing blockers, but no packaged-app run has captured the pre-generation Codex OAuth image usage confirmation JSON from the same run.",
   "currentEvidence": [
     {
       "path": "docs/live-usage-summary.md",
@@ -24,6 +24,10 @@
     {
       "path": "scripts/lane-d-live-usage-confirmation.mjs",
       "kind": "Lane D confirmation evidence resolver"
+    },
+    {
+      "path": "src/lib/live-usage-summary.test.ts",
+      "kind": "non-image generate-stage usage regression"
     }
   ],
   "missingEvidence": [

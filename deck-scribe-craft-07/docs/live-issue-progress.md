@@ -1190,3 +1190,22 @@ bundle whose source/image ids are valid only after trimming whitespace now
 blocks as `output_bundle_golden_path_evidence_missing` instead of satisfying
 the source/image floors. DF-242 remains open until real non-synthetic benchmark
 output bundles are produced.
+
+DF-205 local update: the production image generation gate now consumes current
+provider statuses in addition to the persisted image path decision. A locked
+`codex` / `codexOAuth` decision whose current Codex provider status is
+`requiresAuth` blocks as `provider_auth_required`, and `GenerateStage` passes
+that status into the gate. A logout/disconnect lock can therefore no longer be
+bypassed by reusing an older locked image path decision. DF-205 remains open
+until clean login, logout/relogin, packaged keychain lifecycle, and persisted
+secret-scan evidence are captured from an isolated packaged run.
+
+DF-244 local update: live usage summary image-stage classification no longer
+uses bare `stageId: "generate"` as an image-billing signal. A Codex text usage
+stage labelled `generate` with complete input/output token usage now remains
+ready instead of blocking with `missing_image_usage_count` and
+`missing_image_billing_confirmation`; image confirmation is still required for
+`openaiImage`, explicit `imageCount`, or image billing disclosure payloads.
+DF-244 remains open until packaged app usage-summary manual QA captures real
+image usage payloads and the matching persisted confirmation JSON from the same
+run.
