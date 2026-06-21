@@ -45,12 +45,15 @@ describe("live packaging documentation", () => {
     expect(runbook.includes("file://")).toBe(true);
     expect(progress.includes("releaseTrustEvidencePath")).toBe(true);
     expect(progress.includes("generically named persisted `releaseTrustEvidencePath`")).toBe(true);
+    expect(progress.includes("boundary whitespace")).toBe(true);
     expect(progress.includes("release-trust bundle")).toBe(true);
     expect(progress.includes("codesign`, `notarytool`, `stapler`, and `spctl` markers")).toBe(true);
     expect(runbook.includes("path identifies a release-trust bundle")).toBe(true);
+    expect(runbook.includes("canonical without boundary whitespace")).toBe(true);
     expect(runbook.includes("generic `macos-release-trust.json` claim")).toBe(true);
     expect(decision.includes("releaseTrustEvidencePath")).toBe(true);
     expect(decision.includes("developer-local persisted `releaseTrustEvidencePath`")).toBe(true);
+    expect(decision.includes("non-canonical release-trust path strings")).toBe(true);
     expect(decision.includes("generic release-trust paths without codesign")).toBe(true);
     expect(decision.includes("release-trust evidence paths")).toBe(true);
     expect(decision.includes("clean macOS account evidence")).toBe(true);

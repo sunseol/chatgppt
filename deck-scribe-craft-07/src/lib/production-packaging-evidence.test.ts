@@ -234,6 +234,28 @@ describe("production packaging evidence", () => {
     expect(result.issues.map((issue) => issue.code)).toEqual(["missing_release_trust_evidence"]);
   });
 
+  test("blocks release trust evidence paths that rely on boundary whitespace", () => {
+    // Given
+    const evidence = completeProductionPackagingEvidence({
+      nativeMacosReleaseTrust: {
+        signature: "developer_id",
+        teamIdentifier: "TEAMID1234",
+        notarized: true,
+        stapled: true,
+        gatekeeperAccepted: true,
+        releaseTrustEvidencePath: ` ${VALID_RELEASE_TRUST_EVIDENCE_PATH} `,
+      },
+    });
+
+    // When
+    const result = evaluateProductionPackagingEvidence(evidence);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual(["missing_release_trust_evidence"]);
+  });
+
   test("blocks release trust evidence paths that are not release-trust bundles", () => {
     // Given
     const evidence = completeProductionPackagingEvidence({

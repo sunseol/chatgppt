@@ -76,6 +76,7 @@ export function macosReleaseTrustLabel(trust: NativeMacosReleaseTrust): string {
 const isDeveloperTeamIdentifier = (value: string): boolean => /^[A-Z0-9]{10}$/.test(value);
 
 function hasReleaseTrustEvidencePath(value: string | undefined): boolean {
+  if (value === undefined || value.trim() !== value) return false;
   const normalized = value?.toLowerCase() ?? "";
   return (
     hasNonSyntheticJsonEvidencePath(value) &&
