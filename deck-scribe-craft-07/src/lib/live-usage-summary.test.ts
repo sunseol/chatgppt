@@ -92,6 +92,33 @@ describe("live usage summary", () => {
     ]);
   });
 
+  test("blocks API-key-required image usage confirmation even with persisted evidence", () => {
+    // Given
+    const stages = [
+      stage("generate", {
+        providerKind: "openaiImage",
+        usage: { imageCount: 1 },
+        imageBillingDisclosure: {
+          apiKeyRequired: true,
+          userConfirmed: true,
+          label: "Codex image usage confirmed",
+          confirmationEvidencePath:
+            "usage/project-alpha/job-generate/image-billing-confirmation.json",
+        },
+      }),
+    ];
+
+    // When
+    const result = evaluateLiveUsageSummary(stages);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "missing_image_billing_confirmation",
+    ]);
+  });
+
   test("does not require image billing confirmation for text usage on a generate stage", () => {
     // Given
     const stages = [
@@ -116,7 +143,7 @@ describe("live usage summary", () => {
         providerKind: "openaiImage",
         usage: { imageCount: 1 },
         imageBillingDisclosure: {
-          apiKeyRequired: true,
+          apiKeyRequired: false,
           userConfirmed: true,
           label: "Codex image usage confirmed",
           confirmationEvidencePath: "/Users/jake/chatgppt/manual-qa/image-billing.json",
@@ -142,7 +169,7 @@ describe("live usage summary", () => {
         providerKind: "openaiImage",
         usage: { imageCount: 1 },
         imageBillingDisclosure: {
-          apiKeyRequired: true,
+          apiKeyRequired: false,
           userConfirmed: true,
           label: "Codex image usage confirmed",
           confirmationEvidencePath: "C:\\Users\\jake\\manual-qa\\image-billing.json",
@@ -192,7 +219,7 @@ describe("live usage summary", () => {
         usage: {
           estimatedCostUsd: 0.2,
           imageBillingDisclosure: {
-            apiKeyRequired: true,
+            apiKeyRequired: false,
             userConfirmed: true,
             label: "Codex image usage confirmed",
             confirmationEvidencePath:
@@ -223,7 +250,7 @@ describe("live usage summary", () => {
         usage: { imageCount: 5, estimatedCostUsd: 0.2 },
         costLabel: "actual",
         imageBillingDisclosure: {
-          apiKeyRequired: true,
+          apiKeyRequired: false,
           userConfirmed: true,
           label: "Codex image usage confirmed",
           confirmationEvidencePath:
@@ -244,7 +271,7 @@ describe("live usage summary", () => {
   test("blocks impossible usage and cost amounts", () => {
     // Given
     const disclosure = {
-      apiKeyRequired: true,
+      apiKeyRequired: false,
       userConfirmed: true,
       label: "Codex image usage confirmed",
       confirmationEvidencePath: "usage/project-alpha/job-generate/image-billing-confirmation.json",
@@ -291,7 +318,7 @@ function completeStages(): readonly LiveUsageStageSummary[] {
         imageCount: 5,
         estimatedCostUsd: 0.18,
         imageBillingDisclosure: {
-          apiKeyRequired: true,
+          apiKeyRequired: false,
           userConfirmed: true,
           label: "Codex image usage confirmed",
           confirmationEvidencePath:

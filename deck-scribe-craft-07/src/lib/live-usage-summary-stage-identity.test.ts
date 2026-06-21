@@ -110,7 +110,7 @@ function confirmedBillingDisclosure(): NonNullable<
   LiveUsageStageSummary["imageBillingDisclosure"]
 > {
   return {
-    apiKeyRequired: true,
+    apiKeyRequired: false,
     userConfirmed: true,
     label: "Codex image usage confirmed",
     confirmationEvidencePath: "usage/project-alpha/job-generate/image-billing-confirmation.json",

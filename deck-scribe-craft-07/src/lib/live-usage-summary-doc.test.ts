@@ -26,6 +26,8 @@ describe("live usage summary documentation", () => {
     expect(usageSummary.includes("cost estimate $0.0400")).toBe(true);
     expect(usageSummary.includes("Codex image usage confirmed")).toBe(true);
     expect(usageSummary.includes("Codex image usage not confirmed")).toBe(true);
+    expect(usageSummary.includes("apiKeyRequired: false")).toBe(true);
+    expect(usageSummary.includes("API-key-required confirmation blockers")).toBe(true);
     expect(usageSummary.includes("confirmationEvidencePath")).toBe(true);
     expect(usageSummary.includes("image-billing-confirmation.json")).toBe(true);
     expect(usageSummary.includes('bare `stageId: "generate"` is not sufficient')).toBe(true);
@@ -42,6 +44,7 @@ describe("live usage summary documentation", () => {
         "confirmed image usage disclosure labels only when persisted confirmation evidence is valid",
       ),
     ).toBe(true);
+    expect(usageSummary.includes("API-key-required, or evidence-less")).toBe(true);
     expect(
       usageSummary.includes("secret-like text inside displayed image usage disclosure labels"),
     ).toBe(true);
@@ -83,6 +86,7 @@ describe("live usage summary documentation", () => {
     expect(progress.includes("missing_image_billing_confirmation")).toBe(true);
     expect(progress.includes("confirmed-looking audit payload without valid")).toBe(true);
     expect(progress.includes("real provider image Codex usage disclosure payloads")).toBe(true);
+    expect(progress.includes("apiKeyRequired: true")).toBe(true);
 
     expect(decision.includes("ProviderJobProgressPanel.tsx")).toBe(true);
     expect(decision.includes("malformed supplied numeric usage/cost fields")).toBe(true);
@@ -92,9 +96,10 @@ describe("live usage summary documentation", () => {
     expect(decision.includes("fallback `unknown` project/job")).toBe(true);
     expect(decision.includes("generic/non-canonical Codex image usage status")).toBe(true);
     expect(decision.includes("image-billing-confirmation.json")).toBe(true);
-    expect(decision.includes("evidence-less confirmed-looking image usage as not confirmed")).toBe(
-      true,
-    );
+    expect(decision.includes("apiKeyRequired: false")).toBe(true);
+    expect(
+      decision.includes("evidence-less or API-key-required confirmed-looking image usage"),
+    ).toBe(true);
     expect(decision.includes("formatted summaries")).toBe(true);
     expect(decision.includes("non-canonical, or duplicated usage stage ids")).toBe(true);
     expect(decision.includes("unsupported runtime provider kinds")).toBe(true);

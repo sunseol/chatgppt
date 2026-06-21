@@ -3,9 +3,9 @@
   "issueNumber": 154,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-21T19:56:04Z",
+  "generatedAt": "2026-06-21T20:35:01Z",
   "packageArchiveSha256": "aacadd4cd4546ce20b084b1fbf8018e9571a635983ad9aa30b07a123c705985e",
-  "summary": "Live text and image usage display contracts exist, Lane D shows real image latency/count display, and non-image generate-stage text usage no longer triggers image billing blockers, but no packaged-app run has captured the pre-generation Codex OAuth image usage confirmation JSON from the same run.",
+  "summary": "Live text and image usage display contracts now require Codex OAuth-shaped image confirmation with apiKeyRequired false, Lane D shows real image latency/count display, and non-image generate-stage text usage no longer triggers image billing blockers, but no packaged-app run has captured the pre-generation Codex OAuth image usage confirmation JSON from the same run.",
   "currentEvidence": [
     {
       "path": "docs/live-usage-summary.md",
@@ -27,7 +27,15 @@
     },
     {
       "path": "src/lib/live-usage-summary.test.ts",
-      "kind": "non-image generate-stage usage regression"
+      "kind": "non-image generate-stage and API-key-required usage regression"
+    },
+    {
+      "path": "src/lib/live-usage-billing-evidence.ts",
+      "kind": "central Codex OAuth image confirmation gate"
+    },
+    {
+      "path": "src/lib/live-usage-summary-billing-evidence.test.ts",
+      "kind": "display and summary regression for API-key-required confirmation"
     }
   ],
   "missingEvidence": [

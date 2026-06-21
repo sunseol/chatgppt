@@ -14,7 +14,7 @@ describe("live usage summary redaction", () => {
         usage: {
           imageCount: 1,
           imageBillingDisclosure: {
-            apiKeyRequired: true,
+            apiKeyRequired: false,
             userConfirmed: true,
             label: "Codex image usage confirmed OPENAI_API_KEY=sk-live-secret123",
             confirmationEvidencePath:

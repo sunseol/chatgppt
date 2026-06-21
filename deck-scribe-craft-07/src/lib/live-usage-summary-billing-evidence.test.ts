@@ -231,6 +231,57 @@ describe("live usage summary image usage evidence", () => {
     expect(view.usageItems).toEqual(["images 1", "Codex image usage not confirmed"]);
   });
 
+  test("does not render API-key-required image usage evidence as Codex OAuth confirmed", () => {
+    // Given
+    const imageBillingDisclosure = {
+      apiKeyRequired: true,
+      userConfirmed: true,
+      label: "Codex image usage confirmed",
+      confirmationEvidencePath: "usage/project-alpha/job-generate/image-billing-confirmation.json",
+    };
+    const job: ProviderJob = {
+      id: "job_billing_api_key_required",
+      providerId: "openaiImage",
+      capability: "imageGeneration",
+      description: "Generate slide images",
+      status: "succeeded",
+      createdAt: 10,
+      startedAt: 11,
+      finishedAt: 211,
+      attempt: 1,
+      cancelRequested: false,
+      usageSummary: {
+        imageCount: 1,
+        imageBillingDisclosure,
+      },
+    };
+    const stages: readonly LiveUsageStageSummary[] = [
+      {
+        stageId: "generate",
+        providerKind: "openaiImage",
+        durationMs: 1200,
+        retryCount: 0,
+        providerUsageProvided: true,
+        usage: { imageCount: 1 },
+        costLabel: "hidden",
+        imageBillingDisclosure,
+      },
+    ];
+
+    // When
+    const view = createProviderJobProgressView({
+      stageLabel: "Live image generation",
+      job,
+      recovered: false,
+    });
+    const summary = formatLiveUsageSummary(stages);
+
+    // Then
+    expect(view.usageItems).toEqual(["images 1", "Codex image usage not confirmed"]);
+    expect(summary.includes("Codex image usage not confirmed")).toBe(true);
+    expect(summary.includes("Codex image usage confirmed")).toBe(false);
+  });
+
   test("does not format confirmed-looking image usage without persisted evidence", () => {
     // Given
     const stages: readonly LiveUsageStageSummary[] = [

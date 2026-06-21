@@ -179,6 +179,23 @@ failed-regeneration original-preservation evidence in the Lane D bundle.
 
 ## 2026-06-22 KST DF-244 Malformed App Server Usage Gate
 
+DF-244 local update: Codex image usage confirmation now has to be Codex
+OAuth-shaped, not API-key-shaped. `src/lib/live-usage-billing-evidence.ts`
+centralizes confirmation readiness and requires `apiKeyRequired: false`,
+`userConfirmed: true`, a nonblank label, and a canonical
+`usage/<project>/<job>/image-billing-confirmation.json` evidence path before
+summary approval, formatted summaries, audit reports, or progress panels can
+display `Codex image usage confirmed`. A confirmed-looking payload with
+`apiKeyRequired: true` and a valid evidence path now blocks as
+`missing_image_billing_confirmation` and renders `Codex image usage not
+confirmed`. Regression coverage lives in
+`src/lib/live-usage-summary.test.ts` and
+`src/lib/live-usage-summary-billing-evidence.test.ts`.
+
+This still does not close DF-244. Packaged app-surface manual QA still needs
+real Codex image usage disclosure payloads plus the persisted pre-generation
+confirmation JSON from the same run.
+
 DF-244 local update: App Server `thread/tokenUsage/updated` usage parsing now
 preserves malformed supplied numeric usage and cost fields as invalid evidence
 instead of silently dropping them. A rich image usage payload with
@@ -544,7 +561,7 @@ DF-233 local update: `src/lib/live-image-queue-progress.ts` now rejects queue ev
 
 DF-233 local update: `src/lib/live-image-queue-evidence.ts` now rejects non-cancelled provider failure rows that are not tied to a recorded failed provider job and matching slide-generation prompt usage. Missing job evidence blocks as `failure_job_not_found`, missing prompt usage linkage blocks as `failure_prompt_usage_missing`, and `src/lib/live-image-queue-evidence.test.ts` covers the false-ready case. The issue remains open because real provider 429/5xx retry, in-flight cancellation, and packaged restart-resume evidence still need real Codex OAuth image artifacts.
 
-DF-244 live update: `ProviderJobProgressPanel` now renders app-surface provider id, measured execution duration, retry count, token/image usage items, `estimatedCostUsd` only as `cost estimate`, confirmed Codex image usage disclosure labels only when persisted non-synthetic, non-local `confirmationEvidencePath` JSON evidence and user confirmation exist, and unconfirmed Codex image usage status when the job usage summary carries no such evidence or `userConfirmed: false`, including confirmed-looking payloads that set `apiKeyRequired: false` without evidence. The summary, progress view, and audit report now redact secret-like text inside image usage disclosure labels before display. The panel integration test covers the live Codex usage-probe shape with provider `codex`, duration `7158ms`, `retries 1`, `input 25006`, `output 141`, and `cost estimate $0.0400`; it also covers the image usage shape with `images 5`, `cost estimate $0.1800`, `Codex image usage confirmed`, and `Codex image usage not confirmed` for an unconfirmed, evidence-less, or developer-local confirmed-looking Codex usage payload. `evaluateLiveUsageSummary` rejects blank, padded, or duplicated stage ids, runtime provider kinds outside the DeckForge taxonomy, empty provider-supplied usage objects, incomplete Codex input/output token pairs, image usage evidence without image counts, Codex image usage confirmation without persisted non-local evidence, negative/fractional token or image counts, negative/non-finite cost amounts, and unsupported runtime cost labels before summary approval, and the app progress view omits invalid provider payload values such as negative tokens, fractional token counts, or `NaN` cost from visible usage rows. The issue remains open because packaged app manual QA with real provider image Codex usage disclosure payloads has not run.
+DF-244 live update: `ProviderJobProgressPanel` now renders app-surface provider id, measured execution duration, retry count, token/image usage items, `estimatedCostUsd` only as `cost estimate`, confirmed Codex image usage disclosure labels only when `apiKeyRequired: false`, persisted non-synthetic, non-local `confirmationEvidencePath` JSON evidence, and user confirmation exist, and unconfirmed Codex image usage status when the job usage summary carries no such evidence, `apiKeyRequired: true`, or `userConfirmed: false`, including confirmed-looking payloads that set `apiKeyRequired: false` without evidence. The summary, progress view, and audit report now redact secret-like text inside image usage disclosure labels before display. The panel integration test covers the live Codex usage-probe shape with provider `codex`, duration `7158ms`, `retries 1`, `input 25006`, `output 141`, and `cost estimate $0.0400`; it also covers the image usage shape with `images 5`, `cost estimate $0.1800`, `Codex image usage confirmed`, and `Codex image usage not confirmed` for an unconfirmed, API-key-required, evidence-less, or developer-local confirmed-looking Codex usage payload. `evaluateLiveUsageSummary` rejects blank, padded, or duplicated stage ids, runtime provider kinds outside the DeckForge taxonomy, empty provider-supplied usage objects, incomplete Codex input/output token pairs, image usage evidence without image counts, Codex image usage confirmation without persisted non-local evidence, API-key-required image disclosure, negative/fractional token or image counts, negative/non-finite cost amounts, and unsupported runtime cost labels before summary approval, and the app progress view omits invalid provider payload values such as negative tokens, fractional token counts, or `NaN` cost from visible usage rows. The issue remains open because packaged app manual QA with real provider image Codex usage disclosure payloads has not run.
 
 DF-244 local update: usage summary stage ids now reject boundary-whitespace-padded values with `noncanonical_usage_stage_identity`. This prevents a row such as `stageId: " generate "` from avoiding exact generate-stage image confirmation checks while still looking displayable after trimming. `src/lib/live-usage-summary-stage-identity.test.ts` covers the false-ready path. The issue remains open because packaged app manual QA with real provider image Codex usage disclosure payloads has not run.
 

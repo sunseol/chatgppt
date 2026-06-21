@@ -5,6 +5,25 @@ const BILLING_CONFIRMATION_FILENAME = "image-billing-confirmation.json";
 const SAFE_EVIDENCE_SEGMENT = /^[a-zA-Z0-9_-]+$/;
 const FALLBACK_EVIDENCE_SEGMENTS = ["unknown"] as const;
 
+export type ImageBillingDisclosureEvidence = {
+  readonly apiKeyRequired: boolean;
+  readonly userConfirmed: boolean;
+  readonly label: string;
+  readonly confirmationEvidencePath?: string;
+};
+
+export function hasConfirmedCodexImageBillingDisclosure(
+  disclosure: ImageBillingDisclosureEvidence | undefined,
+): boolean {
+  return (
+    disclosure !== undefined &&
+    disclosure.apiKeyRequired === false &&
+    disclosure.userConfirmed === true &&
+    disclosure.label.trim().length > 0 &&
+    hasBillingConfirmationEvidencePath(disclosure.confirmationEvidencePath)
+  );
+}
+
 export function hasBillingConfirmationEvidencePath(path: string | undefined): boolean {
   if (path === undefined || path.trim() !== path) return false;
   if (!hasNonSyntheticJsonEvidencePath(path)) return false;

@@ -1,6 +1,6 @@
 import type { ProviderJob, ProviderJobStatus, ProviderUsageSummary } from "./provider-job-manager";
 import { redactSensitiveText } from "./redaction";
-import { hasBillingConfirmationEvidencePath } from "./live-usage-billing-evidence";
+import { hasConfirmedCodexImageBillingDisclosure } from "./live-usage-billing-evidence";
 
 export type ProviderJobArtifactView = {
   readonly label: string;
@@ -136,8 +136,7 @@ function costEstimateItem(cost: number | undefined): string {
 function imageBillingDisclosureItem(usageSummary: ProviderUsageSummary): string {
   const disclosure = usageSummary.imageBillingDisclosure;
   if (disclosure === undefined) return "";
-  if (!disclosure.userConfirmed) return "Codex image usage not confirmed";
-  if (!hasBillingConfirmationEvidencePath(disclosure.confirmationEvidencePath)) {
+  if (!hasConfirmedCodexImageBillingDisclosure(disclosure)) {
     return "Codex image usage not confirmed";
   }
   return redactSensitiveText(disclosure.label.trim());

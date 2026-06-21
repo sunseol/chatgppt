@@ -4,7 +4,7 @@ import type {
   ProviderJob,
   ProviderUsageSummary,
 } from "./provider-job-manager";
-import { hasBillingConfirmationEvidencePath } from "./live-usage-billing-evidence";
+import { hasConfirmedCodexImageBillingDisclosure } from "./live-usage-billing-evidence";
 import { redactSensitiveText } from "./redaction";
 
 export type AuditEventType =
@@ -167,10 +167,8 @@ function formatUsageSummary(summary: ProviderUsageSummary): string {
 function imageBillingDisclosureText(summary: ProviderUsageSummary): string {
   const disclosure = summary.imageBillingDisclosure;
   if (disclosure === undefined) return "";
-  if (!disclosure.userConfirmed) return "Codex image usage not confirmed";
-  if (!hasBillingConfirmationEvidencePath(disclosure.confirmationEvidencePath)) {
+  if (!hasConfirmedCodexImageBillingDisclosure(disclosure)) {
     return "Codex image usage not confirmed";
   }
-  const label = disclosure.label.trim();
-  return label.length === 0 ? "Codex image usage not confirmed" : redactSensitiveText(label);
+  return redactSensitiveText(disclosure.label.trim());
 }

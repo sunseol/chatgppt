@@ -1,5 +1,5 @@
 import type { LiveUsageStageSummary } from "./live-usage-summary";
-import { hasBillingConfirmationEvidencePath } from "./live-usage-billing-evidence";
+import { hasConfirmedCodexImageBillingDisclosure } from "./live-usage-billing-evidence";
 import { redactSensitiveText } from "./redaction";
 
 export function formatLiveUsageSummary(stages: readonly LiveUsageStageSummary[]): string {
@@ -38,12 +38,8 @@ function isDisplayableCostLabel(value: string): boolean {
 function billingText(stage: LiveUsageStageSummary): string {
   const disclosure = stage.imageBillingDisclosure ?? stage.usage?.imageBillingDisclosure;
   if (disclosure === undefined) return "";
-  if (
-    !disclosure.userConfirmed ||
-    !hasBillingConfirmationEvidencePath(disclosure.confirmationEvidencePath)
-  ) {
+  if (!hasConfirmedCodexImageBillingDisclosure(disclosure)) {
     return " · Codex image usage not confirmed";
   }
-  const label = disclosure.label.trim();
-  return label.length === 0 ? "" : ` · ${redactSensitiveText(label)}`;
+  return ` · ${redactSensitiveText(disclosure.label.trim())}`;
 }

@@ -99,7 +99,7 @@ describe("provider job progress panel", () => {
             imageCount: 5,
             estimatedCostUsd: 0.18,
             imageBillingDisclosure: {
-              apiKeyRequired: true,
+              apiKeyRequired: false,
               userConfirmed: true,
               label: "Codex image usage confirmed",
               confirmationEvidencePath:

@@ -1,7 +1,7 @@
 import type { ProviderImageBillingDisclosure, ProviderUsageSummary } from "./provider-job-manager";
 import type { ProviderKind } from "./provider-types";
 import { usageStageIdentityIssues } from "./live-usage-stage-identity";
-import { hasBillingConfirmationEvidencePath } from "./live-usage-billing-evidence";
+import { hasConfirmedCodexImageBillingDisclosure } from "./live-usage-billing-evidence";
 export { formatLiveUsageSummary } from "./live-usage-summary-format";
 
 export type LiveCostLabel = "actual" | "estimate" | "hidden";
@@ -178,9 +178,7 @@ function costLabelIssues(stage: LiveUsageStageSummary): readonly LiveUsageSummar
 function imageBillingIssues(stage: LiveUsageStageSummary): readonly LiveUsageSummaryIssue[] {
   if (!isImageGenerationStage(stage)) return [];
   const disclosure = imageBillingDisclosure(stage);
-  return disclosure?.userConfirmed === true &&
-    disclosure.label.trim().length > 0 &&
-    billingConfirmationHasEvidence(disclosure)
+  return hasConfirmedCodexImageBillingDisclosure(disclosure)
     ? []
     : [
         issue(
@@ -189,10 +187,6 @@ function imageBillingIssues(stage: LiveUsageStageSummary): readonly LiveUsageSum
           "Image generation requires visible Codex usage confirmation.",
         ),
       ];
-}
-
-function billingConfirmationHasEvidence(disclosure: LiveImageBillingDisclosure): boolean {
-  return hasBillingConfirmationEvidencePath(disclosure.confirmationEvidencePath);
 }
 
 function isImageGenerationStage(stage: LiveUsageStageSummary): boolean {

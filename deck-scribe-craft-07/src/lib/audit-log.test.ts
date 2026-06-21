@@ -104,7 +104,7 @@ describe("full audit log", () => {
         imageCount: 5,
         estimatedCostUsd: 0.18,
         imageBillingDisclosure: {
-          apiKeyRequired: true,
+          apiKeyRequired: false,
           userConfirmed: true,
           label: "Codex image usage confirmed",
           confirmationEvidencePath:
@@ -116,7 +116,7 @@ describe("full audit log", () => {
     const report = formatAuditLogForReport([event]);
 
     expect(event.usageSummary?.imageBillingDisclosure).toEqual({
-      apiKeyRequired: true,
+      apiKeyRequired: false,
       userConfirmed: true,
       label: "Codex image usage confirmed",
       confirmationEvidencePath: "usage/project-alpha/job-generate/image-billing-confirmation.json",
