@@ -99,6 +99,7 @@ describe("live readiness documentation", () => {
     expect(runbook.includes("10-character uppercase alphanumeric Apple TeamIdentifier")).toBe(true);
     expect(runbook.includes("releaseTrustEvidencePath") && runbook.includes("not set")).toBe(true);
     expect(manualQa.includes("DF-246") && manualQa.includes("sessionEvidencePath")).toBe(true);
+    expect(manualQa.includes("sessionEvidencePayload")).toBe(true);
     expect(manualQa.includes("10 minutes") && manualQa.includes("setup_over_time")).toBe(true);
     expect(manualQa.includes("tester_not_non_developer")).toBe(true);
     expect(manualQa.includes("missing_manual_qa_session_evidence")).toBe(true);

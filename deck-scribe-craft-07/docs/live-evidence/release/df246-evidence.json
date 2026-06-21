@@ -3,9 +3,9 @@
   "issueNumber": 156,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-21T20:56:40Z",
+  "generatedAt": "2026-06-21T21:44:38Z",
   "packageArchiveSha256": "aacadd4cd4546ce20b084b1fbf8018e9571a635983ad9aa30b07a123c705985e",
-  "summary": "Manual QA validator and checklist exist, and temporary or observer session evidence paths are blocked before readiness, but no non-developer packaged-app manual QA session bundle has been recorded.",
+  "summary": "Manual QA validator and checklist exist, and borrowed session JSON payloads from another evidence path are blocked before readiness, but no non-developer packaged-app manual QA session bundle has been recorded.",
   "currentEvidence": [
     {
       "path": "docs/live-manual-qa-checklist.md",
@@ -17,11 +17,15 @@
     },
     {
       "path": "src/lib/live-manual-qa-session-evidence.ts",
-      "kind": "manual QA session evidence path validator"
+      "kind": "manual QA session evidence path and payload validator"
     },
     {
       "path": "src/lib/live-manual-qa-session-evidence.test.ts",
-      "kind": "temporary session evidence path regression coverage"
+      "kind": "borrowed session payload regression coverage"
+    },
+    {
+      "path": "src/lib/live-manual-qa-test-fixtures.ts",
+      "kind": "manual QA same-session payload fixtures"
     }
   ],
   "missingEvidence": [

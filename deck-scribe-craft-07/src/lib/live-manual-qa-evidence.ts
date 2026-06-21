@@ -36,6 +36,7 @@ export type ManualQaIssueLogEntry = {
 export type LiveManualQaEvidence = {
   readonly testerRole: ManualQaTesterRole;
   readonly sessionEvidencePath: string;
+  readonly sessionEvidencePayload?: unknown;
   readonly sessionDurationMs: number;
   readonly setupTasks: readonly ManualQaSetupTask[];
   readonly approvalTargetChecks: readonly ManualQaApprovalTargetCheck[];
@@ -90,7 +91,7 @@ export function evaluateLiveManualQaEvidence(
 ): LiveManualQaEvidenceResult {
   const issues = [
     ...testerIssues(evidence),
-    ...sessionEvidenceIssues(evidence.sessionEvidencePath),
+    ...sessionEvidenceIssues(evidence),
     ...setupIssues(evidence),
     ...approvalIssues(evidence.approvalTargetChecks),
     ...realSourceOpenIssues(evidence.openedRealSourceUrls, evidence.finalReportSourceUrls),

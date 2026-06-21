@@ -61,6 +61,20 @@ artifact ids inside completed-before, completed-after, pending, or resumed
 artifact lists. Duplicate ids now block with `invalid_restart_resume_evidence`
 instead of being collapsed by set-based subset checks.
 
+## 2026-06-22 KST DF-246 Same-Session Manual QA Payload
+
+DF-246 local update: manual QA readiness now requires the persisted
+`sessionEvidencePath` JSON to provide a `manual_qa_session` payload that matches
+the same evidence path and observed session fields. A copied payload from
+another manual QA bundle now blocks with `missing_manual_qa_session_evidence`
+instead of satisfying the checklist by borrowing a plausible session JSON.
+Regression coverage lives in `src/lib/live-manual-qa-session-evidence.test.ts`,
+with shared fixtures in `src/lib/live-manual-qa-test-fixtures.ts`.
+
+This still does not close DF-246. The ticket still needs a real
+non-developer, under-10-minute packaged-app session with a persisted
+non-synthetic manual QA session bundle and clean output/source/action evidence.
+
 ## 2026-06-22 KST DF-246 Canonical Slide Action Shape
 
 DF-246 local update: manual QA regeneration and title-edit slide action ids now

@@ -42,6 +42,7 @@ Within 10 minutes, the tester must:
 - `sessionDurationMs` greater than 0 and at or below 600000, plus completed setup tasks `new_project`, `login_check`, `prompt_input`
 - `testerRole` set to `non_developer`
 - `sessionEvidencePath` pointing to a persisted non-synthetic `docs/live-evidence/.../manual-qa` session JSON bundle for the observed QA session, not an uncommitted product-local path such as `manual-qa/session-20260619.json`, boundary-whitespace-padded path, temporary/observer session file such as `docs/live-evidence/manual-qa/tmp-session-20260619.json`, generic session or notes JSON such as `manual-qa/session-generic-20260619.json` or `manual-qa/session-notes-20260619.json`, template/sample/example/placeholder bundle, developer-local absolute, or `file://` path
+- `sessionEvidencePayload` parsed from that JSON bundle, with `kind: manual_qa_session`, matching `evidencePath`, tester role, duration, setup tasks, approval checks, source URLs, slide actions, opened exports, counters, severity issue list, and issue log for the same observed session
 - distinct approval target checks for `research_pack`, `slide_generation`, and `export`, with every target understood
 - at least one opened canonical real HTTP(S) source URL that also appears in canonical final report sources, excluding boundary-whitespace-padded source URLs, placeholder, reserved documentation, private-network, or local domains/IPs
 - at least one canonical `slide-<number>` regenerated slide id and one canonical `slide-<number>` edited title slide id; arbitrary tokens such as `1`, `abc`, or `slide-foo`, boundary-whitespace-padded slide ids, and `placeholder`, `template`, `sample`, `example`, `mock`, `fixture`, `test`, or `fake` slide ids do not count, and cannot be mixed into otherwise valid action lists
@@ -112,6 +113,12 @@ match. A padded source such as ` https://www.w3.org/TR/WCAG22/ ` blocks with
 `invalid_real_source_url` when opened, and cannot satisfy
 `opened_source_not_in_report` when it appears only as a padded final report
 source.
+
+Local update: `src/lib/live-manual-qa-session-evidence.ts` now also requires
+the cited session JSON payload to match the same manual QA evidence path and
+observed session fields. A borrowed `manual_qa_session` payload from another
+`sessionEvidencePath` remains `missing_manual_qa_session_evidence` instead of
+standing in for the non-developer tester session.
 
 ## 2026-06-21 Lane F Recheck
 

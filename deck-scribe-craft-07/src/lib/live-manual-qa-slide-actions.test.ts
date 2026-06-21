@@ -1,10 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import {
-  MANUAL_QA_EXPORTS,
-  MANUAL_QA_SETUP_TASKS,
-  evaluateLiveManualQaEvidence,
-  type LiveManualQaEvidence,
-} from "./live-manual-qa-evidence";
+import { evaluateLiveManualQaEvidence } from "./live-manual-qa-evidence";
+import { completeLiveManualQaEvidence as completeEvidence } from "./live-manual-qa-test-fixtures";
 
 describe("live manual QA slide actions", () => {
   test("blocks placeholder slide ids as regeneration or title edit evidence", () => {
@@ -83,28 +79,3 @@ describe("live manual QA slide actions", () => {
     ]);
   });
 });
-
-function completeEvidence(patch: Partial<LiveManualQaEvidence> = {}): LiveManualQaEvidence {
-  return {
-    testerRole: "non_developer",
-    sessionEvidencePath: "docs/live-evidence/manual-qa/session-20260619.json",
-    sessionDurationMs: 540_000,
-    setupTasks: MANUAL_QA_SETUP_TASKS,
-    approvalTargetChecks: [
-      { targetId: "research_pack", understood: true },
-      { targetId: "slide_generation", understood: true },
-      { targetId: "export", understood: true },
-    ],
-    openedRealSourceUrls: ["https://www.w3.org/TR/WCAG22/"],
-    regeneratedSlideIds: ["slide-3"],
-    editedTitleSlideIds: ["slide-3"],
-    openedExports: MANUAL_QA_EXPORTS,
-    criticalErrorCount: 0,
-    mockIndicatorCount: 0,
-    placeholderOutputCount: 0,
-    severityIssueListPresent: true,
-    issueLog: [],
-    finalReportSourceUrls: ["https://www.w3.org/TR/WCAG22/"],
-    ...patch,
-  };
-}
