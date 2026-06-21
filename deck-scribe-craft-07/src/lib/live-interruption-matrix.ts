@@ -67,6 +67,7 @@ export type LiveInterruptionIssueCode =
   | "noncanonical_interruption_evidence_identity"
   | "unsafe_recovered_job_state"
   | "completed_artifact_lost"
+  | "interrupted_job_completed_after_restart"
   | "unsafe_partial_image_resume"
   | "cancelled_job_still_running"
   | "cancelled_job_completed_after_cancel"
@@ -97,6 +98,7 @@ export function evaluateLiveInterruptionMatrix(
     ...invalidRecoveredStateIssues(matrix.scenarios),
     ...unsafeRecoveredStateIssues(matrix.scenarios),
     ...completedArtifactLossIssues(matrix.scenarios),
+    ...interruptedCompletionIssues(matrix.scenarios),
     ...partialImageResumeIssues(matrix.scenarios),
     ...cancelledJobIssues(matrix.scenarios),
     ...interruptedArtifactGateIssues(matrix.scenarios),
@@ -170,6 +172,27 @@ function completedArtifactLossIssues(
           "completed_artifact_lost",
           "Completed artifacts must survive restart recovery.",
           lost,
+        ),
+      ];
+}
+
+function interruptedCompletionIssues(
+  scenarios: readonly LiveInterruptionScenarioEvidence[],
+): readonly LiveInterruptionIssue[] {
+  const refs = scenarios
+    .filter((scenario) => scenario.id === "text_turn_shutdown" || scenario.id === "fetch_shutdown")
+    .flatMap((scenario) =>
+      scenario.completedArtifactIdsAfter.filter(
+        (artifactId) => !scenario.completedArtifactIdsBefore.includes(artifactId),
+      ),
+    );
+  return refs.length === 0
+    ? []
+    : [
+        issue(
+          "interrupted_job_completed_after_restart",
+          "Interrupted text and fetch jobs must not complete new artifacts after restart.",
+          refs,
         ),
       ];
 }
