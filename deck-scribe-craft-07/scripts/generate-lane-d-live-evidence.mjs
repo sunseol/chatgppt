@@ -7,6 +7,7 @@ import {
   presentation,
   reviewCard,
 } from "./lane-d-live-evidence-render.mjs";
+import { resolveLaneDImageBillingConfirmation } from "./lane-d-live-usage-confirmation.mjs";
 
 const evidenceDir = "docs/live-evidence/codex-image/lane-d-live-app-surface-20260621";
 const batchProject = "df232_live_codex_batch";
@@ -201,6 +202,9 @@ async function writeRegenerationEvidence(originalComposition) {
 async function writeUsageEvidence(slides) {
   const path = `${evidenceDir}/df244-usage-display.html`;
   const totalLatencyMs = slides.reduce((sum, slide) => sum + slide.provenance.durationMs, 0);
+  const billingConfirmation = await resolveLaneDImageBillingConfirmation({
+    projectIds: [batchProject, regenProject],
+  });
   const rows = slides
     .map(
       (slide) =>
@@ -218,7 +222,7 @@ async function writeUsageEvidence(slides) {
     imageCount: slides.length,
     totalLatencyMs,
     costDisplay: "hidden_provider_did_not_supply_cost",
-    userConfirmation: "missing_app_surface_pre_generation_confirmation",
+    ...billingConfirmation.summary,
   });
   return {
     path,

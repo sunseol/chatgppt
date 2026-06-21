@@ -38,6 +38,7 @@ Before image generation, the UI must make Codex account image usage visible and 
 - `src/lib/live-app-server-usage-summary.ts` converts `thread/tokenUsage/updated` notifications from `codex app-server --stdio` into `LiveUsageStageSummary.usage`, preserves richer App Server `usageSummary` or `usage` payload fields such as `imageCount`, `estimatedCostUsd`, and `imageBillingDisclosure`, and preserves malformed supplied numeric fields as invalid values so `invalid_usage_amount` or `invalid_cost_amount` blocks the summary.
 - `src/lib/live-image-billing-confirmation.ts` persists the pre-generation Codex OAuth image usage confirmation record into product storage as `usage/<project>/<job>/image-billing-confirmation.json`, returns the matching `ProviderImageBillingDisclosure`, and refuses to treat a declined or unpersisted confirmation as evidence.
 - `src/lib/generate-stage-recovery.ts` owns Generate-stage job recovery storage, and `src/components/deck/GenerateStage.tsx` now records the persisted Codex image confirmation disclosure on Codex image-generation jobs before the job starts.
+- `scripts/lane-d-live-usage-confirmation.mjs` resolves the packaged Lane D usage bundle from a real persisted Codex OAuth confirmation JSON. `scripts/lane-d-live-usage-confirmation.test.mjs` verifies that only a canonical record whose `evidencePath` matches its product storage location can change the generated usage summary from `missing_app_surface_pre_generation_confirmation` to `confirmed_app_surface_pre_generation_codex_oauth`.
 - `src/lib/provider-job-progress-view.ts` and `src/components/deck/ProviderJobProgressPanel.tsx` expose app-surface provider id, execution duration, retry count, valid token/image usage, and finite estimated provider cost as `cost estimate` while still preserving job status, retry availability, recovered state, partial artifacts, redacted failure messages, and redacted image usage labels.
 - `src/lib/audit-log.ts` records provider usage summaries into report audit events, renders `estimatedCostUsd` as `cost estimate`, not as an exact charge, and only preserves confirmed image usage disclosure labels when persisted confirmation evidence is valid.
 
@@ -111,6 +112,13 @@ The local contract, one live Codex text usage probe, App Server rich usage paylo
 - Total measured image latency: `197953ms`
 
 The display intentionally keeps cost hidden because the Codex image sidecars do not supply a billable cost value. DF-244 remains open because no persisted pre-generation user-confirmation record from the packaged app surface exists.
+
+The Lane D evidence generator now consumes a real
+`usage/<project>/<job>/image-billing-confirmation.json` record when one is
+present under the product project storage tree. The current committed bundle
+still reports `missing_app_surface_pre_generation_confirmation`, which is
+correct for the available evidence because no packaged-app confirmation record
+has been captured yet.
 
 ## Live Image Usage Update
 
