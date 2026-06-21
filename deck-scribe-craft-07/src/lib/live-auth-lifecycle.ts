@@ -2,6 +2,8 @@ import type { ProviderJobManager, ProviderJobStatus } from "./provider-job-manag
 import type { ProviderStatus } from "./provider-types";
 import { secretMaterialCandidates } from "./live-secret-material-candidates";
 
+const IMAGE_SECRET_SERVICE = "deckforge.openai.image";
+
 export type LiveSecretStoreKind = "os_keychain" | "equivalent_secret_store";
 
 export type LiveSecretReference = {
@@ -116,17 +118,14 @@ export async function connectImageApiKeySecret(input: {
   const createdAt = input.now();
 
   const secretReference = await input.store.saveSecret({
-    service: "deckforge.openai.image",
+    service: IMAGE_SECRET_SERVICE,
     account: input.account,
     secretValue: trimmed,
     createdAt,
   });
   if (!isExpectedStoreKind(secretReference.storeKind, input.store.kind))
     throw new LiveSecretStoreKindError();
-  if (
-    secretReference.service !== "deckforge.openai.image" ||
-    secretReference.account !== input.account
-  )
+  if (secretReference.service !== IMAGE_SECRET_SERVICE || secretReference.account !== input.account)
     throw new LiveSecretReferenceScopeError();
   if (secretReference.createdAt !== createdAt) throw new LiveSecretReferenceTimestampError();
   if (!hasCanonicalSecretReferenceIdentity(secretReference))
@@ -147,6 +146,7 @@ export async function disconnectImageApiKeySecret(input: {
 }): Promise<ImageApiKeyDisconnectedState> {
   if (!isExpectedStoreKind(input.reference.storeKind, input.store.kind))
     throw new LiveSecretStoreKindError();
+  if (input.reference.service !== IMAGE_SECRET_SERVICE) throw new LiveSecretReferenceScopeError();
   if (!hasCanonicalSecretReferenceIdentity(input.reference))
     throw new LiveSecretReferenceIdentityError();
   await input.store.deleteSecret(input.reference);

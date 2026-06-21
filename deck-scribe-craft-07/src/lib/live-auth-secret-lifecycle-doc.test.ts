@@ -42,8 +42,11 @@ describe("live auth secret lifecycle documentation", () => {
     expect(authSecretLifecycle.includes('"clientSecret":"..."')).toBe(true);
     expect(authSecretLifecycle.includes("disconnectImageApiKeySecret")).toBe(true);
     expect(
-      authSecretLifecycle.includes("rejects store-kind mismatch or invalid reference identity"),
+      authSecretLifecycle.includes(
+        "rejects store-kind mismatch, wrong image credential service scope, or invalid reference identity",
+      ),
     ).toBe(true);
+    expect(authSecretLifecycle.includes("live-auth-lifecycle-disconnect-scope.test.ts")).toBe(true);
     expect(authSecretLifecycle.includes("classifyLiveAuthFailure")).toBe(true);
     expect(authSecretLifecycle.includes("login_expired")).toBe(true);
     expect(authSecretLifecycle.includes("Session expired")).toBe(true);

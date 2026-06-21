@@ -3,9 +3,9 @@
   "issueNumber": 131,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-21T19:56:04Z",
+  "generatedAt": "2026-06-21T21:11:39Z",
   "packageArchiveSha256": "aacadd4cd4546ce20b084b1fbf8018e9571a635983ad9aa30b07a123c705985e",
-  "summary": "Authenticated Codex runtime, local secret-lifecycle guards, and stale post-logout image gate blocking exist, but release evidence still lacks a clean-account login, logout/relogin, and packaged keychain lifecycle run.",
+  "summary": "Authenticated Codex runtime, local secret-lifecycle guards including wrong-service disconnect blocking, and stale post-logout image gate blocking exist, but release evidence still lacks a clean-account login, logout/relogin, and packaged keychain lifecycle run.",
   "currentEvidence": [
     {
       "path": "docs/live-auth-secret-lifecycle.md",
@@ -19,6 +19,10 @@
     {
       "path": "src/lib/live-auth-lifecycle.ts",
       "kind": "auth logout and provider lock model"
+    },
+    {
+      "path": "src/lib/live-auth-lifecycle-disconnect-scope.test.ts",
+      "kind": "wrong-service keychain disconnect regression"
     },
     {
       "path": "src/lib/production-image-generation-gate.test.ts",

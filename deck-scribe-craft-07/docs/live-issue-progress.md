@@ -644,6 +644,15 @@ trim-only delete target from reaching the keychain delete call. The issue
 remains open because fresh login manual QA, logout/relogin QA, and packaged OS
 keychain bridge QA are still external Live evidence requirements.
 
+DF-205 local update: `disconnectImageApiKeySecret` now also rejects wrong-service
+secret references with `LiveSecretReferenceScopeError` before calling the
+keychain delete function. A `deckforge.other.secret` reference can no longer
+make logout or cleanup evidence look like the DeckForge image credential
+lifecycle was deleted. Regression coverage lives in
+`src/lib/live-auth-lifecycle-disconnect-scope.test.ts`. The issue remains open
+because fresh login manual QA, logout/relogin QA, and packaged OS keychain
+bridge QA are still external Live evidence requirements.
+
 DF-223 local update: `validateLiveResearchEvidence` now rejects persisted evidence refs when the linked Research source lacks persisted `capture.rawArchivePath`, even if the evidence ref itself names a plausible artifact path. The source artifact validator was split into `src/lib/live-research-source-artifact-evidence.ts`, with regression coverage in `src/lib/live-research-source-artifact-evidence.test.ts`; `missing_source_artifact` now covers both blank evidence artifact paths and invented paths for sources without capture metadata. Evidence ref datasets must also belong to the claim's `datasetIds`, and unlinked evidence-ref datasets no longer satisfy the major-number dataset requirement. The issue remains open because an authenticated packaged-app live Research Pack review with app-produced evidence references is still required.
 
 DF-223 local update: dataset-backed major-number claims now require the referenced dataset to be sourced by at least one of the claim's source artifact ids. A dataset whose `sourceIds` point only at an unrelated source fails with `unknown_reference` and no longer satisfies `missing_number_dataset`, with coverage in `src/lib/live-research-number-evidence.test.ts`. The issue remains open because an authenticated packaged-app live Research Pack review with app-produced evidence references is still required.
