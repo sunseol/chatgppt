@@ -3,6 +3,7 @@ import {
   evaluateLiveImageQueueEvidence,
   type LiveImageQueueEvidenceIssueCode,
 } from "./live-image-queue-evidence";
+import { createPromptUsageRecord } from "./prompt-assets";
 import type { GeneratedSlide } from "./deck-types";
 import type { SlideGenerationQueueResult } from "./slide-generation-queue-types";
 
@@ -38,6 +39,26 @@ describe("live image queue progress evidence", () => {
           errorMessage: "upstream 503",
           userMessage: "Slide 1 failed.",
         },
+      ],
+      jobs: [
+        {
+          id: "job_failed",
+          providerId: "openaiImage",
+          capability: "imageGeneration",
+          description: "Generate slide 1",
+          status: "failed",
+          createdAt: 1_789_900_000,
+          attempt: 1,
+          cancelRequested: false,
+        },
+      ],
+      promptUsages: [
+        createPromptUsageRecord({
+          promptId: "slide_generation",
+          artifactId: "bundle_failed",
+          jobId: "job_failed",
+          recordedAt: 1_789_900_000,
+        }),
       ],
       progress: { completed: 0, failed: 1, total: 5, percent: 20 },
     });

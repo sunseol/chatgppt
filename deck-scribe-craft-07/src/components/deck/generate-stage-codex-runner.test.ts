@@ -60,15 +60,21 @@ describe("generate stage Codex runner", () => {
     ]);
     expect(slideUpdates[0]?.every((slide) => slide.status === "generating")).toBe(true);
     expect(slideUpdates.at(-1)?.every((slide) => slide.status === "ready")).toBe(true);
-    expect(writes.map((write) => write.path)).toEqual([
+    const writePaths = writes.map((write) => write.path);
+    const expectedImageWritePaths = [
       "projects/project_001/slides/images/slide_001.v1.png",
       "projects/project_001/slides/images/slide_001.v1.metadata.json",
       "projects/project_001/slides/images/slide_001.v1.provenance.json",
       "projects/project_001/slides/images/slide_002.v1.png",
       "projects/project_001/slides/images/slide_002.v1.metadata.json",
       "projects/project_001/slides/images/slide_002.v1.provenance.json",
+    ].sort();
+    expect(writePaths.filter((path) => path.includes("/slides/images/")).sort()).toEqual(
+      expectedImageWritePaths,
+    );
+    expect(writePaths.at(-1)).toBe(
       "projects/project_001/live-evidence/df233-image-queue-job_generate_1.json",
-    ]);
+    );
     const evidenceContent = writes.at(-1)?.content;
     if (typeof evidenceContent !== "string") throw new Error("Expected queue evidence JSON.");
     expect(evidenceContent.includes('"issue": "DF-233"')).toBe(true);

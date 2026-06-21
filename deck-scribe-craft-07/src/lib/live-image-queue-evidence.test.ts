@@ -230,6 +230,34 @@ describe("live image queue evidence", () => {
     // Then
     expect(issueCodes(validation)).toEqual(["retry_job_not_found", "retry_prompt_usage_missing"]);
   });
+
+  test("blocks provider failure evidence that is not tied to recorded job prompt usage", () => {
+    // Given
+    const result = readyQueueResult({
+      failures: [
+        {
+          jobId: "job_failed",
+          bundleId: "bundle_failed",
+          slideNumber: 3,
+          retryable: false,
+          attempts: 1,
+          failureKind: "server",
+          retryDelaysMs: [],
+          errorMessage: "upstream 503",
+          userMessage: "Slide 3 failed after retry.",
+        },
+      ],
+    });
+
+    // When
+    const validation = evaluateLiveImageQueueEvidence(result);
+
+    // Then
+    expect(issueCodes(validation)).toEqual([
+      "failure_job_not_found",
+      "failure_prompt_usage_missing",
+    ]);
+  });
 });
 
 function issueCodes(

@@ -1,9 +1,9 @@
 import type { SlideGenerationQueueResult } from "./slide-generation-queue-types";
 import type { ImageProviderFailureKind } from "./image-provider-errors";
 import type { PromptUsageRecord } from "./prompt-assets";
-import type { ProviderJob } from "./provider-job-manager";
 import { concurrencyIssues } from "./live-image-queue-concurrency";
 import { cancellationIssues } from "./live-image-queue-cancellation";
+import { providerFailureIssues } from "./live-image-queue-provider-failure";
 import { retrySlideIssues } from "./live-image-queue-retry-slide";
 import { retryDelayIssues } from "./live-image-queue-retry-delay";
 import { queueProgressIssues } from "./live-image-queue-progress";
@@ -23,6 +23,11 @@ export type LiveImageQueueEvidenceIssueCode =
   | "retry_prompt_usage_missing"
   | "retry_bundle_mismatch"
   | "retry_non_transient_failure"
+  | "failure_job_not_found"
+  | "failure_without_failed_job"
+  | "failure_attempt_count_mismatch"
+  | "failure_prompt_usage_missing"
+  | "failure_bundle_mismatch"
   | "cancelled_job_missing_failure"
   | "cancel_failure_without_cancelled_job"
   | "cancel_prompt_usage_missing"
@@ -58,6 +63,7 @@ export function evaluateLiveImageQueueEvidence(
   const issues = [
     ...queueProgressIssues(result),
     ...concurrencyIssues(result.concurrency),
+    ...providerFailureIssues(result.jobs, result.failures, result.promptUsages),
     ...retryJobIssues(result.jobs, result.retryProvenance),
     ...retryAttemptIssues(result.jobs, result.retryProvenance),
     ...retrySlideIssues(result.jobs, result.failures, result.retryProvenance),
