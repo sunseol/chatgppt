@@ -44,6 +44,34 @@ describe("live initial release gate final export evidence", () => {
     expect(result.blockers.map((blocker) => blocker.code)).toEqual(["golden_path_export_not_live"]);
     expect(result.blockers[0]?.refs).toEqual(["live_export_001:development/local/local"]);
   });
+
+  test("blocks final export lineage with noncanonical Codex turn identities", () => {
+    // Given
+    const input = readyInputWithFinalExport("live_export_001");
+    const result = evaluateLiveInitialReleaseGate({
+      ...input,
+      goldenPathLineage: [
+        createProviderArtifactProvenance({
+          artifactId: "live_export_001",
+          executionMode: "production",
+          providerKind: "codex",
+          authMode: "codex_session",
+          modelOrRuntime: "codex-cli 0.141.0",
+          promptVersion: "final_report@v1",
+          durationMs: 500,
+          inputArtifactIds: ["live_slide_1"],
+          turnId: " turn_final ",
+          threadId: "thread_project",
+          fixture: false,
+        }),
+      ],
+    });
+
+    // When / Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.blockers.map((blocker) => blocker.code)).toEqual(["golden_path_export_not_live"]);
+  });
 });
 
 function readyInputWithFinalExport(finalExportArtifactId: string): LiveReleaseGateInput {

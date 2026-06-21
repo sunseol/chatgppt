@@ -4,6 +4,20 @@ Date: 2026-06-19
 
 Scope: tracked GitHub issues `#126` through `#157` (`DF-200` through `DF-247`).
 
+## 2026-06-22 KST DF-247 Canonical Final Export Lineage Identities
+
+DF-247 local update: the final release gate now requires the Golden Path final
+export lineage to carry canonical Codex `turnId` and `threadId` values before it
+can count as a production Codex session. A final export provenance row with
+`turnId: " turn_final "` now blocks with `golden_path_export_not_live` instead
+of trimming into release readiness. Regression coverage lives in
+`src/lib/live-release-gate-final-export.test.ts`.
+
+This still does not close DF-247. The release remains blocked until all P0 Live
+tickets are Verified Live and the real Golden Path, benchmark, interruption,
+packaging, manual QA, evidence-index, release decision, and known-limits
+artifacts are ready.
+
 ## 2026-06-22 KST DF-245 Canonical Developer ID TeamIdentifier Gate
 
 DF-245 local update: native macOS release trust evidence now requires the

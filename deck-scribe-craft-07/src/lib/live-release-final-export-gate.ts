@@ -21,8 +21,8 @@ export function hasLiveFinalExportLineageArtifact(artifact: ProviderArtifactProv
     artifact.executionMode === "production" &&
     artifact.providerKind === "codex" &&
     artifact.authMode === "codex_session" &&
-    hasText(artifact.threadId) &&
-    hasText(artifact.turnId)
+    hasCanonicalText(artifact.threadId) &&
+    hasCanonicalText(artifact.turnId)
   );
 }
 
@@ -30,6 +30,6 @@ export function formatFinalExportLineageRef(artifact: ProviderArtifactProvenance
   return `${artifact.artifactId}:${artifact.executionMode}/${artifact.providerKind}/${artifact.authMode}`;
 }
 
-function hasText(value: string | undefined): boolean {
-  return typeof value === "string" && value.trim().length > 0;
+function hasCanonicalText(value: string | undefined): boolean {
+  return typeof value === "string" && value.trim() === value && value.length > 0;
 }
