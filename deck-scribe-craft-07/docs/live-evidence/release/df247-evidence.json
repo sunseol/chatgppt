@@ -14,6 +14,10 @@
     {
       "path": "docs/live-evidence/release/packaged-live-evidence-index.json",
       "kind": "shared packaged evidence index"
+    },
+    {
+      "path": "src/lib/packaged-live-evidence-index.ts",
+      "kind": "packaged evidence index validator with ticket-token path binding"
     }
   ],
   "missingEvidence": [

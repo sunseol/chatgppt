@@ -100,6 +100,34 @@ describe("packaged live evidence index", () => {
     expect(result.issues[0]?.refs).toEqual(["DF-242"]);
   });
 
+  test("blocks artifact paths that only contain the ticket id as a substring", () => {
+    // Given
+    const index = completeIndex({
+      entries: PACKAGED_LIVE_EVIDENCE_TICKET_IDS.map((ticketId) =>
+        ticketId === "DF-245"
+          ? {
+              ...entry(ticketId),
+              artifactPath: "docs/live-evidence/release/notdf245-evidence.json",
+            }
+          : entry(ticketId),
+      ),
+    });
+
+    // When
+    const result = evaluatePackagedLiveEvidenceIndex(index);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "packaged_live_ticket_path_mismatch",
+    ]);
+    expect(result.issues[0]?.refs).toEqual([
+      "DF-245",
+      "docs/live-evidence/release/notdf245-evidence.json",
+    ]);
+  });
+
   test("blocks ready claims when child validation or release dependencies are blocked", () => {
     const index = completeIndex({
       entries: PACKAGED_LIVE_EVIDENCE_TICKET_IDS.map((ticketId) =>

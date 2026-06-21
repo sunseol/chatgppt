@@ -172,7 +172,7 @@ function artifactPathNamesTicket(path: string, ticketId: PackagedLiveEvidenceTic
   const normalizedPath = path.toLowerCase();
   const dashed = ticketId.toLowerCase();
   const compact = dashed.replace("-", "");
-  return normalizedPath.includes(dashed) || normalizedPath.includes(compact);
+  return new RegExp(`(?:^|[/._-])(?:${dashed}|${compact})(?:[/._-]|$)`).test(normalizedPath);
 }
 
 function artifactHashIssues(

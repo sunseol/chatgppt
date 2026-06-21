@@ -16,6 +16,10 @@
       "kind": "product queue evidence writer"
     },
     {
+      "path": "src/lib/live-image-queue-restart-resume-evidence.ts",
+      "kind": "restart-resume evidence validator with duplicate artifact id blocking"
+    },
+    {
       "path": "docs/live-evidence/codex-image/lane-g-closure-recheck-20260621/issue-closure-evidence.json",
       "sha256": "cce49011bc94260509f1f4c4e0fb8753ecaff53e8a4313206cea8de1b718f13d",
       "kind": "blocked image/export/usage closure recheck"

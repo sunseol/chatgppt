@@ -58,6 +58,7 @@ function validRestartResumeEvidence(
     evidence.pendingImageArtifactIds.length > 0 &&
     evidence.resumedArtifactIds.length > 0 &&
     artifactGroupsAreCanonical(evidence) &&
+    artifactGroupsHaveUniqueIds(evidence) &&
     evidence.completedArtifactIdsBefore.every((artifactId) => completedAfter.has(artifactId)) &&
     evidence.pendingImageArtifactIds.every((artifactId) => resumed.has(artifactId))
   );
@@ -70,6 +71,15 @@ function artifactGroupsAreCanonical(evidence: LiveImageQueueRestartResumeEvidenc
     ...evidence.pendingImageArtifactIds,
     ...evidence.resumedArtifactIds,
   ].every(canonicalEvidenceId);
+}
+
+function artifactGroupsHaveUniqueIds(evidence: LiveImageQueueRestartResumeEvidence): boolean {
+  return [
+    evidence.completedArtifactIdsBefore,
+    evidence.completedArtifactIdsAfter,
+    evidence.pendingImageArtifactIds,
+    evidence.resumedArtifactIds,
+  ].every((artifactIds) => new Set(artifactIds).size === artifactIds.length);
 }
 
 function isRecoverySnapshotPath(projectId: string, path: string): boolean {

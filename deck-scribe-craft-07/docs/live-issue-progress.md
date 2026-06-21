@@ -39,6 +39,17 @@ committed child evidence JSON also names the same package hash. This prevents a
 future ready index from mixing current release metadata with evidence artifacts
 captured against an older package archive.
 
+DF-247 local update: Packaged Live evidence artifact paths now have to name the
+ticket as a bounded path token, not merely as a substring. A path like
+`notdf245-evidence.json` now blocks with
+`packaged_live_ticket_path_mismatch` instead of satisfying DF-245 by accidental
+substring match.
+
+DF-233 local update: restart-resume queue evidence now rejects duplicate
+artifact ids inside completed-before, completed-after, pending, or resumed
+artifact lists. Duplicate ids now block with `invalid_restart_resume_evidence`
+instead of being collapsed by set-based subset checks.
+
 ## 2026-06-22 KST DF-246 Canonical Slide Action Shape
 
 DF-246 local update: manual QA regeneration and title-edit slide action ids now
