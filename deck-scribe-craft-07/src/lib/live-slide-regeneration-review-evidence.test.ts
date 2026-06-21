@@ -44,6 +44,39 @@ describe("live slide regeneration review evidence", () => {
     expect(error instanceof Error).toBe(true);
     expect(writes).toEqual([]);
   });
+
+  test("rejects approved review evidence whose comparison drifts from the candidate", async () => {
+    // Given
+    const candidate = await readyCandidate();
+    const writes: ImageArtifactStoreWrite[] = [];
+
+    // When
+    const error = await caughtError(() =>
+      writeLiveSlideRegenerationReviewEvidence({
+        store: {
+          write: async (entry) => {
+            writes.push(entry);
+          },
+        },
+        projectId: "project_001",
+        eventId: "rev_235",
+        exportedAt: 1_789_944_001,
+        event: {
+          outcome: "approved",
+          candidate,
+          comparison: {
+            ...matchingComparison(candidate),
+            requestedChanges: ["unrelated logo placement"],
+          },
+          approvedSlide: { ...candidate.slide, status: "approved" },
+        },
+      }),
+    );
+
+    // Then
+    expect(error instanceof Error).toBe(true);
+    expect(writes).toEqual([]);
+  });
 });
 
 async function readyCandidate(): Promise<LiveSlideRegenerationCandidate> {

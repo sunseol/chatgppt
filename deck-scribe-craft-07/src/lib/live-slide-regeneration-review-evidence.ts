@@ -72,18 +72,76 @@ export async function writeLiveSlideRegenerationReviewEvidence(input: {
 
 function validateReviewEvent(event: LiveSlideRegenerationReviewEvent): void {
   if (event.outcome !== "approved") return;
-  const expected = event.candidate.slide;
+  validateApprovedSlide(event);
+  validateApprovedComparison(event);
+}
+
+function validateApprovedSlide(
+  event: Extract<LiveSlideRegenerationReviewEvent, { readonly outcome: "approved" }>,
+): void {
+  const candidateSlide = event.candidate.slide;
   if (
     event.approvedSlide.status === "approved" &&
-    event.approvedSlide.number === expected.number &&
-    event.approvedSlide.version === expected.version &&
-    event.approvedSlide.imageDescriptor === expected.imageDescriptor
+    event.approvedSlide.number === candidateSlide.number &&
+    event.approvedSlide.version === candidateSlide.version &&
+    event.approvedSlide.imageDescriptor === candidateSlide.imageDescriptor
   ) {
     return;
   }
   throw new ImageArtifactStoreError(
     "Approved slide regeneration review evidence must match the ready candidate.",
   );
+}
+
+function validateApprovedComparison(
+  event: Extract<LiveSlideRegenerationReviewEvent, { readonly outcome: "approved" }>,
+): void {
+  if (approvedComparisonMatchesCandidate(event)) return;
+  throw new ImageArtifactStoreError(
+    "Approved slide regeneration review comparison evidence must match the ready candidate.",
+  );
+}
+
+function approvedComparisonMatchesCandidate(
+  event: Extract<LiveSlideRegenerationReviewEvent, { readonly outcome: "approved" }>,
+): boolean {
+  const candidate = event.candidate;
+  const comparison = event.comparison;
+  return (
+    comparison.slideNumber === candidate.slide.number &&
+    comparison.revisedSlideVersion === candidate.slide.version &&
+    comparison.beforeImageDescriptor === candidate.beforeImageDescriptor &&
+    comparison.afterImageDescriptor === candidate.afterImageDescriptor &&
+    comparison.afterImageDescriptor === candidate.slide.imageDescriptor &&
+    comparison.afterImageDescriptor.includes(candidate.backgroundArtifactId) &&
+    targetsMatch(candidate.mustChange, comparison.requestedChanges) &&
+    targetsMatch(candidate.mustKeep, comparison.preservedTargets) &&
+    preservedTargetsKept(candidate.mustKeep, comparison.preservationChecks)
+  );
+}
+
+function preservedTargetsKept(
+  mustKeep: readonly string[],
+  preservationChecks: SlideRevisionComparison["preservationChecks"],
+): boolean {
+  const checkedTargets = preservationChecks.map((check) => check.target);
+  return (
+    targetsMatch(mustKeep, checkedTargets) &&
+    preservationChecks.every((check) => check.status === "kept")
+  );
+}
+
+function targetsMatch(expected: readonly string[], actual: readonly string[]): boolean {
+  const expectedTargets = sortedTargets(expected);
+  const actualTargets = sortedTargets(actual);
+  return (
+    expectedTargets.length === actualTargets.length &&
+    expectedTargets.every((target, index) => target === actualTargets[index])
+  );
+}
+
+function sortedTargets(values: readonly string[]): readonly string[] {
+  return [...values].sort();
 }
 
 export function hasLiveSlideRegenerationReviewEvidencePath(path: string | undefined): boolean {

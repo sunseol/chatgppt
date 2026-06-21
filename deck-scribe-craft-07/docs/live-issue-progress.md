@@ -827,7 +827,10 @@ selected-slide live regeneration approval and failure preservation. Approved
 live candidates write
 `projects/{projectId}/live-evidence/df235-slide-regeneration-review-{requestId}.json`
 with outcome `approved`, the live candidate, the before/after comparison, and
-the approved slide. Eligible live Codex regeneration failures no longer fall
+the approved slide. Approved review evidence now revalidates that the
+comparison matches the candidate, requested changes, preserved targets, and kept
+preservation checks before the artifact is written. Eligible live Codex
+regeneration failures no longer fall
 back to the local mock revision path; they preserve the approved original and
 write outcome `preserved_after_failure` with the provider or validation issues.
 The returned `reviewEvidencePath` is now stored in
@@ -863,6 +866,14 @@ non-canonical persisted review artifact path as packaged approval or
 failure-preservation evidence. The issue remains open until packaged-app live
 full-slide regeneration before/after approval QA and failed-regeneration
 original-preservation evidence are captured from the real review UI.
+
+DF-235 local update: `writeLiveSlideRegenerationReviewEvidence` now rejects
+approved review evidence whose embedded before/after comparison drifts from the
+ready candidate, requested changes, preserved targets, or kept preservation
+checks. This prevents a caller from writing an `approved` DF-235 artifact just
+because the final approved slide matches the candidate while the comparison
+evidence would have blocked approval. DF-235 remains open until a real packaged
+review UI run proves candidate approval and failed-regeneration preservation.
 
 ## 2026-06-21 Interruption Closure Manifest
 
