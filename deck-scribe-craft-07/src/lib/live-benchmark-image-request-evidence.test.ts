@@ -9,6 +9,22 @@ import { LIVE_GOLDEN_PATH_E2E_STEPS } from "./live-golden-path-e2e-contract";
 const PACKAGE_SHA = "83032811d035f19bc7ac6d1837f137d535e011334197e6b18ae8f9477e342df7";
 
 describe("live benchmark image request evidence", () => {
+  test("passes Codex image turn ids when legacy request ids are empty", () => {
+    // Given
+    const bundle = completeBundle({
+      runs: [
+        runWithImageTurnIds("korean_business", distinctImageTurnIds("korean_business")),
+        ...passedRuns(),
+      ],
+    });
+
+    // When
+    const result = evaluateLiveBenchmarkEvidence(bundle);
+
+    // Then
+    expect(result).toEqual({ kind: "ready", passedLiveCount: 4 });
+  });
+
   test("blocks passed output bundles that reuse one live image request id", () => {
     // Given
     const bundle = completeBundle({
@@ -82,6 +98,19 @@ function runWithImageRequestIds(
   };
 }
 
+function runWithImageTurnIds(
+  id: LiveBenchmarkRun["id"],
+  liveImageTurnIds: readonly string[],
+): LiveBenchmarkRun {
+  return {
+    ...runWithImageRequestIds(id, []),
+    outputBundle: {
+      ...runWithImageRequestIds(id, []).outputBundle,
+      liveImageTurnIds,
+    },
+  };
+}
+
 function failedRun(id: LiveBenchmarkRun["id"]): LiveBenchmarkRun {
   return {
     ...runWithImageRequestIds(id, []),
@@ -113,4 +142,8 @@ function repeatedImageRequestIds(): readonly string[] {
 
 function distinctImageRequestIds(prefix: string): readonly string[] {
   return Array.from({ length: 5 }, (_, index) => `${prefix}_img_req_${index + 1}`);
+}
+
+function distinctImageTurnIds(prefix: string): readonly string[] {
+  return Array.from({ length: 5 }, (_, index) => `${prefix}_image_turn_${index + 1}`);
 }

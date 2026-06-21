@@ -696,3 +696,12 @@ blocks as `missing_regeneration_request_id`, so packaged review or Golden Path
 evidence cannot claim a regenerated image from trim-only provider identity.
 DF-235 and DF-241 still require the packaged review UI and signed Golden Path
 runs to capture the real approval/export evidence.
+
+DF-242 local update: Live benchmark output bundle validation now accepts
+Codex image `liveImageTurnIds` as the primary provider identity evidence and
+keeps legacy `liveImageRequestIds` only as a fallback. A passed benchmark can
+therefore cite five Codex OAuth image turns without populating OpenAI-shaped
+request ids, while cross-run duplicate detection resolves the same provider
+identity list before checking reuse. DF-242 remains open until five real
+benchmark output bundles are produced and at least four named packaged Live
+Golden Path runs pass.

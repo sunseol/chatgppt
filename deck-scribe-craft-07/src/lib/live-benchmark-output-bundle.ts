@@ -5,6 +5,7 @@ import type {
 } from "./live-benchmark-evidence";
 import { hasObservedBenchmarkEvidencePath } from "./live-benchmark-evidence-path";
 import { goldenPathEvidenceIssues } from "./live-benchmark-golden-path-evidence";
+import { liveBenchmarkImageProviderIdentityIds } from "./live-benchmark-image-provider-identity";
 import { duplicatePassedArtifactRefs } from "./live-benchmark-output-artifact-duplicates";
 import { evidenceCountMismatchRefs } from "./live-benchmark-output-bundle-counts";
 import {
@@ -66,9 +67,8 @@ export function outputBundleIssues(
     runs,
     (run) => run.outputBundle.liveImageArtifactIds,
   );
-  const duplicateImageRequests = duplicatePassedArtifactRefs(
-    runs,
-    (run) => run.outputBundle.liveImageRequestIds,
+  const duplicateImageRequests = duplicatePassedArtifactRefs(runs, (run) =>
+    liveBenchmarkImageProviderIdentityIds(run.outputBundle),
   );
   const duplicateGoldenPathReports = duplicatePassedArtifactRefs(runs, (run) =>
     validEvidenceReportPath(run.outputBundle.goldenPathReportPath, "live_e2e_report.md")
@@ -188,7 +188,7 @@ export function outputBundleIssues(
       : [
           issue(
             "duplicate_output_bundle_image_request",
-            "Passed Live benchmark bundles must not reuse live image requests.",
+            "Passed Live benchmark bundles must not reuse live image provider turn/request ids.",
             duplicateImageRequests,
           ),
         ]),

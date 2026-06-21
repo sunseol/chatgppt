@@ -7,6 +7,10 @@ import {
   hasInvalidBenchmarkArtifactMarker,
   hasObservedBenchmarkEvidencePath,
 } from "./live-benchmark-evidence-path";
+import {
+  liveBenchmarkCitedImageProviderIdentityIds,
+  liveBenchmarkImageProviderIdentityIds,
+} from "./live-benchmark-image-provider-identity";
 import { hasDistinctScreenshotEvidence } from "./live-benchmark-screenshot-evidence";
 
 export function goldenPathEvidenceIssues(
@@ -41,7 +45,7 @@ export function goldenPathEvidenceIssues(
           {
             code: "output_bundle_golden_path_evidence_missing" as const,
             message:
-              "Passed Live benchmark bundles must include Golden Path report, screenshots, sources, initial images, and image requests.",
+              "Passed Live benchmark bundles must include Golden Path report, screenshots, sources, initial images, and image provider turn/request ids.",
             refs: missingGoldenPathEvidence,
           },
         ]),
@@ -75,7 +79,7 @@ function hasCoreGoldenPathEvidence(bundle: LiveBenchmarkOutputBundleManifest): b
     bundle.imageArtifactCount >= 5 &&
     hasDistinctArtifactEvidence(bundle.sourceArtifactIds, 3) &&
     hasDistinctArtifactEvidence(initialImageIds, 5) &&
-    hasDistinctArtifactEvidence(bundle.liveImageRequestIds, 5)
+    hasDistinctArtifactEvidence(liveBenchmarkImageProviderIdentityIds(bundle), 5)
   );
 }
 
@@ -107,7 +111,7 @@ function syntheticRefs(run: LiveBenchmarkRun): readonly string[] {
     ...run.outputBundle.sourceArtifactIds,
     ...run.outputBundle.liveImageArtifactIds,
     ...(run.outputBundle.regeneratedLiveImageArtifactIds ?? []),
-    ...run.outputBundle.liveImageRequestIds,
+    ...liveBenchmarkCitedImageProviderIdentityIds(run.outputBundle),
   ]
     .map((value) => value.trim())
     .filter((value) => value.length > 0 && hasSyntheticMarker(value))

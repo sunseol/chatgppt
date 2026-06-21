@@ -71,6 +71,40 @@ describe("live benchmark cross-run artifact uniqueness", () => {
     ]);
     expect(result.issues[0]?.refs).toEqual([`korean_business:market_research:${sharedReportPath}`]);
   });
+
+  test("blocks passed benchmark runs that reuse Codex image turn evidence", () => {
+    // Given
+    const reusedTurnIds = [
+      "shared_turn_1",
+      "shared_turn_2",
+      "shared_turn_3",
+      "shared_turn_4",
+      "shared_turn_5",
+    ];
+
+    // When
+    const result = evaluateLiveBenchmarkEvidence({
+      reportPath: "docs/live-benchmark-report.md",
+      packageArchiveSha256: PACKAGE_SHA,
+      runs: [
+        withImageTurnIds(run("korean_business", "passed", undefined, undefined, []), reusedTurnIds),
+        withImageTurnIds(run("market_research", "passed", undefined, undefined, []), reusedTurnIds),
+        run("chart_report", "passed"),
+        run("image_intro", "passed"),
+        run("revision_regeneration", "failed"),
+      ],
+    });
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "duplicate_output_bundle_image_request",
+    ]);
+    expect(result.issues[0]?.refs).toEqual(
+      reusedTurnIds.map((turnId) => `korean_business:market_research:${turnId}`),
+    );
+  });
 });
 
 function run(
@@ -133,5 +167,15 @@ function withGoldenPathReport(
   return {
     ...run,
     outputBundle: { ...run.outputBundle, goldenPathReportPath },
+  };
+}
+
+function withImageTurnIds(
+  run: LiveBenchmarkRun,
+  liveImageTurnIds: readonly string[],
+): LiveBenchmarkRun {
+  return {
+    ...run,
+    outputBundle: { ...run.outputBundle, liveImageTurnIds },
   };
 }
