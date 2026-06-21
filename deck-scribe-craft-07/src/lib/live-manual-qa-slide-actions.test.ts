@@ -62,6 +62,26 @@ describe("live manual QA slide actions", () => {
     if (result.kind !== "blocked") return;
     expect(result.issues.map((issue) => issue.code)).toEqual(["invalid_manual_qa_slide_action"]);
   });
+
+  test("blocks non-canonical slide ids that are not slide-number references", () => {
+    // Given
+    const evidence = completeEvidence({
+      regeneratedSlideIds: ["1", "slide_", "slide-foo"],
+      editedTitleSlideIds: ["-3", "abc", "0"],
+    });
+
+    // When
+    const result = evaluateLiveManualQaEvidence(evidence);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "missing_slide_regeneration",
+      "missing_title_edit",
+      "invalid_manual_qa_slide_action",
+    ]);
+  });
 });
 
 function completeEvidence(patch: Partial<LiveManualQaEvidence> = {}): LiveManualQaEvidence {

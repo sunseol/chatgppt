@@ -4,6 +4,20 @@ Date: 2026-06-19
 
 Scope: tracked GitHub issues `#126` through `#157` (`DF-200` through `DF-247`).
 
+## 2026-06-22 KST DF-246 Canonical Slide Action Shape
+
+DF-246 local update: manual QA regeneration and title-edit slide action ids now
+have to use the canonical `slide-<number>` shape before they can count. A bundle
+whose action lists contain marker-free arbitrary tokens such as `1`, `abc`, or
+`slide-foo` now blocks with `missing_slide_regeneration`,
+`missing_title_edit`, and `invalid_manual_qa_slide_action` instead of satisfying
+the checklist with plausible-looking but non-slide references. Regression
+coverage lives in `src/lib/live-manual-qa-slide-actions.test.ts`.
+
+This still does not close DF-246. The ticket still needs a real
+non-developer, under-10-minute packaged-app session with a persisted
+non-synthetic manual QA session bundle and clean output/source/action evidence.
+
 ## 2026-06-22 KST DF-242 Mixed Image Turn/Request Identity Reuse
 
 DF-242 local update: benchmark output bundle image provider identity checks now

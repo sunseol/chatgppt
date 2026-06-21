@@ -10,6 +10,7 @@ const NON_LIVE_SLIDE_ID_MARKERS = [
   "test",
   "fake",
 ] as const;
+const LIVE_SLIDE_ID = /^slide-[1-9]\d*$/;
 
 type SlidePresenceIssueCode = Extract<
   LiveManualQaIssueCode,
@@ -77,6 +78,7 @@ function isLiveSlideId(value: string): boolean {
   const normalized = value.toLowerCase();
   return (
     value === value.trim() &&
+    LIVE_SLIDE_ID.test(value) &&
     !NON_LIVE_SLIDE_ID_MARKERS.some((marker) => normalized.includes(marker))
   );
 }
