@@ -1509,3 +1509,15 @@ preservation checks. This removes the product-writer approved JSON gap, but
 DF-235 remains open until a packaged Review-stage UI run captures this approval
 from the app surface and a failed live regeneration run proves the approved
 original remains selected/exportable.
+
+DF-244 product usage-summary update: `scripts/generate-df244-product-usage-confirmation-summary.mjs`
+fed the real product-run confirmation JSON from
+`df244_generate_export_smoke_20260622` through the Lane D confirmation resolver
+and wrote
+`docs/live-evidence/codex-image/df244-generate-export-usage-summary-20260622.json`
+(`sha256:a262756f8857306d1f6371b9c13cbd0a0c8844c99d02e651a78d25c6f27fbe2c`).
+The summary now reports `confirmed_app_surface_pre_generation_codex_oauth`,
+provider `codex`, `imageCount: 1`, latency `136903ms`, hidden cost, and the
+same product confirmation record path. This removes the product-run usage
+resolver gap, but DF-244 remains open until packaged UI manual QA captures and
+displays the persisted confirmation from the same real image job.

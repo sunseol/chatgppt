@@ -3,9 +3,9 @@
   "issueNumber": 154,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-21T23:10:04Z",
+  "generatedAt": "2026-06-21T23:28:26Z",
   "packageArchiveSha256": "0354291e6c6ac847335ba5095e088d1122a3bf93937589021edabb3e4fbcc913",
-  "summary": "Live text and image usage display contracts now require Codex OAuth-shaped image confirmation with apiKeyRequired false and confirmation evidence bound to the same provider job. The Generate stage now mirrors confirmed Codex OAuth image billing records into project artifact storage before generation, the desktop image schema is App Server strict, local project folder export includes those project-scoped browser artifact writes, Lane D shows real image latency/count display, and a product-run smoke captured same-job confirmation plus one real Codex image. No packaged-app run has captured the pre-generation confirmation JSON from the same run.",
+  "summary": "Live text and image usage display contracts now require Codex OAuth-shaped image confirmation with apiKeyRequired false and confirmation evidence bound to the same provider job. The Generate stage now mirrors confirmed Codex OAuth image billing records into project artifact storage before generation, the desktop image schema is App Server strict, local project folder export includes those project-scoped browser artifact writes, Lane D shows real image latency/count display, and a product-run smoke captured same-job confirmation plus one real Codex image whose product usage summary resolves to confirmed Codex OAuth. No packaged-app run has captured the pre-generation confirmation JSON from the same run.",
   "currentEvidence": [
     {
       "path": "docs/live-usage-summary.md",
@@ -79,6 +79,15 @@
       "path": "projects/df244_generate_export_smoke_20260622/slides/images/slide_001.v1.png",
       "sha256": "72a9cccd871e29e5d1ba2561c3669291c5683c04e891efa74b0478dd2e4d9eb7",
       "kind": "real Codex product Generate image"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df244-generate-export-usage-summary-20260622.json",
+      "sha256": "a262756f8857306d1f6371b9c13cbd0a0c8844c99d02e651a78d25c6f27fbe2c",
+      "kind": "product-run usage summary resolved from same-job confirmation"
+    },
+    {
+      "path": "scripts/generate-df244-product-usage-confirmation-summary.mjs",
+      "kind": "product-run usage confirmation summary generator"
     },
     {
       "path": "src/lib/live-usage-summary.test.ts",

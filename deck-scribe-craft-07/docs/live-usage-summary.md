@@ -198,6 +198,18 @@ This is product-run evidence for the Generate path and export contract, not a
 packaged UI manual QA pass; DF-244 remains open until a packaged app run
 captures and displays the persisted confirmation from the same real image job.
 
+2026-06-22 KST product usage-summary smoke: the Lane D confirmation resolver now
+consumes the product-run confirmation JSON from
+`df244_generate_export_smoke_20260622` and emits
+`confirmed_app_surface_pre_generation_codex_oauth` in
+`docs/live-evidence/codex-image/df244-generate-export-usage-summary-20260622.json`
+(`sha256:a262756f8857306d1f6371b9c13cbd0a0c8844c99d02e651a78d25c6f27fbe2c`).
+The summary records provider `codex`, `imageCount: 1`, total latency
+`136903ms`, hidden cost because no billable cost was supplied, and the canonical
+confirmation record path from the same product run. This proves the usage
+summary resolver can consume persisted product confirmation, but DF-244 still
+needs the same evidence from a packaged app UI run.
+
 ## Generate Stage Live Image Path
 
 2026-06-21 KST product update: after the confirmation record is attached, the
