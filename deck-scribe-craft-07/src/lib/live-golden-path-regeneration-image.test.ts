@@ -53,6 +53,24 @@ describe("live golden path regenerated image evidence", () => {
       result.issues.map((issue) => issue.code).includes("missing_regenerated_live_image_artifact"),
     ).toBe(true);
   });
+
+  test("blocks regeneration lineage that only matches an initial image after trimming", () => {
+    // Given
+    const imageArtifacts = [
+      ...Array.from({ length: 5 }, (_, index) => liveImage(index + 1)),
+      regeneratedImageWithPaddedInput(),
+    ];
+
+    // When
+    const result = evaluateLiveGoldenPathE2EBundle(bundleWithImages(imageArtifacts));
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(
+      result.issues.map((issue) => issue.code).includes("missing_regenerated_live_image_artifact"),
+    ).toBe(true);
+  });
 });
 
 function bundleWithImages(
@@ -147,5 +165,21 @@ function unrelatedRegeneratedImage() {
     fixture: false,
     threadId: "thread_golden_path",
     turnId: "turn_image_unrelated_regenerated",
+  });
+}
+
+function regeneratedImageWithPaddedInput() {
+  return createProviderArtifactProvenance({
+    artifactId: "project_001_image_slide_003_v2",
+    executionMode: "production",
+    providerKind: "codex",
+    authMode: "codex_session",
+    modelOrRuntime: "gpt-image-2",
+    promptVersion: "slide_regeneration@v1",
+    durationMs: 1_000,
+    inputArtifactIds: [" live_image_3 "],
+    fixture: false,
+    threadId: "thread_golden_path",
+    turnId: "turn_image_regenerated",
   });
 }

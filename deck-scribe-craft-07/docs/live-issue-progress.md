@@ -1339,6 +1339,15 @@ otherwise valid report, screenshot, source, image, and export evidence. DF-242
 remains open until five real benchmark output bundles are produced and at least
 four named packaged Live Golden Path runs pass.
 
+DF-241 local update: live Golden Path regenerated image evidence now requires
+the regeneration artifact to cite an initial live image with a canonical input
+artifact id. A regeneration artifact whose `inputArtifactIds` only match
+`live_image_3` after trimming boundary whitespace now blocks with
+`missing_regenerated_live_image_artifact` instead of satisfying Golden Path
+readiness. DF-241 remains open until the packaged production Golden Path run
+captures the signed report, screenshots/recording, final validation bundle,
+restart/reopen evidence, and export lineage.
+
 DF-205 local update: the production image generation gate now consumes current
 provider statuses in addition to the persisted image path decision. A locked
 `codex` / `codexOAuth` decision whose current Codex provider status is

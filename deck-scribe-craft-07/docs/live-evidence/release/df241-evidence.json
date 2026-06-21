@@ -3,9 +3,9 @@
   "issueNumber": 151,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-21T20:27:31Z",
+  "generatedAt": "2026-06-21T22:08:40Z",
   "packageArchiveSha256": "aacadd4cd4546ce20b084b1fbf8018e9571a635983ad9aa30b07a123c705985e",
-  "summary": "Local Golden Path validators now require regeneration-marked image evidence with input lineage to an initial live image, and partial Codex OAuth text/image evidence exists, but no packaged production Golden Path has completed from login through export.",
+  "summary": "Local Golden Path validators now require regeneration-marked image evidence with canonical input lineage to an initial live image, and partial Codex OAuth text/image evidence exists, but no packaged production Golden Path has completed from login through export.",
   "currentEvidence": [
     {
       "path": "docs/live-golden-path-e2e.md",
@@ -13,11 +13,11 @@
     },
     {
       "path": "src/lib/live-golden-path-image-evidence.ts",
-      "kind": "local validator requiring regeneration marker plus live-image input lineage"
+      "kind": "local validator requiring regeneration marker plus canonical live-image input lineage"
     },
     {
       "path": "src/lib/live-golden-path-regeneration-image.test.ts",
-      "kind": "regression coverage for marker-only regeneration rejection"
+      "kind": "regression coverage for marker-only and trim-only-input regeneration rejection"
     },
     {
       "path": "docs/live-evidence/lane-e-20260621/text-pipeline-summary.json",

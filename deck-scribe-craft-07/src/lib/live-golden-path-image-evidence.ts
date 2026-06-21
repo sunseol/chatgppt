@@ -84,8 +84,8 @@ function referencesAnotherLiveImage(
   liveImageIds: ReadonlySet<string>,
 ): boolean {
   return artifact.inputArtifactIds.some((inputId) => {
-    const normalizedInputId = inputId.trim();
-    return normalizedInputId !== artifact.artifactId && liveImageIds.has(normalizedInputId);
+    const inputIdIsCanonical = inputId.length > 0 && inputId === inputId.trim();
+    return inputIdIsCanonical && inputId !== artifact.artifactId && liveImageIds.has(inputId);
   });
 }
 

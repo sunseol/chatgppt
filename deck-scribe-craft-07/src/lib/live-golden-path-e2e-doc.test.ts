@@ -62,10 +62,11 @@ describe("live golden path E2E documentation", () => {
     expect(goldenPathE2E.includes("five initial images")).toBe(true);
     expect(
       goldenPathE2E.includes(
-        "marked as regeneration evidence and cites one of the initial live image artifacts",
+        "marked as regeneration evidence and cites one of the initial live image artifacts as a canonical input artifact id",
       ),
     ).toBe(true);
-    expect(goldenPathE2E.includes("marker-only regenerated image artifact rejection")).toBe(true);
+    expect(goldenPathE2E.includes("trim-only input artifact ids")).toBe(true);
+    expect(goldenPathE2E.includes("marker-only or trim-only-input")).toBe(true);
     expect(goldenPathE2E.includes("live-golden-path-regeneration-image.test.ts")).toBe(true);
     expect(goldenPathE2E.includes("missing_restart_reopen_evidence")).toBe(true);
     expect(goldenPathE2E.includes("signed-report chronology rejection")).toBe(true);
