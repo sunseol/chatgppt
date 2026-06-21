@@ -5,7 +5,10 @@ import {
   createLiveSlideRegenerationCandidate,
   type LiveSlideRegenerationCandidate,
 } from "./live-slide-regeneration";
-import { writeLiveSlideRegenerationReviewEvidence } from "./live-slide-regeneration-review-evidence";
+import {
+  hasLiveSlideRegenerationReviewEvidencePath,
+  writeLiveSlideRegenerationReviewEvidence,
+} from "./live-slide-regeneration-review-evidence";
 import {
   approvedSlideFixture,
   liveRegenerationRequestFixture,
@@ -77,6 +80,21 @@ describe("live slide regeneration review evidence", () => {
     expect(error instanceof Error).toBe(true);
     expect(writes).toEqual([]);
   });
+
+  test("blocks scratch review evidence paths from project state", () => {
+    // Given
+    const paths = [
+      "projects/project_001/live-evidence/df235-slide-regeneration-review-generic.json",
+      "projects/tmp/live-evidence/df235-slide-regeneration-review-rev_235.json",
+      "projects/project_001/live-evidence/df235-slide-regeneration-review-observer.json",
+    ];
+
+    // When
+    const decisions = paths.map(hasLiveSlideRegenerationReviewEvidencePath);
+
+    // Then
+    expect(decisions).toEqual([false, false, false]);
+  });
 });
 
 async function readyCandidate(): Promise<LiveSlideRegenerationCandidate> {
@@ -119,11 +137,12 @@ function matchingComparison(candidate: LiveSlideRegenerationCandidate): SlideRev
   };
 }
 
-async function caughtError(action: () => Promise<unknown>): Promise<unknown> {
+async function caughtError(action: () => Promise<unknown>): Promise<Error | undefined> {
   try {
     await action();
     return undefined;
   } catch (error) {
-    return error;
+    if (error instanceof Error) return error;
+    throw error;
   }
 }

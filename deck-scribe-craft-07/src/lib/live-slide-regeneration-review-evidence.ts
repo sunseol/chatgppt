@@ -6,7 +6,16 @@ import type { SlideRevisionComparison } from "./slide-revision-generation";
 
 const REVIEW_EVIDENCE_PATH =
   /^projects\/[A-Za-z0-9_-]+\/live-evidence\/df235-slide-regeneration-review-[A-Za-z0-9_-]+\.json$/;
-const TEMPLATE_EVIDENCE_MARKERS = ["template", "sample", "example", "placeholder"] as const;
+const NON_OBSERVED_REVIEW_EVIDENCE_MARKERS = [
+  "template",
+  "sample",
+  "example",
+  "placeholder",
+  "generic",
+  "tmp",
+  "temp",
+  "observer",
+] as const;
 
 export type LiveSlideRegenerationReviewEvent =
   | {
@@ -150,7 +159,7 @@ export function hasLiveSlideRegenerationReviewEvidencePath(path: string | undefi
   const normalized = path.toLowerCase();
   return (
     REVIEW_EVIDENCE_PATH.test(path) &&
-    !TEMPLATE_EVIDENCE_MARKERS.some((marker) => normalized.includes(marker))
+    !NON_OBSERVED_REVIEW_EVIDENCE_MARKERS.some((marker) => normalized.includes(marker))
   );
 }
 

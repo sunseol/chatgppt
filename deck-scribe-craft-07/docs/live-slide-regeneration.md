@@ -110,8 +110,9 @@ persists through `DeckProject.liveSlideRegenerationReviewEvidence`.
 `reviewEvidencePath` values only when they match the canonical writer path
 `projects/{projectId}/live-evidence/df235-slide-regeneration-review-{eventId}.json`
 and are non-synthetic, non-local JSON evidence. Generic
-`df235-slide-regeneration-review.json`, template/sample/example/placeholder, or
-developer-local paths no longer inflate `DeckProject.liveSlideRegenerationReviewEvidence`.
+`df235-slide-regeneration-review.json`, template/sample/example/placeholder,
+generic event ids, temporary project scopes, observer paths, or developer-local
+paths no longer inflate `DeckProject.liveSlideRegenerationReviewEvidence`.
 
 2026-06-21 KST product hardening: `reviewEvidencePath` values now also must be
 canonical without boundary whitespace. A padded path such as
@@ -119,6 +120,13 @@ canonical without boundary whitespace. A padded path such as
 does not persist into `DeckProject.liveSlideRegenerationReviewEvidence`, so
 project state cannot make a non-canonical review artifact path look ready after
 string trimming.
+
+2026-06-22 KST product hardening: `reviewEvidencePath` values now also reject
+scratch or observer-marked canonical-looking paths such as
+`projects/tmp/live-evidence/df235-slide-regeneration-review-rev_235.json`,
+`df235-slide-regeneration-review-generic.json`, or
+`df235-slide-regeneration-review-observer.json`. These paths no longer survive
+project-state persistence as packaged Review-stage evidence.
 
 ## Revision Target Identity Gate
 

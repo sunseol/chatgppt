@@ -187,6 +187,21 @@ This still does not close DF-235. A real packaged Review-stage run still needs
 to approve the regenerated v2 candidate from the app surface and capture
 failed-regeneration original-preservation evidence in the Lane D bundle.
 
+## 2026-06-22 KST DF-235 Review Evidence Path Marker Gate
+
+DF-235 local update: review evidence paths now reject scratch or observer-marked
+canonical-looking paths before they can persist into
+`DeckProject.liveSlideRegenerationReviewEvidence`. Paths such as
+`projects/tmp/live-evidence/df235-slide-regeneration-review-rev_235.json`,
+`df235-slide-regeneration-review-generic.json`, or
+`df235-slide-regeneration-review-observer.json` now block instead of being
+accepted as packaged Review-stage approval or preservation evidence. Regression
+coverage lives in `src/lib/live-slide-regeneration-review-evidence.test.ts`.
+
+This still does not close DF-235. A real packaged Review-stage run still needs
+to approve the regenerated v2 candidate from the app surface and capture
+failed-regeneration original-preservation evidence in the Lane D bundle.
+
 ## 2026-06-22 KST DF-244 Malformed App Server Usage Gate
 
 DF-244 local update: Codex image usage confirmation now has to be Codex
