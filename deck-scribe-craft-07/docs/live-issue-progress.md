@@ -522,3 +522,32 @@ Assigned issue disposition:
 - DF-241 / `#151` and DF-247 / `#157`: remain blocked by the missing full
   Golden Path/release evidence, but can now reference a single DF-243 closure
   manifest when the live interruption matrix is eventually captured.
+
+## 2026-06-21 Packaged Live Evidence Index Gate
+
+The current product branch now has `src/lib/packaged-live-evidence-index.ts` as
+the shared Packaged Live evidence index validator for DF-241, DF-242, DF-243,
+DF-245, DF-246, and DF-247. The index is intentionally only an aggregator of
+already-produced evidence JSON paths and SHA-256 digests; it does not replace
+the underlying Golden Path, benchmark, interruption, packaging, manual QA, or
+release-gate validators.
+
+DF-247 local update: Packaged Live evidence index validation now rejects missing
+or duplicated ticket entries, wrong GitHub issue numbers, non-canonical evidence
+paths, artifact paths that name another ticket, duplicate artifact paths,
+malformed SHA-256 digests, and entries marked `ready` while their child
+validation result is still `blocked`. It also rejects a ready DF-247 release
+index when any upstream DF-241/DF-242/DF-243/DF-245/DF-246 entry is blocked.
+This prevents the final release gate handoff from treating scattered or
+contradictory packaged evidence pointers as a coherent release bundle.
+
+Assigned issue disposition:
+
+- DF-241 / `#151`, DF-242 / `#152`, DF-243 / `#153`, DF-245 / `#155`, and
+  DF-246 / `#156`: remain open. The local index gives packaged QA one shared
+  manifest shape to fill after each underlying artifact is genuinely produced,
+  but it does not create the real Golden Path, benchmark, interruption,
+  signed/notarized clean-machine, or non-developer manual QA evidence.
+- DF-247 / `#157`: remains blocked by the same open P0 evidence requirements,
+  but can now reject a final release index that points at missing, duplicated,
+  wrong-ticket, or still-blocked upstream evidence.
