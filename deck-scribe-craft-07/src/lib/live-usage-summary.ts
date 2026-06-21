@@ -128,9 +128,9 @@ function usageAmountIssues(stage: LiveUsageStageSummary): readonly LiveUsageSumm
 }
 
 function durationIssues(stage: LiveUsageStageSummary): readonly LiveUsageSummaryIssue[] {
-  return Number.isFinite(stage.durationMs) && stage.durationMs >= 0
+  return Number.isFinite(stage.durationMs) && stage.durationMs > 0
     ? []
-    : [issue("invalid_duration", stage, "Stage duration must be non-negative.")];
+    : [issue("invalid_duration", stage, "Stage duration must be a positive observed value.")];
 }
 
 function retryIssues(stage: LiveUsageStageSummary): readonly LiveUsageSummaryIssue[] {

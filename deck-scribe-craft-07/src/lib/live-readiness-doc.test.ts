@@ -248,7 +248,7 @@ describe("live readiness documentation", () => {
     const usageSummary = readDoc(DOCS.usageSummary);
 
     expect(usageSummary.includes("DF-244")).toBe(true);
-    expect(usageSummary.includes("provider, duration, and retry count")).toBe(true);
+    expectDocIncludes(usageSummary, "provider, positive observed duration, and retry count");
     expect(usageSummary.includes("unlabelled_estimated_cost")).toBe(true);
     expect(usageSummary.includes("estimated_cost_marked_actual")).toBe(true);
     expect(usageSummary.includes("missing_image_billing_confirmation")).toBe(true);

@@ -53,12 +53,15 @@ describe("live usage summary documentation", () => {
     expect(usageSummary.includes("duplicate_usage_stage_identity")).toBe(true);
     expect(usageSummary.includes("invalid_usage_provider_kind")).toBe(true);
     expect(usageSummary.includes("live-usage-summary-stage-identity.test.ts")).toBe(true);
+    expect(usageSummary.includes("live-usage-summary-duration-evidence.test.ts")).toBe(true);
+    expect(usageSummary.includes("zero-duration latency evidence blockers")).toBe(true);
     expect(usageSummary.includes("invalid_cost_label")).toBe(true);
     expect(usageSummary.includes("live-usage-summary-cost-label.test.ts")).toBe(true);
     expect(usageSummary.includes("manual QA against the packaged app surface")).toBe(true);
 
     expect(progress.includes("DF-244 live update")).toBe(true);
     expect(progress.includes("DF-244 Malformed App Server Usage Gate")).toBe(true);
+    expect(progress.includes("DF-244 Positive Duration Evidence Gate")).toBe(true);
     expect(progress.includes("DF-244 App Server rich usage update")).toBe(true);
     expect(progress.includes("malformed supplied numeric usage and cost fields")).toBe(true);
     expect(progress.includes("thread/tokenUsage/updated")).toBe(true);
@@ -93,6 +96,7 @@ describe("live usage summary documentation", () => {
     expect(decision.includes("formatted summaries")).toBe(true);
     expect(decision.includes("non-canonical, or duplicated usage stage ids")).toBe(true);
     expect(decision.includes("unsupported runtime provider kinds")).toBe(true);
+    expect(decision.includes("zero-duration or otherwise invalid duration/retry data")).toBe(true);
     expect(decision.includes("developer-local")).toBe(true);
     expect(decision.includes("packaged app-surface usage summary manual QA")).toBe(true);
     expect(decision.includes("real provider image Codex usage payloads")).toBe(true);
