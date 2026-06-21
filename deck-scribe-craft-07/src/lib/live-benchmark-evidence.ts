@@ -10,6 +10,7 @@ export const LIVE_BENCHMARK_IDS = [
   "image_intro",
   "revision_regeneration",
 ] as const;
+const LIVE_BENCHMARK_REPORT_PATH = "docs/live-benchmark-report.md";
 
 export type LiveBenchmarkId = (typeof LIVE_BENCHMARK_IDS)[number];
 export type LiveBenchmarkStatus = "passed" | "failed" | "blocked";
@@ -239,8 +240,7 @@ function shortfallIssues(passedLiveCount: number): readonly LiveBenchmarkEvidenc
 }
 
 function reportIssues(reportPath: string): readonly LiveBenchmarkEvidenceIssue[] {
-  const normalized = reportPath.toLowerCase().trim();
-  return normalized.endsWith("live-benchmark-report.md") &&
+  return reportPath === LIVE_BENCHMARK_REPORT_PATH &&
     hasObservedBenchmarkEvidencePath(reportPath, [".md"])
     ? []
     : [

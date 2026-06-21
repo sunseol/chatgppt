@@ -80,6 +80,28 @@ describe("live benchmark report path evidence", () => {
     ]);
   });
 
+  test("blocks benchmark report paths outside the committed docs location", () => {
+    // Given
+    const bundle = completeBundle({
+      reportPath: "tmp/live-benchmark-report.md",
+      runs: [
+        passedRun("korean_business"),
+        passedRun("market_research"),
+        passedRun("chart_report"),
+        passedRun("image_intro"),
+        failedRun("revision_regeneration"),
+      ],
+    });
+
+    // When
+    const result = evaluateLiveBenchmarkEvidence(bundle);
+
+    // Then
+    expect(result.kind === "blocked" ? result.issues.map((issue) => issue.code) : []).toEqual([
+      "missing_live_benchmark_report",
+    ]);
+  });
+
   test("blocks scenario report paths that only become valid after trimming", () => {
     // Given
     const bundle = completeBundle({

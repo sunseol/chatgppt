@@ -3,13 +3,21 @@
   "issueNumber": 152,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-21T15:58:37Z",
+  "generatedAt": "2026-06-21T20:40:01Z",
   "packageArchiveSha256": "aacadd4cd4546ce20b084b1fbf8018e9571a635983ad9aa30b07a123c705985e",
-  "summary": "The live benchmark validator is implemented, but no five-scenario packaged benchmark output bundle set exists.",
+  "summary": "The live benchmark validator is implemented and now requires the exact committed docs/live-benchmark-report.md report path, but no five-scenario packaged benchmark output bundle set exists.",
   "currentEvidence": [
     {
       "path": "docs/live-benchmark-report.md",
       "kind": "contract"
+    },
+    {
+      "path": "src/lib/live-benchmark-evidence.ts",
+      "kind": "validator requiring exact committed benchmark report path"
+    },
+    {
+      "path": "src/lib/live-benchmark-report-path-evidence.test.ts",
+      "kind": "regression coverage for same-named non-docs benchmark reports"
     },
     {
       "path": "docs/live-release-decision.md",

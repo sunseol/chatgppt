@@ -43,7 +43,7 @@ Release requirement: at least 4 of 5 live benchmarks must pass without counting 
 - at least four of the five required `live` scenario runs whose Live Golden Path completed
 - no mock scores counted in Live pass totals
 - failure classification strictly limited to provider, context, research, image, renderer, or editor for every failed or blocked benchmark
-- a `docs/live-benchmark-report.md` report path
+- the exact committed `docs/live-benchmark-report.md` report path; a same-named report in `tmp/`, `reports/`, or any other location is not DF-242 release evidence
 
 Blocking issue codes:
 
@@ -81,7 +81,7 @@ Blocking issue codes:
 - `live_benchmark_shortfall`
 - `missing_live_benchmark_report`
 
-Current local status: the validator is implemented and tested, including rejection of unknown or duplicate benchmark scenarios, unsupported failure domains at both evidence-bundle and release-gate level, non-canonical uppercase package SHA evidence, `mock`, `fixture`, `test`, `fake`, `template`, `sample`, `example`, `placeholder`, developer-local absolute, and `file://` output bundle paths and report paths, benchmark report paths, scenario report paths, source/image artifact ids, and final export artifact ids that only become valid after trimming whitespace, synthetic or observer-template source/image/provider turn or request/regeneration/export artifact ids, evidence count/list mismatches, duplicate scenario report reuse, cross-scenario borrowed report/Golden Path/screenshot paths, missing, reused, or non-step-named screenshot path evidence, missing regenerated image artifact evidence, regenerated images counted toward the initial five-image floor, plus cross-run source/image/provider turn or request evidence reuse even when a bundle contains both distinct turn ids and reused request ids, but no real provider output bundle 5 sets have been produced.
+Current local status: the validator is implemented and tested, including rejection of unknown or duplicate benchmark scenarios, unsupported failure domains at both evidence-bundle and release-gate level, non-canonical uppercase package SHA evidence, `mock`, `fixture`, `test`, `fake`, `template`, `sample`, `example`, `placeholder`, developer-local absolute, and `file://` output bundle paths and report paths, top-level benchmark report paths outside the exact committed `docs/live-benchmark-report.md` location, benchmark report paths, scenario report paths, source/image artifact ids, and final export artifact ids that only become valid after trimming whitespace, synthetic or observer-template source/image/provider turn or request/regeneration/export artifact ids, evidence count/list mismatches, duplicate scenario report reuse, cross-scenario borrowed report/Golden Path/screenshot paths, missing, reused, or non-step-named screenshot path evidence, missing regenerated image artifact evidence, regenerated images counted toward the initial five-image floor, plus cross-run source/image/provider turn or request evidence reuse even when a bundle contains both distinct turn ids and reused request ids, but no real provider output bundle 5 sets have been produced.
 
 ## 2026-06-21 KST lane evidence update
 
