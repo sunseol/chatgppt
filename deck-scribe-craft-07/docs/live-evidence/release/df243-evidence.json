@@ -3,9 +3,9 @@
   "issueNumber": 153,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-21T20:45:56Z",
+  "generatedAt": "2026-06-21T21:58:04Z",
   "packageArchiveSha256": "aacadd4cd4546ce20b084b1fbf8018e9571a635983ad9aa30b07a123c705985e",
-  "summary": "The interruption closure manifest materializes the observed text-turn and fetch-shutdown recovery snapshots, the product can persist app-storage cancel-job, image partial-resume, and interrupted approval/export gate JSON from real queue/gate evidence, and the matrix now rejects cancel recovery/cancel-signal path aliasing plus same-named report paths outside exact docs/live-interruption-matrix.md. The release remains blocked until those generated artifacts are captured from a packaged run.",
+  "summary": "The interruption closure manifest materializes the observed text-turn and fetch-shutdown recovery snapshots, the product can persist app-storage cancel-job, image partial-resume, and interrupted approval/export gate JSON from real queue/gate evidence, and the closure gate now rejects borrowed matrix payloads from another evidence path. The release remains blocked until those generated artifacts are captured from a packaged run.",
   "currentEvidence": [
     {
       "path": "docs/live-evidence/lane-h-20260621/df243-closure-evidence.json",
@@ -70,6 +70,14 @@
     {
       "path": "src/lib/live-interruption-gate-evidence-export.test.ts",
       "kind": "interrupted artifact gate evidence writer regression coverage"
+    },
+    {
+      "path": "src/lib/live-interruption-closure-payload.ts",
+      "kind": "closure matrix payload validator"
+    },
+    {
+      "path": "src/lib/live-interruption-closure-evidence.test.ts",
+      "kind": "borrowed matrix payload regression coverage"
     }
   ],
   "missingEvidence": [

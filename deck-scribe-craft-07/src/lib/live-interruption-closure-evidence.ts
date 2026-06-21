@@ -2,6 +2,7 @@ import {
   liveInterruptionClosureIdentityIssues,
   type LiveInterruptionClosureIdentityIssue,
 } from "./live-interruption-closure-identity";
+import { matrixEvidencePayloadIssues } from "./live-interruption-closure-payload";
 import { hasObservedInterruptionEvidencePath } from "./live-interruption-evidence-path";
 import {
   evaluateLiveInterruptionMatrix,
@@ -26,6 +27,7 @@ export type LiveInterruptionClosureEvidence = {
   readonly status: LiveInterruptionClosureStatus;
   readonly reportPath: string;
   readonly matrixEvidencePath: string;
+  readonly matrixEvidencePayload?: unknown;
   readonly matrix: LiveInterruptionMatrixEvidence;
   readonly requiredArtifacts: LiveInterruptionClosureRequiredArtifacts;
 };
@@ -60,6 +62,7 @@ export function evaluateLiveInterruptionClosureEvidence(
     ...liveInterruptionClosureIdentityIssues(evidence),
     ...statusIssues(evidence),
     ...matrixEvidencePathIssues(evidence),
+    ...matrixEvidencePayloadIssues(evidence),
     ...reportPathIssues(evidence),
     ...requiredArtifactPathIssues(evidence.requiredArtifacts),
     ...requiredArtifactBundlePathIssues(evidence.requiredArtifacts),

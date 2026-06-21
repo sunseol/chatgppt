@@ -72,6 +72,26 @@ describe("live interruption closure evidence", () => {
     expect(result.issues[0]?.refs).toEqual(["cancelSignalEvidencePath"]);
   });
 
+  test("blocks matrix evidence payloads borrowed from another matrix path", () => {
+    // Given
+    const evidence = closureEvidence({
+      matrixEvidencePayload: {
+        ...matrixEvidencePayload(completeMatrix(), "docs/live-evidence/df243-other-matrix.json"),
+        evidencePath: "docs/live-evidence/df243-other-matrix.json",
+      },
+    });
+
+    // When
+    const result = evaluateLiveInterruptionClosureEvidence(evidence);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "missing_interruption_matrix_evidence",
+    ]);
+  });
+
   test("blocks closure manifests for a different issue or ticket", () => {
     // Given
     const evidence = closureEvidence({ issue: "#999", ticket: "DF-999" });
@@ -136,7 +156,7 @@ function closureEvidence(
   patch: Partial<LiveInterruptionClosureEvidence> = {},
 ): LiveInterruptionClosureEvidence {
   const matrix = completeMatrix();
-  return {
+  const evidence = {
     issue: "#153",
     ticket: "DF-243",
     status: "ready_for_close",
@@ -151,6 +171,13 @@ function closureEvidence(
       exportGateEvidencePath: evidencePath("interrupted-export-gate"),
     },
     ...patch,
+  } satisfies LiveInterruptionClosureEvidence;
+  return {
+    ...evidence,
+    matrixEvidencePayload:
+      "matrixEvidencePayload" in patch
+        ? patch.matrixEvidencePayload
+        : matrixEvidencePayload(evidence.matrix, evidence.matrixEvidencePath),
   };
 }
 
@@ -195,4 +222,39 @@ function scenario(
 
 function evidencePath(name: string): string {
   return `docs/live-evidence/lane-h-20260621/${name}.json`;
+}
+
+type LiveInterruptionMatrixPayloadFixture = {
+  readonly kind: "df243_interruption_matrix";
+  readonly evidencePath: string;
+  readonly reportPath: string;
+  readonly scenarios: readonly {
+    readonly id: string;
+    readonly liveJobId: string;
+    readonly recoverySnapshotPath: string;
+    readonly cancelSignalEvidencePath?: string;
+    readonly approvalGateEvidencePath?: string;
+    readonly exportGateEvidencePath?: string;
+  }[];
+  readonly capturedAt: string;
+};
+
+function matrixEvidencePayload(
+  matrix: LiveInterruptionMatrixEvidence,
+  evidencePathValue: string,
+): LiveInterruptionMatrixPayloadFixture {
+  return {
+    kind: "df243_interruption_matrix",
+    evidencePath: evidencePathValue,
+    reportPath: matrix.reportPath,
+    scenarios: matrix.scenarios.map((item) => ({
+      id: item.id,
+      liveJobId: item.liveJobId,
+      recoverySnapshotPath: item.recoverySnapshotPath,
+      cancelSignalEvidencePath: item.cancelSignalEvidencePath,
+      approvalGateEvidencePath: item.approvalGateEvidencePath,
+      exportGateEvidencePath: item.exportGateEvidencePath,
+    })),
+    capturedAt: "2026-06-21T22:20:00Z",
+  };
 }
