@@ -49,6 +49,61 @@ describe("Codex App Server usage summary", () => {
     expect(summary.includes("input 25006 · output 141")).toBe(true);
   });
 
+  test("preserves richer App Server usage summaries with image disclosure and estimated cost", () => {
+    // Given
+    const stage = createCodexAppServerUsageStageSummary({
+      stageId: "generate",
+      durationMs: 197_953,
+      retryCount: 2,
+      notifications: [
+        {
+          method: "thread/tokenUsage/updated",
+          params: {
+            tokenUsage: {
+              total: {
+                inputTokens: 1_024,
+                outputTokens: 256,
+              },
+            },
+            usageSummary: {
+              imageCount: 5,
+              estimatedCostUsd: 0.18,
+              imageBillingDisclosure: {
+                apiKeyRequired: false,
+                userConfirmed: true,
+                label: "Codex image usage confirmed",
+                confirmationEvidencePath: "usage/df244-image-billing-confirmation.json",
+              },
+            },
+          },
+        },
+      ],
+    });
+
+    // When
+    const gate = evaluateLiveUsageSummary([stage]);
+    const summary = formatLiveUsageSummary([stage]);
+
+    // Then
+    expect(gate).toEqual({ kind: "ready" });
+    expect(stage.costLabel).toBe("estimate");
+    expect(stage.usage).toEqual({
+      inputTokens: 1_024,
+      outputTokens: 256,
+      imageCount: 5,
+      estimatedCostUsd: 0.18,
+      imageBillingDisclosure: {
+        apiKeyRequired: false,
+        userConfirmed: true,
+        label: "Codex image usage confirmed",
+        confirmationEvidencePath: "usage/df244-image-billing-confirmation.json",
+      },
+    });
+    expect(summary.includes("input 1024 · output 256 · images 5")).toBe(true);
+    expect(summary.includes("cost estimate $0.1800")).toBe(true);
+    expect(summary.includes("Codex image usage confirmed")).toBe(true);
+  });
+
   test("blocks malformed token usage notifications as supplied but unrecorded usage", () => {
     // Given
     const stage = createCodexAppServerUsageStageSummary({

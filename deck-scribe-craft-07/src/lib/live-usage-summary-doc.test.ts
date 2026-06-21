@@ -14,7 +14,13 @@ describe("live usage summary documentation", () => {
     const decision = readDoc(DOCS.decision);
 
     expect(usageSummary.includes("App Surface Usage Display")).toBe(true);
+    expect(usageSummary.includes("App Server Rich Usage Preservation")).toBe(true);
     expect(usageSummary.includes("ProviderJobProgressPanel.integration.test.tsx")).toBe(true);
+    expect(usageSummary.includes("usageSummary")).toBe(true);
+    expect(usageSummary.includes("imageBillingDisclosure")).toBe(true);
+    expect(usageSummary.includes("estimatedCostUsd")).toBe(true);
+    expect(usageSummary.includes("`costLabel` to `estimate`")).toBe(true);
+    expect(usageSummary.includes("missing_provider_usage_summary")).toBe(true);
     expect(usageSummary.includes("cost estimate $0.0400")).toBe(true);
     expect(usageSummary.includes("Codex image usage confirmed")).toBe(true);
     expect(usageSummary.includes("Codex image usage not confirmed")).toBe(true);
@@ -44,7 +50,11 @@ describe("live usage summary documentation", () => {
     expect(usageSummary.includes("manual QA against the packaged app surface")).toBe(true);
 
     expect(progress.includes("DF-244 live update")).toBe(true);
+    expect(progress.includes("DF-244 App Server rich usage update")).toBe(true);
+    expect(progress.includes("thread/tokenUsage/updated")).toBe(true);
+    expect(progress.includes("imageBillingDisclosure.confirmationEvidencePath")).toBe(true);
     expect(progress.includes("estimatedCostUsd` only as `cost estimate")).toBe(true);
+    expect(progress.includes("`costLabel` to `estimate`")).toBe(true);
     expect(progress.includes("confirmationEvidencePath")).toBe(true);
     expect(progress.includes("non-local")).toBe(true);
     expect(progress.includes("blank or duplicated stage ids")).toBe(true);
