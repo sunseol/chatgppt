@@ -76,6 +76,29 @@ describe("review gallery title edit re-export evidence", () => {
     expect(validation.issues.map((issue) => issue.code)).toEqual(["title_edit_reexport_mismatch"]);
   });
 
+  test("blocks title edit evidence paths that rely on boundary whitespace", () => {
+    // Given
+    const items = validItems();
+
+    // When
+    const validation = validateReviewGalleryLiveCompositions({
+      items,
+      expectedSlideCount: 1,
+      titleEditReexportEvidence: {
+        slideNumber: 1,
+        originalTitle: "시장",
+        editedTitle: "수정된 시장",
+        exportedSvgPath: " projects/project/exports/svg/slide_01.svg ",
+        exportedSvgContent: validExportedSvgContent("수정된 시장"),
+      },
+    });
+
+    // Then
+    expect(validation.kind).toBe("blocked");
+    if (validation.kind !== "blocked") return;
+    expect(validation.issues.map((issue) => issue.code)).toEqual(["title_edit_reexport_mismatch"]);
+  });
+
   test("blocks title edit evidence that is not tied to the compositor background", () => {
     // Given
     const items = validItems();

@@ -69,6 +69,14 @@ DF-234 local update: `src/components/deck/review-gallery-title-edit-export-valid
 
 DF-234 local update: `src/components/deck/review-gallery-title-edit-export-validation.ts` now also rejects title edit re-export evidence whose exported SVG path is synthetic, non-project-scoped, or marked as template/sample/example/placeholder evidence, even when the SVG content contains the edited title. `src/components/deck/review-gallery-title-edit-export.test.ts` covers the false-ready template export path. The issue remains open until packaged-app live compositor screenshots from five real image artifacts and title edit/re-export QA are captured.
 
+DF-234 local update: title edit re-export evidence now rejects exported SVG
+paths that only become valid after trimming boundary whitespace. A padded
+`projects/.../exports/svg/slide_01.svg` value now blocks with
+`title_edit_reexport_mismatch`, so packaged review or manual-QA evidence cannot
+turn a non-canonical export artifact path into a ready title-edit proof. The
+issue remains open until packaged-app live compositor screenshots from five real
+image artifacts and title edit/re-export QA are captured.
+
 DF-234 local update: title edit re-export evidence now also has to carry the reviewed compositor export basis and stored background artifact id/path/hash. This prevents a project-scoped SVG that contains the edited title, but was detached from the real reviewed background artifact, from satisfying the packaged title edit QA requirement. `src/components/deck/review-gallery-title-edit-export.test.ts` covers the detached-compositor false-ready case. The issue remains open until packaged-app live compositor screenshots from five real image artifacts and title edit/re-export QA are captured.
 
 DF-235 local update: `src/lib/live-slide-regeneration-candidate.ts` now treats the regenerated background provenance sidecar as part of the versioned storage identity. A candidate whose binary and metadata paths look correct but whose provenance sidecar points at another artifact or slide is rejected with `background_artifact_storage_path_mismatch`; `src/lib/live-slide-regeneration-provenance.test.ts` covers the false-ready case. The issue remains open until packaged-app live full-slide regeneration before/after approval QA, a real provider regenerated background artifact version, and failed-regeneration original-preservation evidence are captured.

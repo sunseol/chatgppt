@@ -72,10 +72,10 @@ function exportedSvgReferencesComposition(
 }
 
 function isObservedTitleEditExportPath(value: string, slideNumber: number): boolean {
-  const trimmed = value.trim();
-  const normalized = trimmed.toLowerCase();
+  if (value.trim() !== value) return false;
+  const normalized = value.toLowerCase();
   return (
-    hasNonSyntheticEvidencePath(trimmed, [".svg"]) &&
+    hasNonSyntheticEvidencePath(value, [".svg"]) &&
     normalized.startsWith("projects/") &&
     normalized.endsWith(`/exports/svg/slide_${pad2(slideNumber)}.svg`) &&
     !NON_OBSERVED_EXPORT_PATH_MARKERS.some((marker) => normalized.includes(marker))
