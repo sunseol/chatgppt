@@ -117,15 +117,16 @@ function completeBundle(
 }
 
 function liveImageArtifact(artifactId: string, turnId = "turn_image_reused") {
+  const isRegenerated = artifactId.includes("regenerated");
   return createProviderArtifactProvenance({
     artifactId,
     executionMode: "production",
     providerKind: "codex",
     authMode: "codex_session",
     modelOrRuntime: "gpt-image-2",
-    promptVersion: "slide_background@v1",
+    promptVersion: isRegenerated ? "slide_regeneration@v1" : "slide_background@v1",
     durationMs: 1_000,
-    inputArtifactIds: ["live_layout_ir"],
+    inputArtifactIds: isRegenerated ? ["live_image_3"] : ["live_layout_ir"],
     fixture: false,
     threadId: "thread_golden_path",
     turnId,

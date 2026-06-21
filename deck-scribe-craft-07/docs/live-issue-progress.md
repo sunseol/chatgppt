@@ -6,6 +6,17 @@ Scope: tracked GitHub issues `#126` through `#157` (`DF-200` through `DF-247`).
 
 ## 2026-06-22 KST Packaged Evidence Index Covers All Open P0s
 
+DF-241 local update: Golden Path regeneration image evidence now requires both
+a regeneration marker and input lineage to one of the initial live image
+artifacts. A marker-only unrelated regenerated image can no longer satisfy
+`missing_regenerated_live_image_artifact`; regression coverage lives in
+`src/lib/live-golden-path-regeneration-image.test.ts`, and the validator is in
+`src/lib/live-golden-path-image-evidence.ts`. DF-241 still cannot close until a
+real packaged Golden Path run captures the signed report, screenshots/recording,
+final validation bundle, text/research/source lineage, five initial images,
+approved selected-slide regeneration, title edit, export, and restart/reopen
+evidence.
+
 DF-247 local update: the Packaged Live evidence index now requires blocked or
 ready JSON artifacts for all ten remaining open P0 tickets: DF-205, DF-233,
 DF-235, DF-241, DF-242, DF-243, DF-244, DF-245, DF-246, and DF-247. The branch
@@ -629,7 +640,7 @@ DF-240 local update: `evaluateFinalExportGate` now rejects production export sum
 
 DF-240 local update: `validateLiveGenerationReportLineage` now rejects reused text turn ids across distinct slide lineage rows with `duplicate_text_turn`. `src/lib/live-generation-report-artifact-identity.test.ts` covers the false-positive case where two slides carried unique text/image artifacts and image turn ids but reused the same Codex text turn as report/export evidence. The issue remains open because a packaged production run still needs to produce real per-slide text turns, image turns, compositor output, and final export files.
 
-DF-241 local update: `liveGoldenPathIssues` now rejects Golden Path E2E bundles that list the `live_slide_regeneration` step but only provide the five initial live image artifacts. `src/lib/live-golden-path-image-evidence.ts` now separates the five initial production `codex` image artifacts from the approved full-slide regeneration artifact, accepts regeneration evidence either through a regeneration-marked artifact/prompt or a live image artifact that cites another live image artifact as input, rejects missing regeneration with `missing_regenerated_live_image_artifact`, and prevents a regenerated artifact from counting toward the initial five-image floor. `src/lib/live-golden-path-regeneration-image.test.ts` covers both false positives. The issue remains open because a signed packaged production Golden Path run with `live_e2e_report.md`, screenshots/recording, final validation bundle, restart/reopen evidence, real sources, five initial live images, and one approved regenerated live image has not been produced.
+DF-241 local update: `liveGoldenPathIssues` now rejects Golden Path E2E bundles that list the `live_slide_regeneration` step but only provide the five initial live image artifacts. `src/lib/live-golden-path-image-evidence.ts` now separates the five initial production `codex` image artifacts from the approved full-slide regeneration artifact, requires regeneration evidence to be both regeneration-marked and input-linked to another live image artifact, rejects missing regeneration with `missing_regenerated_live_image_artifact`, and prevents a regenerated artifact from counting toward the initial five-image floor. `src/lib/live-golden-path-regeneration-image.test.ts` covers missing and marker-only false positives. The issue remains open because a signed packaged production Golden Path run with `live_e2e_report.md`, screenshots/recording, final validation bundle, restart/reopen evidence, real sources, five initial live images, and one approved regenerated live image has not been produced.
 
 DF-241 local update: Golden Path source evidence now uses `src/lib/live-real-source-url.ts` to reject placeholder, reserved documentation, local, or private-network source URLs before the three-source and primary/official-source requirements can pass. `src/lib/live-golden-path-source-url-evidence.test.ts` captures the false-positive case where `example.*` or documentation IP URLs previously satisfied the live-source count. The issue remains open because a signed packaged production Golden Path run with real provider sources and stored validation artifacts has not been produced.
 

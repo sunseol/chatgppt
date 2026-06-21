@@ -59,17 +59,34 @@ function regeneratedLiveImageArtifactIds(
 ): ReadonlySet<string> {
   const liveImageIds = new Set(liveImages.map((artifact) => artifact.artifactId));
   const regeneratedIds = liveImages
-    .filter(
-      (artifact) =>
-        hasRegenerationMarker(artifact.artifactId) ||
-        hasRegenerationMarker(artifact.promptVersion) ||
-        artifact.inputArtifactIds.some((inputId) => {
-          const normalizedInputId = inputId.trim();
-          return normalizedInputId !== artifact.artifactId && liveImageIds.has(normalizedInputId);
-        }),
-    )
+    .filter((artifact) => isRegeneratedFromAnotherLiveImage(artifact, liveImageIds))
     .map((artifact) => artifact.artifactId);
   return new Set(regeneratedIds);
+}
+
+function isRegeneratedFromAnotherLiveImage(
+  artifact: ProviderArtifactProvenance,
+  liveImageIds: ReadonlySet<string>,
+): boolean {
+  return (
+    hasRegenerationEvidenceMarker(artifact) && referencesAnotherLiveImage(artifact, liveImageIds)
+  );
+}
+
+function hasRegenerationEvidenceMarker(artifact: ProviderArtifactProvenance): boolean {
+  return (
+    hasRegenerationMarker(artifact.artifactId) || hasRegenerationMarker(artifact.promptVersion)
+  );
+}
+
+function referencesAnotherLiveImage(
+  artifact: ProviderArtifactProvenance,
+  liveImageIds: ReadonlySet<string>,
+): boolean {
+  return artifact.inputArtifactIds.some((inputId) => {
+    const normalizedInputId = inputId.trim();
+    return normalizedInputId !== artifact.artifactId && liveImageIds.has(normalizedInputId);
+  });
 }
 
 function hasRegenerationMarker(value: string): boolean {

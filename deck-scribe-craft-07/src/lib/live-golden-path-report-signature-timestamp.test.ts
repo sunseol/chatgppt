@@ -70,7 +70,7 @@ function bundleFixture(reportContent: string) {
       providerKind: "codex",
       authMode: "codex_session",
       modelOrRuntime: "gpt-image-2",
-      promptVersion: "slide_generation@v1",
+      promptVersion: "slide_regeneration@v1",
       durationMs: 1_200,
       inputArtifactIds: ["project_001_image_slide_003_v1"],
       fixture: false,
