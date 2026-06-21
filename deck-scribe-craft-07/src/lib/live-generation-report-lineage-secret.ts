@@ -26,6 +26,7 @@ function lineageFieldValues(slide: LiveSlideReportLineage): readonly string[] {
     slide.textThreadId ?? "",
     slide.textPromptVersion,
     slide.imageArtifactId,
+    slide.imageTurnId ?? "",
     slide.imageRequestId ?? "",
     slide.promptVersion,
     slide.compositorHash,

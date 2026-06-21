@@ -677,3 +677,13 @@ backgrounds while passing only because OpenAI-style `requestId` is absent.
 DF-241 and DF-247 remain open until the signed packaged Golden Path and final
 release evidence index are produced from real app runs, but this removes one
 false-ready path for reusing packaged Codex image evidence.
+
+DF-240/DF-241 local update: slide-level live generation report lineage now has
+a first-class Codex image `imageTurnId` field. The formatter labels Codex image
+evidence as `image turn` while retaining legacy `imageRequestId` as a fallback
+for older/OpenAI-shaped rows, and final export provider-link validation matches
+against the same resolved image turn identity. This keeps packaged Golden Path
+and final export reports aligned with the Codex OAuth image route instead of
+making reviewers populate OpenAI API-style request-id fields for Codex image
+turns. DF-240/DF-241 still require the real packaged production report/export
+and Golden Path bundles.

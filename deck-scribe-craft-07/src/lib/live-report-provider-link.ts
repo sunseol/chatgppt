@@ -1,4 +1,5 @@
 import type { LiveSlideReportLineage } from "./live-generation-report-lineage";
+import { liveReportImageTurnId } from "./live-generation-report-image-turn";
 import type { ExecutionMode, ProviderArtifactProvenance } from "./provider-provenance";
 
 export type LiveReportProviderLinkIssueCode =
@@ -113,7 +114,7 @@ function imageProviderLinkIssues(
     artifact.executionMode === "production" &&
     artifact.providerKind === slide.imageProviderKind &&
     artifact.authMode === "codex_session" &&
-    artifact.turnId === slide.imageRequestId &&
+    artifact.turnId === liveReportImageTurnId(slide) &&
     artifact.promptVersion === slide.promptVersion &&
     artifact.fixture === slide.fixture
   ) {

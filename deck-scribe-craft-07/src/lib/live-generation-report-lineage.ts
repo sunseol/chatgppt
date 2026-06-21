@@ -5,6 +5,10 @@ import { lineageFieldSecretIssues } from "./live-generation-report-lineage-secre
 import { slideCoverageIssues } from "./live-generation-report-slide-coverage";
 import { textPromptIssues } from "./live-generation-report-text-prompt";
 import { productionContaminationIssues } from "./live-generation-report-contamination";
+import {
+  liveReportImageIdentityLabel,
+  liveReportImageTurnId,
+} from "./live-generation-report-image-turn";
 
 export type LiveGenerationReportLineageIssueCode =
   | "missing_source_trace"
@@ -47,6 +51,7 @@ export interface LiveSlideReportLineage {
   readonly textPromptVersion: string;
   readonly imageArtifactId: string;
   readonly imageProviderKind: ProviderArtifactProvenance["providerKind"];
+  readonly imageTurnId?: string;
   readonly imageRequestId?: string;
   readonly promptVersion: string;
   readonly fixture: boolean;
@@ -68,9 +73,9 @@ export function formatLiveGenerationReportLineage(
       } · prompt ${slide.textPromptVersion || "missing"} · artifact ${slide.textArtifactId} · ${
         slide.textProviderKind
       }`,
-      `  - image request ${slide.imageRequestId ?? "missing"} · artifact ${
-        slide.imageArtifactId
-      } · ${slide.imageProviderKind}`,
+      `  - ${liveReportImageIdentityLabel(slide)} ${
+        liveReportImageTurnId(slide) ?? "missing"
+      } · artifact ${slide.imageArtifactId} · ${slide.imageProviderKind}`,
       `  - prompt ${slide.promptVersion || "missing"} · fixture ${slide.fixture ? "yes" : "no"}`,
       `  - compositor ${slide.compositorHash} · export ${slide.exportedPngHash}`,
     ]),
@@ -141,13 +146,13 @@ function slideIssues(
             message: "Live image artifact id must match the reported slide number.",
           },
         ]),
-    ...(slide.imageRequestId?.trim()
+    ...(liveReportImageTurnId(slide)?.trim()
       ? []
       : [
           {
             code: "missing_image_request" as const,
             slideNumber: slide.slideNumber,
-            message: "Live image artifacts require provider request ids.",
+            message: "Live image artifacts require provider turn or request ids.",
           },
         ]),
     ...(slide.promptVersion.trim()

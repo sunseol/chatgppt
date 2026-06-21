@@ -2,6 +2,7 @@ import type {
   LiveGenerationReportLineageIssue,
   LiveSlideReportLineage,
 } from "./live-generation-report-lineage";
+import { liveReportImageTurnId } from "./live-generation-report-image-turn";
 
 export function lineageReferenceIssues(
   slides: readonly LiveSlideReportLineage[],
@@ -53,10 +54,12 @@ function duplicateSlideIssues(
 function duplicateImageRequestIssues(
   slides: readonly LiveSlideReportLineage[],
 ): readonly LiveGenerationReportLineageIssue[] {
-  return duplicateValues(slides.map((slide) => slide.imageRequestId ?? "")).map((requestId) => ({
-    code: "duplicate_image_request",
-    message: `Image request ${requestId} cannot satisfy multiple slide lineage rows.`,
-  }));
+  return duplicateValues(slides.map((slide) => liveReportImageTurnId(slide) ?? "")).map(
+    (requestId) => ({
+      code: "duplicate_image_request",
+      message: `Image turn/request ${requestId} cannot satisfy multiple slide lineage rows.`,
+    }),
+  );
 }
 
 function duplicateExportHashIssues(

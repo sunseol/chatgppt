@@ -14,7 +14,7 @@ Each production slide report must include:
 - no duplicate slide lineage rows
 - nonblank source ids used by the slide, with no blank or duplicate source id entries
 - nonblank text turn id, text thread id, text artifact id, text prompt version, and text provider kind
-- nonblank image request id, image artifact id, and image provider kind
+- nonblank Codex image turn id (`imageTurnId`) or legacy image request id, image artifact id, and image provider kind
 - Deck-scoped text artifacts may be shared across slide lineage rows when every row still carries source ids, text turn/thread ids, text prompt version, and provider provenance.
 - unique image artifact ids across slide lineage rows
 - text and image artifact ids that exist in provider provenance
@@ -30,7 +30,7 @@ Each production slide report must include:
 - exported project content without mock-mode or fixture markers
 - a production export package summary whose artifact hash is a full SHA-256 digest and whose export/project paths are observed non-synthetic, non-local JSON evidence, not template/sample/example/placeholder paths
 
-`buildGenerationReport` appends the formatted `## Live Slide Lineage` section when supplied with verified live report lineage. The report renderer uses the labels `text turn`, `image request`, `prompt`, `fixture`, `compositor`, and `export` so reviewers can see both text and image prompt lineage without opening the project file.
+`buildGenerationReport` appends the formatted `## Live Slide Lineage` section when supplied with verified live report lineage. The report renderer uses the labels `text turn`, `image turn` for Codex OAuth image evidence, `image request` for legacy provider evidence, `prompt`, `fixture`, `compositor`, and `export` so reviewers can see both text and image prompt lineage without opening the project file. New Codex image lineage should write `imageTurnId`; `imageRequestId` remains a legacy compatibility fallback.
 
 ## Blocking Rules
 
@@ -45,7 +45,7 @@ Each production slide report must include:
 - `missing_image_artifact`: image lineage is missing an image artifact id.
 - `duplicate_image_artifact`: an image artifact id is reused across slide lineage entries.
 - `image_artifact_slide_mismatch`: image artifact id is not a versioned `*_image_slide_###_vN` artifact id for the reported slide number.
-- `missing_image_request`: image lineage is missing the nonblank provider turn id.
+- `missing_image_request`: image lineage is missing the nonblank Codex provider turn id or legacy request id.
 - `duplicate_image_request`: an image provider turn id is reused across slide lineage entries.
 - `duplicate_export_hash`: an exported PNG hash is reused across slide lineage entries.
 - `missing_text_provider_lineage`: text artifact id is absent from provider provenance.
@@ -54,7 +54,7 @@ Each production slide report must include:
 - `image_provider_auth_mismatch`: image provider provenance is not from authenticated Codex image generation.
 - `text_provider_lineage_mismatch`: text turn/thread lineage differs from provider provenance.
 - `text_prompt_version_mismatch`: text prompt version differs from provider provenance.
-- `image_provider_lineage_mismatch`: image request lineage differs from provider provenance.
+- `image_provider_lineage_mismatch`: image turn/request lineage differs from provider provenance.
 - `missing_live_report_lineage_section`: validated sidecar lineage was supplied to the production export gate but the report markdown does not contain the formatted `## Live Slide Lineage` section.
 - `missing_prompt_version`: the slide prompt version is absent.
 - `invalid_compositor_hash`: compositor PNG hash is not a full SHA-256 digest.
@@ -72,9 +72,9 @@ Each production slide report must include:
 
 ## Local Evidence
 
-- `src/lib/live-generation-report-lineage.test.ts` verifies the formatted report section, complete production lineage, blocked missing or blank evidence ids, mixed blank source ids, duplicate source ids, missing text prompt version evidence, invalid export/compositor hashes, duplicate slide rows, reused image turn ids, sidecar lineage secret leakage, contaminated exported project content, and contaminated exports.
+- `src/lib/live-generation-report-lineage.test.ts` and `src/lib/live-generation-report-image-turn-lineage.test.ts` verify the formatted report section, complete production lineage, Codex `imageTurnId` lineage without legacy `imageRequestId`, blocked missing or blank evidence ids, mixed blank source ids, duplicate source ids, missing text prompt version evidence, invalid export/compositor hashes, duplicate slide rows, reused image turn ids, sidecar lineage secret leakage, contaminated exported project content, and contaminated exports.
 - `src/lib/live-generation-report-artifact-identity.test.ts` verifies that malformed image artifact ids plus reused image artifact id or exported PNG hash evidence cannot satisfy slide lineage rows, while a deck-scoped text artifact can feed multiple slide rows.
-- `src/lib/final-export-gate-live-lineage.test.ts`, `src/lib/final-export-gate-live-lineage-auth.test.ts`, `src/lib/final-export-gate-live-lineage-text-prompt.test.ts`, and `src/lib/final-export-gate-export-path.test.ts` verify that production export is blocked when slide-level live report lineage is missing, incomplete, omits project slides, reuses image request evidence, references provider artifacts that are absent from provider provenance, lacks authenticated text/image provider auth, has a non-digest export artifact hash, carries template/sample/example/placeholder export package paths, disagrees with provider turn/request metadata, or disagrees with text prompt version provenance, and is allowed only when provider provenance plus slide report lineage are complete.
+- `src/lib/final-export-gate-live-lineage.test.ts`, `src/lib/final-export-gate-live-lineage-auth.test.ts`, `src/lib/final-export-gate-live-lineage-text-prompt.test.ts`, and `src/lib/final-export-gate-export-path.test.ts` verify that production export is blocked when slide-level live report lineage is missing, incomplete, omits project slides, reuses image turn/request evidence, references provider artifacts that are absent from provider provenance, lacks authenticated text/image provider auth, has a non-digest export artifact hash, carries template/sample/example/placeholder export package paths, disagrees with provider turn/request metadata, or disagrees with text prompt version provenance, and is allowed only when provider provenance plus slide report lineage are complete.
 - `src/lib/final-export-gate-live-lineage-report-section.test.ts` verifies that production export is blocked when verified sidecar lineage is absent from the report markdown.
 - `src/lib/generation-report-live-lineage.test.ts` verifies that `buildGenerationReport` appends the formatted `## Live Slide Lineage` section when live lineage is supplied.
 - `src/lib/generation-report.test.ts` verifies existing generation report provider provenance fields including turn id, request id, prompt version, and fixture flag.

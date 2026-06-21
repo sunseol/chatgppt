@@ -29,7 +29,7 @@ describe("final export gate live report lineage", () => {
       reportMarkdown: reportFixture(),
       executionMode: "production",
       lineage: providerLineageFixture(),
-      liveReportLineage: [{ ...liveReportLineageFixture(), imageRequestId: undefined }],
+      liveReportLineage: [{ ...liveReportLineageFixture(), imageTurnId: undefined }],
     });
 
     expect(result.kind).toBe("blocked");
@@ -115,7 +115,7 @@ describe("final export gate live report lineage", () => {
         {
           ...liveReportLineageFixture(),
           textTurnId: "turn_text_unlinked",
-          imageRequestId: "img_req_unlinked",
+          imageTurnId: "turn_image_unlinked",
         },
       ],
     });
@@ -247,7 +247,7 @@ function liveReportLineageFixture(): LiveSlideReportLineage {
     textPromptVersion: "deck_plan@v1",
     imageArtifactId: "project_001_image_slide_001_v1",
     imageProviderKind: "codex",
-    imageRequestId: "turn_image_001",
+    imageTurnId: "turn_image_001",
     promptVersion: "slide_generation@v1",
     fixture: false,
     compositorHash: fullHash(),
