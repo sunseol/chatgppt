@@ -642,3 +642,12 @@ This keeps the defensive legacy secret-store path aligned with the packaged OS
 keychain bridge requirement while production image generation remains on Codex
 OAuth. DF-205 remains open until fresh login, logout/relogin, and packaged
 keychain lifecycle QA are produced from a clean account or clean machine.
+
+DF-241 local update: Golden Path restart/reopen evidence now requires the
+parsed `restartReopen.reopenedAt` timestamp to be at or after the parsed
+`reportSignature.signedAt` timestamp when the signed report timestamp is valid.
+A stale reopen event such as `2026-06-19T08:55:00.000Z` cannot satisfy a report
+signed at `2026-06-19T09:00:00.000Z`; it blocks as
+`missing_restart_reopen_evidence`. DF-241 remains open until a real signed
+packaged production Golden Path run produces the full report, screenshots,
+recording, validation bundle, export, and restart/reopen evidence.

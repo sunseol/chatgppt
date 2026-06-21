@@ -24,6 +24,30 @@ describe("live golden path restart reopen timestamp", () => {
     if (result.kind !== "blocked") return;
     expect(result.issues.map((issue) => issue.code)).toEqual(["missing_restart_reopen_evidence"]);
   });
+
+  test("blocks restart reopen evidence that predates the signed report", () => {
+    // Given
+    const bundle = completeBundle({
+      reportSignature: {
+        signer: "qa.lead@example.com",
+        signedAt: "2026-06-19T09:00:00.000Z",
+        digest: hashContent("Golden Path passed with five live images."),
+      },
+      restartReopen: {
+        projectId: "p_live",
+        reopenedAt: "2026-06-19T08:55:00.000Z",
+        exportArtifactId: "live_export_001",
+      },
+    });
+
+    // When
+    const result = evaluateLiveGoldenPathE2EBundle(bundle);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual(["missing_restart_reopen_evidence"]);
+  });
 });
 
 function completeBundle(patch: Partial<LiveGoldenPathE2EBundle> = {}): LiveGoldenPathE2EBundle {

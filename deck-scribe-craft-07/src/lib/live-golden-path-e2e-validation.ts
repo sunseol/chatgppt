@@ -2,6 +2,7 @@ import { hashContent } from "./artifacts";
 import { validationBundleIssues } from "./live-golden-path-e2e-evidence";
 import { imageArtifactIssues } from "./live-golden-path-image-evidence";
 import { hasObservedGoldenPathEvidencePath } from "./live-golden-path-evidence-path";
+import { restartIssues } from "./live-golden-path-restart-evidence";
 import { sourceIssues } from "./live-golden-path-source-evidence";
 import {
   LIVE_GOLDEN_PATH_E2E_STEPS,
@@ -216,24 +217,6 @@ function textArtifactMatchesStage(
 ): boolean {
   const evidence = `${artifact.artifactId} ${artifact.promptVersion}`.toLowerCase();
   return markers.some((marker) => evidence.includes(marker));
-}
-
-function restartIssues(bundle: LiveGoldenPathE2EBundle): readonly LiveGoldenPathE2EIssue[] {
-  const reopenedAt = bundle.restartReopen.reopenedAt.trim();
-  const restartReady =
-    bundle.restartReopen.projectId === bundle.projectId &&
-    reopenedAt.length > 0 &&
-    Number.isFinite(Date.parse(reopenedAt)) &&
-    bundle.restartReopen.exportArtifactId === bundle.finalExportArtifactId;
-  return restartReady
-    ? []
-    : [
-        liveGoldenPathIssue(
-          "missing_restart_reopen_evidence",
-          "Project must reopen after restart with a timestamp and the same final export artifact.",
-          [bundle.restartReopen.projectId, bundle.restartReopen.exportArtifactId],
-        ),
-      ];
 }
 
 function secretIssues(reportContent: string): readonly LiveGoldenPathE2EIssue[] {

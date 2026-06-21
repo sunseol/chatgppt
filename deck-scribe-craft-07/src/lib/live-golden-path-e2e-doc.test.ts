@@ -12,8 +12,10 @@ describe("live golden path E2E documentation", () => {
     expect(goldenPathE2E.includes("missing_e2e_step")).toBe(true);
     expect(goldenPathE2E.includes("e2e_step_order_mismatch")).toBe(true);
     expect(goldenPathE2E.includes("canonical step order")).toBe(true);
+    expect(goldenPathE2E.includes("live-golden-path-restart-evidence.ts")).toBe(true);
     expect(goldenPathE2E.includes("report_digest_mismatch")).toBe(true);
     expect(goldenPathE2E.includes("parseable `signedAt` timestamp")).toBe(true);
+    expect(goldenPathE2E.includes("at or after the signed report timestamp")).toBe(true);
     expect(goldenPathE2E.includes("live-golden-path-report-signature-timestamp.test.ts")).toBe(
       true,
     );
@@ -60,5 +62,6 @@ describe("live golden path E2E documentation", () => {
     expect(goldenPathE2E.includes("five initial images")).toBe(true);
     expect(goldenPathE2E.includes("live-golden-path-regeneration-image.test.ts")).toBe(true);
     expect(goldenPathE2E.includes("missing_restart_reopen_evidence")).toBe(true);
+    expect(goldenPathE2E.includes("signed-report chronology rejection")).toBe(true);
   });
 });
