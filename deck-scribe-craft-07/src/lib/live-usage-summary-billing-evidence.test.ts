@@ -69,6 +69,37 @@ describe("live usage summary image usage evidence", () => {
     ]);
   });
 
+  test("blocks generic image usage confirmation evidence paths", () => {
+    // Given
+    const stages: readonly LiveUsageStageSummary[] = [
+      {
+        stageId: "generate",
+        providerKind: "openaiImage",
+        durationMs: 1200,
+        retryCount: 0,
+        providerUsageProvided: true,
+        usage: { imageCount: 1 },
+        costLabel: "hidden",
+        imageBillingDisclosure: {
+          apiKeyRequired: true,
+          userConfirmed: true,
+          label: "Codex image usage confirmed",
+          confirmationEvidencePath: "usage/generic-confirmation.json",
+        },
+      },
+    ];
+
+    // When
+    const result = evaluateLiveUsageSummary(stages);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "missing_image_billing_confirmation",
+    ]);
+  });
+
   test("does not render confirmed-looking image usage without evidence", () => {
     // Given
     const job: ProviderJob = {

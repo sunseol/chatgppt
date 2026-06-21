@@ -25,7 +25,9 @@ describe("live usage summary documentation", () => {
     expect(usageSummary.includes("Codex image usage confirmed")).toBe(true);
     expect(usageSummary.includes("Codex image usage not confirmed")).toBe(true);
     expect(usageSummary.includes("confirmationEvidencePath")).toBe(true);
+    expect(usageSummary.includes("image-billing-confirmation.json")).toBe(true);
     expect(usageSummary.includes("template/sample/example/placeholder")).toBe(true);
+    expect(usageSummary.includes("generic confirmation JSON filenames")).toBe(true);
     expect(usageSummary.includes("live-usage-billing-evidence.ts")).toBe(true);
     expect(usageSummary.includes("formatted summaries")).toBe(true);
     expect(
@@ -61,12 +63,15 @@ describe("live usage summary documentation", () => {
     expect(progress.includes("provider kinds outside the DeckForge taxonomy")).toBe(true);
     expect(progress.includes("unsupported runtime cost labels")).toBe(true);
     expect(progress.includes("usage/image-billing-template.json")).toBe(true);
+    expect(progress.includes("usage/generic-confirmation.json")).toBe(true);
     expect(progress.includes("confirmed-looking audit payload without valid")).toBe(true);
     expect(progress.includes("real provider image Codex usage disclosure payloads")).toBe(true);
 
     expect(decision.includes("ProviderJobProgressPanel.tsx")).toBe(true);
     expect(decision.includes("confirmationEvidencePath")).toBe(true);
     expect(decision.includes("template/sample/example/placeholder")).toBe(true);
+    expect(decision.includes("image-billing-confirmation.json")).toBe(true);
+    expect(decision.includes("template/generic Codex image usage status")).toBe(true);
     expect(decision.includes("evidence-less confirmed-looking image usage as not confirmed")).toBe(
       true,
     );
