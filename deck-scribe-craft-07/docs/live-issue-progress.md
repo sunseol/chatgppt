@@ -433,6 +433,11 @@ with outcome `approved`, the live candidate, the before/after comparison, and
 the approved slide. Eligible live Codex regeneration failures no longer fall
 back to the local mock revision path; they preserve the approved original and
 write outcome `preserved_after_failure` with the provider or validation issues.
+The returned `reviewEvidencePath` is now stored in
+`DeckProject.liveSlideRegenerationReviewEvidence` through
+`src/lib/live-slide-regeneration-review-state.ts`, so the DF-235 approval or
+failure-preservation artifact remains discoverable after project DB
+serialization and restart.
 
 Assigned issue disposition:
 

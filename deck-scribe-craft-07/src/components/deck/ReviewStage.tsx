@@ -18,6 +18,7 @@ import { approveStage, updateProject } from "@/lib/deck-store";
 import { hash } from "@/lib/mock-ai";
 import type { DeckProject, GeneratedSlide } from "@/lib/deck-types";
 import type { LiveSlideRegenerationCandidate } from "@/lib/live-slide-regeneration";
+import { createReviewEvidenceProjectPatch } from "@/lib/live-slide-regeneration-review-state";
 import type { SlideRevisionComparison } from "@/lib/slide-revision-generation";
 
 export function ReviewStage({ project }: { readonly project: DeckProject }) {
@@ -51,7 +52,15 @@ export function ReviewStage({ project }: { readonly project: DeckProject }) {
         instruction,
       });
       setSlides([...result.slides]);
-      updateProject(project.id, { slides: [...result.slides] });
+      updateProject(project.id, (current) =>
+        createReviewEvidenceProjectPatch({
+          project: current,
+          slides: result.slides,
+          reviewEvidencePath: result.reviewEvidencePath,
+          slideNumber: selected,
+          outcome: "preserved_after_failure",
+        }),
+      );
       setRevisionComparison(result.comparison);
       setLiveRegenerationCandidate(result.liveCandidate);
       if (result.editConsumed) setEdit("");
@@ -69,7 +78,15 @@ export function ReviewStage({ project }: { readonly project: DeckProject }) {
       liveCandidate: liveRegenerationCandidate,
     });
     setSlides([...result.slides]);
-    updateProject(project.id, { slides: [...result.slides] });
+    updateProject(project.id, (current) =>
+      createReviewEvidenceProjectPatch({
+        project: current,
+        slides: result.slides,
+        reviewEvidencePath: result.reviewEvidencePath,
+        slideNumber: revisionComparison.slideNumber,
+        outcome: "approved",
+      }),
+    );
     setRevisionComparison(null);
     setLiveRegenerationCandidate(null);
   };

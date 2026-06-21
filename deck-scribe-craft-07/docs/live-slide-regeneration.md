@@ -32,11 +32,12 @@ DF-235 requires selected-slide regeneration to create a full new slide backgroun
 - `approveLiveSlideRegenerationCandidate` preserves the approved original when approval evidence is missing or mismatched, and only replaces the selected slide once matching before/after comparison evidence is present.
 - `src/lib/live-slide-regeneration-review-evidence.ts` writes portable DF-235 review evidence at `projects/{projectId}/live-evidence/df235-slide-regeneration-review-{eventId}.json` for both approved candidates and failed live regeneration attempts that preserve the original.
 - `src/components/deck/review-stage-regeneration-evidence.ts` connects the Review-stage approval button to that writer, and `src/components/deck/review-stage-regeneration.ts` records failure-preservation evidence instead of silently falling back to local mock regeneration when an eligible live Codex regeneration fails or is blocked.
+- `src/lib/live-slide-regeneration-review-state.ts` carries returned `reviewEvidencePath` values into `DeckProject.liveSlideRegenerationReviewEvidence` alongside the slide update patch, so approved-candidate and preserved-after-failure evidence survives project DB serialization and restart recovery.
 
 ## Verification
 
 - `bun test src/lib/live-slide-regeneration-approval.test.ts src/lib/live-slide-regeneration-request-validation.test.ts src/lib/live-slide-regeneration-approved-original.test.ts src/lib/live-slide-regeneration-version.test.ts src/lib/live-slide-regeneration-slide-spec.test.ts src/lib/live-slide-regeneration.test.ts src/lib/slide-revision-generation.test.ts src/lib/slide-revision-model.test.ts src/components/deck/RevisionComparePanel.integration.test.tsx`
-- `bun test src/components/deck/review-stage-regeneration.test.ts`
+- `bun test src/components/deck/review-stage-regeneration.test.ts src/lib/live-slide-regeneration-review-state.test.ts`
 - `bun run typecheck`
 - `bun run lint`
 
@@ -91,8 +92,12 @@ The live Codex Review-stage path also stops falling back to local mock
 regeneration when a candidate-producing live path fails. Instead it preserves
 the approved original, leaves no comparison candidate to approve, and writes
 outcome `preserved_after_failure` evidence with the provider or validation
-issues. This closes the local product gap that prevented a packaged manual QA
-run from handing reviewers a single approval/failure-preservation artifact.
+issues. The Review stage now also appends the returned `reviewEvidencePath` to
+`DeckProject.liveSlideRegenerationReviewEvidence` for both approved candidates
+and preserved failures, keeping the evidence path in local project state after
+serialization and restart. This closes the local product gap that prevented a
+packaged manual QA run from handing reviewers a single persisted
+approval/failure-preservation artifact.
 
 DF-235 remains open until this artifact is produced by a real packaged app
 review run and attached to the Lane D evidence bundle.

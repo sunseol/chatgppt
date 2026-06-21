@@ -41,8 +41,11 @@ describe("live full-slide regeneration documentation", () => {
     expect(slideRegeneration.includes("preservedTargets")).toBe(true);
     expect(slideRegeneration.includes("preserved approved slide")).toBe(true);
     expect(slideRegeneration.includes("live-slide-regeneration-review-evidence.ts")).toBe(true);
+    expect(slideRegeneration.includes("live-slide-regeneration-review-state.ts")).toBe(true);
     expect(slideRegeneration.includes("review-stage-regeneration-evidence.ts")).toBe(true);
     expect(slideRegeneration.includes("df235-slide-regeneration-review")).toBe(true);
+    expect(slideRegeneration.includes("liveSlideRegenerationReviewEvidence")).toBe(true);
+    expect(slideRegeneration.includes("project DB serialization")).toBe(true);
     expect(slideRegeneration.includes("preserved_after_failure")).toBe(true);
     expect(slideRegeneration.includes("local mock regeneration")).toBe(true);
   });
