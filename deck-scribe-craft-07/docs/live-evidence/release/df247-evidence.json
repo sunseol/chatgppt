@@ -1,0 +1,28 @@
+{
+  "ticketId": "DF-247",
+  "issueNumber": 157,
+  "status": "blocked",
+  "validationKind": "blocked",
+  "generatedAt": "2026-06-21T15:58:37Z",
+  "packageArchiveSha256": "d21d149aa545b9dd357ae29934c9339efb812eb03374197bb11be0bb32bf6dfd",
+  "summary": "The final release gate remains blocked because upstream packaged evidence entries are blocked and the release decision is not approved.",
+  "currentEvidence": [
+    {
+      "path": "docs/live-release-decision.md",
+      "kind": "canonical blocked release decision"
+    },
+    {
+      "path": "docs/live-evidence/release/packaged-live-evidence-index.json",
+      "kind": "shared packaged evidence index"
+    }
+  ],
+  "missingEvidence": [
+    "all P0 tickets verified live",
+    "ready DF-241 Golden Path evidence",
+    "ready DF-242 benchmark evidence",
+    "ready DF-243 interruption evidence",
+    "ready DF-245 packaging trust and clean-machine evidence",
+    "ready DF-246 non-developer manual QA evidence",
+    "approved release decision in docs/live-release-decision.md"
+  ]
+}

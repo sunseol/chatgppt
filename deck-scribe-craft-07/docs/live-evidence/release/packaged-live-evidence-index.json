@@ -1,0 +1,55 @@
+{
+  "path": "docs/live-evidence/release/packaged-live-evidence-index.json",
+  "packageArchiveSha256": "d21d149aa545b9dd357ae29934c9339efb812eb03374197bb11be0bb32bf6dfd",
+  "generatedAt": "2026-06-21T15:58:37Z",
+  "entries": [
+    {
+      "ticketId": "DF-241",
+      "issueNumber": 151,
+      "status": "blocked",
+      "validationKind": "blocked",
+      "artifactPath": "docs/live-evidence/release/df241-evidence.json",
+      "artifactSha256": "19a00bcadf05438d9d9c5506abd33540a5f299b4850045ee12da7e5154a6905a"
+    },
+    {
+      "ticketId": "DF-242",
+      "issueNumber": 152,
+      "status": "blocked",
+      "validationKind": "blocked",
+      "artifactPath": "docs/live-evidence/release/df242-evidence.json",
+      "artifactSha256": "c8067b134348d0f604ee5420b3aee95bdab4c4b7e0c54540269461612215c663"
+    },
+    {
+      "ticketId": "DF-243",
+      "issueNumber": 153,
+      "status": "blocked",
+      "validationKind": "blocked",
+      "artifactPath": "docs/live-evidence/release/df243-evidence.json",
+      "artifactSha256": "a3c5e8e31f703b4eee5150054187e47ca3c7d2245ec68e60c973e1cc5173d83b"
+    },
+    {
+      "ticketId": "DF-245",
+      "issueNumber": 155,
+      "status": "blocked",
+      "validationKind": "blocked",
+      "artifactPath": "docs/live-evidence/release/df245-evidence.json",
+      "artifactSha256": "1b11b676f7af9168477069a9ac0c117e57914cc97e778d1a29267fb2422d24b8"
+    },
+    {
+      "ticketId": "DF-246",
+      "issueNumber": 156,
+      "status": "blocked",
+      "validationKind": "blocked",
+      "artifactPath": "docs/live-evidence/release/df246-evidence.json",
+      "artifactSha256": "448df7d69b402bf54eb251a0c9ca123b1c3c179b5d1bc9e3f04c7df48ca9069d"
+    },
+    {
+      "ticketId": "DF-247",
+      "issueNumber": 157,
+      "status": "blocked",
+      "validationKind": "blocked",
+      "artifactPath": "docs/live-evidence/release/df247-evidence.json",
+      "artifactSha256": "79deb45a854fff28df54a1202be49f21cf2942ef88d3b802f9029aa0820a2ce1"
+    }
+  ]
+}

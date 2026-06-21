@@ -1,0 +1,33 @@
+{
+  "ticketId": "DF-245",
+  "issueNumber": 155,
+  "status": "blocked",
+  "validationKind": "blocked",
+  "generatedAt": "2026-06-21T15:58:37Z",
+  "packageArchiveSha256": "d21d149aa545b9dd357ae29934c9339efb812eb03374197bb11be0bb32bf6dfd",
+  "summary": "Current package and DMG artifacts exist and scan clean locally, but the DMG is unsigned, not notarized, not stapled, and not accepted by Gatekeeper.",
+  "currentEvidence": [
+    {
+      "path": "dist/deckforge-macos-dry-run.tgz",
+      "sha256": "d21d149aa545b9dd357ae29934c9339efb812eb03374197bb11be0bb32bf6dfd",
+      "kind": "current dry-run package"
+    },
+    {
+      "path": "release-artifacts/DeckForge_0.1.0_aarch64.dmg",
+      "sha256": "d6849d24c5af4548b7b35e65a68a05c8d139be4b1b5504d7c3da3a3dc9e2d467",
+      "kind": "current unsigned DMG"
+    },
+    {
+      "path": "docs/production-clean-machine-runbook.md",
+      "kind": "clean-machine runbook and current blocked signing state"
+    }
+  ],
+  "missingEvidence": [
+    "Developer ID Application signing identity",
+    "notarytool credentials and successful notarization",
+    "stapled DMG or app",
+    "Gatekeeper accepted assessment",
+    "persisted release-trust JSON bundle",
+    "clean macOS account install, Codex login, image credential setup, project launch, and first live interview evidence"
+  ]
+}

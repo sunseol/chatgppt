@@ -27,6 +27,22 @@ remain open until a real packaged Golden Path bundle, benchmark output bundle
 set, and final release evidence index are produced from authenticated Codex
 OAuth text/image runs.
 
+## 2026-06-22 KST Packaged Evidence Index Materialized
+
+DF-247 local update: the shared Packaged Live evidence index now exists at
+`docs/live-evidence/release/packaged-live-evidence-index.json`, with per-ticket
+blocked evidence artifacts for DF-241, DF-242, DF-243, DF-245, DF-246, and
+DF-247 under `docs/live-evidence/release/`. The index records the current dry-run
+package SHA-256 and each evidence artifact SHA-256, and
+`src/lib/packaged-live-evidence-index-artifact.test.ts` verifies the committed
+index plus entry file digests.
+
+This is not a release approval. Every index entry remains `blocked` /
+`validationKind: blocked`, so DF-247 still requires ready upstream packaged
+Golden Path, benchmark, interruption, packaging trust/clean-machine, and
+non-developer manual QA evidence before the release decision can move from
+`Blocked` to approved.
+
 ## 2026-06-21 Current Branch OAuth Image Route Recheck
 
 DF-205/DF-230 local update: production image generation now rejects old persisted OpenAI API-key image decisions even if they were previously marked `locked` and contain binary/provenance artifact paths. `src/lib/production-image-generation-gate.ts` returns `production_codex_oauth_required` unless the persisted route is `codex` with `codexOAuth`; `src/lib/production-image-generation-gate-oauth-route.test.ts` covers the false-ready reload case. `src/lib/provider-selection-policy.ts` now filters production provider choices to Codex-only, `src/lib/provider-capability-view.ts` converts legacy `openaiImage` / `openaiApiKey` fallback state into a Codex image capability lock instead of an API-key prompt, and `src/components/deck/ProductionWorkflowStage.tsx` describes generate-stage readiness through Codex OAuth image capability. This aligns the product with the current direction that image generation uses the signed-in Codex OAuth image capability, not API-key based image generation. DF-205 remains open because fresh login, logout/relogin, and clean packaged Codex OAuth image capability evidence still require a clean account or clean machine.

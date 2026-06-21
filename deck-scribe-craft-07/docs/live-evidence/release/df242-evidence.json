@@ -1,0 +1,25 @@
+{
+  "ticketId": "DF-242",
+  "issueNumber": 152,
+  "status": "blocked",
+  "validationKind": "blocked",
+  "generatedAt": "2026-06-21T15:58:37Z",
+  "packageArchiveSha256": "d21d149aa545b9dd357ae29934c9339efb812eb03374197bb11be0bb32bf6dfd",
+  "summary": "The live benchmark validator is implemented, but no five-scenario packaged benchmark output bundle set exists.",
+  "currentEvidence": [
+    {
+      "path": "docs/live-benchmark-report.md",
+      "kind": "contract"
+    },
+    {
+      "path": "docs/live-release-decision.md",
+      "kind": "release decision recording 0 of 5 live benchmark passes"
+    }
+  ],
+  "missingEvidence": [
+    "five distinct packaged benchmark output bundles",
+    "at least four named live benchmark passes with failureDomain none",
+    "scenario reports and live_e2e_report.md paths for each passed benchmark",
+    "per-benchmark source, image, regeneration, screenshot, export, and provider turn evidence tied to the current package hash"
+  ]
+}

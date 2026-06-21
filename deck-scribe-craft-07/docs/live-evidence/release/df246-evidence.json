@@ -1,0 +1,28 @@
+{
+  "ticketId": "DF-246",
+  "issueNumber": 156,
+  "status": "blocked",
+  "validationKind": "blocked",
+  "generatedAt": "2026-06-21T15:58:37Z",
+  "packageArchiveSha256": "d21d149aa545b9dd357ae29934c9339efb812eb03374197bb11be0bb32bf6dfd",
+  "summary": "Manual QA validator and checklist exist, but no non-developer packaged-app manual QA session bundle has been recorded.",
+  "currentEvidence": [
+    {
+      "path": "docs/live-manual-qa-checklist.md",
+      "kind": "manual QA checklist"
+    },
+    {
+      "path": "docs/live-release-decision.md",
+      "kind": "release decision recording missing non-developer manual QA"
+    }
+  ],
+  "missingEvidence": [
+    "non-developer tester session evidence JSON",
+    "setup under ten minutes with new project, login check, and prompt input",
+    "research_pack, slide_generation, and export approval target checks",
+    "real source opened and linked in final report",
+    "regeneration and title edit actions",
+    "PNG, project, and report export opens",
+    "severity issue list with zero P0 and zero critical errors"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "ticketId": "DF-241",
+  "issueNumber": 151,
+  "status": "blocked",
+  "validationKind": "blocked",
+  "generatedAt": "2026-06-21T15:58:37Z",
+  "packageArchiveSha256": "d21d149aa545b9dd357ae29934c9339efb812eb03374197bb11be0bb32bf6dfd",
+  "summary": "Local Golden Path validators and partial Codex OAuth text/image evidence exist, but no packaged production Golden Path has completed from login through export.",
+  "currentEvidence": [
+    {
+      "path": "docs/live-golden-path-e2e.md",
+      "kind": "contract"
+    },
+    {
+      "path": "docs/live-evidence/lane-e-20260621/text-pipeline-summary.json",
+      "sha256": "78c08cc5e49f05587279a7258772c63791545813e0f11fee1f0dc4c6ab903286",
+      "kind": "library-level live text pipeline"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/lane-d-live-app-surface-20260621/manifest.json",
+      "sha256": "caa4036a28a40886a953a1b547059fd1073cabe35e67f73dc56418b02c02676f",
+      "kind": "partial Codex OAuth image and review evidence"
+    }
+  ],
+  "missingEvidence": [
+    "packaged production Golden Path run from login through export",
+    "signed live_e2e_report.md",
+    "per-step screenshots and recording",
+    "final validation bundle",
+    "packaged restart/reopen evidence",
+    "single run tying live text stages, live research, five images, regeneration, title edit, export, and restart evidence together"
+  ]
+}

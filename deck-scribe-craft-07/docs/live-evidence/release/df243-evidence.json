@@ -1,0 +1,28 @@
+{
+  "ticketId": "DF-243",
+  "issueNumber": 153,
+  "status": "blocked",
+  "validationKind": "blocked",
+  "generatedAt": "2026-06-21T15:58:37Z",
+  "packageArchiveSha256": "d21d149aa545b9dd357ae29934c9339efb812eb03374197bb11be0bb32bf6dfd",
+  "summary": "The interruption closure manifest exists but remains blocked because image partial resume, app-storage cancel, cancel signal, and approval/export gate artifacts are missing.",
+  "currentEvidence": [
+    {
+      "path": "docs/live-evidence/lane-h-20260621/df243-closure-evidence.json",
+      "sha256": "a7df061def3146db8593e80ff920dcad9565343844d60f5b0e82c68c695ec951",
+      "kind": "blocked closure manifest"
+    },
+    {
+      "path": "docs/live-interruption-matrix.md",
+      "kind": "contract"
+    }
+  ],
+  "missingEvidence": [
+    "image partial resume evidence JSON",
+    "app-storage cancel snapshot JSON",
+    "cancel signal evidence JSON",
+    "interrupted approval gate evidence JSON",
+    "interrupted export gate evidence JSON",
+    "committed scenario recovery snapshots under docs/live-evidence"
+  ]
+}
