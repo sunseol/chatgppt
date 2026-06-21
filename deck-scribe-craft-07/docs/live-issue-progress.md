@@ -444,6 +444,13 @@ checks that the closure manifest's image partial-resume, app cancel snapshot,
 cancel-signal, approval-gate, and export-gate JSON paths match the evaluated
 matrix scenarios.
 
+DF-243 local update: `src/lib/live-interruption-closure-evidence.ts` now also
+rejects closure manifests whose required artifact paths point at generic
+`recovery/*.json` files outside the committed evidence bundle. These block as
+`interruption_closure_artifact_outside_evidence_bundle`, so packaged QA must
+copy captured interruption artifacts into `docs/live-evidence/...` before the
+closure manifest can become `ready_for_close`.
+
 Assigned issue disposition:
 
 - DF-243 / `#153`: remains open. The current manifest deliberately stays

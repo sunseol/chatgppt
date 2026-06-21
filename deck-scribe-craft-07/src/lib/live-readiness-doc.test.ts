@@ -18,6 +18,12 @@ const DOCS = {
   decision: new URL("../../docs/live-release-decision.md", import.meta.url),
 } as const;
 
+const INTERRUPTION_EVIDENCE_DIGESTS = [
+  "27855e9afff031bc49c87bb08bb46ea6ac9a5436e4a2eef9ecb74382e62809b6",
+  "a472a031283e5a2ce537801d43a15b2d121241d823397868b81437c50e78bc3d",
+  "f35c082c75b37ccbe7e8e5eddf1907e61e66171e13d94dd2c4df50fe3060b62f",
+] as const;
+
 describe("live readiness documentation", () => {
   test("records the current implementation audit by pipeline stage", () => {
     const text = readDoc(DOCS.audit);
@@ -223,26 +229,16 @@ describe("live readiness documentation", () => {
     expect(interruptionMatrix.includes("cancelled_job_completed_after_cancel")).toBe(true);
     expect(interruptionMatrix.includes("interrupted_artifact_approvable")).toBe(true);
     expect(interruptionMatrix.includes("live-interruption-closure-evidence.ts")).toBe(true);
+    expectDocIncludes(interruptionMatrix, "interruption_closure_artifact_outside_evidence_bundle");
+    expect(interruptionMatrix.includes("docs/live-evidence/...")).toBe(true);
     expect(interruptionMatrix.includes("df243-closure-evidence.json")).toBe(true);
     expect(interruptionMatrix.includes("image partial-resume, app cancel snapshot")).toBe(true);
     expect(interruptionMatrix.includes("turn/interrupt")).toBe(true);
     expect(interruptionMatrix.includes("019edc5a-0cc0-7031-915a-5fc6d65c6d86")).toBe(true);
     expect(interruptionMatrix.includes("fetch_shutdown_live_20260619")).toBe(true);
-    expect(
-      interruptionMatrix.includes(
-        "27855e9afff031bc49c87bb08bb46ea6ac9a5436e4a2eef9ecb74382e62809b6",
-      ),
-    ).toBe(true);
-    expect(
-      interruptionMatrix.includes(
-        "a472a031283e5a2ce537801d43a15b2d121241d823397868b81437c50e78bc3d",
-      ),
-    ).toBe(true);
-    expect(
-      interruptionMatrix.includes(
-        "f35c082c75b37ccbe7e8e5eddf1907e61e66171e13d94dd2c4df50fe3060b62f",
-      ),
-    ).toBe(true);
+    for (const digest of INTERRUPTION_EVIDENCE_DIGESTS) {
+      expectDocIncludes(interruptionMatrix, digest);
+    }
   });
 
   test("records the live usage, latency, retry, and billing display contract", () => {
@@ -264,4 +260,8 @@ describe("live readiness documentation", () => {
 
 function readDoc(url: URL): string {
   return readFileSync(url, "utf8");
+}
+
+function expectDocIncludes(doc: string, expected: string): void {
+  expect(doc.includes(expected)).toBe(true);
 }

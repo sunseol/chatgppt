@@ -32,6 +32,7 @@ export type LiveInterruptionClosureIssueCode =
   | "missing_interruption_matrix_evidence"
   | "interruption_matrix_report_mismatch"
   | "missing_interruption_closure_artifact"
+  | "interruption_closure_artifact_outside_evidence_bundle"
   | "interruption_closure_artifact_mismatch";
 
 export type LiveInterruptionClosureIssue = {
@@ -55,6 +56,7 @@ export function evaluateLiveInterruptionClosureEvidence(
     ...matrixEvidencePathIssues(evidence),
     ...reportPathIssues(evidence),
     ...requiredArtifactPathIssues(evidence.requiredArtifacts),
+    ...requiredArtifactBundlePathIssues(evidence.requiredArtifacts),
     ...requiredArtifactMatchIssues(evidence),
   ];
   return issues.length === 0 ? { kind: "ready" } : { kind: "blocked", issues };
@@ -131,6 +133,24 @@ function requiredArtifactPathIssues(
       ];
 }
 
+function requiredArtifactBundlePathIssues(
+  artifacts: LiveInterruptionClosureRequiredArtifacts,
+): readonly LiveInterruptionClosureIssue[] {
+  const outsideBundle = requiredArtifactEntries(artifacts)
+    .filter((entry) => hasObservedInterruptionEvidencePath(entry.value))
+    .filter((entry) => !isCommittedEvidenceBundlePath(entry.value))
+    .map((entry) => entry.label);
+  return outsideBundle.length === 0
+    ? []
+    : [
+        issue(
+          "interruption_closure_artifact_outside_evidence_bundle",
+          "DF-243 closure artifacts must live under docs/live-evidence so packaged QA evidence is reviewable.",
+          outsideBundle,
+        ),
+      ];
+}
+
 function requiredArtifactMatchIssues(
   evidence: LiveInterruptionClosureEvidence,
 ): readonly LiveInterruptionClosureIssue[] {
@@ -195,6 +215,15 @@ function scenario(
   id: LiveInterruptionScenarioEvidence["id"],
 ): LiveInterruptionScenarioEvidence | undefined {
   return matrix.scenarios.find((item) => item.id === id);
+}
+
+function isCommittedEvidenceBundlePath(value: string): boolean {
+  const trimmed = value.trim();
+  return (
+    value === trimmed &&
+    trimmed.startsWith("docs/live-evidence/") &&
+    !trimmed.split("/").some((segment) => segment === "" || segment === "..")
+  );
 }
 
 function pair(

@@ -28,10 +28,10 @@ describe("live interruption closure evidence", () => {
     const evidence = closureEvidence({
       requiredArtifacts: {
         imagePartialResumeEvidencePath: "",
-        appCancelSnapshotPath: "recovery/cancel_job.json",
-        cancelSignalEvidencePath: "recovery/cancel-job-signal.json",
-        approvalGateEvidencePath: "recovery/interrupted-approval-gate.json",
-        exportGateEvidencePath: "recovery/interrupted-export-gate.json",
+        appCancelSnapshotPath: evidencePath("cancel_job"),
+        cancelSignalEvidencePath: evidencePath("cancel-job-signal"),
+        approvalGateEvidencePath: evidencePath("interrupted-approval-gate"),
+        exportGateEvidencePath: evidencePath("interrupted-export-gate"),
       },
     });
 
@@ -52,11 +52,11 @@ describe("live interruption closure evidence", () => {
     // Given
     const evidence = closureEvidence({
       requiredArtifacts: {
-        imagePartialResumeEvidencePath: "recovery/image_partial_resume.json",
-        appCancelSnapshotPath: "recovery/cancel_job.json",
-        cancelSignalEvidencePath: "recovery/other-cancel-signal.json",
-        approvalGateEvidencePath: "recovery/interrupted-approval-gate.json",
-        exportGateEvidencePath: "recovery/interrupted-export-gate.json",
+        imagePartialResumeEvidencePath: evidencePath("image_partial_resume"),
+        appCancelSnapshotPath: evidencePath("cancel_job"),
+        cancelSignalEvidencePath: evidencePath("other-cancel-signal"),
+        approvalGateEvidencePath: evidencePath("interrupted-approval-gate"),
+        exportGateEvidencePath: evidencePath("interrupted-export-gate"),
       },
     });
 
@@ -70,6 +70,48 @@ describe("live interruption closure evidence", () => {
       "interruption_closure_artifact_mismatch",
     ]);
     expect(result.issues[0]?.refs).toEqual(["cancelSignalEvidencePath"]);
+  });
+
+  test("blocks closure manifests that use generic recovery paths outside the evidence bundle", () => {
+    // Given
+    const evidence = closureEvidence({
+      matrix: completeMatrix({
+        scenarios: LIVE_INTERRUPTION_SCENARIOS.map((id) =>
+          scenario(id, {
+            recoverySnapshotPath: `recovery/${id}.json`,
+            ...(id === "cancel_job"
+              ? { cancelSignalEvidencePath: "recovery/cancel-job-signal.json" }
+              : {}),
+            approvalGateEvidencePath: "recovery/interrupted-approval-gate.json",
+            exportGateEvidencePath: "recovery/interrupted-export-gate.json",
+          }),
+        ),
+      }),
+      requiredArtifacts: {
+        imagePartialResumeEvidencePath: "recovery/image_partial_resume.json",
+        appCancelSnapshotPath: "recovery/cancel_job.json",
+        cancelSignalEvidencePath: "recovery/cancel-job-signal.json",
+        approvalGateEvidencePath: "recovery/interrupted-approval-gate.json",
+        exportGateEvidencePath: "recovery/interrupted-export-gate.json",
+      },
+    });
+
+    // When
+    const result = evaluateLiveInterruptionClosureEvidence(evidence);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "interruption_closure_artifact_outside_evidence_bundle",
+    ]);
+    expect(result.issues[0]?.refs).toEqual([
+      "imagePartialResumeEvidencePath",
+      "appCancelSnapshotPath",
+      "cancelSignalEvidencePath",
+      "approvalGateEvidencePath",
+      "exportGateEvidencePath",
+    ]);
   });
 });
 
@@ -85,20 +127,23 @@ function closureEvidence(
     matrixEvidencePath: "docs/live-evidence/df243-interruption-matrix.json",
     matrix,
     requiredArtifacts: {
-      imagePartialResumeEvidencePath: "recovery/image_partial_resume.json",
-      appCancelSnapshotPath: "recovery/cancel_job.json",
-      cancelSignalEvidencePath: "recovery/cancel-job-signal.json",
-      approvalGateEvidencePath: "recovery/interrupted-approval-gate.json",
-      exportGateEvidencePath: "recovery/interrupted-export-gate.json",
+      imagePartialResumeEvidencePath: evidencePath("image_partial_resume"),
+      appCancelSnapshotPath: evidencePath("cancel_job"),
+      cancelSignalEvidencePath: evidencePath("cancel-job-signal"),
+      approvalGateEvidencePath: evidencePath("interrupted-approval-gate"),
+      exportGateEvidencePath: evidencePath("interrupted-export-gate"),
     },
     ...patch,
   };
 }
 
-function completeMatrix(): LiveInterruptionMatrixEvidence {
+function completeMatrix(
+  patch: Partial<LiveInterruptionMatrixEvidence> = {},
+): LiveInterruptionMatrixEvidence {
   return {
     reportPath: "docs/live-interruption-matrix.md",
     scenarios: LIVE_INTERRUPTION_SCENARIOS.map((id) => scenario(id)),
+    ...patch,
   };
 }
 
@@ -112,10 +157,10 @@ function scenario(
     completedArtifactIdsBefore: ["brief_live_001", "img_001", "img_002"],
     completedArtifactIdsAfter: ["brief_live_001", "img_001", "img_002"],
     liveJobId: `live_job_${id}`,
-    recoverySnapshotPath: `recovery/${id}.json`,
+    recoverySnapshotPath: evidencePath(id),
     recoverySnapshotScope: "app_storage",
     cancellationRecorded: true,
-    ...(id === "cancel_job" ? { cancelSignalEvidencePath: "recovery/cancel-job-signal.json" } : {}),
+    ...(id === "cancel_job" ? { cancelSignalEvidencePath: evidencePath("cancel-job-signal") } : {}),
     ...(id === "cancel_job" ? { cancelSignalJobId: "live_job_cancel_job" } : {}),
     pendingImageArtifactIds: id === "image_partial_resume" ? ["img_003", "img_004"] : [],
     resumedArtifactIds: id === "image_partial_resume" ? ["img_003", "img_004"] : [],
@@ -124,9 +169,13 @@ function scenario(
     approvableArtifactIds: [],
     exportableArtifactIds: [],
     approvalGateChecked: true,
-    approvalGateEvidencePath: "recovery/interrupted-approval-gate.json",
+    approvalGateEvidencePath: evidencePath("interrupted-approval-gate"),
     exportGateChecked: true,
-    exportGateEvidencePath: "recovery/interrupted-export-gate.json",
+    exportGateEvidencePath: evidencePath("interrupted-export-gate"),
     ...patch,
   };
+}
+
+function evidencePath(name: string): string {
+  return `docs/live-evidence/lane-h-20260621/${name}.json`;
 }
