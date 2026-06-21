@@ -13,6 +13,7 @@ import {
   duplicateOutputBundleReports,
   duplicatePassedExportArtifacts,
 } from "./live-benchmark-output-bundle-duplicates";
+import { isCanonicalNonblankBenchmarkValue } from "./live-benchmark-canonical-value";
 import {
   duplicateScreenshotEvidenceIssues,
   missingStepScreenshotEvidenceIssues,
@@ -56,7 +57,11 @@ export function outputBundleIssues(
     .filter((run) => !validEvidenceReportPath(run.outputBundle.reportPath, ".md"))
     .map((run) => run.id);
   const missingExports = runs
-    .filter((run) => run.status === "passed" && !run.outputBundle.exportArtifactId.trim())
+    .filter(
+      (run) =>
+        run.status === "passed" &&
+        !isCanonicalNonblankBenchmarkValue(run.outputBundle.exportArtifactId),
+    )
     .map((run) => run.id);
   const duplicateExportArtifacts = duplicatePassedExportArtifacts(runs);
   const duplicateSourceArtifacts = duplicatePassedArtifactRefs(

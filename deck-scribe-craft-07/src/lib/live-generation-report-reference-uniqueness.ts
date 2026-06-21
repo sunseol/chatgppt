@@ -3,30 +3,18 @@ import type {
   LiveSlideReportLineage,
 } from "./live-generation-report-lineage";
 import { liveReportImageTurnId } from "./live-generation-report-image-turn";
+import { isCanonicalNonblankValue } from "./live-generation-report-canonical-value";
 
 export function lineageReferenceIssues(
   slides: readonly LiveSlideReportLineage[],
 ): readonly LiveGenerationReportLineageIssue[] {
   return [
-    ...blankSourceTraceIssues(slides),
     ...duplicateSourceTraceIssues(slides),
     ...duplicateSlideIssues(slides),
     ...duplicateImageArtifactIssues(slides),
     ...duplicateImageRequestIssues(slides),
     ...duplicateExportHashIssues(slides),
   ];
-}
-
-function blankSourceTraceIssues(
-  slides: readonly LiveSlideReportLineage[],
-): readonly LiveGenerationReportLineageIssue[] {
-  return slides
-    .filter((slide) => hasBlankAndNonblankValues(slide.sourceIds))
-    .map((slide) => ({
-      code: "missing_source_trace" as const,
-      slideNumber: slide.slideNumber,
-      message: "Live report source ids cannot include blank entries.",
-    }));
 }
 
 function duplicateSourceTraceIssues(
@@ -87,7 +75,7 @@ function duplicateNumbers(values: readonly number[]): readonly number[] {
 function duplicateValues(values: readonly string[]): readonly string[] {
   const seen = new Set<string>();
   const duplicates = new Set<string>();
-  for (const value of values.map((item) => item.trim()).filter(Boolean)) {
+  for (const value of values.filter(isCanonicalNonblankValue)) {
     if (seen.has(value)) {
       duplicates.add(value);
     } else {
@@ -95,8 +83,4 @@ function duplicateValues(values: readonly string[]): readonly string[] {
     }
   }
   return [...duplicates];
-}
-
-function hasBlankAndNonblankValues(values: readonly string[]): boolean {
-  return values.some((value) => !value.trim()) && values.some((value) => value.trim());
 }

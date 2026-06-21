@@ -9,6 +9,10 @@ import {
   liveReportImageIdentityLabel,
   liveReportImageTurnId,
 } from "./live-generation-report-image-turn";
+import {
+  hasNoncanonicalLineageValue,
+  isCanonicalNonblankValue,
+} from "./live-generation-report-canonical-value";
 
 export type LiveGenerationReportLineageIssueCode =
   | "missing_source_trace"
@@ -100,7 +104,7 @@ function slideIssues(
   slide: LiveSlideReportLineage,
 ): readonly LiveGenerationReportLineageIssue[] {
   return [
-    ...(slide.sourceIds.some((sourceId) => sourceId.trim())
+    ...(hasCanonicalSourceTrace(slide.sourceIds)
       ? []
       : [
           {
@@ -109,7 +113,7 @@ function slideIssues(
             message: "Live report requires slide-level source ids.",
           },
         ]),
-    ...(slide.textTurnId?.trim() && slide.textThreadId?.trim()
+    ...(isCanonicalNonblankValue(slide.textTurnId) && isCanonicalNonblankValue(slide.textThreadId)
       ? []
       : [
           {
@@ -119,7 +123,7 @@ function slideIssues(
           },
         ]),
     ...textPromptIssues(slide),
-    ...(slide.textArtifactId.trim()
+    ...(isCanonicalNonblankValue(slide.textArtifactId)
       ? []
       : [
           {
@@ -128,7 +132,7 @@ function slideIssues(
             message: "Live text lineage requires a text artifact id.",
           },
         ]),
-    ...(slide.imageArtifactId.trim()
+    ...(isCanonicalNonblankValue(slide.imageArtifactId)
       ? []
       : [
           {
@@ -146,7 +150,7 @@ function slideIssues(
             message: "Live image artifact id must match the reported slide number.",
           },
         ]),
-    ...(liveReportImageTurnId(slide)?.trim()
+    ...(isCanonicalNonblankValue(liveReportImageTurnId(slide))
       ? []
       : [
           {
@@ -155,7 +159,7 @@ function slideIssues(
             message: "Live image artifacts require provider turn or request ids.",
           },
         ]),
-    ...(slide.promptVersion.trim()
+    ...(isCanonicalNonblankValue(slide.promptVersion)
       ? []
       : [
           {
@@ -211,8 +215,12 @@ function joinOrNone(values: readonly string[]): string {
 
 const isSha256Digest = (value: string): boolean => /^sha256:[a-f0-9]{64}$/.test(value);
 
+function hasCanonicalSourceTrace(sourceIds: readonly string[]): boolean {
+  return sourceIds.length > 0 && !hasNoncanonicalLineageValue(sourceIds);
+}
+
 function imageArtifactMatchesSlide(imageArtifactId: string, slideNumber: number): boolean {
-  if (!imageArtifactId.trim()) return true;
+  if (!isCanonicalNonblankValue(imageArtifactId)) return true;
   const match = /^[A-Za-z0-9_-]+_image_slide_(\d{3})_v[1-9]\d*$/.exec(imageArtifactId);
   return match?.[1] === pad3(slideNumber);
 }

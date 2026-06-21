@@ -57,6 +57,70 @@ describe("live benchmark report path evidence", () => {
       "missing_live_benchmark_report",
     ]);
   });
+
+  test("blocks benchmark report paths that only become valid after trimming", () => {
+    // Given
+    const bundle = completeBundle({
+      reportPath: " docs/live-benchmark-report.md ",
+      runs: [
+        passedRun("korean_business"),
+        passedRun("market_research"),
+        passedRun("chart_report"),
+        passedRun("image_intro"),
+        failedRun("revision_regeneration"),
+      ],
+    });
+
+    // When
+    const result = evaluateLiveBenchmarkEvidence(bundle);
+
+    // Then
+    expect(result.kind === "blocked" ? result.issues.map((issue) => issue.code) : []).toEqual([
+      "missing_live_benchmark_report",
+    ]);
+  });
+
+  test("blocks scenario report paths that only become valid after trimming", () => {
+    // Given
+    const bundle = completeBundle({
+      runs: [
+        passedRun("korean_business", { reportPath: " reports/korean_business.md " }),
+        passedRun("market_research"),
+        passedRun("chart_report"),
+        passedRun("image_intro"),
+        failedRun("revision_regeneration"),
+      ],
+    });
+
+    // When
+    const result = evaluateLiveBenchmarkEvidence(bundle);
+
+    // Then
+    expect(result.kind === "blocked" ? result.issues.map((issue) => issue.code) : []).toEqual([
+      "output_bundle_report_missing",
+    ]);
+  });
+
+  test("blocks final export artifact ids that only become valid after trimming", () => {
+    // Given
+    const bundle = completeBundle({
+      runs: [
+        passedRun("korean_business", { exportArtifactId: " korean_business_export " }),
+        passedRun("market_research"),
+        passedRun("chart_report"),
+        passedRun("image_intro"),
+        failedRun("revision_regeneration"),
+      ],
+    });
+
+    // When
+    const result = evaluateLiveBenchmarkEvidence(bundle);
+
+    // Then
+    expect(result.kind === "blocked" ? result.issues.map((issue) => issue.code) : []).toEqual([
+      "output_bundle_export_missing",
+    ]);
+  });
 });
 
 function completeBundle(patch: Partial<LiveBenchmarkEvidenceBundle>): LiveBenchmarkEvidenceBundle {
@@ -71,7 +135,10 @@ function completeBundle(patch: Partial<LiveBenchmarkEvidenceBundle>): LiveBenchm
 function passedRun(
   id: LiveBenchmarkRun["id"],
   paths: Partial<
-    Pick<LiveBenchmarkRun["outputBundle"], "reportPath" | "goldenPathReportPath">
+    Pick<
+      LiveBenchmarkRun["outputBundle"],
+      "reportPath" | "goldenPathReportPath" | "exportArtifactId"
+    >
   > = {},
 ): LiveBenchmarkRun {
   return {

@@ -14,6 +14,7 @@ export function hasObservedBenchmarkEvidencePath(
   allowedExtensions: readonly string[],
 ): boolean {
   if (value === undefined) return false;
+  if (value.length === 0 || value !== value.trim()) return false;
   if (!hasNonSyntheticEvidencePath(value, allowedExtensions)) return false;
   return !hasNonObservedBenchmarkMarker(value);
 }

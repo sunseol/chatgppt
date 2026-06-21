@@ -4,6 +4,29 @@ Date: 2026-06-19
 
 Scope: tracked GitHub issues `#126` through `#157` (`DF-200` through `DF-247`).
 
+## 2026-06-22 KST Current Branch Canonical Evidence Recheck
+
+DF-241/DF-242/DF-247 local update: Golden Path, benchmark, and final export
+lineage evidence now rejects boundary-whitespace-padded durable paths and ids
+instead of trimming them into readiness. `src/lib/live-golden-path-evidence-path.ts`
+blocks padded report, screenshot, recording, and final validation bundle paths;
+`src/lib/live-benchmark-evidence-path.ts` blocks padded benchmark report, scenario
+report, output bundle, screenshot, and Golden Path report paths; and
+`src/lib/live-benchmark-output-bundle.ts` requires final export artifact ids to
+be canonical nonblank values. `src/lib/live-generation-report-lineage.ts` now
+requires canonical source ids, text artifact ids, text thread/turn ids, text
+prompt versions, image artifact ids, image provider turn/request ids, and slide
+prompt versions before a generation report can satisfy production export
+lineage. Regression coverage lives in
+`src/lib/live-golden-path-e2e-canonical-path.test.ts`,
+`src/lib/live-benchmark-report-path-evidence.test.ts`, and
+`src/lib/live-generation-report-lineage-canonical.test.ts`.
+
+These changes close local false-ready paths only. DF-241, DF-242, and DF-247
+remain open until a real packaged Golden Path bundle, benchmark output bundle
+set, and final release evidence index are produced from authenticated Codex
+OAuth text/image runs.
+
 ## 2026-06-21 Current Branch OAuth Image Route Recheck
 
 DF-205/DF-230 local update: production image generation now rejects old persisted OpenAI API-key image decisions even if they were previously marked `locked` and contain binary/provenance artifact paths. `src/lib/production-image-generation-gate.ts` returns `production_codex_oauth_required` unless the persisted route is `codex` with `codexOAuth`; `src/lib/production-image-generation-gate-oauth-route.test.ts` covers the false-ready reload case. `src/lib/provider-selection-policy.ts` now filters production provider choices to Codex-only, `src/lib/provider-capability-view.ts` converts legacy `openaiImage` / `openaiApiKey` fallback state into a Codex image capability lock instead of an API-key prompt, and `src/components/deck/ProductionWorkflowStage.tsx` describes generate-stage readiness through Codex OAuth image capability. This aligns the product with the current direction that image generation uses the signed-in Codex OAuth image capability, not API-key based image generation. DF-205 remains open because fresh login, logout/relogin, and clean packaged Codex OAuth image capability evidence still require a clean account or clean machine.

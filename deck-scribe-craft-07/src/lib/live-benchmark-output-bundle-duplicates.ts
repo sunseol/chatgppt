@@ -1,4 +1,5 @@
 import type { LiveBenchmarkId, LiveBenchmarkRun } from "./live-benchmark-evidence";
+import { isCanonicalNonblankBenchmarkValue } from "./live-benchmark-canonical-value";
 import { hasObservedBenchmarkEvidencePath } from "./live-benchmark-evidence-path";
 
 export function duplicateOutputBundleRefs(runs: readonly LiveBenchmarkRun[]): readonly string[] {
@@ -21,8 +22,8 @@ export function duplicatePassedExportArtifacts(
   return duplicateRunRefs(
     runs.filter((run) => run.status === "passed"),
     (run) => {
-      const exportArtifactId = run.outputBundle.exportArtifactId.trim();
-      return exportArtifactId ? [exportArtifactId] : [];
+      const exportArtifactId = run.outputBundle.exportArtifactId;
+      return isCanonicalNonblankBenchmarkValue(exportArtifactId) ? [exportArtifactId] : [];
     },
   );
 }

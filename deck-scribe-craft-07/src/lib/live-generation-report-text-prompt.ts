@@ -2,11 +2,12 @@ import type {
   LiveGenerationReportLineageIssue,
   LiveSlideReportLineage,
 } from "./live-generation-report-lineage";
+import { isCanonicalNonblankValue } from "./live-generation-report-canonical-value";
 
 export function textPromptIssues(
   slide: LiveSlideReportLineage,
 ): readonly LiveGenerationReportLineageIssue[] {
-  return slide.textPromptVersion.trim()
+  return isCanonicalNonblankValue(slide.textPromptVersion)
     ? []
     : [
         {
