@@ -1,4 +1,5 @@
 import { LIVE_BENCHMARK_IDS } from "./live-benchmark-evidence";
+import { isLiveBenchmarkFailureDomain } from "./live-benchmark-failure-domain";
 import type { LiveBenchmarkEvidence, LiveReleaseBlocker } from "./live-release-gate";
 
 const REQUIRED_RELEASE_BENCHMARK_IDS = new Set<string>(LIVE_BENCHMARK_IDS);
@@ -7,8 +8,18 @@ export function benchmarkBlockers(
   benchmarks: readonly LiveBenchmarkEvidence[],
   passedBenchmarkCount: number,
 ): readonly LiveReleaseBlocker[] {
+  const invalidFailureDomains = invalidFailureDomainRefs(benchmarks);
   const conflicts = conflictingBenchmarkIds(benchmarks);
   return [
+    ...(invalidFailureDomains.length === 0
+      ? []
+      : [
+          blocker(
+            "live_benchmark_invalid_failure_domain",
+            "Live benchmark failure domains must match the DF-242 taxonomy.",
+            invalidFailureDomains,
+          ),
+        ]),
     ...(conflicts.length === 0
       ? []
       : [
@@ -41,6 +52,12 @@ export function distinctCleanPassedBenchmarkCount(
       )
       .map((benchmark) => benchmark.id),
   ).size;
+}
+
+function invalidFailureDomainRefs(benchmarks: readonly LiveBenchmarkEvidence[]): readonly string[] {
+  return benchmarks
+    .filter((benchmark) => !isLiveBenchmarkFailureDomain(benchmark.failureDomain))
+    .map((benchmark) => `${benchmark.id}:${benchmark.failureDomain}`);
 }
 
 function hasAllRequiredBenchmarkScenarios(benchmarks: readonly LiveBenchmarkEvidence[]): boolean {

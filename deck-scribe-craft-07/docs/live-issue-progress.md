@@ -617,3 +617,11 @@ trimming boundary whitespace. Padded paths such as
 cannot be claimed from non-canonical persisted path strings. DF-245 remains open
 until real clean macOS account validation, Developer ID signing, notarization,
 stapling, Gatekeeper acceptance, and release-trust evidence are recorded.
+
+DF-242 local update: the release gate now rejects benchmark summary rows whose
+`failureDomain` is outside the DF-242 taxonomy with
+`live_benchmark_invalid_failure_domain`. A malformed benchmark row such as
+`revision_regeneration:billing` can no longer pass release readiness simply
+because the evidence-bundle validator would have caught it earlier. DF-242
+remains open until five real benchmark output bundles are produced and at least
+four named provider Golden Path runs pass with `failureDomain: "none"`.

@@ -17,6 +17,10 @@ const LIVE_BENCHMARK_FAILURE_DOMAINS = [
 
 const VALID_FAILURE_DOMAINS = new Set<string>(LIVE_BENCHMARK_FAILURE_DOMAINS);
 
+export function isLiveBenchmarkFailureDomain(value: string): value is LiveBenchmarkFailureDomain {
+  return VALID_FAILURE_DOMAINS.has(value);
+}
+
 export function failureDomainIssues(
   runs: readonly LiveBenchmarkRun[],
 ): readonly LiveBenchmarkEvidenceIssue[] {

@@ -31,7 +31,7 @@ export type ReleaseBlockingP1Category =
 export type LiveBenchmarkEvidence = {
   readonly id: string;
   readonly status: LiveBenchmarkStatus;
-  readonly failureDomain: LiveBenchmarkFailureDomain;
+  readonly failureDomain: string;
 };
 
 export type ProductionPackageEvidence = {
@@ -71,6 +71,7 @@ export type LiveReleaseBlockerCode =
   | "p0_not_live_verified"
   | "production_mock_enabled"
   | "production_package_contaminated"
+  | "live_benchmark_invalid_failure_domain"
   | "live_benchmark_status_conflict"
   | "live_benchmark_shortfall"
   | "golden_path_lineage_missing"

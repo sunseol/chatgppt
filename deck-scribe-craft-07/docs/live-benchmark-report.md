@@ -74,13 +74,14 @@ Blocking issue codes:
 - `output_bundle_regeneration_image_missing` - missing approved full-slide regeneration image artifact evidence from a passed benchmark output bundle
 - `mock_score_contamination`
 - `invalid_failure_domain`
+- `live_benchmark_invalid_failure_domain`
 - `missing_failure_domain`
 - `passed_failure_domain_present`
 - `golden_path_not_completed`
 - `live_benchmark_shortfall`
 - `missing_live_benchmark_report`
 
-Current local status: the validator is implemented and tested, including rejection of unknown or duplicate benchmark scenarios, unsupported failure domains, `mock`, `fixture`, `test`, `fake`, `template`, `sample`, `example`, `placeholder`, developer-local absolute, and `file://` output bundle paths and report paths, synthetic or observer-template source/image/request/regeneration/export artifact ids, evidence count/list mismatches, duplicate scenario report reuse, cross-scenario borrowed report/Golden Path/screenshot paths, missing, reused, or non-step-named screenshot path evidence, missing regenerated image artifact evidence, regenerated images counted toward the initial five-image floor, plus cross-run source/image/request evidence reuse, but no real provider output bundle 5 sets have been produced.
+Current local status: the validator is implemented and tested, including rejection of unknown or duplicate benchmark scenarios, unsupported failure domains at both evidence-bundle and release-gate level, `mock`, `fixture`, `test`, `fake`, `template`, `sample`, `example`, `placeholder`, developer-local absolute, and `file://` output bundle paths and report paths, synthetic or observer-template source/image/request/regeneration/export artifact ids, evidence count/list mismatches, duplicate scenario report reuse, cross-scenario borrowed report/Golden Path/screenshot paths, missing, reused, or non-step-named screenshot path evidence, missing regenerated image artifact evidence, regenerated images counted toward the initial five-image floor, plus cross-run source/image/request evidence reuse, but no real provider output bundle 5 sets have been produced.
 
 ## 2026-06-21 KST lane evidence update
 
