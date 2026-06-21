@@ -33,7 +33,8 @@ export type LiveImageQueueEvidenceIssueCode =
   | "cancel_prompt_usage_missing"
   | "cancel_bundle_mismatch"
   | "cancel_attempt_count_mismatch"
-  | "cancel_failure_without_cancel_signal";
+  | "cancel_failure_without_cancel_signal"
+  | "noncanonical_queue_evidence_identity";
 
 export type LiveImageQueueEvidenceIssue = {
   readonly code: LiveImageQueueEvidenceIssueCode;
@@ -61,6 +62,7 @@ export function evaluateLiveImageQueueEvidence(
     };
   }
   const issues = [
+    ...queueEvidenceIdentityIssues(result),
     ...queueProgressIssues(result),
     ...concurrencyIssues(result.concurrency),
     ...providerFailureIssues(result.jobs, result.failures, result.promptUsages),
@@ -76,6 +78,34 @@ export function evaluateLiveImageQueueEvidence(
 }
 
 type ReadyQueueResult = Extract<SlideGenerationQueueResult, { readonly kind: "ready" }>;
+
+function queueEvidenceIdentityIssues(
+  result: ReadyQueueResult,
+): readonly LiveImageQueueEvidenceIssue[] {
+  const ids = [
+    result.context.deckContextId,
+    result.context.deckContextHash,
+    result.context.designSystemId,
+    result.context.designTokenHash,
+    result.context.layoutPrototypeId,
+    ...result.jobs.map((job) => job.id),
+    ...result.failures.flatMap((failure) => [failure.jobId, failure.bundleId]),
+    ...result.promptUsages.flatMap((usage) => [usage.artifactId, usage.jobId]),
+    ...result.retryProvenance.flatMap((event) => [event.jobId, event.bundleId]),
+  ];
+  return ids.some((id) => id !== undefined && !isCanonicalQueueEvidenceId(id))
+    ? [
+        {
+          code: "noncanonical_queue_evidence_identity" as const,
+          message: "Queue evidence ids must be nonblank and boundary-whitespace-free.",
+        },
+      ]
+    : [];
+}
+
+function isCanonicalQueueEvidenceId(value: string): boolean {
+  return value.trim() !== "" && value === value.trim();
+}
 
 function retryJobIssues(
   jobs: ReadyQueueResult["jobs"],

@@ -490,6 +490,14 @@ recovery snapshots now also reject any malformed job entry and require
 evidence from silently dropping the broken cancel/retry job and recovering a
 partial snapshot.
 
+DF-233 local update: `evaluateLiveImageQueueEvidence` now rejects blank or
+boundary-whitespace-padded queue context, job, prompt bundle, retry, and failure
+identities with `noncanonical_queue_evidence_identity`. A queue bundle whose
+padded `jobId` and `bundleId` values match each other no longer passes just
+because every copied field preserves the same non-canonical string. DF-233 still
+needs a real packaged run whose exported bundle contains genuine 429/5xx retry
+provenance, in-flight user cancellation, and restart-resume evidence.
+
 ## 2026-06-21 Review Stage Regeneration Evidence Export
 
 The current product branch now persists DF-235 Review-stage evidence for
