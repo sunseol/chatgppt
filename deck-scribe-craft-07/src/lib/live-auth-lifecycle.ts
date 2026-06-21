@@ -84,6 +84,13 @@ export class LiveSecretReferenceScopeError extends Error {
   }
 }
 
+export class LiveSecretReferenceTimestampError extends Error {
+  constructor() {
+    super("Secret store returned a reference with drifted timestamp.");
+    this.name = "LiveSecretReferenceTimestampError";
+  }
+}
+
 export class LiveSecretStoreKindError extends Error {
   constructor() {
     super("Secret store returned an unsupported store kind.");
@@ -99,12 +106,13 @@ export async function connectImageApiKeySecret(input: {
 }): Promise<ImageApiKeyConnectionState> {
   const trimmed = input.apiKey.trim();
   if (trimmed.length === 0) throw new LiveSecretInputError();
+  const createdAt = input.now();
 
   const secretReference = await input.store.saveSecret({
     service: "deckforge.openai.image",
     account: input.account,
     secretValue: trimmed,
-    createdAt: input.now(),
+    createdAt,
   });
   if (!isExpectedStoreKind(secretReference.storeKind, input.store.kind))
     throw new LiveSecretStoreKindError();
@@ -113,6 +121,7 @@ export async function connectImageApiKeySecret(input: {
     secretReference.account !== input.account
   )
     throw new LiveSecretReferenceScopeError();
+  if (secretReference.createdAt !== createdAt) throw new LiveSecretReferenceTimestampError();
   if (secretReferenceContainsRawSecret(secretReference, trimmed))
     throw new LiveSecretReferenceError();
 

@@ -21,9 +21,12 @@ describe("live auth secret lifecycle documentation", () => {
     expect(authSecretLifecycle.includes("hex-encoded image API key")).toBe(true);
     expect(authSecretLifecycle.includes("live-auth-secret-reference-encoding.test.ts")).toBe(true);
     expect(authSecretLifecycle.includes("live-auth-secret-reference-scope.test.ts")).toBe(true);
+    expect(authSecretLifecycle.includes("live-auth-secret-reference-timestamp.test.ts")).toBe(true);
     expect(authSecretLifecycle.includes("LiveSecretReferenceError")).toBe(true);
     expect(authSecretLifecycle.includes("LiveSecretReferenceScopeError")).toBe(true);
+    expect(authSecretLifecycle.includes("LiveSecretReferenceTimestampError")).toBe(true);
     expect(authSecretLifecycle.includes("wrong service or account scope")).toBe(true);
+    expect(authSecretLifecycle.includes("created timestamp")).toBe(true);
     expect(authSecretLifecycle.includes("serializeProjectList")).toBe(true);
     expect(authSecretLifecycle.includes("redactSensitiveText")).toBe(true);
     expect(authSecretLifecycle.includes("Bearer/Basic/token Authorization credentials")).toBe(true);
