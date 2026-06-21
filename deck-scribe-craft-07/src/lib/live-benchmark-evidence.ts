@@ -76,6 +76,7 @@ export type LiveBenchmarkEvidenceIssueCode =
   | "duplicate_output_bundle_artifact"
   | "duplicate_output_bundle_screenshot"
   | "output_bundle_step_screenshot_missing"
+  | "output_bundle_scenario_evidence_mismatch"
   | "duplicate_output_bundle_source_artifact"
   | "duplicate_output_bundle_image_artifact"
   | "duplicate_output_bundle_image_request"

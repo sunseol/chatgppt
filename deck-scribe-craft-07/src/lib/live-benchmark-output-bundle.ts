@@ -16,6 +16,7 @@ import {
   duplicateScreenshotEvidenceIssues,
   missingStepScreenshotEvidenceIssues,
 } from "./live-benchmark-screenshot-evidence";
+import { scenarioPathEvidenceIssues } from "./live-benchmark-scenario-path-evidence";
 
 export function outputBundleIssues(
   runs: readonly LiveBenchmarkRun[],
@@ -161,6 +162,7 @@ export function outputBundleIssues(
             duplicateExportArtifacts,
           ),
         ]),
+    ...scenarioPathEvidenceIssues(runs),
     ...duplicateScreenshotEvidenceIssues(runs),
     ...missingStepScreenshotEvidenceIssues(runs),
     ...(duplicateSourceArtifacts.length === 0
