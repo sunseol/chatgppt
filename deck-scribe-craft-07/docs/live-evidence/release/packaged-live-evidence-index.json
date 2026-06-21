@@ -25,7 +25,7 @@
       "status": "blocked",
       "validationKind": "blocked",
       "artifactPath": "docs/live-evidence/release/df243-evidence.json",
-      "artifactSha256": "a3c5e8e31f703b4eee5150054187e47ca3c7d2245ec68e60c973e1cc5173d83b"
+      "artifactSha256": "66a34bfdeb372132325a6db9c2cc76b589379ac42d4756979910757b35e2846f"
     },
     {
       "ticketId": "DF-245",

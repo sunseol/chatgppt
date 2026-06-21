@@ -1,0 +1,15 @@
+{
+  "scenarioId": "text_turn_shutdown",
+  "liveJobId": "019edc5a-0cc0-7031-915a-5fc6d65c6d86",
+  "statusAfterRecovery": "interrupted",
+  "evidenceDigest": "27855e9afff031bc49c87bb08bb46ea6ac9a5436e4a2eef9ecb74382e62809b6",
+  "observedAt": "2026-06-19 KST",
+  "sourceDocumentPath": "docs/live-interruption-matrix.md",
+  "observedSignals": [
+    "authenticated App Server JSON-RPC probe",
+    "turn/interrupt sent after turn/started",
+    "turn/completed reported interrupted",
+    "thread/read reported interrupted",
+    "thread/turns/list reported interrupted"
+  ]
+}

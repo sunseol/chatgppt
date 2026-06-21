@@ -1,0 +1,15 @@
+{
+  "scenarioId": "fetch_shutdown",
+  "liveJobId": "fetch_shutdown_live_20260619",
+  "statusAfterRecovery": "failed",
+  "evidenceDigest": "a472a031283e5a2ce537801d43a15b2d121241d823397868b81437c50e78bc3d",
+  "observedAt": "2026-06-19 KST",
+  "sourceDocumentPath": "docs/live-interruption-matrix.md",
+  "observedSignals": [
+    "production fetchResearchSource path",
+    "live HTTPS GET to https://httpbin.org/delay/10",
+    "AbortController aborted after 754 ms",
+    "retryable failed result returned",
+    "no raw content or content hash persisted"
+  ]
+}

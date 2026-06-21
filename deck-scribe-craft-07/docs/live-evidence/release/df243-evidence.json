@@ -5,12 +5,27 @@
   "validationKind": "blocked",
   "generatedAt": "2026-06-21T15:58:37Z",
   "packageArchiveSha256": "d21d149aa545b9dd357ae29934c9339efb812eb03374197bb11be0bb32bf6dfd",
-  "summary": "The interruption closure manifest exists but remains blocked because image partial resume, app-storage cancel, cancel signal, and approval/export gate artifacts are missing.",
+  "summary": "The interruption closure manifest now materializes the observed text-turn and fetch-shutdown recovery snapshots, but remains blocked because image partial resume, app-storage cancel, cancel signal, and approval/export gate artifacts are missing.",
   "currentEvidence": [
     {
       "path": "docs/live-evidence/lane-h-20260621/df243-closure-evidence.json",
-      "sha256": "a7df061def3146db8593e80ff920dcad9565343844d60f5b0e82c68c695ec951",
+      "sha256": "d5249540e2841cf6179f90b8824fc7471a834becfd10252e9a3af98dbc001271",
       "kind": "blocked closure manifest"
+    },
+    {
+      "path": "docs/live-evidence/lane-h-20260621/df243-interruption-matrix.json",
+      "sha256": "53f7feba1e45036297c6728eb4866ebf3ac5e74982323b9fa5016b26ba6d9b69",
+      "kind": "blocked matrix artifact"
+    },
+    {
+      "path": "docs/live-evidence/lane-h-20260621/text-turn-shutdown-recovery-snapshot.json",
+      "sha256": "bdb10baf053ec024eaf2a1fbeaa69f0afa14607db7725bd3b264007a268e9f1d",
+      "kind": "observed text interruption recovery snapshot"
+    },
+    {
+      "path": "docs/live-evidence/lane-h-20260621/fetch-shutdown-recovery-snapshot.json",
+      "sha256": "2d1ac1fcb37c14e5137252d5703eb6f5ab597f839f75873a7248502278215563",
+      "kind": "observed fetch abort recovery snapshot"
     },
     {
       "path": "docs/live-interruption-matrix.md",
@@ -22,7 +37,6 @@
     "app-storage cancel snapshot JSON",
     "cancel signal evidence JSON",
     "interrupted approval gate evidence JSON",
-    "interrupted export gate evidence JSON",
-    "committed scenario recovery snapshots under docs/live-evidence"
+    "interrupted export gate evidence JSON"
   ]
 }

@@ -4,6 +4,37 @@ Date: 2026-06-19
 
 Scope: tracked GitHub issues `#126` through `#157` (`DF-200` through `DF-247`).
 
+## 2026-06-22 KST DF-243 Observed Snapshot Materialization
+
+DF-243 local update: the blocked closure manifest now points at committed
+observed recovery snapshot JSON for the two interruption scenarios that already
+had real probe evidence. `text_turn_shutdown` is backed by
+`docs/live-evidence/lane-h-20260621/text-turn-shutdown-recovery-snapshot.json`
+with digest `27855e9afff031bc49c87bb08bb46ea6ac9a5436e4a2eef9ecb74382e62809b6`,
+and `fetch_shutdown` is backed by
+`docs/live-evidence/lane-h-20260621/fetch-shutdown-recovery-snapshot.json` with
+digest `a472a031283e5a2ce537801d43a15b2d121241d823397868b81437c50e78bc3d`.
+The committed matrix artifact now lives at
+`docs/live-evidence/lane-h-20260621/df243-interruption-matrix.json`, and
+`src/lib/live-interruption-closure-artifact.test.ts` verifies that the manifest,
+matrix artifact, and observed snapshot files stay aligned.
+
+This still does not close DF-243. The current closure validator now reports
+missing recovery snapshots only for `image_partial_resume`, `cancel_job`, and
+`interrupted_artifact_gate`; app-storage cancel, cancel-signal, and approval /
+export gate evidence are still missing.
+
+## 2026-06-22 KST GitHub Open Issue Recheck
+
+GitHub REST recheck confirms `#148` / DF-234 is already `closed` with
+`state_reason: completed` (`closed_at: 2026-06-20T20:08:59Z`). The older
+summary-table row that still says DF-234 is partial is superseded by the Lane D
+Live artifact bundle update and the closed GitHub state.
+
+Tracked issues still open in `#126`-`#157`: `#131` / DF-205, `#147` / DF-233,
+`#149` / DF-235, `#151` / DF-241, `#152` / DF-242, `#153` / DF-243, `#154` /
+DF-244, `#155` / DF-245, `#156` / DF-246, and `#157` / DF-247.
+
 ## 2026-06-22 KST Current Branch Canonical Evidence Recheck
 
 DF-241/DF-242/DF-247 local update: Golden Path, benchmark, and final export
