@@ -119,6 +119,7 @@ describe("live full-slide regeneration", () => {
   test("stores a new background artifact version and keeps the approved slide until approval", async () => {
     // Given
     const stored = await storedBackgrounds();
+    expect(stored.candidate.metadata.providerId).toBe("codex");
     const requestResult = buildLiveSlideRegenerationRequest({
       revisionRequest: revisionRequestFixture(),
       deckContextId: "deckctx_001",
@@ -238,27 +239,33 @@ async function storedBackgrounds(
   } = {},
 ) {
   const store = createImageArtifactStore({ write: async () => undefined });
-  const originalRequestId = "img_req_original";
+  const originalRequestId = "turn_codex_image_original";
   const original = await storeSlideImageArtifact({
     store,
     projectId: "project_001",
-    artifact: slideImageArtifactFixture({ requestId: originalRequestId }),
+    artifact: slideImageArtifactFixture({ providerId: "codex", requestId: originalRequestId }),
     version: 1,
     createdAt: 1_789_900_001,
   });
+  const candidateProviderId = options.candidateProviderId ?? "codex";
+  const storedCandidateProviderId = candidateProviderId === "openaiImage" ? "openaiImage" : "codex";
+  const candidateRequestId =
+    storedCandidateProviderId === "codex" ? "turn_codex_image_revised" : "img_req_revised";
   const candidateStored = options.reuseOriginalAsCandidate
     ? original
     : await storeSlideImageArtifact({
         store,
         projectId: "project_001",
         artifact: slideImageArtifactFixture({
-          requestId: "img_req_revised",
+          providerId: storedCandidateProviderId,
+          requestId: candidateRequestId,
         }),
         version: 2,
         createdAt: 1_789_900_002,
       });
   const candidate =
-    options.candidateProviderId === undefined || options.candidateProviderId === "openaiImage"
+    options.candidateProviderId === undefined ||
+    options.candidateProviderId === storedCandidateProviderId
       ? candidateStored
       : {
           ...candidateStored,
