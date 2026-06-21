@@ -4,6 +4,7 @@ import type {
   LiveInterruptionScenarioEvidence,
 } from "./live-interruption-matrix";
 import { hasObservedInterruptionEvidencePath } from "./live-interruption-evidence-path";
+import { noncanonicalScenarioIdentityRefs } from "./live-interruption-evidence-identity";
 
 export function scenarioEvidenceDetailIssues(
   scenarios: readonly LiveInterruptionScenarioEvidence[],
@@ -201,43 +202,6 @@ function duplicateValues(values: readonly string[]): readonly string[] {
     seen.add(value);
   }
   return Array.from(duplicates);
-}
-
-function noncanonicalScenarioIdentityRefs(
-  scenario: LiveInterruptionScenarioEvidence,
-): readonly string[] {
-  return [
-    ...noncanonicalRef(scenario.id, "liveJobId", scenario.liveJobId),
-    ...noncanonicalRef(scenario.id, "recoverySnapshotPath", scenario.recoverySnapshotPath),
-    ...noncanonicalOptionalRef(
-      scenario.id,
-      "cancelSignalEvidencePath",
-      scenario.cancelSignalEvidencePath,
-    ),
-    ...noncanonicalOptionalRef(scenario.id, "cancelSignalJobId", scenario.cancelSignalJobId),
-    ...noncanonicalOptionalRef(
-      scenario.id,
-      "approvalGateEvidencePath",
-      scenario.approvalGateEvidencePath,
-    ),
-    ...noncanonicalOptionalRef(
-      scenario.id,
-      "exportGateEvidencePath",
-      scenario.exportGateEvidencePath,
-    ),
-  ];
-}
-
-function noncanonicalOptionalRef(
-  scenarioId: string,
-  label: string,
-  value: string | undefined,
-): readonly string[] {
-  return value === undefined ? [] : noncanonicalRef(scenarioId, label, value);
-}
-
-function noncanonicalRef(scenarioId: string, label: string, value: string): readonly string[] {
-  return value === value.trim() ? [] : [`${scenarioId}:${label}`];
 }
 
 function isPersistedJsonEvidencePath(value: string | undefined): boolean {

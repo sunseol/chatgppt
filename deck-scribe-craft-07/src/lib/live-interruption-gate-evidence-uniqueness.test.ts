@@ -30,6 +30,33 @@ describe("live interruption gate evidence uniqueness", () => {
       "duplicate_interrupted_gate_evidence",
     ]);
   });
+
+  test("blocks interrupted artifact gates that reuse one evidence path through a dot segment alias", () => {
+    // Given
+    const matrix = completeMatrix({
+      scenarios: LIVE_INTERRUPTION_SCENARIOS.map((id) =>
+        id === "interrupted_artifact_gate"
+          ? scenario(id, {
+              approvalGateEvidencePath:
+                "docs/live-evidence/lane-h-20260621/interrupted-approval-gate.json",
+              exportGateEvidencePath:
+                "docs/live-evidence/lane-h-20260621/../lane-h-20260621/interrupted-approval-gate.json",
+            })
+          : scenario(id),
+      ),
+    });
+
+    // When
+    const result = evaluateLiveInterruptionMatrix(matrix);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual([
+      "noncanonical_interruption_evidence_identity",
+    ]);
+    expect(result.issues[0]?.refs).toEqual(["interrupted_artifact_gate:exportGateEvidencePath"]);
+  });
 });
 
 function completeMatrix(
