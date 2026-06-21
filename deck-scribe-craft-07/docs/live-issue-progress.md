@@ -1521,3 +1521,26 @@ provider `codex`, `imageCount: 1`, latency `136903ms`, hidden cost, and the
 same product confirmation record path. This removes the product-run usage
 resolver gap, but DF-244 remains open until packaged UI manual QA captures and
 displays the persisted confirmation from the same real image job.
+
+DF-243 product cancel evidence update:
+`scripts/run-df243-cancel-product-evidence-smoke.ts` now runs the real product
+slide-generation queue with provider id `codex`, requests cancellation while
+the in-flight slide worker returns a late image, and verifies that the queue
+rejects that late output (`acceptedSlides: []`) while storing job
+`live_job_cancel_product_1` as `cancelled` with `cancelRequested: true`. The
+DF-243 cancel writer then persists separate app-storage recovery and cancel
+signal JSON at
+`projects/df243_cancel_product_smoke_20260622/live-evidence/df243-cancel-job-recovery-snapshot-cancel_product_run_20260622.json`
+(`sha256:ff1da9cbfce7afbf36854de2c98c4bb04d123cd453fa6aeb568e896d3c64b049`)
+and
+`projects/df243_cancel_product_smoke_20260622/live-evidence/df243-cancel-job-cancel-signal-cancel_product_run_20260622.json`
+(`sha256:0ef3c55b969e5111d941feaa9c6f051f1763866457990e0eebee8d3f38629a68`).
+The smoke summary at
+`docs/live-evidence/codex-image/df243-cancel-product-smoke-20260622/summary.json`
+(`sha256:baca4adc1124248d13fd0c2db38759ff6b25835460cf3f58847e8bc7cc7a7ed8`)
+also records that the local project folder export includes both cancel
+artifacts, and its companion matrix JSON validates as `ready`. This removes the
+local product-writer cancellation gap, but DF-243 remains open until the same
+cancel artifacts, image partial-resume artifacts, and interrupted approval/export
+gate artifacts are captured from a packaged app run and copied into the
+canonical `docs/live-evidence/...` bundle.

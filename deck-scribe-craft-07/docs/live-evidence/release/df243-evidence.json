@@ -3,9 +3,9 @@
   "issueNumber": 153,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-21T22:55:19Z",
+  "generatedAt": "2026-06-21T23:35:49Z",
   "packageArchiveSha256": "0354291e6c6ac847335ba5095e088d1122a3bf93937589021edabb3e4fbcc913",
-  "summary": "The interruption closure manifest materializes the observed text-turn and fetch-shutdown recovery snapshots, the product can persist app-storage cancel-job, image partial-resume, and interrupted approval/export gate JSON from real queue/gate evidence, local project folder export can carry those project-scoped browser artifact writes, and the closure gate now rejects borrowed matrix payloads from another evidence path. The release remains blocked until those generated artifacts are captured from a packaged run.",
+  "summary": "The interruption closure manifest materializes the observed text-turn and fetch-shutdown recovery snapshots. A product queue smoke now proves that an in-flight Codex image queue output returned after cancellation is rejected, the job is stored as cancelled with cancelRequested true, the DF-243 cancel writer persists separate app-storage recovery and cancel-signal JSON, and local project folder export carries those project-scoped artifacts. The release remains blocked until packaged image partial-resume, packaged cancel, and interrupted approval/export artifacts are captured from the app surface.",
   "currentEvidence": [
     {
       "path": "docs/live-evidence/lane-h-20260621/df243-closure-evidence.json",
@@ -26,6 +26,30 @@
       "path": "docs/live-evidence/lane-h-20260621/fetch-shutdown-recovery-snapshot.json",
       "sha256": "2d1ac1fcb37c14e5137252d5703eb6f5ab597f839f75873a7248502278215563",
       "kind": "observed fetch abort recovery snapshot"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df243-cancel-product-smoke-20260622/summary.json",
+      "sha256": "baca4adc1124248d13fd0c2db38759ff6b25835460cf3f58847e8bc7cc7a7ed8",
+      "kind": "product queue cancel writer smoke summary"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df243-cancel-product-smoke-20260622/df243-cancel-product-smoke-matrix.json",
+      "sha256": "968965df08bb0332a87d52c91dc286cf7f039a87504d9f3aea985210d7722dec",
+      "kind": "ready cancel scenario matrix from product queue smoke"
+    },
+    {
+      "path": "projects/df243_cancel_product_smoke_20260622/live-evidence/df243-cancel-job-recovery-snapshot-cancel_product_run_20260622.json",
+      "sha256": "ff1da9cbfce7afbf36854de2c98c4bb04d123cd453fa6aeb568e896d3c64b049",
+      "kind": "product-written cancel-job app-storage recovery snapshot"
+    },
+    {
+      "path": "projects/df243_cancel_product_smoke_20260622/live-evidence/df243-cancel-job-cancel-signal-cancel_product_run_20260622.json",
+      "sha256": "0ef3c55b969e5111d941feaa9c6f051f1763866457990e0eebee8d3f38629a68",
+      "kind": "product-written cancel signal evidence"
+    },
+    {
+      "path": "scripts/run-df243-cancel-product-evidence-smoke.ts",
+      "kind": "reproducible product queue cancel evidence smoke"
     },
     {
       "path": "docs/live-interruption-matrix.md",
