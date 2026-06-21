@@ -23,9 +23,9 @@ const RELEASE_TRUST_EVIDENCE_PATH_MARKERS = [
 export function macosReleaseTrustIssues(
   trust: NativeMacosReleaseTrust,
 ): readonly ProductionPackagingIssue[] {
-  const teamIdentifier = trust.teamIdentifier.trim();
+  const teamIdentifier = trust.teamIdentifier;
   return [
-    ...(trust.signature === "developer_id" && isDeveloperTeamIdentifier(teamIdentifier)
+    ...(trust.signature === "developer_id" && isCanonicalDeveloperTeamIdentifier(teamIdentifier)
       ? []
       : [
           issue(
@@ -74,6 +74,10 @@ export function macosReleaseTrustLabel(trust: NativeMacosReleaseTrust): string {
 }
 
 const isDeveloperTeamIdentifier = (value: string): boolean => /^[A-Z0-9]{10}$/.test(value);
+
+function isCanonicalDeveloperTeamIdentifier(value: string): boolean {
+  return value.trim() === value && isDeveloperTeamIdentifier(value);
+}
 
 function hasReleaseTrustEvidencePath(value: string | undefined): boolean {
   if (value === undefined || value.trim() !== value) return false;

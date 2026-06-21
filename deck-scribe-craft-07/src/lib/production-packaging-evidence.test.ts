@@ -190,6 +190,28 @@ describe("production packaging evidence", () => {
     expect(result.issues[0]?.refs).toEqual(["developer_id", "not set"]);
   });
 
+  test("blocks Developer ID TeamIdentifier evidence that only becomes valid after trimming", () => {
+    // Given
+    const evidence = completeProductionPackagingEvidence({
+      nativeMacosReleaseTrust: {
+        signature: "developer_id",
+        teamIdentifier: " TEAMID1234 ",
+        notarized: true,
+        stapled: true,
+        gatekeeperAccepted: true,
+        releaseTrustEvidencePath: VALID_RELEASE_TRUST_EVIDENCE_PATH,
+      },
+    });
+
+    // When
+    const result = evaluateProductionPackagingEvidence(evidence);
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual(["missing_developer_id_signature"]);
+  });
+
   test("blocks release trust claims without persisted assessment evidence", () => {
     // Given
     const evidence = completeProductionPackagingEvidence({
