@@ -4,6 +4,24 @@ Date: 2026-06-19
 
 Scope: tracked GitHub issues `#126` through `#157` (`DF-200` through `DF-247`).
 
+## 2026-06-22 KST DF-243 Image Partial Resume Product Evidence Export
+
+DF-243 local update: the product now also has a dedicated app-storage evidence
+writer for the `image_partial_resume` interruption scenario.
+`writeLiveInterruptionImageResumeEvidenceExport` persists
+`projects/{projectId}/live-evidence/df243-image-partial-resume-recovery-snapshot-{jobId}.json`
+only after the pre-restart completed artifacts survive, pending image artifact
+ids are non-empty/canonical, and every resumed image artifact was pending before
+restart. Regression coverage lives in
+`src/lib/live-interruption-image-resume-evidence-export.test.ts`, including a
+matrix-ready partial-resume scenario and the false-ready path where an
+untracked image artifact is marked resumed.
+
+This still does not close DF-243. The release closure artifact remains blocked
+until a packaged/authenticated run captures the generated image partial-resume
+snapshot, generated cancel snapshot/cancel-signal JSON, and interrupted approval
+/ export gate artifacts.
+
 ## 2026-06-22 KST DF-243 Cancel Job Product Evidence Export
 
 DF-243 local update: the product now has a dedicated app-storage evidence
