@@ -385,3 +385,26 @@ Assigned issue disposition:
   image usage payloads and the persisted confirmation JSON is still missing.
 - DF-247 / `#157`: remains blocked by the remaining open P0 tickets and the
   missing release evidence set.
+
+## 2026-06-21 Generate Stage Queue Evidence Export
+
+The current product branch now persists a DF-233 queue evidence JSON bundle for
+production `codex` Generate-stage runs at
+`projects/{projectId}/live-evidence/df233-image-queue-{jobId}.json`. The bundle
+is written through the same artifact store as live image PNG/metadata/provenance
+sidecars and records queue status, context, slides, failures, provider job
+snapshots, prompt usage, retry provenance, concurrency, progress, and stored
+image artifact paths. The outer provider job partial result records
+`queueEvidencePath`, so the packaged app surface can hand auditors the generated
+queue artifact after a real run.
+
+Assigned issue disposition:
+
+- DF-233 / `#147`: remains open. The local product path now exports the queue
+  evidence bundle needed for closure review, but the exported bundle still must
+  be produced by a real packaged Codex OAuth run containing genuine 429/5xx
+  retry provenance, in-flight user cancellation, and restart-resume evidence.
+- DF-241 / `#151`: remains open. The Golden Path can now reference a concrete
+  queue evidence artifact from Generate, but the signed packaged Golden Path
+  bundle is still missing.
+- DF-247 / `#157`: remains blocked by the remaining P0 evidence requirements.

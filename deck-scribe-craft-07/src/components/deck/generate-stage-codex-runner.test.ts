@@ -60,7 +60,31 @@ describe("generate stage Codex runner", () => {
     ]);
     expect(slideUpdates[0]?.every((slide) => slide.status === "generating")).toBe(true);
     expect(slideUpdates.at(-1)?.every((slide) => slide.status === "ready")).toBe(true);
-    expect(writes.length).toBe(6);
+    expect(writes.map((write) => write.path)).toEqual([
+      "projects/project_001/slides/images/slide_001.v1.png",
+      "projects/project_001/slides/images/slide_001.v1.metadata.json",
+      "projects/project_001/slides/images/slide_001.v1.provenance.json",
+      "projects/project_001/slides/images/slide_002.v1.png",
+      "projects/project_001/slides/images/slide_002.v1.metadata.json",
+      "projects/project_001/slides/images/slide_002.v1.provenance.json",
+      "projects/project_001/live-evidence/df233-image-queue-job_generate_1.json",
+    ]);
+    const evidenceContent = writes.at(-1)?.content;
+    if (typeof evidenceContent !== "string") throw new Error("Expected queue evidence JSON.");
+    expect(evidenceContent.includes('"issue": "DF-233"')).toBe(true);
+    expect(evidenceContent.includes('"resultStatus": "succeeded"')).toBe(true);
+    expect(evidenceContent.includes("projects/project_001/slides/images/slide_001.v1.png")).toBe(
+      true,
+    );
+    expect(evidenceContent.includes("projects/project_001/slides/images/slide_002.v1.png")).toBe(
+      true,
+    );
+    expect(completed.partialResult).toEqual({
+      kind: "live_slide_images",
+      label: "2 Codex slide images",
+      artifactId: "project_001",
+      queueEvidencePath: "projects/project_001/live-evidence/df233-image-queue-job_generate_1.json",
+    });
     expect(reportedJobs.some((job) => job.progress?.percent === 100)).toBe(true);
   });
 });

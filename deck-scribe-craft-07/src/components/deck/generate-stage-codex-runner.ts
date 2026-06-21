@@ -5,6 +5,7 @@ import type { CodexImageClient } from "@/lib/codex-image-provider";
 import { createBrowserImageArtifactStore } from "@/lib/browser-image-artifact-store";
 import { createDesktopCodexImageClient } from "@/lib/desktop-codex-image-generation";
 import { runCodexLiveSlideGenerationSession } from "@/lib/live-slide-generation-session";
+import { writeLiveImageQueueEvidenceExport } from "@/lib/live-image-queue-evidence-export";
 import type { ProviderJob, ProviderJobManager } from "@/lib/provider-job-manager";
 
 export type CodexGenerateStageJobInput = {
@@ -27,10 +28,11 @@ export async function runCodexGenerateStageJob(
 
   return input.manager.run(input.jobId, async (context) => {
     input.onJob(context.reportProgress({ percent: 5, message: "Codex 이미지 세션 준비 중" }));
+    const store = input.store ?? createBrowserImageArtifactStore();
     const result = await runCodexLiveSlideGenerationSession({
       project: input.project,
       client: input.client ?? createDesktopCodexImageClient(),
-      store: input.store ?? createBrowserImageArtifactStore(),
+      store,
       isCancellationRequested: context.isCancellationRequested,
       onProgress: (progress) => {
         input.onProgress(progress.percent);
@@ -47,20 +49,30 @@ export async function runCodexGenerateStageJob(
     switch (result.kind) {
       case "blocked":
         throw new ImageProviderRequestError("provider_contract", result.issues.join(" "));
-      case "ready":
+      case "ready": {
         input.onSlides(result.slides);
         input.onProgress(result.progress.percent);
+        const queueEvidence = await writeLiveImageQueueEvidenceExport({
+          store,
+          projectId: input.project.id,
+          jobId: input.jobId,
+          exportedAt: input.now?.() ?? Date.now(),
+          result,
+          storedImageArtifactPaths: storedImageArtifactPaths(result.slides),
+        });
         input.onJob(
           context.recordPartialResult({
             kind: "live_slide_images",
             label: `${result.slides.length} Codex slide images`,
             artifactId: input.project.id,
+            queueEvidencePath: queueEvidence.path,
           }),
         );
         if (result.status !== "succeeded") {
           throw new ImageProviderRequestError("unknown", failureSummary(result.failures));
         }
         return result.slides;
+      }
       default:
         return assertNever(result);
     }
@@ -76,6 +88,13 @@ function generatingSlides(project: DeckProject): readonly GeneratedSlide[] {
       imageDescriptor: "Codex image generation in progress",
     })) ?? []
   );
+}
+
+function storedImageArtifactPaths(slides: readonly GeneratedSlide[]): readonly string[] {
+  return slides.flatMap((slide) => {
+    const path = slide.notes?.trim();
+    return path && path.startsWith("projects/") ? [path] : [];
+  });
 }
 
 function failureSummary(
