@@ -17,7 +17,7 @@ const macosDir = join(contentsDir, "MacOS");
 const resourcesDir = join(contentsDir, "Resources");
 const archivePath = join(distDir, "deckforge-macos-dry-run.tgz");
 
-run("bun", ["run", "build"]);
+run("bun", ["run", "build:package"]);
 requirePath(clientDir, "client build output");
 requirePath(serverDir, "server build output");
 sanitizePackageBuildDirectory(clientDir, root);

@@ -21,16 +21,17 @@ The current worktree has stronger Live-readiness contracts than the previous moc
 
 ## Latest local verification
 
-- `bun test` passes: 991 tests, 0 failures, 3853 expectations.
+- `bun test` passes: 1029 tests, 0 failures, 4034 expectations.
 - `bun run typecheck` passes.
 - `bun run lint` exits 0 with six pre-existing React Fast Refresh warnings in
   shared UI files.
 - `bun run build` passes for client, SSR, and prerendered `/`.
 - `bun run package:dry-run` creates `dist/deckforge-macos-dry-run.tgz`.
-- Dry-run archive SHA-256: `e80f2378b21a79b5e600e49840deb97e6159d249e4d45d50ad9f19699a6a680f`.
-- Current unsigned DMG SHA-256: `33cc5cb29e25aba266288546037bd5f5007f7696a6a65bfb4787bd1aa50b2f20`.
-- Package content scan finds no hits for mock provider ids, mock provider labels, mock stage function names, `mock-provider`, `MOCK MODE`, fixture paths, test files, local developer absolute paths, `.omx/`, `.playwright-mcp/`, bundled `auth.json` or `.codex` payload files, long `Bearer` tokens, or OpenAI/Codex secret-like values in `dist/client`, `dist/server`, or the extracted dry-run app bundle. The regenerated archive contains 17 app files, 26 archive members, and 288,577 compressed bytes. The broader mock/fixture/research approval/secret matches are expected production guard-code literals, production status copy, secret-redaction regex definitions, sensitive-path guards, and Tailwind/class-merge CSS utility identifiers: `mock_lineage_contamination`, `fixture_lineage_contamination`, `pending_reinforcement_request`, `summary_without_original`, `missing_provenance`, `API_KEY_PATTERN`, `SECRET_ASSIGNMENT_PATTERN`, `.codex/auth.json`, `OPENAI_API_KEY` redaction regex text, and `sk-image-linear-from-pos`.
-- Lane I regenerated the current native package with `bun run tauri:build`; the app binary SHA-256 is `ae4f2216b92e03254cf9522406d7fc9b9d66c374a428858c055af7dd2feb6fd7`. Fixed-string scans of the dry-run app bundle and native `.app` found 0 mock provider id, mock stage, fixture/test path, local-path, `.omx`, `.playwright-mcp`, or assigned secret hits. `Bearer`, assigned `OPENAI_API_KEY`, bundled auth, and OpenAI key-shaped scans found 0 hits. The built app remains ad-hoc signed with no TeamIdentifier, `codesign --verify --deep --strict` fails with `code has no resources but signature indicates they must be present`, and Gatekeeper rejects the DMG with `source=no usable signature`. `security find-identity -v -p codesigning` found 0 valid identities, and `xcrun notarytool history` returned `Must provide credentials`.
+- Dry-run archive SHA-256: `d21d149aa545b9dd357ae29934c9339efb812eb03374197bb11be0bb32bf6dfd`; 288,207 bytes, 26 archive members, 17 app files.
+- Current unsigned DMG SHA-256: `d6849d24c5af4548b7b35e65a68a05c8d139be4b1b5504d7c3da3a3dc9e2d467`; 1,833,575 bytes.
+- Current native app binary SHA-256: `f886f3dc8c9e5c968a7a5a80134814a72b629c9fdbf0bff05e570408a7003c65`.
+- Native Tauri packaging now runs `bun run build:package`, so the TanStack generated `dist/server` manifest is sanitized after Tauri's `beforeBuildCommand` instead of being recreated with developer-local absolute paths. `scripts/package-path-sanitizer.test.mjs` covers that wiring.
+- Package content scan finds no hits for `mock-provider`, `MOCK MODE`, `.omx`, `.playwright-mcp`, local developer absolute paths, `CODEX_SESSION=`, assigned `OPENAI_API_KEY`, or bundled `auth.json` in `dist/client`, `dist/server`, the extracted dry-run app bundle, or the native `.app`. OpenAI key-shaped regex hits are Tailwind CSS utility identifiers such as `sk-image-linear-from-pos`, not secrets.
 
 ## 2026-06-21 Lane F Release-Gates Recheck
 
