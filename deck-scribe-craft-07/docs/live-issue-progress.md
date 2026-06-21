@@ -1125,6 +1125,15 @@ requires the observed session JSON to be copied into the committed
 from satisfying the release manual QA requirement. DF-246 remains open until a
 real non-developer packaged-app session produces the required evidence bundle.
 
+DF-246 local update: manual QA session evidence now rejects temporary or
+observer session paths even when they live under `docs/live-evidence` and
+contain `manual-qa` plus `session`. A path such as
+`docs/live-evidence/manual-qa/tmp-session-20260619.json` now blocks as
+`missing_manual_qa_session_evidence`, so a scratch observer bundle cannot stand
+in for the persisted observed non-developer QA session artifact. DF-246 remains
+open until a real non-developer packaged-app session produces the required
+evidence bundle.
+
 DF-245 local update: clean-machine step evidence paths and the separate
 `cleanMachineAccountEvidencePath` now reject values that only become valid after
 trimming boundary whitespace. Padded paths such as

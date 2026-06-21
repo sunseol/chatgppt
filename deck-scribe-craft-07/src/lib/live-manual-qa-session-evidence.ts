@@ -8,6 +8,9 @@ const NON_OBSERVED_SESSION_MARKERS = [
   "placeholder",
   "generic",
   "notes",
+  "tmp",
+  "temp",
+  "observer",
 ] as const;
 
 export function sessionEvidenceIssues(sessionEvidencePath: string): readonly LiveManualQaIssue[] {

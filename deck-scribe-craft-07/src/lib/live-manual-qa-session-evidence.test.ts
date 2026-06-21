@@ -115,6 +115,21 @@ describe("live manual QA session evidence", () => {
     ]);
   });
 
+  test("blocks temporary manual QA session evidence paths", () => {
+    // Given
+    const evidence = completeEvidence({
+      sessionEvidencePath: "docs/live-evidence/manual-qa/tmp-session-20260619.json",
+    });
+
+    // When
+    const result = evaluateLiveManualQaEvidence(evidence);
+
+    // Then
+    expect(result.kind === "blocked" ? result.issues.map((issue) => issue.code) : []).toEqual([
+      "missing_manual_qa_session_evidence",
+    ]);
+  });
+
   test("blocks session evidence paths that rely on boundary whitespace", () => {
     // Given
     const evidence = completeEvidence({
