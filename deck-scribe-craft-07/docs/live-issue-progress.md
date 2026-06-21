@@ -651,3 +651,13 @@ signed at `2026-06-19T09:00:00.000Z`; it blocks as
 `missing_restart_reopen_evidence`. DF-241 remains open until a real signed
 packaged production Golden Path run produces the full report, screenshots,
 recording, validation bundle, export, and restart/reopen evidence.
+
+DF-235 local update: Review-stage approval attempts blocked by
+`regeneration_comparison_mismatch` now persist DF-235 review evidence instead
+of returning `reviewEvidencePath: null`. The new
+`preserved_after_approval_blocked` outcome records the live candidate, the
+mismatched before/after comparison, the blocker issue code, and the preserved
+approved slide, then carries the evidence path through
+`DeckProject.liveSlideRegenerationReviewEvidence`. DF-235 remains open until a
+real packaged review UI run proves candidate approval and failed-regeneration
+original preservation from the app surface.

@@ -84,7 +84,7 @@ export function ReviewStage({ project }: { readonly project: DeckProject }) {
         slides: result.slides,
         reviewEvidencePath: result.reviewEvidencePath,
         slideNumber: revisionComparison.slideNumber,
-        outcome: "approved",
+        outcome: result.reviewOutcome ?? "approved",
       }),
     );
     setRevisionComparison(null);

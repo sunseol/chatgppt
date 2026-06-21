@@ -50,6 +50,8 @@ describe("live full-slide regeneration documentation", () => {
       true,
     );
     expect(slideRegeneration.includes("project DB serialization")).toBe(true);
+    expect(slideRegeneration.includes("approval-blocked attempts")).toBe(true);
+    expect(slideRegeneration.includes("preserved_after_approval_blocked")).toBe(true);
     expect(slideRegeneration.includes("preserved_after_failure")).toBe(true);
     expect(slideRegeneration.includes("local mock regeneration")).toBe(true);
   });

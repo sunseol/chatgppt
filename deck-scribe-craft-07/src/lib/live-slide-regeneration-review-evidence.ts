@@ -16,6 +16,13 @@ export type LiveSlideRegenerationReviewEvent =
       readonly approvedSlide: GeneratedSlide;
     }
   | {
+      readonly outcome: "preserved_after_approval_blocked";
+      readonly candidate: LiveSlideRegenerationCandidate;
+      readonly comparison: SlideRevisionComparison;
+      readonly issues: readonly string[];
+      readonly preservedSlide: GeneratedSlide;
+    }
+  | {
       readonly outcome: "preserved_after_failure";
       readonly slideNumber: number;
       readonly originalSlideVersion: number;

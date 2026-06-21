@@ -136,7 +136,7 @@ export interface GeneratedSlide {
 export interface LiveSlideRegenerationReviewEvidenceRef {
   readonly path: string;
   readonly slideNumber: number;
-  readonly outcome: "approved" | "preserved_after_failure";
+  readonly outcome: "approved" | "preserved_after_approval_blocked" | "preserved_after_failure";
 }
 
 export interface EditableLayerModel {

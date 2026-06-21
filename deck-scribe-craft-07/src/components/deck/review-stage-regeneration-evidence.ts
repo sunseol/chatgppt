@@ -1,8 +1,13 @@
 import { createBrowserImageArtifactStore } from "@/lib/browser-image-artifact-store";
-import type { DeckProject, GeneratedSlide } from "@/lib/deck-types";
+import type {
+  DeckProject,
+  GeneratedSlide,
+  LiveSlideRegenerationReviewEvidenceRef,
+} from "@/lib/deck-types";
 import type { ImageArtifactStore } from "@/lib/image-artifact-store";
 import {
   approveLiveSlideRegenerationCandidate,
+  liveSlideRegenerationApprovalIssues,
   type LiveSlideRegenerationCandidate,
 } from "@/lib/live-slide-regeneration";
 import { writeLiveSlideRegenerationReviewEvidence } from "@/lib/live-slide-regeneration-review-evidence";
@@ -19,6 +24,7 @@ export type ReviewStageRegenerationEvidenceResult = {
 export type ReviewStageRevisionApprovalResult = {
   readonly slides: readonly GeneratedSlide[];
   readonly reviewEvidencePath: string | null;
+  readonly reviewOutcome: LiveSlideRegenerationReviewEvidenceRef["outcome"] | null;
 };
 
 export async function approveReviewStageRevisionWithEvidence(input: {
@@ -30,15 +36,48 @@ export async function approveReviewStageRevisionWithEvidence(input: {
   readonly storage?: Storage;
   readonly now?: () => number;
 }): Promise<ReviewStageRevisionApprovalResult> {
+  const issues =
+    input.liveCandidate === null
+      ? []
+      : liveSlideRegenerationApprovalIssues({
+          slides: input.slides,
+          candidate: input.liveCandidate,
+          comparison: input.comparison,
+        });
   const slides = approveReviewStageRevision(input);
-  if (input.liveCandidate === null) return { slides, reviewEvidencePath: null };
+  if (input.liveCandidate === null) {
+    return { slides, reviewEvidencePath: null, reviewOutcome: null };
+  }
+  if (issues.length > 0) {
+    const preservedSlide =
+      input.slides.find((slide) => slide.number === input.liveCandidate?.slide.number) ??
+      input.liveCandidate.slide;
+    const stored = await writeLiveSlideRegenerationReviewEvidence({
+      store: input.store ?? createBrowserImageArtifactStore(input.storage),
+      projectId: input.projectId,
+      eventId: input.liveCandidate.requestId,
+      exportedAt: input.now?.() ?? Date.now(),
+      event: {
+        outcome: "preserved_after_approval_blocked",
+        candidate: input.liveCandidate,
+        comparison: input.comparison,
+        issues: issues.map((issue) => issue.code),
+        preservedSlide,
+      },
+    });
+    return {
+      slides,
+      reviewEvidencePath: stored.path,
+      reviewOutcome: "preserved_after_approval_blocked",
+    };
+  }
   const approvedSlide = slides.find((slide) => slide.number === input.liveCandidate?.slide.number);
   if (
     approvedSlide?.status !== "approved" ||
     approvedSlide.version !== input.liveCandidate.slide.version ||
     approvedSlide.imageDescriptor !== input.liveCandidate.slide.imageDescriptor
   ) {
-    return { slides, reviewEvidencePath: null };
+    return { slides, reviewEvidencePath: null, reviewOutcome: null };
   }
   const stored = await writeLiveSlideRegenerationReviewEvidence({
     store: input.store ?? createBrowserImageArtifactStore(input.storage),
@@ -52,7 +91,7 @@ export async function approveReviewStageRevisionWithEvidence(input: {
       approvedSlide,
     },
   });
-  return { slides, reviewEvidencePath: stored.path };
+  return { slides, reviewEvidencePath: stored.path, reviewOutcome: "approved" };
 }
 
 export async function preservedLiveRegenerationFailure(

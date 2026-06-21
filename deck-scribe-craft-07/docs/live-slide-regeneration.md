@@ -30,9 +30,9 @@ DF-235 requires selected-slide regeneration to create a full new slide backgroun
 - Failed candidates return the preserved approved slide so the previous accepted version remains available for review and export.
 - `src/lib/live-slide-regeneration-approval.ts` blocks approval with `missing_regeneration_comparison`, `candidate_not_ready_for_approval`, or `regeneration_comparison_mismatch` unless the candidate is still `ready`, the current slide is the approved original, and before/after comparison evidence matches the original descriptor, regenerated descriptor, slide versions, selected slide, new background artifact id, `requestedChanges`, and `preservedTargets`.
 - `approveLiveSlideRegenerationCandidate` preserves the approved original when approval evidence is missing or mismatched, and only replaces the selected slide once matching before/after comparison evidence is present.
-- `src/lib/live-slide-regeneration-review-evidence.ts` writes portable DF-235 review evidence at `projects/{projectId}/live-evidence/df235-slide-regeneration-review-{eventId}.json` for both approved candidates and failed live regeneration attempts that preserve the original.
+- `src/lib/live-slide-regeneration-review-evidence.ts` writes portable DF-235 review evidence at `projects/{projectId}/live-evidence/df235-slide-regeneration-review-{eventId}.json` for approved candidates, approval-blocked attempts that preserve the original, and failed live regeneration attempts that preserve the original.
 - `src/components/deck/review-stage-regeneration-evidence.ts` connects the Review-stage approval button to that writer, and `src/components/deck/review-stage-regeneration.ts` records failure-preservation evidence instead of silently falling back to local mock regeneration when an eligible live Codex regeneration fails or is blocked.
-- `src/lib/live-slide-regeneration-review-state.ts` carries returned `reviewEvidencePath` values into `DeckProject.liveSlideRegenerationReviewEvidence` alongside the slide update patch only when they match the canonical DF-235 writer path `projects/{projectId}/live-evidence/df235-slide-regeneration-review-{eventId}.json`, so approved-candidate and preserved-after-failure evidence survives project DB serialization and restart recovery without accepting generic, local, or boundary-whitespace-padded review evidence paths.
+- `src/lib/live-slide-regeneration-review-state.ts` carries returned `reviewEvidencePath` values into `DeckProject.liveSlideRegenerationReviewEvidence` alongside the slide update patch only when they match the canonical DF-235 writer path `projects/{projectId}/live-evidence/df235-slide-regeneration-review-{eventId}.json`, so approved-candidate, approval-blocked, and preserved-after-failure evidence survives project DB serialization and restart recovery without accepting generic, local, or boundary-whitespace-padded review evidence paths.
 
 ## Verification
 
@@ -98,6 +98,13 @@ and preserved failures, keeping the evidence path in local project state after
 serialization and restart. This closes the local product gap that prevented a
 packaged manual QA run from handing reviewers a single persisted
 approval/failure-preservation artifact.
+
+2026-06-21 KST product hardening: approval attempts that are blocked by
+`regeneration_comparison_mismatch` now also write review evidence instead of
+silently returning `reviewEvidencePath: null`. The evidence outcome is
+`preserved_after_approval_blocked`, records the live candidate, the mismatched
+comparison, the blocker issue code, and the preserved approved slide, then
+persists through `DeckProject.liveSlideRegenerationReviewEvidence`.
 
 2026-06-21 KST product hardening: project state now stores returned
 `reviewEvidencePath` values only when they match the canonical writer path
