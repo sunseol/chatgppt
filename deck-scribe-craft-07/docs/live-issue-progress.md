@@ -1564,3 +1564,19 @@ The summary at
 proves both writer outputs validate as `ready`. DF-233 remains open until the
 equivalent retry, in-flight cancellation, and restart-resume bundle is captured
 from a packaged Codex OAuth image run with real provider jobs.
+
+DF-235 product failure-preservation update:
+`scripts/run-df235-review-failure-preservation-smoke.ts` now drives
+`runReviewStageSlideRegeneration` through the live Codex regeneration path with
+a provider `503` failure. The runner preserves the approved original slide at
+version 1, leaves `comparison` and `liveCandidate` null, keeps
+`editConsumed: false`, and writes `preserved_after_failure` review evidence at
+`projects/df235_failure_preservation_smoke_20260622/live-evidence/df235-slide-regeneration-review-rev_df235_failure_preservation_20260622.json`
+(`sha256:e97ad5aa22987bb0c0f4c711d1a97b65a9f57f6c6df7213c90e1ef6afa092018`).
+The summary at
+`docs/live-evidence/codex-image/df235-review-failure-preservation-20260622.json`
+(`sha256:3fe4be2a2fa20103409810f601d4eaa8ab88f879f1fb775531665f3dce282fc6`)
+removes the local product failed-regeneration preservation writer gap. DF-235
+remains open until the packaged Review-stage UI captures both approval of the
+lineage-valid v2 candidate and failed-regeneration preservation from the app
+surface.
