@@ -458,6 +458,15 @@ Codex image usage from a non-canonical persisted evidence path. The issue
 remains open because packaged app manual QA with real provider usage/cost
 payloads and real image Codex usage disclosure evidence has not run.
 
+DF-244 local update: image usage confirmation evidence now rejects fallback
+`unknown` project or job segments even when the surrounding path shape is
+otherwise canonical. `usage/unknown/unknown/image-billing-confirmation.json`
+blocks as `missing_image_billing_confirmation`, preventing sanitized fallback
+billing confirmations from appearing as user-confirmed Codex image usage. The
+issue remains open until packaged app usage-summary manual QA captures real
+provider image Codex usage payloads and the matching persisted confirmation
+record from the same run.
+
 ## 2026-06-21 Generate Stage Queue Evidence Export
 
 The current product branch now persists a DF-233 queue evidence JSON bundle for
