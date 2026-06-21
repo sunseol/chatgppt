@@ -27,6 +27,34 @@ describe("live golden path text lineage", () => {
       "live_layout_ir",
     ]);
   });
+
+  test("blocks generic text artifact names from satisfying stage-specific lineage", () => {
+    // Given
+    const bundle = completeBundle();
+
+    // When
+    const result = evaluateLiveGoldenPathE2EBundle({
+      ...bundle,
+      lineage: [
+        textArtifact("live_interview", "turn_interview"),
+        textArtifact("live_research", "turn_research"),
+        textArtifact("plan", "turn_plan"),
+        textArtifact("design", "turn_design"),
+        textArtifact("layout", "turn_layout"),
+        ...bundle.imageArtifacts,
+      ],
+    });
+
+    // Then
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual(["missing_live_text_artifact"]);
+    expect(result.issues[0]?.refs).toEqual([
+      "live_deck_plan",
+      "live_design_system",
+      "live_layout_ir",
+    ]);
+  });
 });
 
 function completeBundle(): LiveGoldenPathE2EBundle {
@@ -95,5 +123,21 @@ function liveImage(
     fixture: false,
     threadId: "thread_golden_path",
     turnId: `turn_image_${index}`,
+  });
+}
+
+function textArtifact(artifactId: string, turnId: string) {
+  return createProviderArtifactProvenance({
+    artifactId,
+    executionMode: "production",
+    providerKind: "codex",
+    authMode: "codex_session",
+    modelOrRuntime: "codex-cli 0.141.0",
+    promptVersion: `${artifactId}@v1`,
+    durationMs: 1_000,
+    inputArtifactIds: ["approved_live_context"],
+    fixture: false,
+    turnId,
+    threadId: "thread_golden_path",
   });
 }

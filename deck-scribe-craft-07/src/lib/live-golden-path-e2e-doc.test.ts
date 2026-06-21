@@ -24,6 +24,7 @@ describe("live golden path E2E documentation", () => {
     expect(goldenPathE2E.includes("validation_bundle_unexpected_reference")).toBe(true);
     expect(goldenPathE2E.includes("missing_live_text_artifact")).toBe(true);
     expect(goldenPathE2E.includes("live-golden-path-text-lineage.test.ts")).toBe(true);
+    expect(goldenPathE2E.includes("generic `plan`, `design`, or `layout` labels")).toBe(true);
     expect(
       goldenPathE2E.includes("live-golden-path-validation-bundle-extra-reference.test.ts"),
     ).toBe(true);

@@ -19,9 +19,9 @@ import { redactSensitiveText } from "./redaction";
 const REQUIRED_TEXT_STAGE_LINEAGE = [
   { step: "live_interview", markers: ["interview"] },
   { step: "live_research", markers: ["research"] },
-  { step: "live_deck_plan", markers: ["deck_plan", "plan"] },
-  { step: "live_design_system", markers: ["design_system", "design"] },
-  { step: "live_layout_ir", markers: ["layout_ir", "layout"] },
+  { step: "live_deck_plan", markers: ["deck_plan"] },
+  { step: "live_design_system", markers: ["design_system"] },
+  { step: "live_layout_ir", markers: ["layout_ir"] },
 ] as const satisfies readonly {
   readonly step: LiveGoldenPathE2EStep;
   readonly markers: readonly string[];
