@@ -129,6 +129,16 @@ scratch or observer-marked canonical-looking paths such as
 `df235-slide-regeneration-review-observer.json`. These paths no longer survive
 project-state persistence as packaged Review-stage evidence.
 
+2026-06-22 KST live rerun: after tightening the candidate input-lineage gate,
+the previous `df235_live_regeneration` v2 image was no longer sufficient because
+its provenance cited only prompt/layout inputs. A fresh Codex OAuth regeneration
+run now writes
+`docs/live-evidence/codex-image/df235-selected-slide-regeneration-lineage-20260622.json`
+and `projects/df235_live_regeneration_lineage_20260622/slides/images/slide_003.v2.provenance.json`;
+that sidecar includes `df232_live_codex_batch_image_slide_003_v1` in
+`inputArtifactIds`, so the regenerated candidate is tied to the selected
+approved original background artifact under the current validator.
+
 ## Revision Target Identity Gate
 
 2026-06-21 KST product hardening: regeneration request validation now rejects

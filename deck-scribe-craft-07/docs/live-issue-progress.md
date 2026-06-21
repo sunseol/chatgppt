@@ -1357,6 +1357,19 @@ approved original. DF-235 remains open until the packaged Review-stage UI run
 captures approval of the v2 candidate and failed-regeneration preservation
 evidence through the product surface.
 
+DF-235 live rerun: the current branch re-ran selected-slide regeneration through
+the authenticated Codex App Server after the input-lineage hardening. The new
+summary at
+`docs/live-evidence/codex-image/df235-selected-slide-regeneration-lineage-20260622.json`
+records regenerated PNG
+`projects/df235_live_regeneration_lineage_20260622/slides/images/slide_003.v2.png`
+with thread `019eec4f-4a6c-7832-823f-b70616583b4a`, turn
+`019eec4f-4ce2-7a20-88a8-41c18590e7d7`, and provenance input lineage including
+`df232_live_codex_batch_image_slide_003_v1`. This replaces the older
+regeneration-only evidence for candidate lineage purposes, but DF-235 remains
+open until the packaged Review-stage UI captures approval and failure
+preservation evidence through the product surface.
+
 DF-205 local update: the production image generation gate now consumes current
 provider statuses in addition to the persisted image path decision. A locked
 `codex` / `codexOAuth` decision whose current Codex provider status is

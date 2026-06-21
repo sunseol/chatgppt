@@ -1,0 +1,101 @@
+{
+  "capturedAt": "2026-06-21T22:36:08.912Z",
+  "runtime": "codex-cli 0.141.0 app-server --stdio via runCodexLiveSlideRegenerationSession",
+  "evidenceProjectId": "df235_live_regeneration_lineage_20260622",
+  "selectedSlideNumber": 3,
+  "original": {
+    "binaryPath": "projects/df232_live_codex_batch/slides/images/slide_003.v1.png",
+    "metadataPath": "projects/df232_live_codex_batch/slides/images/slide_003.v1.metadata.json",
+    "provenancePath": "projects/df232_live_codex_batch/slides/images/slide_003.v1.provenance.json",
+    "artifactId": "df232_live_codex_batch_image_slide_003_v1",
+    "turnId": "019ee68a-e53e-71c0-814a-8d5da527c75a"
+  },
+  "regenerated": {
+    "binaryPath": "projects/df235_live_regeneration_lineage_20260622/slides/images/slide_003.v2.png",
+    "binaryHash": "sha256:167127d22caf3a920d843e2a88e929bc37ca98f2f83f8b88b2e678805a64910a",
+    "binaryBytes": 1169660,
+    "metadataPath": "projects/df235_live_regeneration_lineage_20260622/slides/images/slide_003.v2.metadata.json",
+    "provenancePath": "projects/df235_live_regeneration_lineage_20260622/slides/images/slide_003.v2.provenance.json",
+    "artifactId": "df235_live_regeneration_lineage_20260622_image_slide_003_v2",
+    "threadId": "019eec4f-4a6c-7832-823f-b70616583b4a",
+    "turnId": "019eec4f-4ce2-7a20-88a8-41c18590e7d7",
+    "inputArtifactIds": [
+      "sha256:3334a742",
+      "slide_03_layout.png",
+      "df232_live_codex_batch_image_slide_003_v1"
+    ],
+    "latencyMs": 289310
+  },
+  "candidate": {
+    "requestId": "rev_df235_lineage_20260622",
+    "originalBackgroundArtifactId": "df232_live_codex_batch_image_slide_003_v1",
+    "backgroundArtifactId": "df235_live_regeneration_lineage_20260622_image_slide_003_v2",
+    "status": "ready",
+    "version": 2
+  },
+  "comparison": {
+    "slideNumber": 3,
+    "originalSlideVersion": 1,
+    "revisedSlideVersion": 2,
+    "beforeImageDescriptor": "codex|16:9|slide_03_layout.png|slide_generation@v1",
+    "afterImageDescriptor": "live-regeneration|request=rev_df235_lineage_20260622|background=df235_live_regeneration_lineage_20260622_image_slide_003_v2|deckContext=deckctx_fdba5853|designSystem=design_df235_lineage",
+    "requestedChanges": [
+      "title text"
+    ],
+    "preservedTargets": [
+      "main statistics",
+      "source caption",
+      "background style",
+      "approved color palette",
+      "global design style",
+      "layout hierarchy"
+    ],
+    "preservationChecks": [
+      {
+        "target": "main statistics",
+        "status": "kept",
+        "message": "main statistics preserved by live regeneration request rev_df235_lineage_20260622."
+      },
+      {
+        "target": "source caption",
+        "status": "kept",
+        "message": "source caption preserved by live regeneration request rev_df235_lineage_20260622."
+      },
+      {
+        "target": "background style",
+        "status": "kept",
+        "message": "background style preserved by live regeneration request rev_df235_lineage_20260622."
+      },
+      {
+        "target": "approved color palette",
+        "status": "kept",
+        "message": "approved color palette preserved by live regeneration request rev_df235_lineage_20260622."
+      },
+      {
+        "target": "global design style",
+        "status": "kept",
+        "message": "global design style preserved by live regeneration request rev_df235_lineage_20260622."
+      },
+      {
+        "target": "layout hierarchy",
+        "status": "kept",
+        "message": "layout hierarchy preserved by live regeneration request rev_df235_lineage_20260622."
+      }
+    ],
+    "summary": "Slide 3 live regeneration rev_df235_lineage_20260622 is ready for approval."
+  },
+  "writes": [
+    {
+      "path": "projects/df235_live_regeneration_lineage_20260622/slides/images/slide_003.v2.png",
+      "bytes": 1169660
+    },
+    {
+      "path": "projects/df235_live_regeneration_lineage_20260622/slides/images/slide_003.v2.metadata.json",
+      "bytes": 695
+    },
+    {
+      "path": "projects/df235_live_regeneration_lineage_20260622/slides/images/slide_003.v2.provenance.json",
+      "bytes": 632
+    }
+  ]
+}
