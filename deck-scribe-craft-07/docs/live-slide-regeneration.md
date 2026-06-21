@@ -139,6 +139,25 @@ that sidecar includes `df232_live_codex_batch_image_slide_003_v1` in
 `inputArtifactIds`, so the regenerated candidate is tied to the selected
 approved original background artifact under the current validator.
 
+## Review Approval Evidence Smoke
+
+2026-06-22 KST product-run smoke replayed the lineage-valid v2 candidate through
+the Review-stage product writer `approveReviewStageRevisionWithEvidence`. The
+writer produced approved DF-235 review evidence at
+`projects/df235_live_regeneration_lineage_20260622/live-evidence/df235-slide-regeneration-review-rev_df235_lineage_20260622.json`
+(`sha256:cf6487e96a4b7023dd0dc47dceaef98dafb3ce80fced739fa49a65e7d5c105dc`)
+and summary
+`docs/live-evidence/codex-image/df235-review-approval-evidence-20260622.json`
+(`sha256:d738e4bc6da620250c352594bc0041f196c8667c4cc34421e0c2e9a60e290f11`).
+The approved evidence names regenerated slide 3 version 2, the selected
+approved original artifact `df232_live_codex_batch_image_slide_003_v1`, the
+regenerated background artifact
+`df235_live_regeneration_lineage_20260622_image_slide_003_v2`, exact
+`requestedChanges` and `preservedTargets`, and kept preservation checks. This
+removes the product-generated approved-candidate JSON gap, but DF-235 still
+needs a packaged Review-stage UI run and a failed live regeneration preservation
+run before closure.
+
 ## Revision Target Identity Gate
 
 2026-06-21 KST product hardening: regeneration request validation now rejects

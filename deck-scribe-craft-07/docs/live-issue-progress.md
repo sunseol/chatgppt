@@ -1494,3 +1494,18 @@ DF-245 remains open until real Developer ID signing, notarization/stapling,
 Gatekeeper acceptance, persisted release-trust evidence, and clean macOS account
 install/login/image-credential/project-launch/live-interview evidence are
 captured from a packaged run.
+
+DF-235 product evidence update: `scripts/run-df235-review-approval-evidence-smoke.ts`
+replayed the lineage-valid v2 Codex regeneration candidate through
+`approveReviewStageRevisionWithEvidence` and wrote approved review evidence at
+`projects/df235_live_regeneration_lineage_20260622/live-evidence/df235-slide-regeneration-review-rev_df235_lineage_20260622.json`
+(`sha256:cf6487e96a4b7023dd0dc47dceaef98dafb3ce80fced739fa49a65e7d5c105dc`).
+The companion summary at
+`docs/live-evidence/codex-image/df235-review-approval-evidence-20260622.json`
+(`sha256:d738e4bc6da620250c352594bc0041f196c8667c4cc34421e0c2e9a60e290f11`)
+records outcome `approved`, regenerated slide 3 version 2, the approved
+original artifact id, regenerated background artifact id/hash, and exact
+preservation checks. This removes the product-writer approved JSON gap, but
+DF-235 remains open until a packaged Review-stage UI run captures this approval
+from the app surface and a failed live regeneration run proves the approved
+original remains selected/exportable.
