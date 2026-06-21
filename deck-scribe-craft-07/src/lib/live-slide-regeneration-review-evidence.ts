@@ -53,6 +53,7 @@ export async function writeLiveSlideRegenerationReviewEvidence(input: {
   readonly exportedAt: number;
   readonly event: LiveSlideRegenerationReviewEvent;
 }): Promise<StoredLiveSlideRegenerationReviewEvidence> {
+  validateReviewEvent(input.event);
   const evidence = {
     schemaVersion: 1,
     issue: "DF-235",
@@ -67,6 +68,22 @@ export async function writeLiveSlideRegenerationReviewEvidence(input: {
     content: JSON.stringify(evidence, null, 2),
   });
   return { path, evidence };
+}
+
+function validateReviewEvent(event: LiveSlideRegenerationReviewEvent): void {
+  if (event.outcome !== "approved") return;
+  const expected = event.candidate.slide;
+  if (
+    event.approvedSlide.status === "approved" &&
+    event.approvedSlide.number === expected.number &&
+    event.approvedSlide.version === expected.version &&
+    event.approvedSlide.imageDescriptor === expected.imageDescriptor
+  ) {
+    return;
+  }
+  throw new ImageArtifactStoreError(
+    "Approved slide regeneration review evidence must match the ready candidate.",
+  );
 }
 
 export function hasLiveSlideRegenerationReviewEvidencePath(path: string | undefined): boolean {
