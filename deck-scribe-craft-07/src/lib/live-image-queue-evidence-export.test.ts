@@ -35,6 +35,13 @@ describe("live image queue evidence export", () => {
     expect(stored.evidence.resultStatus).toBe("partial_failure");
     expect(stored.evidence.retryProvenance.length).toBe(1);
     expect(stored.evidence.failures[0]?.failureKind).toBe("cancelled");
+    expect(stored.evidence.validation.kind).toBe("blocked");
+    if (stored.evidence.validation.kind !== "blocked") {
+      throw new Error("Expected invalid closure evidence to remain blocked.");
+    }
+    expect(
+      stored.evidence.validation.issues.map((issue) => issue.code).includes("retry_job_not_found"),
+    ).toBe(true);
     expect(stored.evidence.storedImageArtifactPaths).toEqual([
       "projects/project_001/slides/images/slide_001.v1.png",
     ]);

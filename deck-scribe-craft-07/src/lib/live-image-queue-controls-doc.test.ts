@@ -15,7 +15,9 @@ describe("live image queue controls documentation", () => {
     const hasProviderFailureGate =
       imageQueueControls.includes("failure_job_not_found") &&
       imageQueueControls.includes("failure_prompt_usage_missing") &&
-      imageQueueControls.includes("failed provider job");
+      imageQueueControls.includes("failed provider job") &&
+      imageQueueControls.includes("queue evidence `validation` result") &&
+      imageQueueControls.includes("Recovery Snapshot Evidence Gate");
 
     // Then
     expect(hasProviderFailureGate).toBe(true);

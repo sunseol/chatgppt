@@ -16,9 +16,10 @@ DF-233 requires the live image queue to throttle concurrent work, retry only tra
 - `src/lib/slide-generation-retry-policy.ts` classifies retry decisions through image provider failure kinds and applies exponential backoff for transient `rate_limit`, `server`, and unknown failures only when a retry policy allows more attempts.
 - `src/lib/slide-generation-queue-executor.ts` records retry provenance on failed slides and successful-after-retry slides: job id, bundle id, slide number, attempt, failure kind, message, and retry delay history. It also rechecks cancellation after retry backoff before calling `manager.retry`, so a user cancellation during backoff cannot start or count a new provider attempt. Provider output is checked again after an in-flight image call returns, so an image that completes after user cancellation is recorded as cancelled rather than accepted.
 - `SlideGenerationQueueResult.retryProvenance` preserves retry events even when a slide eventually succeeds, so live QA can audit transient `rate_limit` or `server` recovery instead of seeing only the final success.
-- `src/lib/live-image-queue-evidence-export.ts` now writes a DF-233 queue evidence JSON bundle after production Codex Generate-stage runs. The bundle records queue status, context, slides, failures, provider job snapshots, prompt usage, retry provenance, concurrency, progress, and stored image artifact paths at `projects/{projectId}/live-evidence/df233-image-queue-{jobId}.json`, so a packaged run can hand auditors one closure-grade queue artifact instead of requiring raw localStorage inspection.
+- `src/lib/live-image-queue-evidence-export.ts` now writes a DF-233 queue evidence JSON bundle after production Codex Generate-stage runs. The bundle records queue status, context, slides, failures, provider job snapshots, prompt usage, retry provenance, concurrency, progress, stored image artifact paths, and the queue evidence `validation` result at `projects/{projectId}/live-evidence/df233-image-queue-{jobId}.json`, so a packaged run can hand auditors one queue artifact without requiring raw localStorage inspection or letting blocked evidence look closure-ready.
 - `src/lib/live-image-queue-evidence.ts`, `src/lib/live-image-queue-progress.ts`, `src/lib/live-image-queue-concurrency.ts`, `src/lib/live-image-queue-cancellation.ts`, `src/lib/live-image-queue-retry-slide.ts`, and `src/lib/live-image-queue-retry-delay.ts` reject progress counts that do not match the recorded slides/failures with `queue_progress_count_mismatch`, queue status values that contradict final slide/failure counts with `queue_status_count_mismatch`, missing concurrency proof with `missing_concurrency_evidence`, zero or invalid requested/effective concurrency limits with `invalid_concurrency_evidence`, observed concurrency above the effective throttle with `concurrency_limit_exceeded`, provider failure evidence that is not anchored to a failed recorded provider job and matching slide-generation prompt usage with `failure_job_not_found` or `failure_prompt_usage_missing`, retry evidence that is not anchored to a recorded provider job and slide-generation prompt usage, retry event counts or attempt sequences that do not match the final job attempt, retry events tied to a different bundle or slide than the retried job output/failure, retry delay histories that differ from failed slide evidence with `retry_delay_history_mismatch`, non-transient retry failure kinds, cancelled provider jobs without matching slide failure evidence with `cancelled_job_missing_failure`, and cancellation failures without a cancelled provider job, matching attempt count, preserved cancel signal, or matching slide-generation prompt bundle.
 - `isCancellationRequested` prevents later provider calls after a user cancellation and records cancelled jobs plus slide failures instead of leaving background work running.
+- `src/lib/provider-job-recovery.ts` rejects packaged resume snapshots when any job entry is malformed or when `currentJobId` is absent from the parsed jobs, so restart-resume evidence cannot silently drop the broken cancel/retry job and still look recoverable.
 - `src/lib/slide-generation-queue-live-controls.test.ts` covers bounded `rate_limit` retry, max-attempt `server` retry provenance, later-call cancellation, in-flight cancellation before provider completion, completed-slide partial resume, and unfinished-slide regeneration during partial resume. `src/lib/slide-generation-queue-resume-lineage.test.ts` covers stale prompt-lineage and stale layout-reference regeneration during partial resume. `src/lib/slide-generation-queue-cancellation-backoff.test.ts` covers cancellation during retry backoff without starting the next attempt. `src/lib/live-image-queue-progress.test.ts` covers progress and status false-ready evidence whose reported counts contradict recorded queue outputs. `src/lib/live-image-queue-concurrency.test.ts` covers missing, zero-limit, and over-limit concurrency evidence and proves queue execution records the observed throttle. `src/lib/live-image-queue-cancelled-job.test.ts` covers cancelled provider jobs that are missing slide failure evidence. `src/lib/live-image-queue-retry-delay.test.ts` covers false-ready retry evidence whose provenance delay does not match the failed slide retry delay history. `src/lib/live-image-queue-evidence.test.ts` covers non-cancelled provider failure evidence that omits the failed provider job and prompt usage linkage.
 
 ## Verification
@@ -78,9 +79,12 @@ The export does not claim DF-233 is closed by itself. It makes the next packaged
 Codex OAuth image run auditable by preserving the exact queue result fields
 needed for closure review: queue status, progress, retry provenance, failure
 records, provider job states, prompt usage, concurrency evidence, and the stored
-image artifact paths produced by that run. DF-233 still needs a real packaged
-run whose exported bundle contains genuine 429/5xx retry provenance, in-flight
-user cancellation, and restart-resume evidence.
+image artifact paths produced by that run. The exported JSON now also embeds the
+`evaluateLiveImageQueueEvidence` result, so malformed retry/cancel/progress
+evidence remains visibly `blocked` inside the bundle instead of looking like a
+closure-ready artifact. DF-233 still needs a real packaged run whose exported
+bundle contains genuine 429/5xx retry provenance, in-flight user cancellation,
+and restart-resume evidence.
 
 ## Queue Progress Evidence Gate
 
@@ -101,3 +105,11 @@ corresponding provider job blocks with `failure_job_not_found`, and a bundle
 that omits prompt usage linkage blocks with `failure_prompt_usage_missing`.
 This prevents a failed provider event from being represented only as a slide
 failure row with no auditable job/request trail.
+
+## Recovery Snapshot Evidence Gate
+
+2026-06-21 KST local update: provider job recovery snapshots now parse only
+when every recorded job entry is valid and `currentJobId` points at one of those
+jobs. A packaged restart-resume bundle that mixes one valid job with a malformed
+cancel/retry job no longer recovers a partial snapshot, which prevents DF-233
+resume evidence from hiding the broken job that mattered for queue closure.

@@ -1,4 +1,8 @@
 import { ImageArtifactStoreError, type ImageArtifactStore } from "./image-artifact-store";
+import {
+  evaluateLiveImageQueueEvidence,
+  type LiveImageQueueEvidenceValidation,
+} from "./live-image-queue-evidence";
 import type { ProviderJob } from "./provider-job-manager";
 import type { SlideGenerationQueueResult } from "./slide-generation-queue";
 
@@ -39,6 +43,7 @@ export type LiveImageQueueEvidenceExport = {
   readonly concurrency: ReadySlideGenerationQueueResult["concurrency"];
   readonly progress: ReadySlideGenerationQueueResult["progress"];
   readonly storedImageArtifactPaths: readonly string[];
+  readonly validation: LiveImageQueueEvidenceValidation;
 };
 
 export type StoredLiveImageQueueEvidenceExport = {
@@ -86,6 +91,7 @@ function liveImageQueueEvidenceExport(input: {
     concurrency: input.result.concurrency,
     progress: input.result.progress,
     storedImageArtifactPaths: input.storedImageArtifactPaths,
+    validation: evaluateLiveImageQueueEvidence(input.result),
   };
 }
 

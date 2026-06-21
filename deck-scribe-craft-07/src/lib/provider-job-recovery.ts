@@ -42,8 +42,9 @@ export function parseProviderJobRecoverySnapshot(
   if (!isString(projectId) || !isStepKey(step) || !isString(currentJobId) || !Array.isArray(jobs)) {
     return undefined;
   }
-  const parsedJobs = jobs.filter(isProviderJob);
+  const parsedJobs = jobs.every(isProviderJob) ? jobs : [];
   if (parsedJobs.length === 0) return undefined;
+  if (!parsedJobs.some((job) => job.id === currentJobId)) return undefined;
   return { projectId, step, currentJobId, jobs: parsedJobs };
 }
 

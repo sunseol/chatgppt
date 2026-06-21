@@ -452,6 +452,15 @@ Assigned issue disposition:
   bundle is still missing.
 - DF-247 / `#157`: remains blocked by the remaining P0 evidence requirements.
 
+DF-233 local update: exported queue evidence now embeds the
+`evaluateLiveImageQueueEvidence` validation result, so malformed retry, cancel,
+or progress evidence remains visibly `blocked` inside
+`df233-image-queue-{jobId}.json` instead of looking closure-ready. Provider job
+recovery snapshots now also reject any malformed job entry and require
+`currentJobId` to match a parsed job, preventing packaged restart-resume
+evidence from silently dropping the broken cancel/retry job and recovering a
+partial snapshot.
+
 ## 2026-06-21 Review Stage Regeneration Evidence Export
 
 The current product branch now persists DF-235 Review-stage evidence for
