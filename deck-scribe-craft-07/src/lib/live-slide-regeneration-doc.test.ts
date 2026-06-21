@@ -17,6 +17,7 @@ describe("live full-slide regeneration documentation", () => {
     expect(slideRegeneration.includes("missing_must_keep_targets")).toBe(true);
     expect(slideRegeneration.includes("missing_must_change_targets")).toBe(true);
     expect(slideRegeneration.includes("blank_revision_target")).toBe(true);
+    expect(slideRegeneration.includes("revision_target_not_canonical")).toBe(true);
     expect(slideRegeneration.includes("duplicate_revision_target")).toBe(true);
     expect(slideRegeneration.includes("revision_targets_overlap")).toBe(true);
     expect(slideRegeneration.includes("original_slide_not_approved")).toBe(true);
@@ -54,5 +55,6 @@ describe("live full-slide regeneration documentation", () => {
     expect(slideRegeneration.includes("preserved_after_approval_blocked")).toBe(true);
     expect(slideRegeneration.includes("preserved_after_failure")).toBe(true);
     expect(slideRegeneration.includes("local mock regeneration")).toBe(true);
+    expect(slideRegeneration.includes("Revision Target Identity Gate")).toBe(true);
   });
 });

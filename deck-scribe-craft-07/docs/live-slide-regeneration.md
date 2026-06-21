@@ -8,12 +8,12 @@ Status: Partial, external evidence required
 
 ## Contract Summary
 
-DF-235 requires selected-slide regeneration to create a full new slide background from the approved original context instead of local inpainting. The local contract now requires the selected original slide to already be approved, preserves the selected slide spec hash, `deckContextId`, and `designSystemId`, requires a non-blank edit instruction plus non-empty, non-blank, non-duplicated, and non-overlapping `must_keep` and `must_change`, requires canonical original background artifact and Codex turn evidence before provider submission, stores the regenerated background as a newer versioned production Codex image artifact with matching Codex OAuth provenance, exact storage paths, matching provenance sidecar identity, and metadata/provenance provider turn evidence that differs from the original turn, keeps the already approved slide unchanged until the user approves the candidate, and requires matching before/after comparison evidence including requested/preserved target lists before approval can replace the original.
+DF-235 requires selected-slide regeneration to create a full new slide background from the approved original context instead of local inpainting. The local contract now requires the selected original slide to already be approved, preserves the selected slide spec hash, `deckContextId`, and `designSystemId`, requires a non-blank edit instruction plus non-empty, non-blank, non-duplicated, non-overlapping, and canonical `must_keep` and `must_change`, requires canonical original background artifact and Codex turn evidence before provider submission, stores the regenerated background as a newer versioned production Codex image artifact with matching Codex OAuth provenance, exact storage paths, matching provenance sidecar identity, and metadata/provenance provider turn evidence that differs from the original turn, keeps the already approved slide unchanged until the user approves the candidate, and requires matching before/after comparison evidence including requested/preserved target lists before approval can replace the original.
 
 ## Local Evidence
 
 - `src/lib/live-slide-regeneration.ts` builds a live regeneration request from the existing revision request while preserving `deckContextId`, `designSystemId`, slide plan id, slide spec hash, `mustKeep`, `mustChange`, the original background artifact id, and the original provider turn id.
-- `src/lib/live-slide-regeneration-request-validation.ts` rejects unsafe requests with `missing_edit_instruction`, `missing_must_keep_targets`, `missing_must_change_targets`, `blank_revision_target`, `duplicate_revision_target`, `revision_targets_overlap`, `missing_original_background_artifact`, `missing_original_background_request`, and `original_background_evidence_not_canonical`; `src/lib/live-slide-regeneration.ts` also rejects requests for non-approved selected originals with `original_slide_not_approved`.
+- `src/lib/live-slide-regeneration-request-validation.ts` rejects unsafe requests with `missing_edit_instruction`, `missing_must_keep_targets`, `missing_must_change_targets`, `blank_revision_target`, `revision_target_not_canonical`, `duplicate_revision_target`, `revision_targets_overlap`, `missing_original_background_artifact`, `missing_original_background_request`, and `original_background_evidence_not_canonical`; `src/lib/live-slide-regeneration.ts` also rejects requests for non-approved selected originals with `original_slide_not_approved`.
 - `src/lib/live-slide-regeneration-slide-spec.ts` rejects candidate output when the candidate slide spec number or hash differs from the request's approved `slideSpecHash`.
 - `src/lib/live-slide-regeneration-candidate.ts` owns candidate validation so the regeneration contract can keep the candidate artifact rules focused and reviewable.
 - The candidate gate rejects invalid output with issue codes including `slide_spec_mismatch`, `original_slide_mismatch`, `original_slide_version_mismatch`, `deck_context_mismatch`, `design_system_mismatch`, `slide_id_mismatch`, `stale_candidate_version`, `background_artifact_not_new`, `background_artifact_version_mismatch`, `background_artifact_storage_path_mismatch`, `invalid_regeneration_background_hash`, `missing_regeneration_request_id`, `regeneration_request_provenance_mismatch`, `regeneration_request_id_not_new`, `regeneration_background_not_live`, and `mock_background_artifact`.
@@ -119,6 +119,14 @@ canonical without boundary whitespace. A padded path such as
 does not persist into `DeckProject.liveSlideRegenerationReviewEvidence`, so
 project state cannot make a non-canonical review artifact path look ready after
 string trimming.
+
+## Revision Target Identity Gate
+
+2026-06-21 KST product hardening: regeneration request validation now rejects
+`mustKeep` and `mustChange` targets that only become valid after trimming
+boundary whitespace with `revision_target_not_canonical`. A request whose target
+list contains values like ` title text ` no longer reaches provider submission
+or later comparison matching by relying on normalized target equality.
 
 DF-235 remains open until this artifact is produced by a real packaged app
 review run and attached to the Lane D evidence bundle.

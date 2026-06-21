@@ -11,6 +11,7 @@ export function requestIssues(input: {
     ...mustKeepIssues(input.revisionRequest),
     ...mustChangeIssues(input.revisionRequest),
     ...blankTargetIssues(input.revisionRequest),
+    ...targetCanonicalIssues(input.revisionRequest),
     ...duplicateTargetIssues(input.revisionRequest),
     ...targetOverlapIssues(input.revisionRequest),
     ...originalBackgroundIssues(input),
@@ -88,6 +89,23 @@ function blankTargetIssues(
           code: "blank_revision_target" as const,
           slideNumber: revisionRequest.slideNumber,
           message: "Live regeneration targets cannot be blank.",
+        },
+      ]
+    : [];
+}
+
+function targetCanonicalIssues(
+  revisionRequest: SlideRevisionRequest,
+): readonly LiveSlideRegenerationIssue[] {
+  const hasPaddedTarget = [...revisionRequest.mustKeep, ...revisionRequest.mustChange].some(
+    (target) => target.trim() && target !== target.trim(),
+  );
+  return hasPaddedTarget
+    ? [
+        {
+          code: "revision_target_not_canonical" as const,
+          slideNumber: revisionRequest.slideNumber,
+          message: "Live regeneration targets must be canonical before provider submission.",
         },
       ]
     : [];
