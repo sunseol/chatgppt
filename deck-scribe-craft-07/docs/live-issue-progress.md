@@ -1464,6 +1464,26 @@ bottleneck for the next packaged QA run, but the three tickets remain open until
 those real packaged-run artifacts are produced and copied into
 `docs/live-evidence/...`.
 
+DF-244/DF-233 live product-run smoke: the desktop Codex image structured-turn
+schema now declares `additionalProperties: false`, fixing the App Server
+`invalid_json_schema` failure observed before image generation. The smoke runner
+`scripts/run-live-codex-generate-export-smoke.ts` completed one real Codex image
+turn through the product Generate runner, thread
+`019eec6f-bc99-78c1-abc4-8905807608a4`, turn
+`019eec6f-bf06-7803-9349-637f743172cd`, duration `136903ms`, and wrote
+`docs/live-evidence/codex-image/df244-generate-export-smoke-20260622/summary.json`.
+The run produced
+`projects/df244_generate_export_smoke_20260622/slides/images/slide_001.v1.png`,
+the same-job billing confirmation JSON at
+`projects/df244_generate_export_smoke_20260622/usage/df244_generate_export_smoke_20260622/job_generate_export_smoke_1/image-billing-confirmation.json`,
+and DF-233 queue evidence at
+`projects/df244_generate_export_smoke_20260622/live-evidence/df233-image-queue-job_generate_export_smoke_1.json`.
+This proves the product Generate runner can produce and export same-project
+image, billing, and queue artifacts from a real Codex image turn. DF-244 still
+needs packaged UI/manual QA plus a regenerated Lane D usage display from the
+persisted packaged confirmation, and DF-233 still needs genuine 429/5xx retry,
+in-flight cancellation, and restart-resume evidence.
+
 DF-245 local update: clean-machine step payloads now have to carry the same
 `macosUsername` and `homeDirectory` as the clean macOS account payload. A
 `codex_login` or `project_launch` step that only points at the canonical

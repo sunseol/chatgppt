@@ -16,6 +16,7 @@ const IMAGE_TURN_MODEL = "gpt-5.4";
 
 const IMAGE_GENERATION_OUTPUT_SCHEMA = {
   type: "object",
+  additionalProperties: false,
   required: ["status"],
   properties: {
     status: { type: "string" },

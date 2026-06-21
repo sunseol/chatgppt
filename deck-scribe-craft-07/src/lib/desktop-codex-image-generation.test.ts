@@ -22,6 +22,8 @@ describe("desktop Codex image generation", () => {
           expect(command).toBe("deckforge_codex_app_server_structured_turn");
           expect(JSON.stringify(args).includes("Generate a clean background.")).toBe(true);
           expect(JSON.stringify(args).includes("slide_001_layout.png")).toBe(true);
+          const request = structuredTurnRequest(args);
+          expect(findLooseObjectSchemaPaths(request.outputSchema)).toEqual([]);
           return {
             runtime: "codex app-server --stdio",
             threadId: "thread_codex_image",
@@ -113,4 +115,26 @@ async function captureProviderError(
     if (error instanceof ImageProviderRequestError) return error;
     throw error;
   }
+}
+
+function structuredTurnRequest(args: unknown): { readonly outputSchema: unknown } {
+  if (!isRecord(args)) throw new Error("Expected invoke args.");
+  const request = args["request"];
+  if (!isRecord(request)) throw new Error("Expected structured turn request.");
+  return { outputSchema: request["outputSchema"] };
+}
+
+function findLooseObjectSchemaPaths(value: unknown, path = "$"): readonly string[] {
+  if (!isRecord(value)) return [];
+  const here = value["type"] === "object" && value["additionalProperties"] !== false ? [path] : [];
+  return [
+    ...here,
+    ...Object.entries(value).flatMap(([key, child]) =>
+      findLooseObjectSchemaPaths(child, `${path}.${key}`),
+    ),
+  ];
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
 }

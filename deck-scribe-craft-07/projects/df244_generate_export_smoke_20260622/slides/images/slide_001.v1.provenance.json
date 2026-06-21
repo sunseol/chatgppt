@@ -1,0 +1,17 @@
+{
+  "path": "projects/df244_generate_export_smoke_20260622/slides/images/slide_001.v1.provenance.json",
+  "artifactId": "df244_generate_export_smoke_20260622_image_slide_001_v1",
+  "executionMode": "production",
+  "providerKind": "codex",
+  "authMode": "codex_session",
+  "modelOrRuntime": "gpt-image-2",
+  "promptVersion": "slide_generation@v1",
+  "durationMs": 136903,
+  "inputArtifactIds": [
+    "sha256:3334a742",
+    "slide_01_layout.png"
+  ],
+  "fixture": false,
+  "threadId": "019eec6f-bc99-78c1-abc4-8905807608a4",
+  "turnId": "019eec6f-bf06-7803-9349-637f743172cd"
+}

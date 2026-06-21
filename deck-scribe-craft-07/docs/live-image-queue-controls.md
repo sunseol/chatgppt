@@ -157,3 +157,16 @@ projects. This gives the next packaged Codex OAuth image run a product-supported
 way to hand auditors the queue artifact, but DF-233 remains open until that run
 contains genuine 429/5xx retry provenance, in-flight cancellation, and
 restart-resume evidence.
+
+## Live Generate Export Smoke
+
+2026-06-22 KST product-run smoke tightened the desktop Codex image App Server
+response schema with `additionalProperties: false` and then ran one real Codex
+image turn through the product Generate runner. The run wrote queue evidence at
+`projects/df244_generate_export_smoke_20260622/live-evidence/df233-image-queue-job_generate_export_smoke_1.json`,
+recorded one succeeded Codex image job, stored
+`projects/df244_generate_export_smoke_20260622/slides/images/slide_001.v1.png`,
+captured slide-generation prompt usage, preserved concurrency evidence, and
+validated the queue bundle as `ready` for the successful one-slide path. This
+does not exercise transient 429/5xx retry, in-flight cancellation, or
+restart-resume, so DF-233 remains open for those real packaged-run events.

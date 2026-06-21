@@ -185,6 +185,19 @@ Text artifact payloads are redacted during export while base64 image binaries
 are preserved. DF-244 still requires a packaged Codex image run that actually
 produces and exports this confirmation JSON.
 
+2026-06-22 KST live product-run smoke: desktop Codex image generation now sends
+the App Server response schema with `additionalProperties: false`, which fixed a
+pre-generation `invalid_json_schema` failure. The smoke runner
+`scripts/run-live-codex-generate-export-smoke.ts` completed one real Codex image
+turn through the product Generate runner and wrote a same-job confirmation JSON,
+versioned PNG metadata/provenance, DF-233 queue evidence, and a project folder
+export summary with `5` project artifact writes and no cross-project writes. The
+summary lives at
+`docs/live-evidence/codex-image/df244-generate-export-smoke-20260622/summary.json`.
+This is product-run evidence for the Generate path and export contract, not a
+packaged UI manual QA pass; DF-244 remains open until a packaged app run
+captures and displays the persisted confirmation from the same real image job.
+
 ## Generate Stage Live Image Path
 
 2026-06-21 KST product update: after the confirmation record is attached, the

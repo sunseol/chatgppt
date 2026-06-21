@@ -3,9 +3,9 @@
   "issueNumber": 154,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-21T22:55:19Z",
+  "generatedAt": "2026-06-21T23:10:04Z",
   "packageArchiveSha256": "0354291e6c6ac847335ba5095e088d1122a3bf93937589021edabb3e4fbcc913",
-  "summary": "Live text and image usage display contracts now require Codex OAuth-shaped image confirmation with apiKeyRequired false and confirmation evidence bound to the same provider job. The Generate stage now mirrors confirmed Codex OAuth image billing records into project artifact storage before generation, local project folder export includes those project-scoped browser artifact writes, and Lane D shows real image latency/count display, but no packaged-app run has captured the pre-generation confirmation JSON from the same run.",
+  "summary": "Live text and image usage display contracts now require Codex OAuth-shaped image confirmation with apiKeyRequired false and confirmation evidence bound to the same provider job. The Generate stage now mirrors confirmed Codex OAuth image billing records into project artifact storage before generation, the desktop image schema is App Server strict, local project folder export includes those project-scoped browser artifact writes, Lane D shows real image latency/count display, and a product-run smoke captured same-job confirmation plus one real Codex image. No packaged-app run has captured the pre-generation confirmation JSON from the same run.",
   "currentEvidence": [
     {
       "path": "docs/live-usage-summary.md",
@@ -54,6 +54,33 @@
       "kind": "project folder download wires current browser artifact writes into export"
     },
     {
+      "path": "src/lib/desktop-codex-image-generation.ts",
+      "kind": "strict App Server image response schema"
+    },
+    {
+      "path": "src/lib/desktop-codex-image-generation.test.ts",
+      "kind": "strict image response schema regression"
+    },
+    {
+      "path": "scripts/run-live-codex-generate-export-smoke.ts",
+      "kind": "real Codex product Generate runner smoke"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df244-generate-export-smoke-20260622/summary.json",
+      "sha256": "57721e5ac6b1c6a245c6a1e6ac39059560d5ffca34d0c7d2ea893aff18198de5",
+      "kind": "real Codex product Generate export summary"
+    },
+    {
+      "path": "projects/df244_generate_export_smoke_20260622/usage/df244_generate_export_smoke_20260622/job_generate_export_smoke_1/image-billing-confirmation.json",
+      "sha256": "7e0c5cfa6d9322361b9abf1c6d03c46e8aa2c306074c01857dda7fa03b615844",
+      "kind": "same-job Codex OAuth image billing confirmation"
+    },
+    {
+      "path": "projects/df244_generate_export_smoke_20260622/slides/images/slide_001.v1.png",
+      "sha256": "72a9cccd871e29e5d1ba2561c3669291c5683c04e891efa74b0478dd2e4d9eb7",
+      "kind": "real Codex product Generate image"
+    },
+    {
       "path": "src/lib/live-usage-summary.test.ts",
       "kind": "non-image generate-stage and API-key-required usage regression"
     },
@@ -84,8 +111,8 @@
   ],
   "missingEvidence": [
     "packaged-app pre-generation Codex OAuth image usage confirmation JSON extracted from project folder export",
-    "real image usage disclosure payload tied to the same packaged run",
-    "usage summary regenerated from the persisted confirmation record",
+    "real image usage disclosure payload tied to the same packaged UI run",
+    "usage summary regenerated from the persisted packaged confirmation record",
     "manual QA screenshot or recording proving latency, retry, count, and confirmation display",
     "evidence copied into docs/live-evidence and tied to the current package hash"
   ]
