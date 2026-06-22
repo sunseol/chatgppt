@@ -1544,7 +1544,7 @@ replayed the lineage-valid v2 Codex regeneration candidate through
 (`sha256:cf6487e96a4b7023dd0dc47dceaef98dafb3ce80fced739fa49a65e7d5c105dc`).
 The companion summary at
 `docs/live-evidence/codex-image/df235-review-approval-evidence-20260622.json`
-(`sha256:5d65e568eef17846e30db1fcc0688cecda8ab7a94adfc0f40c326e8af60c104a`)
+(`sha256:d3d61c3511d70ef35eb66d865f974d2ebdae7ce270f233392c3830dcd0e8a869`)
 records outcome `approved`, regenerated slide 3 version 2, the approved
 original artifact id, regenerated background artifact id/hash, and exact
 preservation checks. This removes the product-writer approved JSON gap, but
@@ -1633,18 +1633,18 @@ cancellation, and restart-resume paths. The retry run records two transient
 (`server:1:100`, `server:2:200`), succeeds on attempt 3, and writes ready queue
 evidence at
 `projects/df233_queue_retry_smoke_20260622/live-evidence/df233-image-queue-retry_product_run_20260622.json`
-(`sha256:c25ade822845e8a8d7b34a00d0a4f49384132ba933ca763cb983c207cb86798f`).
+(`sha256:f342cc61c9abbd4a0626ddce108e3b9499d5485bca60cff36d767de2ee96bb77`).
 The cancellation run requests cancellation while the provider worker returns a
 late slide 1 output, rejects that output (`acceptedSlides: []`), records
 `live_job_cancel_product_1` as `cancelled` with `cancelRequested: true`, and
 writes ready queue evidence at
 `projects/df233_queue_cancel_smoke_20260622/live-evidence/df233-image-queue-cancel_product_run_20260622.json`
-(`sha256:285b66b7c12e83e47f975b2254cf1261f638055be63b096e4bfbbde175fa5354`).
+(`sha256:616fee34a2af90b0f6b2afac12f287a9fd39e766ee1575277c35f061483a1879`).
 The resume run starts with slide 1 completed, generates only slide 2, includes
 restart-resume proof for the pending/resumed slide 2 artifact, and writes ready
 queue evidence at
 `projects/df233_queue_resume_smoke_20260622/live-evidence/df233-image-queue-resume_product_run_20260622.json`
-(`sha256:3ae427c48714afcd45ed9592e12a50cec65d69ce6cd70e642cb017de59cb9fa9`).
+(`sha256:c5f8581f0e707780b0182307a023ca71696a0c904ad080ba0988a85bcce14e3e`).
 The summary at
 `docs/live-evidence/codex-image/df233-queue-controls-smoke-20260622/summary.json`
 (`sha256:ef3049044d2c844673ee41973280e5fcd44953da771991616b73e371e2ce8a51`)
@@ -1828,3 +1828,19 @@ release evidence and packaged index now point at those current files. DF-243
 remains open until the same cancel, image partial-resume, approval-gate, and
 export-gate artifacts are captured from a packaged app run and copied into the
 canonical evidence bundle.
+
+DF-233/DF-235 product evidence refresh:
+`scripts/run-df233-queue-controls-product-evidence-smoke.ts`,
+`scripts/run-df235-review-approval-evidence-smoke.ts`, and
+`scripts/run-df235-review-failure-preservation-smoke.ts` were rerun on
+2026-06-22. DF-233 still reports ready retry, cancel, and restart-resume product
+writer evidence, with refreshed retry/cancel/resume digests
+`f342cc61c9abbd4a0626ddce108e3b9499d5485bca60cff36d767de2ee96bb77`,
+`616fee34a2af90b0f6b2afac12f287a9fd39e766ee1575277c35f061483a1879`, and
+`c5f8581f0e707780b0182307a023ca71696a0c904ad080ba0988a85bcce14e3e`.
+DF-235 still reports approved review evidence for the lineage-valid v2 candidate
+and preserved-after-failure evidence for the failed regeneration path; the
+refreshed approval summary digest is
+`d3d61c3511d70ef35eb66d865f974d2ebdae7ce270f233392c3830dcd0e8a869`.
+The release evidence and packaged index now point at these current files, while
+both tickets remain blocked on packaged app evidence from the UI surface.
