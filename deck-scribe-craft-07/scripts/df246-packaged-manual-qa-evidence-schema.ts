@@ -48,7 +48,7 @@ const PackagedManualQaInputSchema = z
     manualQaCandidatePackageSha256: z.string().min(1),
     checklistPath: z.literal("docs/live-manual-qa-checklist.md"),
     packageRecheckPath: z.literal("docs/live-evidence/release/df245-package-recheck-20260622.json"),
-    sessionEvidence: ManualQaSessionEvidenceSchema,
+    sessionEvidence: ManualQaSessionEvidenceSchema.optional(),
   })
   .strict();
 

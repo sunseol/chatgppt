@@ -81,15 +81,18 @@ function completeInput() {
       sessionId: "df205_clean_auth_20260622",
       packageArchiveSha256: PACKAGE_SHA,
       accountMode: "clean_macos_account",
+      captureKind: "packaged_clean_account",
     },
     freshLogin: {
       evidencePath: "docs/live-evidence/packaged-df205-20260622/fresh-login.json",
+      captureKind: "packaged_clean_account",
       codexLoginStatus: "logged_in_using_chatgpt",
       rawTokenPersisted: false,
       authJsonBundled: false,
     },
     logoutRelogin: {
       evidencePath: "docs/live-evidence/packaged-df205-20260622/logout-relogin.json",
+      captureKind: "packaged_clean_account",
       logoutObserved: true,
       liveJobsCancelled: true,
       providerActionsLockedWhileLoggedOut: true,
@@ -98,16 +101,19 @@ function completeInput() {
     },
     codexImageCapability: {
       evidencePath: "docs/live-evidence/packaged-df205-20260622/codex-image-capability.json",
+      captureKind: "packaged_clean_account",
       providerKind: "codex",
       authMode: "codex_oauth",
       apiKeyRequired: false,
       imageGenerationAvailable: true,
     },
     keychainLifecycle: {
+      captureKind: "packaged_run_no_api_key_fallback",
       fallbackInstalled: false,
     },
     secretLeakScan: {
       evidencePath: "docs/live-evidence/packaged-df205-20260622/secret-leak-scan.json",
+      captureKind: "signed_packaged_clean_machine",
       packageArchiveSha256: PACKAGE_SHA,
       configuredSecretHits: [],
       authJsonHits: [],

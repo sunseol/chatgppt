@@ -88,7 +88,7 @@ Release remains `Blocked`. No ticket in the Lane F set can honestly close from t
   `evaluateProductionPackagingEvidence` before returning ready or blocked.
   Unsigned dry-run packages, missing release-trust payloads, and missing
   clean-machine evidence remain blocked.
-- DF-205 now cites that same current-package recheck as active auth/secret lifecycle scan evidence for the dry-run archive and native app. It narrows DF-205 to clean-account login/logout/relogin, packaged Codex OAuth capability, packaged keychain lifecycle, and clean-machine secret leak evidence.
+- DF-205 now cites that same current-package recheck as active auth/secret lifecycle scan evidence for the dry-run archive and native app. `docs/live-evidence/release/df205-packaged-auth-secret-candidate-20260622.json` routes the current authenticated runtime smoke and package recheck through the packaged auth/secret producer as a blocked candidate, preserving blockers for non-packaged auth provenance, missing logout/relogin, missing packaged Codex OAuth image capability, unrecorded keychain lifecycle, and current-package-only secret scanning. It narrows DF-205 to clean-account login/logout/relogin, packaged Codex OAuth capability, packaged keychain lifecycle, and clean-machine secret leak evidence.
 - `scripts/produce-df205-packaged-auth-secret-evidence.ts` now provides the
   handoff surface for a real clean-account packaged auth session. It parses
   fresh-login, logout/relogin, Codex OAuth image-capability, optional keychain
@@ -239,14 +239,17 @@ The manual QA release evidence now explicitly ties the current DF-246 checklist
 to the active package archive
 `e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6` and the
 current package/signing blocker recheck at
-`docs/live-evidence/release/df245-package-recheck-20260622.json`. This is a
-handoff basis only, not a pass result: no non-developer tester session bundle has
-been captured.
+`docs/live-evidence/release/df245-package-recheck-20260622.json`.
+`docs/live-evidence/release/df246-packaged-manual-qa-handoff-candidate-20260622.json`
+now routes that handoff through the packaged manual QA producer and keeps it
+blocked with `missing_manual_qa_session_evidence`. This is a handoff basis only,
+not a pass result: no non-developer tester session bundle has been captured.
 
 The DF-247 release-gate evidence and Packaged Live evidence index were refreshed
 again at `2026-06-22T10:21:00.000Z` through the current DF-247 generator and the
-packaged-index generator, preserving the release-gate blocker codes/refs instead
-of a manual blocker summary. Release remains `Blocked` until the upstream
+packaged-index generator, preserving the release-gate blocker codes/refs,
+including DF-244 in the current P0 not-live-verified set, instead of a manual
+blocker summary. Release remains `Blocked` until the upstream
 packaged evidence entries become ready and the canonical release decision is
 approved.
 

@@ -6,6 +6,8 @@ import { z } from "zod";
 const PACKAGE_PATH = "dist/deckforge-macos-dry-run.tgz";
 const TEST_PATH = "src/lib/df205-release-evidence-artifact.test.ts";
 const DF205_EVIDENCE_PATH = "docs/live-evidence/release/df205-evidence.json";
+const DF205_CANDIDATE_PATH =
+  "docs/live-evidence/release/df205-packaged-auth-secret-candidate-20260622.json";
 const PACKAGE_RECHECK_PATH = "docs/live-evidence/release/df245-package-recheck-20260622.json";
 const SHA256_HEX = /^[a-f0-9]{64}$/;
 
@@ -49,13 +51,26 @@ const PackageRecheckSchema = z
   })
   .passthrough();
 
+const AuthSecretCandidateSchema = z
+  .object({
+    evidenceKind: z.literal("df205-packaged-auth-secret-evidence"),
+    status: z.literal("blocked"),
+    packageArchiveSha256: z.string().regex(SHA256_HEX),
+    accountMode: z.literal("authenticated_chatgpt_runtime"),
+    keychainFallbackInstalled: z.null(),
+    releaseBlockers: z.array(z.string().min(1)),
+  })
+  .passthrough();
+
 describe("DF-205 release evidence artifact", () => {
   test("keeps auth secret lifecycle blocked while tied to the current package scan", () => {
     // Given
     const packageSha256 = sha256File(PACKAGE_PATH);
     const evidence = readJson(DF205_EVIDENCE_PATH, ReleaseEvidenceSchema);
     const packageRecheck = readJson(PACKAGE_RECHECK_PATH, PackageRecheckSchema);
+    const candidate = readJson(DF205_CANDIDATE_PATH, AuthSecretCandidateSchema);
     const packageRecheckRef = releaseRef(evidence, PACKAGE_RECHECK_PATH);
+    const candidateRef = releaseRef(evidence, DF205_CANDIDATE_PATH);
 
     // When
     const scanHits = [
@@ -66,9 +81,24 @@ describe("DF-205 release evidence artifact", () => {
     // Then
     expect(evidence.packageArchiveSha256).toBe(packageSha256);
     expect(packageRecheck.packageArchive.sha256).toBe(packageSha256);
+    expect(candidate.packageArchiveSha256).toBe(packageSha256);
     expect(evidence.currentEvidence.some((reference) => reference.path === TEST_PATH)).toBe(true);
     expect(packageRecheckRef.sha256).toBe(sha256File(PACKAGE_RECHECK_PATH));
+    expect(candidateRef.sha256).toBe(sha256File(DF205_CANDIDATE_PATH));
     expect(scanHits).toEqual([]);
+    expect(candidate.releaseBlockers).toEqual([
+      "DF-205 auth session was not captured from a packaged clean-account login run",
+      "DF-205 fresh login evidence was not captured from a packaged clean-account run",
+      "DF-205 logout/relogin evidence was not captured from a packaged clean-account run",
+      "DF-205 logout/relogin proof is incomplete",
+      "DF-205 logout/relogin proof does not cancel active live jobs",
+      "DF-205 logout/relogin proof does not lock providers while logged out",
+      "DF-205 logout/relogin proof does not restore provider readiness",
+      "DF-205 packaged Codex OAuth image capability was not captured from a packaged clean-account run",
+      "DF-205 packaged Codex OAuth image capability is not available",
+      "DF-205 keychain fallback lifecycle was not recorded for the packaged run",
+      "DF-205 packaged secret leak scan was not captured from a clean-machine signed package run",
+    ]);
     expect(evidence.missingEvidence).toEqual([
       "fresh login manual QA from an unauthenticated or clean macOS account",
       "logout/relogin QA proving active live jobs cancel and provider actions stay locked until login is restored",

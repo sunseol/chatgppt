@@ -1,12 +1,20 @@
 import { describe, expect, test } from "bun:test";
-import { evaluateLiveInitialReleaseGate } from "./live-release-gate";
+import { evaluateLiveInitialReleaseGate, LIVE_P0_TICKET_IDS } from "./live-release-gate";
 import {
   readyLiveReleaseGateInput as readyInput,
   releaseDecisionPayload,
 } from "./live-release-gate-test-fixtures";
+import { PACKAGED_LIVE_EVIDENCE_TICKET_IDS } from "./packaged-live-evidence-index";
 import { createProviderArtifactProvenance } from "./provider-provenance";
 
 describe("live initial release gate", () => {
+  test("covers every packaged live evidence ticket in the P0 release set", () => {
+    // Given / When / Then
+    expect(PACKAGED_LIVE_EVIDENCE_TICKET_IDS.every((id) => LIVE_P0_TICKET_IDS.includes(id))).toBe(
+      true,
+    );
+  });
+
   test("passes only when all live release evidence is present", () => {
     const result = evaluateLiveInitialReleaseGate(readyInput());
 

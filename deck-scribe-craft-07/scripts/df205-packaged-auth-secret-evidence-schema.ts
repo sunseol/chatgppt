@@ -3,6 +3,7 @@ import { z } from "zod";
 const FreshLoginSchema = z
   .object({
     evidencePath: z.string().min(1),
+    captureKind: z.enum(["packaged_clean_account", "authenticated_runtime_smoke"]),
     codexLoginStatus: z.literal("logged_in_using_chatgpt"),
     rawTokenPersisted: z.literal(false),
     authJsonBundled: z.literal(false),
@@ -12,6 +13,7 @@ const FreshLoginSchema = z
 const LogoutReloginSchema = z
   .object({
     evidencePath: z.string().min(1),
+    captureKind: z.enum(["packaged_clean_account", "not_recorded"]),
     logoutObserved: z.boolean(),
     liveJobsCancelled: z.boolean(),
     providerActionsLockedWhileLoggedOut: z.boolean(),
@@ -23,6 +25,7 @@ const LogoutReloginSchema = z
 const CodexImageCapabilitySchema = z
   .object({
     evidencePath: z.string().min(1),
+    captureKind: z.enum(["packaged_clean_account", "not_recorded"]),
     providerKind: z.literal("codex"),
     authMode: z.literal("codex_oauth"),
     apiKeyRequired: z.literal(false),
@@ -30,10 +33,17 @@ const CodexImageCapabilitySchema = z
   })
   .strict();
 
-const KeychainLifecycleSchema = z.discriminatedUnion("fallbackInstalled", [
-  z.object({ fallbackInstalled: z.literal(false) }).strict(),
+const KeychainLifecycleSchema = z.discriminatedUnion("captureKind", [
+  z.object({ captureKind: z.literal("not_recorded") }).strict(),
   z
     .object({
+      captureKind: z.literal("packaged_run_no_api_key_fallback"),
+      fallbackInstalled: z.literal(false),
+    })
+    .strict(),
+  z
+    .object({
+      captureKind: z.literal("packaged_run_os_keychain_fallback"),
       fallbackInstalled: z.literal(true),
       evidencePath: z.string().min(1),
       storeKind: z.literal("os_keychain"),
@@ -48,6 +58,7 @@ const KeychainLifecycleSchema = z.discriminatedUnion("fallbackInstalled", [
 const SecretLeakScanSchema = z
   .object({
     evidencePath: z.string().min(1),
+    captureKind: z.enum(["signed_packaged_clean_machine", "current_package_recheck"]),
     packageArchiveSha256: z.string().min(1),
     configuredSecretHits: z.array(z.string()),
     authJsonHits: z.array(z.string()),
@@ -60,7 +71,12 @@ const AuthSessionSchema = z
   .object({
     sessionId: z.string().min(1),
     packageArchiveSha256: z.string().min(1),
-    accountMode: z.enum(["clean_macos_account", "unauthenticated_account"]),
+    accountMode: z.enum([
+      "clean_macos_account",
+      "unauthenticated_account",
+      "authenticated_chatgpt_runtime",
+    ]),
+    captureKind: z.enum(["packaged_clean_account", "authenticated_runtime_smoke"]),
   })
   .strict();
 

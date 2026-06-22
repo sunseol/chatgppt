@@ -48,6 +48,39 @@ describe("DF-246 packaged manual QA evidence producer", () => {
     expect(evidence.releaseBlockers).toContain("DF-246 manual QA validation is blocked");
   });
 
+  test("keeps release handoff blocked when no non-developer session bundle exists yet", () => {
+    // Given
+    const input = parseDf246PackagedManualQaInput({
+      capturedAt: CAPTURED_AT,
+      packageArchiveSha256: PACKAGE_SHA,
+      manualQaCandidatePackageSha256: PACKAGE_SHA,
+      checklistPath: "docs/live-manual-qa-checklist.md",
+      packageRecheckPath: "docs/live-evidence/release/df245-package-recheck-20260622.json",
+    });
+
+    // When
+    const evidence = produceDf246PackagedManualQaEvidence(input);
+
+    // Then
+    expect(evidence.status).toBe("blocked");
+    expect(evidence.sessionEvidencePath).toBeNull();
+    expect(evidence.testerRole).toBeNull();
+    expect(evidence.releaseBlockers).toEqual([
+      "DF-246 manual QA session evidence JSON is missing",
+      "DF-246 manual QA validation is blocked",
+    ]);
+    expect(evidence.manualQaValidation).toEqual({
+      kind: "blocked",
+      issues: [
+        {
+          code: "missing_manual_qa_session_evidence",
+          message: "Manual QA must cite a persisted non-synthetic session evidence bundle.",
+          refs: ["missing"],
+        },
+      ],
+    });
+  });
+
   test("keeps manual QA evidence blocked when package hashes drift", () => {
     // Given
     const input = parseDf246PackagedManualQaInput({

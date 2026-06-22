@@ -18,6 +18,11 @@ const ARTIFACT_SHA = "8e34a90924cd487d5cae9608b51a975e352c53285f5b77bc5b2bbd14cc
 const DECISION_SHA = "719f63f024e9e914ee694138257fab95c17e5be0bfca48f38f46c9c70dbb9278";
 
 describe("current DF-247 release gate evidence", () => {
+  test("keeps the current open P0 list aligned with the packaged evidence index", () => {
+    // Given / When / Then
+    expect(CURRENT_DF247_OPEN_P0_TICKET_IDS).toEqual(PACKAGED_LIVE_EVIDENCE_TICKET_IDS);
+  });
+
   test("builds a current blocked release gate input without a cyclic packaged index digest", () => {
     // Given
     const index = blockedPackagedIndex();

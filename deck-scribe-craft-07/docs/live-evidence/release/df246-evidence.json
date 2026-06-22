@@ -5,7 +5,7 @@
   "validationKind": "blocked",
   "generatedAt": "2026-06-22T02:25:38Z",
   "packageArchiveSha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
-  "summary": "Manual QA validator, checklist, current-package handoff evidence, and direct release-artifact regression coverage exist, and borrowed session JSON payloads from another evidence path are blocked before readiness, but no non-developer packaged-app manual QA session bundle has been recorded.",
+  "summary": "Manual QA validator, checklist, current-package handoff evidence, and direct release-artifact regression coverage exist, and borrowed session JSON payloads from another evidence path are blocked before readiness. The current checklist and package recheck now flow through the packaged manual QA producer as a blocked handoff candidate without fabricating a tester session, but no non-developer packaged-app manual QA session bundle has been recorded.",
   "currentEvidence": [
     {
       "path": "docs/live-manual-qa-checklist.md",
@@ -18,8 +18,25 @@
       "kind": "current package and signing blocker recheck for manual QA handoff"
     },
     {
+      "path": "docs/live-evidence/release/df246-packaged-manual-qa-handoff-candidate-20260622.json",
+      "sha256": "77d33ff41412b8c1f21452eea399323f715cc03b24f386cb3503a1d7ba4a5549",
+      "kind": "blocked packaged manual QA candidate generated from current handoff evidence"
+    },
+    {
       "path": "docs/live-release-decision.md",
       "kind": "release decision recording missing non-developer manual QA"
+    },
+    {
+      "path": "scripts/df246-packaged-manual-qa-handoff-ingestion.ts",
+      "kind": "manual QA handoff to blocked packaged candidate ingestion helper"
+    },
+    {
+      "path": "scripts/produce-df246-packaged-manual-qa-handoff-candidate.ts",
+      "kind": "reproducible blocked packaged manual QA handoff candidate generator"
+    },
+    {
+      "path": "scripts/df246-packaged-manual-qa-handoff-ingestion.test.ts",
+      "kind": "manual QA handoff ingestion regression coverage"
     },
     {
       "path": "src/lib/live-manual-qa-session-evidence.ts",
@@ -35,7 +52,7 @@
     },
     {
       "path": "src/lib/df246-release-evidence-artifact.test.ts",
-      "kind": "DF-246 release handoff package, checklist, and package-recheck hash regression"
+      "kind": "DF-246 release handoff package, checklist, package-recheck, and blocked candidate hash regression"
     }
   ],
   "handoffEvidence": {

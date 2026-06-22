@@ -20,6 +20,7 @@ export const CURRENT_DF247_OPEN_P0_TICKET_IDS: readonly LiveP0TicketId[] = [
   "DF-241",
   "DF-242",
   "DF-243",
+  "DF-244",
   "DF-245",
   "DF-246",
   "DF-247",

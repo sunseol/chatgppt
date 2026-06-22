@@ -20,6 +20,7 @@
           "DF-241",
           "DF-242",
           "DF-243",
+          "DF-244",
           "DF-245",
           "DF-246",
           "DF-247"
@@ -69,12 +70,12 @@
     {
       "path": "docs/live-release-decision.md",
       "kind": "canonical release decision",
-      "sha256": "8a1bf535a77625c90811fdd4ccdf229c73d6442d98dd1cafbe5ca47ea37e564c"
+      "sha256": "9a5579a03f9400e7614124f5bb93d1a679b72c21c10550c86907d214193fc432"
     },
     {
       "path": "docs/live-evidence/release/df205-evidence.json",
       "kind": "DF-205 packaged auth and secret evidence",
-      "sha256": "d95bf68297d11bb594e7fd128f66ea3e141cf7c99020543a3d452a4dc410c11d"
+      "sha256": "a844af0acde6eab852116bf9ccf83f5842aa10ff3bb56a7eac9e814547ddfe58"
     },
     {
       "path": "docs/live-evidence/release/df233-evidence.json",
@@ -114,7 +115,7 @@
     {
       "path": "docs/live-evidence/release/df246-evidence.json",
       "kind": "DF-246 packaged manual QA evidence",
-      "sha256": "cd332f328c7dd15f09dc17a1c21f5ea0211f431b7218a0a68d869d5e63f1bebe"
+      "sha256": "6225b9cfa8ad2c1ce689d4ca95a8fd1bebf73bc831054b86b0a30fa95ba70ec9"
     },
     {
       "path": "docs/live-evidence/release/packaged-live-evidence-index.json",
@@ -122,7 +123,7 @@
     }
   ],
   "missingEvidence": [
-    "p0_not_live_verified:DF-205,DF-233,DF-235,DF-241,DF-242,DF-243,DF-245,DF-246,DF-247",
+    "p0_not_live_verified:DF-205,DF-233,DF-235,DF-241,DF-242,DF-243,DF-244,DF-245,DF-246,DF-247",
     "live_benchmark_shortfall:DF-242",
     "golden_path_lineage_missing:DF-241",
     "packaged_live_ticket_blocked:DF-205,DF-233,DF-235,DF-241,DF-242,DF-243,DF-244,DF-245,DF-246,DF-247",
