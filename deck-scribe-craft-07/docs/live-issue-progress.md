@@ -714,12 +714,11 @@ index records the current dry-run package SHA-256 and each evidence artifact SHA
 `src/lib/packaged-live-evidence-index-artifact.test.ts` verifies the committed
 index plus entry file digests.
 
-This is not a release approval. Every index entry remains `blocked` /
-`validationKind: blocked`, so DF-247 still requires ready upstream packaged
-auth/secret lifecycle, image queue, slide-regeneration, usage, Golden Path,
-benchmark, interruption, packaging trust/clean-machine, and non-developer
-manual QA evidence before the release decision can move from `Blocked` to
-approved.
+This is not a release approval. The current index reports 3 of 10 ready entries
+(DF-235, DF-243, and DF-244), so DF-247 still requires ready upstream packaged
+auth/secret lifecycle, image queue, Golden Path, benchmark, packaging
+trust/clean-machine, and non-developer manual QA evidence before the release
+decision can move from `Blocked` to approved.
 
 ## 2026-06-21 Current Branch OAuth Image Route Recheck
 
