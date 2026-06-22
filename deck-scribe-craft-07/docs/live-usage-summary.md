@@ -100,7 +100,7 @@ The same integration surface now blocks misleading confirmation copy when the im
 
 ## Remaining Live Evidence
 
-The local contract, one live Codex text usage probe, App Server rich usage payload preservation including malformed numeric usage/cost blockers, app progress-panel usage display with invalid provider payload omission, blank, boundary-whitespace-padded, or duplicated stage-id and unsupported provider-kind blockers, zero-duration latency evidence blockers, incomplete text/image usage blockers, invalid usage/cost amount and cost-label blockers, persisted Codex image usage confirmation evidence blockers, API-key-required confirmation blockers, developer-local, template, generic, boundary-whitespace-padded, fallback-unknown, and non-project/job-bound confirmation evidence path blockers, Generate-stage Codex OAuth confirmation persistence, and secret-redacted formatted-summary/progress/report image usage disclosure display are ready, but DF-244 still needs manual QA against the packaged app surface with real provider image Codex usage disclosure payloads.
+The local contract, one live Codex text usage probe, App Server rich usage payload preservation including malformed numeric usage/cost blockers, app progress-panel usage display with invalid provider payload omission, blank, boundary-whitespace-padded, or duplicated stage-id and unsupported provider-kind blockers, zero-duration latency evidence blockers, incomplete text/image usage blockers, invalid usage/cost amount and cost-label blockers, persisted Codex image usage confirmation evidence blockers, API-key-required confirmation blockers, developer-local, template, generic, boundary-whitespace-padded, fallback-unknown, and non-project/job-bound confirmation evidence path blockers, Generate-stage Codex OAuth confirmation persistence, secret-redacted formatted-summary/progress/report image usage disclosure display, and packaged app-surface Codex image usage evidence are ready for DF-244.
 
 ## Lane D Image Usage Recheck
 
@@ -113,7 +113,7 @@ The local contract, one live Codex text usage probe, App Server rich usage paylo
 - Image count: `5`
 - Total measured image latency: `197953ms`
 
-The display intentionally keeps cost hidden because the Codex image sidecars do not supply a billable cost value. DF-244 remains open because no persisted pre-generation user-confirmation record from the packaged app surface exists.
+The display intentionally keeps cost hidden because the Codex image sidecars do not supply a billable cost value. This Lane D bundle is historical; the current packaged DF-244 evidence now includes the persisted pre-generation confirmation record copied from the packaged app surface.
 
 The Lane D evidence generator now consumes a real
 `usage/<project>/<job>/image-billing-confirmation.json` record when one is
@@ -197,9 +197,9 @@ confirmation JSON, versioned PNG metadata/provenance, DF-233 queue evidence, and
 a project folder export summary with `5` project artifact writes and no
 cross-project writes. The summary lives at
 `docs/live-evidence/codex-image/df244-generate-export-smoke-20260622/summary.json`.
-This is product-run evidence for the Generate path and export contract, not a
-packaged UI manual QA pass; DF-244 remains open until a packaged app run
-captures and displays the persisted confirmation from the same real image job.
+This is product-run evidence for the Generate path and export contract. The
+current packaged app-surface evidence now captures and displays the persisted
+confirmation from the same real image job.
 
 2026-06-22 KST product usage-summary smoke: the Lane D confirmation resolver now
 consumes the product-run confirmation JSON from
@@ -210,8 +210,18 @@ consumes the product-run confirmation JSON from
 The summary records provider `codex`, `imageCount: 1`, total latency
 `185181ms`, hidden cost because no billable cost was supplied, and the canonical
 confirmation record path from the same product run. This proves the usage
-summary resolver can consume persisted product confirmation, but DF-244 still
-needs the same evidence from a packaged app UI run.
+summary resolver can consume persisted product confirmation.
+
+2026-06-22 KST packaged app-surface smoke:
+`scripts/run-df244-generate-export-packaged-app-surface-smoke.ts` ran the
+current dry-run package through the localhost Codex bridge, generated one real
+Codex OAuth image, and copied the packaged run summary, same-job billing
+confirmation, queue evidence, image artifact, usage summary, and project folder
+export into
+`docs/live-evidence/codex-image/df244-packaged-generate-export-smoke-20260622/`.
+`docs/live-evidence/release/df244-packaged-generate-export-usage-candidate-20260622.json`
+is `ready` with `imageCount: 1`, total latency `176538ms`, retry count `0`,
+hidden cost, and `confirmed_app_surface_pre_generation_codex_oauth`.
 
 2026-06-22 KST generator update: `scripts/generate-lane-d-live-evidence.mjs`
 now derives the DF-244 manifest blocker from the Lane D confirmation resolver.
@@ -231,5 +241,5 @@ path and the outer job publishes a `live_slide_images` partial result, so the
 usage/progress surface can distinguish a real Codex image run from mock preview
 generation.
 
-DF-244 still requires packaged-app manual QA with real image usage payloads and
-the persisted pre-generation confirmation JSON captured from the same run.
+DF-244 packaged-app usage evidence is now captured from the same run and
+materialized in `docs/live-evidence/release/df244-evidence.json`.

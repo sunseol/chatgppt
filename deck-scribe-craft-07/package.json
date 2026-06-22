@@ -27,6 +27,7 @@
     "evidence:df235:from-product-smoke": "bun scripts/produce-df235-product-smoke-packaged-review-candidate.ts",
     "evidence:df244:produce": "bun scripts/produce-df244-packaged-usage-evidence.ts",
     "evidence:df244:from-product-smoke": "bun scripts/produce-df244-product-smoke-packaged-usage-candidate.ts",
+    "evidence:df244:from-packaged-smoke": "bun scripts/produce-df244-packaged-generate-export-usage-candidate.ts",
     "evidence:df245:produce": "bun scripts/produce-df245-production-packaging-evidence.ts",
     "evidence:df246:produce": "bun scripts/produce-df246-packaged-manual-qa-evidence.ts",
     "evidence:df246:from-handoff": "bun scripts/produce-df246-packaged-manual-qa-handoff-candidate.ts",

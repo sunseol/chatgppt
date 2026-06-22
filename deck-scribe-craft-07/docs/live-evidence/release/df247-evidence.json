@@ -3,7 +3,7 @@
   "issueNumber": 157,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-22T05:55:48.022Z",
+  "generatedAt": "2026-06-22T06:24:28.950Z",
   "packageArchiveSha256": "79558b1114d295ddd80fa8068818aeb5bb6b74b4b4b0335981f057824e997163",
   "packagedLiveEvidenceIndexPath": "docs/live-evidence/release/packaged-live-evidence-index.json",
   "releaseGateResult": {
@@ -20,7 +20,6 @@
           "DF-241",
           "DF-242",
           "DF-243",
-          "DF-244",
           "DF-245",
           "DF-246",
           "DF-247"
@@ -50,7 +49,6 @@
           "DF-241",
           "DF-242",
           "DF-243",
-          "DF-244",
           "DF-245",
           "DF-246",
           "DF-247"
@@ -70,7 +68,7 @@
     {
       "path": "docs/live-release-decision.md",
       "kind": "canonical release decision",
-      "sha256": "e34a0fc66f914cc5f84c323d3f8922af0080be28aa206541916c1acc6af729e5"
+      "sha256": "3cd3eccc24e2da7b979e4150719d723e02f2b9a43ddcf7cf7bde2963f243e2ba"
     },
     {
       "path": "docs/live-evidence/release/df205-evidence.json",
@@ -105,7 +103,7 @@
     {
       "path": "docs/live-evidence/release/df244-evidence.json",
       "kind": "DF-244 packaged usage evidence",
-      "sha256": "675c58cd89b7cfecb8bc517ca807a9411c6f9c589be8d9d91f623b9117a31d18"
+      "sha256": "256959cf2b29d7b8c41dc7fce95a7d3b8e7a10a7f6b3de82f2efffbe63965cb6"
     },
     {
       "path": "docs/live-evidence/release/df245-evidence.json",
@@ -123,10 +121,10 @@
     }
   ],
   "missingEvidence": [
-    "p0_not_live_verified:DF-205,DF-233,DF-235,DF-241,DF-242,DF-243,DF-244,DF-245,DF-246,DF-247",
+    "p0_not_live_verified:DF-205,DF-233,DF-235,DF-241,DF-242,DF-243,DF-245,DF-246,DF-247",
     "live_benchmark_shortfall:DF-242",
     "golden_path_lineage_missing:DF-241",
-    "packaged_live_ticket_blocked:DF-205,DF-233,DF-235,DF-241,DF-242,DF-243,DF-244,DF-245,DF-246,DF-247",
+    "packaged_live_ticket_blocked:DF-205,DF-233,DF-235,DF-241,DF-242,DF-243,DF-245,DF-246,DF-247",
     "release_decision_blocked:blocked"
   ]
 }

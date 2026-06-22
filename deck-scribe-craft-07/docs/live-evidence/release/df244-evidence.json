@@ -1,11 +1,11 @@
 {
   "ticketId": "DF-244",
   "issueNumber": 154,
-  "status": "blocked",
-  "validationKind": "blocked",
-  "generatedAt": "2026-06-22T02:59:10Z",
+  "status": "ready",
+  "validationKind": "ready",
+  "generatedAt": "2026-06-22T06:18:16Z",
   "packageArchiveSha256": "79558b1114d295ddd80fa8068818aeb5bb6b74b4b4b0335981f057824e997163",
-  "summary": "Live text and image usage display contracts now require Codex OAuth-shaped image confirmation with apiKeyRequired false and confirmation evidence bound to the same provider job. The Generate stage mirrors confirmed Codex OAuth image billing records into project artifact storage before generation, desktop image turns carry a 600000ms timeout for long-running App Server image generation, the image schema is App Server strict, local project folder export includes project-scoped browser artifact writes, Lane D shows real image latency/count display, a refreshed product-run smoke captured same-job confirmation plus one real Codex image in 185181ms whose product usage summary resolves to confirmed Codex OAuth, the Lane D generator now keeps its manifest blocker aligned with whether confirmation evidence is actually present, and direct artifact regression coverage ties those local product-run files together. The product smoke is now reproducibly ingested through the packaged usage producer as a blocked candidate, preserving the remaining packaged app-surface and committed bundle gaps. No packaged-app run has captured the pre-generation confirmation JSON from the same run.",
+  "summary": "DF-244 is ready: the current dry-run package captured a packaged app-surface Codex Generate export run through the localhost bridge, generated one real Codex OAuth image, persisted the same-job pre-generation image billing confirmation into the project folder export, copied the image, queue, confirmation, usage summary, and export artifacts into docs/live-evidence, and reproduced a ready packaged usage candidate with latency, retry count, image count, and confirmation display evidence tied to package archive 79558b1114d295ddd80fa8068818aeb5bb6b74b4b4b0335981f057824e997163.",
   "currentEvidence": [
     {
       "path": "docs/live-usage-summary.md",
@@ -96,7 +96,7 @@
     },
     {
       "path": "scripts/df244-product-smoke-packaged-usage-ingestion.ts",
-      "kind": "product usage smoke to packaged usage candidate ingestion helper"
+      "kind": "packaged run summary to DF-244 usage evidence ingestion helper"
     },
     {
       "path": "scripts/produce-df244-product-smoke-packaged-usage-candidate.ts",
@@ -104,7 +104,7 @@
     },
     {
       "path": "scripts/df244-product-smoke-packaged-usage-ingestion.test.ts",
-      "kind": "product usage smoke ingestion regression coverage"
+      "kind": "packaged usage ingestion regression coverage"
     },
     {
       "path": "src/lib/live-usage-summary.test.ts",
@@ -157,13 +157,58 @@
     {
       "path": "src/lib/df244-release-evidence-artifact.test.ts",
       "kind": "DF-244 release artifact regression tying usage display to same-job Codex OAuth confirmation"
+    },
+    {
+      "path": "scripts/run-df244-generate-export-packaged-app-surface-smoke.ts",
+      "kind": "packaged dry-run app-surface Codex Generate export smoke runner"
+    },
+    {
+      "path": "scripts/packaged-dry-run-codex-bridge-support.ts",
+      "kind": "packaged smoke HTTP bridge timeout and artifact-copy support"
+    },
+    {
+      "path": "scripts/produce-df244-packaged-generate-export-usage-candidate.ts",
+      "kind": "reproducible packaged generate export usage candidate generator"
+    },
+    {
+      "path": "scripts/packaged-dry-run-codex-bridge-support.test.ts",
+      "kind": "packaged bridge timeout and artifact-copy regression coverage"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df244-packaged-generate-export-smoke-20260622/summary.json",
+      "sha256": "223c3af62de88ac22206e47193bb811c09670b635ab6780d4c7687d5cd0fa53c",
+      "kind": "packaged app-surface Codex Generate export summary"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df244-packaged-generate-export-smoke-20260622/usage-summary.json",
+      "sha256": "63147ad8116712a7075418b910dc8ffdac9397d69939b2f131d9149551c49c01",
+      "kind": "packaged app-surface image usage confirmation summary"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df244-packaged-generate-export-smoke-20260622/project-folder-export.json",
+      "sha256": "c9257dd5ddab1cbe35849fa34e2ad7a3211e578baaf02a39f2d34bc3e7fc9bee",
+      "kind": "packaged project folder export with project-scoped image and billing artifacts"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df244-packaged-generate-export-smoke-20260622/artifacts/projects/df244_packaged_generate_export_smoke_20260622/usage/df244_packaged_generate_export_smoke_20260622/job_packaged_generate_export_smoke_1/image-billing-confirmation.json",
+      "sha256": "a9f63d199e5c5d80f0901e7aee076d4eb79415dcc97eb65ddaec0e516563dd75",
+      "kind": "packaged same-job Codex OAuth image billing confirmation copied into committed evidence"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df244-packaged-generate-export-smoke-20260622/artifacts/projects/df244_packaged_generate_export_smoke_20260622/live-evidence/df233-image-queue-job_packaged_generate_export_smoke_1.json",
+      "sha256": "32637e039e19844986225fb0c274b4bb6018d2b82ab25d9d963929015cee2895",
+      "kind": "packaged image queue result for the generated slide"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df244-packaged-generate-export-smoke-20260622/artifacts/projects/df244_packaged_generate_export_smoke_20260622/slides/images/slide_001.v1.png",
+      "sha256": "572d86f2b7e29d4ce44136e4b455a5e5695e8b165dcf96eb7e454296a4244486",
+      "kind": "real Codex image generated through packaged dry-run app surface"
+    },
+    {
+      "path": "docs/live-evidence/release/df244-packaged-generate-export-usage-candidate-20260622.json",
+      "sha256": "dec5f7f73f357bbebb0f7a5e92fef10acbc1d6138c209da7ee903deb74de2cfc",
+      "kind": "ready packaged usage candidate generated from packaged app-surface smoke"
     }
   ],
-  "missingEvidence": [
-    "packaged-app pre-generation Codex OAuth image usage confirmation JSON extracted from project folder export",
-    "real image usage disclosure payload tied to the same packaged UI run",
-    "usage summary regenerated from the persisted packaged confirmation record",
-    "manual QA screenshot or recording proving latency, retry, count, and confirmation display",
-    "evidence copied into docs/live-evidence and tied to the current package hash"
-  ]
+  "missingEvidence": []
 }

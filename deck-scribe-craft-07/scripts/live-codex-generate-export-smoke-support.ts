@@ -183,7 +183,7 @@ export function appServerErrors(evidence: StructuredTurnEvidence): readonly stri
   });
 }
 
-function buildImageTurnRequest(request: CodexImageClientRequest) {
+export function buildImageTurnRequest(request: CodexImageClientRequest) {
   return {
     prompt: [
       "Generate one production slide image using the signed-in Codex image generation capability.",

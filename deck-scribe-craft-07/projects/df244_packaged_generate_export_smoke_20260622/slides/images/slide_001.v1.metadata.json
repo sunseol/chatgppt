@@ -1,0 +1,29 @@
+{
+  "path": "projects/df244_packaged_generate_export_smoke_20260622/slides/images/slide_001.v1.metadata.json",
+  "providerId": "codex",
+  "slideNumber": 1,
+  "aspectRatio": "16:9",
+  "canvas": {
+    "width": 1600,
+    "height": 900
+  },
+  "layoutReference": {
+    "screenshot": "slide_01_layout.png",
+    "mode": "composition-reference"
+  },
+  "prompt": {
+    "id": "slide_generation",
+    "version": "v1",
+    "hash": "sha256:3334a742"
+  },
+  "request": {
+    "model": "gpt-image-2",
+    "latencyMs": 176538,
+    "usage": {
+      "imageCount": 1
+    },
+    "threadId": "019eedf5-21a7-73c2-ba4e-672f3a4785c2",
+    "turnId": "019eedf5-242f-7140-8b1e-78ee9ecd43bf"
+  },
+  "generatedAt": 1782108725374
+}

@@ -19,7 +19,10 @@ const JobEventSchema = z
 const ProductRunSummarySchema = z
   .object({
     capturedAt: z.string().datetime(),
-    evidenceKind: z.literal("live-codex-generate-export-smoke"),
+    evidenceKind: z.enum([
+      "live-codex-generate-export-smoke",
+      "packaged-live-codex-generate-export-smoke",
+    ]),
     projectId: z.string().min(1),
     jobId: z.string().min(1),
     completedJobStatus: z.literal("succeeded"),

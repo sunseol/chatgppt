@@ -63,7 +63,11 @@ describe("live usage summary documentation", () => {
     expect(usageSummary.includes("zero-duration latency evidence blockers")).toBe(true);
     expect(usageSummary.includes("invalid_cost_label")).toBe(true);
     expect(usageSummary.includes("live-usage-summary-cost-label.test.ts")).toBe(true);
-    expect(usageSummary.includes("manual QA against the packaged app surface")).toBe(true);
+    expect(usageSummary.includes("packaged app-surface Codex image usage evidence are ready")).toBe(
+      true,
+    );
+    expect(usageSummary.includes("df244-packaged-generate-export-smoke-20260622")).toBe(true);
+    expect(usageSummary.includes("df244-packaged-generate-export-usage-candidate")).toBe(true);
 
     expect(progress.includes("DF-244 live update")).toBe(true);
     expect(progress.includes("DF-244 Malformed App Server Usage Gate")).toBe(true);
@@ -108,8 +112,8 @@ describe("live usage summary documentation", () => {
     expect(decision.includes("unsupported runtime provider kinds")).toBe(true);
     expect(decision.includes("zero-duration or otherwise invalid duration/retry data")).toBe(true);
     expect(decision.includes("developer-local")).toBe(true);
-    expect(decision.includes("packaged app-surface usage summary manual QA")).toBe(true);
-    expect(decision.includes("real provider image Codex usage payloads")).toBe(true);
+    expect(decision.includes("packaged DF-244 smoke now captures real provider image")).toBe(true);
+    expect(decision.includes("DF-244 is now ready")).toBe(true);
   });
 });
 
