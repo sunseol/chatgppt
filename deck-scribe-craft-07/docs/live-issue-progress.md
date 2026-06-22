@@ -127,6 +127,16 @@ committed entry SHA-256 digests. This still does not close any ticket; every
 entry remains `blocked` until the corresponding packaged/clean-machine/manual
 QA live evidence is genuinely produced.
 
+DF-247 local update: the shared Packaged Live evidence index now has a
+regeneration command, `bun run evidence:packaged-index:produce --
+docs/live-evidence/release/packaged-live-evidence-index.json [generatedAt]`.
+It reads the ten canonical child evidence JSON artifacts, recalculates each
+entry SHA-256 digest, preserves each child artifact's `status`,
+`validationKind`, issue number, and package hash, and writes the canonical
+ticket order. The current regenerated index still blocks because all ten child
+artifacts remain blocked, but future real evidence can now update DF-247 without
+manual hash editing.
+
 Current package basis for this index: `bun run package:dry-run` produced
 `dist/deckforge-macos-dry-run.tgz` with SHA-256
 `e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6`,

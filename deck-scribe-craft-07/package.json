@@ -25,6 +25,7 @@
     "evidence:df245:produce": "bun scripts/produce-df245-production-packaging-evidence.ts",
     "evidence:df246:produce": "bun scripts/produce-df246-packaged-manual-qa-evidence.ts",
     "evidence:df241-df242:produce": "bun scripts/produce-df241-df242-packaged-evidence.ts",
+    "evidence:packaged-index:produce": "bun scripts/produce-packaged-live-evidence-index.ts",
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build",
