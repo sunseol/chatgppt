@@ -3,7 +3,7 @@
   "issue": "DF-233",
   "projectId": "df233_queue_resume_smoke_20260622",
   "jobId": "resume_product_run_20260622",
-  "exportedAt": 1782085267748,
+  "exportedAt": 1782088203001,
   "resultStatus": "succeeded",
   "context": {
     "deckContextId": "deckctx_a7711223",
@@ -37,9 +37,9 @@
       "capability": "imageGeneration",
       "description": "Generate slide 2",
       "status": "succeeded",
-      "createdAt": 1782085264767,
-      "startedAt": 1782085264767,
-      "finishedAt": 1782085264767,
+      "createdAt": 1782088202101,
+      "startedAt": 1782088202102,
+      "finishedAt": 1782088202103,
       "attempt": 1,
       "cancelRequested": false
     }
@@ -53,7 +53,7 @@
       "stage": "slide-generation",
       "artifactId": "bundle_deckctx_a7711223_slide_02",
       "jobId": "live_job_resume_product_1",
-      "recordedAt": 1782085264767
+      "recordedAt": 1782087635410
     }
   ],
   "retryProvenance": [],

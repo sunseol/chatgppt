@@ -1572,22 +1572,29 @@ full five-scenario interruption closure bundle is copied into
 
 DF-233 product queue-control evidence update:
 `scripts/run-df233-queue-controls-product-evidence-smoke.ts` now runs the
-product slide-generation queue and DF-233 evidence writer for retry and
-restart-resume paths. The retry run records two transient `server` retry events
+product slide-generation queue and DF-233 evidence writer for retry, in-flight
+cancellation, and restart-resume paths. The retry run records two transient
+`server` retry events
 (`server:1:100`, `server:2:200`), succeeds on attempt 3, and writes ready queue
 evidence at
 `projects/df233_queue_retry_smoke_20260622/live-evidence/df233-image-queue-retry_product_run_20260622.json`
-(`sha256:b162c6c406778b43449bbfd84f6e30a9cc76896d853b57e40f8f314464856ffe`).
+(`sha256:000e84094b6069991c09ed0302ab9d065b017637dcabb81195e58ad28b9284c9`).
+The cancellation run requests cancellation while the provider worker returns a
+late slide 1 output, rejects that output (`acceptedSlides: []`), records
+`live_job_cancel_product_1` as `cancelled` with `cancelRequested: true`, and
+writes ready queue evidence at
+`projects/df233_queue_cancel_smoke_20260622/live-evidence/df233-image-queue-cancel_product_run_20260622.json`
+(`sha256:ef8fa5773b21574b99303177090d735d7b77ea40fb84ee4fefdff6e7912a3a2b`).
 The resume run starts with slide 1 completed, generates only slide 2, includes
 restart-resume proof for the pending/resumed slide 2 artifact, and writes ready
 queue evidence at
 `projects/df233_queue_resume_smoke_20260622/live-evidence/df233-image-queue-resume_product_run_20260622.json`
-(`sha256:4c9916e639dbf0b8c07ff62713ea31abec9d5a09a9376fd1ca0fa30a1ae5f4ab`).
+(`sha256:b6ad6c6fae246c9b57bacfe499de3c1f76cd134d58624aace1037813803343ff`).
 The summary at
 `docs/live-evidence/codex-image/df233-queue-controls-smoke-20260622/summary.json`
-(`sha256:078631d92f8276e6e47fd77b872e81faebae04966a4258dbcd3733b954a3a7b7`)
-proves both writer outputs validate as `ready`. DF-233 remains open until the
-equivalent retry, in-flight cancellation, and restart-resume bundle is captured
+(`sha256:ef3049044d2c844673ee41973280e5fcd44953da771991616b73e371e2ce8a51`)
+proves all three writer outputs validate as `ready`. DF-233 remains open until
+the equivalent retry, in-flight cancellation, and restart-resume bundle is captured
 from a packaged Codex OAuth image run with real provider jobs.
 
 DF-235 product failure-preservation update:

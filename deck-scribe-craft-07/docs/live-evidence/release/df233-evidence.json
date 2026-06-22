@@ -3,9 +3,9 @@
   "issueNumber": 147,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-21T23:41:04Z",
+  "generatedAt": "2026-06-22T00:30:00Z",
   "packageArchiveSha256": "0354291e6c6ac847335ba5095e088d1122a3bf93937589021edabb3e4fbcc913",
-  "summary": "Queue throttling, retry, cancellation, resume, and product evidence writers are implemented. One real Codex Generate-runner smoke produced a succeeded one-slide queue artifact, and a product queue-control smoke now writes ready DF-233 evidence for a bounded 5xx retry and restart-resume run. No packaged Codex OAuth image run has captured genuine provider retry, user cancellation, and restart-resume evidence from the app surface.",
+  "summary": "Queue throttling, retry, cancellation, resume, and product evidence writers are implemented. One real Codex Generate-runner smoke produced a succeeded one-slide queue artifact, and a deterministic product queue-control smoke now writes ready DF-233 evidence for bounded 5xx retry, in-flight cancellation that rejects a late provider output, and restart-resume that does not regenerate a completed slide. No packaged Codex OAuth image run has captured genuine provider retry, user cancellation, and restart-resume evidence from the app surface.",
   "currentEvidence": [
     {
       "path": "docs/live-image-queue-controls.md",
@@ -51,28 +51,37 @@
     },
     {
       "path": "docs/live-evidence/codex-image/df233-queue-controls-smoke-20260622/summary.json",
-      "sha256": "078631d92f8276e6e47fd77b872e81faebae04966a4258dbcd3733b954a3a7b7",
-      "kind": "product queue retry and restart-resume smoke summary"
+      "sha256": "ef3049044d2c844673ee41973280e5fcd44953da771991616b73e371e2ce8a51",
+      "kind": "product queue retry, cancellation, and restart-resume smoke summary"
     },
     {
       "path": "projects/df233_queue_retry_smoke_20260622/live-evidence/df233-image-queue-retry_product_run_20260622.json",
-      "sha256": "b162c6c406778b43449bbfd84f6e30a9cc76896d853b57e40f8f314464856ffe",
+      "sha256": "000e84094b6069991c09ed0302ab9d065b017637dcabb81195e58ad28b9284c9",
       "kind": "ready product queue 5xx retry evidence"
     },
     {
+      "path": "projects/df233_queue_cancel_smoke_20260622/live-evidence/df233-image-queue-cancel_product_run_20260622.json",
+      "sha256": "ef8fa5773b21574b99303177090d735d7b77ea40fb84ee4fefdff6e7912a3a2b",
+      "kind": "ready product queue in-flight cancellation evidence"
+    },
+    {
       "path": "projects/df233_queue_resume_smoke_20260622/live-evidence/df233-image-queue-resume_product_run_20260622.json",
-      "sha256": "4c9916e639dbf0b8c07ff62713ea31abec9d5a09a9376fd1ca0fa30a1ae5f4ab",
+      "sha256": "b6ad6c6fae246c9b57bacfe499de3c1f76cd134d58624aace1037813803343ff",
       "kind": "ready product queue restart-resume evidence"
     },
     {
       "path": "scripts/run-df233-queue-controls-product-evidence-smoke.ts",
       "kind": "reproducible product queue-control evidence smoke"
+    },
+    {
+      "path": "scripts/df233-queue-controls-product-evidence-smoke-support.ts",
+      "kind": "product queue-control smoke scenario support"
     }
   ],
   "missingEvidence": [
     "packaged Codex OAuth image run with genuine 429 or 5xx retry provenance",
-    "in-flight user cancellation evidence from a real provider job",
-    "restart-resume evidence proving completed slides are not regenerated",
+    "packaged in-flight user cancellation evidence from a real provider job",
+    "packaged restart-resume evidence proving completed slides are not regenerated",
     "stored versioned PNG artifact paths for every completed packaged queue slide",
     "product-generated DF-233 queue evidence JSON from a packaged run exported through project folder and copied into docs/live-evidence"
   ]
