@@ -23,6 +23,7 @@
     "evidence:df233:from-product-smoke": "bun scripts/produce-df233-packaged-queue-product-smoke-candidate.ts",
     "evidence:df243:produce": "bun scripts/produce-df243-interruption-closure-evidence.ts",
     "evidence:df243:from-product-smoke": "bun scripts/produce-df243-product-smoke-interruption-closure-candidate.ts",
+    "evidence:df243:from-packaged-bundle": "bun scripts/produce-df243-packaged-interruption-closure-evidence.ts",
     "evidence:df235:produce": "bun scripts/produce-df235-packaged-review-evidence.ts",
     "evidence:df235:from-product-smoke": "bun scripts/produce-df235-product-smoke-packaged-review-candidate.ts",
     "evidence:df244:produce": "bun scripts/produce-df244-packaged-usage-evidence.ts",

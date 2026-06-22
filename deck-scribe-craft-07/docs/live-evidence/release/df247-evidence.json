@@ -3,7 +3,7 @@
   "issueNumber": 157,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-22T07:16:34.986Z",
+  "generatedAt": "2026-06-22T04:45:30Z",
   "packageArchiveSha256": "bdb64f343b721a435889377d6449d18d537fe27a11ac41be343c481c483688ee",
   "packagedLiveEvidenceIndexPath": "docs/live-evidence/release/packaged-live-evidence-index.json",
   "releaseGateResult": {
@@ -18,7 +18,6 @@
           "DF-233",
           "DF-241",
           "DF-242",
-          "DF-243",
           "DF-245",
           "DF-246",
           "DF-247"
@@ -46,7 +45,6 @@
           "DF-233",
           "DF-241",
           "DF-242",
-          "DF-243",
           "DF-245",
           "DF-246",
           "DF-247"
@@ -66,7 +64,7 @@
     {
       "path": "docs/live-release-decision.md",
       "kind": "canonical release decision",
-      "sha256": "28ba5d35123b314ea4861a26fc0c58ee5b8ac66fd6825c7df9471283a944a8dd"
+      "sha256": "58453673f68eb03ea586e25f35ed87b169804170dcc9a00d64657994827eb5b8"
     },
     {
       "path": "docs/live-evidence/release/df205-evidence.json",
@@ -96,7 +94,7 @@
     {
       "path": "docs/live-evidence/release/df243-evidence.json",
       "kind": "DF-243 interruption closure evidence",
-      "sha256": "3c66dfe1b3f4e18d65c146d35ec01867f7bbad17bc1a28b4140567a7f6cbc52b"
+      "sha256": "b62ab935376eb09546a51b5d5916e16984dff3aeedca002136e13140606694a5"
     },
     {
       "path": "docs/live-evidence/release/df244-evidence.json",
@@ -119,10 +117,10 @@
     }
   ],
   "missingEvidence": [
-    "p0_not_live_verified:DF-205,DF-233,DF-241,DF-242,DF-243,DF-245,DF-246,DF-247",
+    "p0_not_live_verified:DF-205,DF-233,DF-241,DF-242,DF-245,DF-246,DF-247",
     "live_benchmark_shortfall:DF-242",
     "golden_path_lineage_missing:DF-241",
-    "packaged_live_ticket_blocked:DF-205,DF-233,DF-241,DF-242,DF-243,DF-245,DF-246,DF-247",
+    "packaged_live_ticket_blocked:DF-205,DF-233,DF-241,DF-242,DF-245,DF-246,DF-247",
     "release_decision_blocked:blocked"
   ]
 }

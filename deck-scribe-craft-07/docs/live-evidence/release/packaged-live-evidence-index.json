@@ -1,7 +1,7 @@
 {
   "path": "docs/live-evidence/release/packaged-live-evidence-index.json",
   "packageArchiveSha256": "bdb64f343b721a435889377d6449d18d537fe27a11ac41be343c481c483688ee",
-  "generatedAt": "2026-06-22T07:00:10.409Z",
+  "generatedAt": "2026-06-22T04:46:00Z",
   "entries": [
     {
       "ticketId": "DF-205",
@@ -51,11 +51,11 @@
     {
       "ticketId": "DF-243",
       "issueNumber": 153,
-      "status": "blocked",
-      "validationKind": "blocked",
+      "status": "ready",
+      "validationKind": "ready",
       "packageArchiveSha256": "bdb64f343b721a435889377d6449d18d537fe27a11ac41be343c481c483688ee",
       "artifactPath": "docs/live-evidence/release/df243-evidence.json",
-      "artifactSha256": "3c66dfe1b3f4e18d65c146d35ec01867f7bbad17bc1a28b4140567a7f6cbc52b"
+      "artifactSha256": "b62ab935376eb09546a51b5d5916e16984dff3aeedca002136e13140606694a5"
     },
     {
       "ticketId": "DF-244",
@@ -91,7 +91,7 @@
       "validationKind": "blocked",
       "packageArchiveSha256": "bdb64f343b721a435889377d6449d18d537fe27a11ac41be343c481c483688ee",
       "artifactPath": "docs/live-evidence/release/df247-evidence.json",
-      "artifactSha256": "fbd872ed73731ef986c47f540f41da29073858ee55f5034b3901683233a30114"
+      "artifactSha256": "f2bef6ed2e18f019991dfff57a3486d2407e3ed6feb533a63e2fccd9bce36916"
     }
   ]
 }

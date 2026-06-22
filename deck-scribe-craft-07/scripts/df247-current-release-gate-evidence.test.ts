@@ -22,7 +22,7 @@ describe("current DF-247 release gate evidence", () => {
     // Given / When / Then
     expect(CURRENT_DF247_OPEN_P0_TICKET_IDS).toEqual(
       PACKAGED_LIVE_EVIDENCE_TICKET_IDS.filter(
-        (ticketId) => ticketId !== "DF-235" && ticketId !== "DF-244",
+        (ticketId) => ticketId !== "DF-235" && ticketId !== "DF-243" && ticketId !== "DF-244",
       ),
     );
   });
@@ -91,7 +91,11 @@ describe("current DF-247 release gate evidence", () => {
   });
 });
 
-const READY_PACKAGED_TICKET_IDS = new Set<PackagedLiveEvidenceTicketId>(["DF-235", "DF-244"]);
+const READY_PACKAGED_TICKET_IDS = new Set<PackagedLiveEvidenceTicketId>([
+  "DF-235",
+  "DF-243",
+  "DF-244",
+]);
 
 function blockedPackagedIndex(): PackagedLiveEvidenceIndex {
   return {

@@ -97,7 +97,6 @@ describe("packaged live evidence index artifact", () => {
       "DF-233",
       "DF-241",
       "DF-242",
-      "DF-243",
       "DF-245",
       "DF-246",
       "DF-247",
@@ -106,7 +105,7 @@ describe("packaged live evidence index artifact", () => {
     expect(mismatchedPackageHashes).toEqual([]);
     expect(mismatchedEvidenceRefs).toEqual([]);
     expect(mismatchedHandoffRefs).toEqual([]);
-    expect(summary.includes("Ready tickets: 2 of 10")).toBe(true);
+    expect(summary.includes("Ready tickets: 3 of 10")).toBe(true);
   });
 });
 

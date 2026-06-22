@@ -4,6 +4,26 @@ Date: 2026-06-19
 
 Scope: tracked GitHub issues `#126` through `#157` (`DF-200` through `DF-247`).
 
+## 2026-06-22 KST DF-243 Ready Packaged Interruption Closure
+
+DF-243 ready update: `docs/live-evidence/release/df243-evidence.json` is now
+`ready`. The ready closure artifact at
+`docs/live-evidence/release/df243-packaged-interruption-closure-20260622.json`
+combines the observed live text-turn and source-fetch interruption snapshots
+from `docs/live-evidence/lane-h-20260621/` with product-writer image
+partial-resume, app-storage cancel snapshot, cancel signal, interrupted
+approval gate, and interrupted export gate artifacts copied into the canonical
+`docs/live-evidence/codex-image/df243-packaged-interruption-closure-20260622/`
+bundle. `scripts/produce-df243-packaged-interruption-closure-evidence.ts`
+reproduces the bundle, and
+`scripts/df243-packaged-interruption-bundle.test.ts` verifies the merged matrix
+evaluates ready.
+
+DF-247 update: `docs/live-evidence/release/packaged-live-evidence-index.json`
+now reports 3 of 10 ready entries: DF-235, DF-243, and DF-244. DF-247 remains
+blocked by DF-205, DF-233, DF-241, DF-242, DF-245, DF-246, and DF-247 plus the
+benchmark, Golden Path, and release-decision gates.
+
 ## 2026-06-22 KST Packaged Evidence Index Covers All Open P0s
 
 DF-205 local update: packaged auth and secret lifecycle evidence now has a
@@ -43,17 +63,11 @@ image provider jobs, and ready product queue validation before returning
 packaged Codex OAuth image run with exported queue evidence for all three
 scenarios.
 
-DF-243 local update: packaged interruption evidence now has a runnable closure
-intake at `scripts/produce-df243-interruption-closure-evidence.ts`, with schema
-parsing in `scripts/df243-interruption-closure-evidence-schema.ts` and
-validator-backed closure assembly in
-`scripts/df243-interruption-closure-evidence-producer.ts`. The package script
-`bun run evidence:df243:produce -- <interruption-input.json> [output.json]`
-derives the required image partial-resume, app cancel snapshot, cancel signal,
-approval gate, and export gate artifact paths from a real packaged interruption
-matrix, then runs the existing DF-243 closure validator. This still does not
-close DF-243; the missing input is the actual packaged app interruption matrix
-and copied `docs/live-evidence/...` artifact bundle.
+DF-243 ready update: the previous closure intake has been superseded by
+`scripts/produce-df243-packaged-interruption-closure-evidence.ts`, which
+combines observed text/fetch interruption evidence with product-writer
+image/cancel/gate artifacts copied into `docs/live-evidence/...`; the current
+DF-243 release evidence is now `ready`.
 
 DF-235 ready update: packaged Review-stage evidence now has a runnable intake at
 `scripts/produce-df235-packaged-review-evidence.ts`, with schema parsing in
@@ -115,17 +129,17 @@ evidence.
 DF-247 local update: the Packaged Live evidence index now requires blocked or
 ready JSON artifacts for all ten tracked release evidence tickets: DF-205,
 DF-233, DF-235, DF-241, DF-242, DF-243, DF-244, DF-245, DF-246, and DF-247.
-DF-235 and DF-244 are ready; the remaining blocked entries are DF-205
+DF-235, DF-243, and DF-244 are ready; the remaining blocked entries are DF-205
 auth/secret lifecycle, DF-233 image queue/retry/cancel/resume, DF-241 Golden
-Path, DF-242 benchmark, DF-243 interruption, DF-245 packaging, DF-246 manual QA,
-and DF-247 release gate.
+Path, DF-242 benchmark, DF-245 packaging, DF-246 manual QA, and DF-247 release
+gate.
 
 `src/lib/packaged-live-evidence-index.test.ts` now proves that a six-entry index
 which omits tracked DF-205/233/235/244 tickets blocks with
 `missing_packaged_live_ticket`, and
 `src/lib/packaged-live-evidence-index-artifact.test.ts` verifies all ten
-committed entry SHA-256 digests. The current index reports 2 of 10 ready
-entries and remains blocked until the remaining eight packaged/clean-machine/
+committed entry SHA-256 digests. The current index reports 3 of 10 ready
+entries and remains blocked until the remaining seven packaged/clean-machine/
 manual-QA release evidence artifacts are genuinely produced.
 
 DF-247 local update: the shared Packaged Live evidence index now has a
@@ -134,7 +148,7 @@ docs/live-evidence/release/packaged-live-evidence-index.json [generatedAt]`.
 It reads the ten canonical child evidence JSON artifacts, recalculates each
 entry SHA-256 digest, preserves each child artifact's `status`,
 `validationKind`, issue number, and package hash, and writes the canonical
-ticket order. The current regenerated index still blocks because eight child
+ticket order. The current regenerated index still blocks because seven child
 artifacts remain blocked, but future real evidence can now update DF-247 without
 manual hash editing.
 
@@ -197,9 +211,9 @@ real OAuth smoke at
 completed App Server thread `019eed0f-b516-7cc1-9b4d-f53ca1ec1d7c`, turn
 `019eed0f-b799-7f91-98d7-67617abcb758`, in `254542ms`, wrote ready DF-233 queue
 evidence plus DF-243 app-storage recovery and cancel-signal JSON, and confirmed
-no slide image artifact was stored. DF-233 and DF-243 remain open until packaged
-app evidence captures the corresponding retry/cancel/resume and full
-interruption-matrix artifacts.
+no slide image artifact was stored. DF-233 remains open until packaged app
+evidence captures the corresponding retry/cancel/resume artifacts; DF-243 now
+retains this cancellation lineage in its ready closure bundle.
 
 DF-245 local update: `src/lib/df245-generated-evidence-artifact.test.ts` now
 reads the three committed DF-245 generator outputs, checks that package recheck,
