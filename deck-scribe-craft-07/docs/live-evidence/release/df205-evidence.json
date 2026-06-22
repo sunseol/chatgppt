@@ -3,9 +3,9 @@
   "issueNumber": 131,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-21T21:11:39Z",
+  "generatedAt": "2026-06-22T00:40:00Z",
   "packageArchiveSha256": "0354291e6c6ac847335ba5095e088d1122a3bf93937589021edabb3e4fbcc913",
-  "summary": "Authenticated Codex runtime, local secret-lifecycle guards including wrong-service disconnect blocking, and stale post-logout image gate blocking exist, but release evidence still lacks a clean-account login, logout/relogin, and packaged keychain lifecycle run.",
+  "summary": "Authenticated Codex runtime, local secret-lifecycle guards including wrong-service disconnect blocking, stale post-logout image gate blocking, and a current-package configured secret/auth marker scan exist. The active dry-run archive and native app scan clean for the configured Codex/OpenAI secret, auth.json, local workspace, and long bearer token markers, but release evidence still lacks a clean-account login, logout/relogin, and packaged keychain lifecycle run.",
   "currentEvidence": [
     {
       "path": "docs/live-auth-secret-lifecycle.md",
@@ -35,6 +35,11 @@
     {
       "path": "src/lib/live-secret-material-candidates.ts",
       "kind": "secret material redaction and candidate detection"
+    },
+    {
+      "path": "docs/live-evidence/release/df245-package-recheck-20260622.json",
+      "sha256": "db4249cea9e39d79a05b9ecb9d3d0a8828b87f630da8dc5e3a37e761850c693a",
+      "kind": "current-package secret and auth marker scan"
     }
   ],
   "missingEvidence": [
@@ -42,6 +47,6 @@
     "logout/relogin QA proving active live jobs cancel and provider actions stay locked until login is restored",
     "packaged app Codex OAuth image capability confirmation",
     "packaged OS keychain write/read/delete lifecycle proof for any installed API-key fallback",
-    "persisted secret leak scan from the same packaged run"
+    "clean-machine persisted secret leak scan from the signed packaged run"
   ]
 }

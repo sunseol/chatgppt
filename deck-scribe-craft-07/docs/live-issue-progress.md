@@ -1627,3 +1627,14 @@ for the configured mock/secret/local-path markers, while `security
 find-identity`, `codesign`, and `spctl` still prove the release remains blocked
 without Developer ID signing, notarization, stapling, Gatekeeper acceptance,
 and clean macOS account evidence.
+
+DF-205 current package secret-scan update: the same current-package recheck now
+backs `docs/live-evidence/release/df205-evidence.json` as DF-205 auth/secret
+lifecycle evidence. It proves the active dry-run archive
+`sha256:0354291e6c6ac847335ba5095e088d1122a3bf93937589021edabb3e4fbcc913`
+and native app scan clean for configured Codex/OpenAI secret markers, bundled
+`auth.json`, local workspace paths, assigned session/API-key patterns, and long
+Bearer tokens. This removes the stale-current-package scan gap in DF-205
+release evidence, but DF-205 remains open until a clean account captures fresh
+login, destructive logout/relogin, post-logout provider lock/cancel state,
+packaged keychain lifecycle, and clean-machine secret leak evidence.
