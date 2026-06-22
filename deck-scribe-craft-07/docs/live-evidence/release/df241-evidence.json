@@ -3,9 +3,9 @@
   "issueNumber": 151,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-22T00:43:56Z",
+  "generatedAt": "2026-06-22T02:42:39Z",
   "packageArchiveSha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
-  "summary": "Local Golden Path validators now require regeneration-marked image evidence with canonical input lineage to an initial live image, and the current candidate collector assembles existing live text, source, image, regeneration, and export artifacts into a blocked DF-241/DF-242 evidence bundle. No signed packaged production Golden Path has completed from login through export.",
+  "summary": "Local Golden Path validators now require regeneration-marked image evidence with canonical input lineage to an initial live image, and the current candidate collector assembles existing live text, source, image, regeneration, and export artifacts into a blocked DF-241/DF-242 evidence bundle with direct artifact regression coverage. No signed packaged production Golden Path has completed from login through export.",
   "currentEvidence": [
     {
       "path": "docs/live-golden-path-e2e.md",
@@ -45,6 +45,10 @@
     {
       "path": "scripts/df241-df242-candidate-evidence-support.test.ts",
       "kind": "candidate collector regression coverage"
+    },
+    {
+      "path": "src/lib/df241-df242-candidate-evidence-artifact.test.ts",
+      "kind": "DF-241/DF-242 blocked candidate artifact regression coverage"
     }
   ],
   "missingEvidence": [

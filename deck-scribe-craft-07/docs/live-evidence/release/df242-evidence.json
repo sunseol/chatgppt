@@ -3,9 +3,9 @@
   "issueNumber": 152,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-22T00:43:56Z",
+  "generatedAt": "2026-06-22T02:42:39Z",
   "packageArchiveSha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
-  "summary": "The live benchmark validator is implemented and now rejects benchmark output bundle paths borrowed from another DF-242 scenario. The current DF-241/DF-242 candidate collector proves existing live artifacts can be assembled into a blocked Golden Path candidate, but there are still zero packaged benchmark output bundles and zero passed live benchmarks.",
+  "summary": "The live benchmark validator is implemented and now rejects benchmark output bundle paths borrowed from another DF-242 scenario. The current DF-241/DF-242 candidate collector proves existing live artifacts can be assembled into a blocked Golden Path candidate with direct artifact regression coverage, but there are still zero packaged benchmark output bundles and zero passed live benchmarks.",
   "currentEvidence": [
     {
       "path": "docs/live-benchmark-report.md",
@@ -43,6 +43,10 @@
     {
       "path": "scripts/df241-df242-candidate-evidence-support.test.ts",
       "kind": "candidate collector regression coverage"
+    },
+    {
+      "path": "src/lib/df241-df242-candidate-evidence-artifact.test.ts",
+      "kind": "DF-241/DF-242 blocked candidate artifact regression coverage"
     }
   ],
   "missingEvidence": [

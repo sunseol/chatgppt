@@ -1676,6 +1676,15 @@ guards against treating local product-run smoke artifacts as packaged UI QA, so
 DF-235 remains blocked until the packaged Review-stage approval and failure
 preservation runs are captured from the app surface.
 
+DF-241/DF-242 candidate artifact update:
+`src/lib/df241-df242-candidate-evidence-artifact.test.ts` now reads the committed
+current-candidate evidence bundle and both release artifacts together. It verifies
+the candidate is tied to the active dry-run package hash, still reports the
+expected Golden Path blocker codes, still has zero passed live benchmarks, and
+keeps the packaged Golden Path/benchmark missing evidence explicit. This prevents
+the assembled local candidate from being mistaken for a packaged Golden Path or
+benchmark pass.
+
 DF-245 current package recheck update:
 `scripts/generate-df245-package-recheck.mjs` records the active dry-run package,
 unsigned DMG, content-scan result, and signing/Gatekeeper blockers at
