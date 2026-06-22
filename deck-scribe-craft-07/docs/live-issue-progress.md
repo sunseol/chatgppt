@@ -67,6 +67,17 @@ still does not close DF-244; the missing input is the actual packaged app usage
 bundle with persisted confirmation JSON plus screenshot or recording proof for
 latency, retry count, image count, and confirmation display.
 
+DF-246 local update: packaged manual QA session evidence now has a runnable
+intake at `scripts/produce-df246-packaged-manual-qa-evidence.ts`, with schema
+parsing in `scripts/df246-packaged-manual-qa-evidence-schema.ts` and
+validator-backed output in
+`scripts/df246-packaged-manual-qa-evidence-producer.ts`. The package script
+`bun run evidence:df246:produce -- <manual-qa-input.json> [output.json]` runs
+the existing `evaluateLiveManualQaEvidence` checks against a captured session
+bundle and keeps package-hash drift or developer self-test sessions blocked.
+This still does not close DF-246; the missing input is a real non-developer
+packaged-app manual QA session bundle.
+
 DF-241 local update: Golden Path regeneration image evidence now requires both
 a regeneration marker and input lineage to one of the initial live image
 artifacts. A marker-only unrelated regenerated image can no longer satisfy
