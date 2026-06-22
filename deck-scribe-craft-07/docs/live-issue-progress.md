@@ -18,6 +18,18 @@ Golden Path or benchmark validators fail. This still does not close DF-241 or
 DF-242; the missing input is the actual packaged app run bundle with signed
 Golden Path evidence and five benchmark output bundles.
 
+DF-243 local update: packaged interruption evidence now has a runnable closure
+intake at `scripts/produce-df243-interruption-closure-evidence.ts`, with schema
+parsing in `scripts/df243-interruption-closure-evidence-schema.ts` and
+validator-backed closure assembly in
+`scripts/df243-interruption-closure-evidence-producer.ts`. The package script
+`bun run evidence:df243:produce -- <interruption-input.json> [output.json]`
+derives the required image partial-resume, app cancel snapshot, cancel signal,
+approval gate, and export gate artifact paths from a real packaged interruption
+matrix, then runs the existing DF-243 closure validator. This still does not
+close DF-243; the missing input is the actual packaged app interruption matrix
+and copied `docs/live-evidence/...` artifact bundle.
+
 DF-241 local update: Golden Path regeneration image evidence now requires both
 a regeneration marker and input lineage to one of the initial live image
 artifacts. A marker-only unrelated regenerated image can no longer satisfy
