@@ -6,6 +6,18 @@ Scope: tracked GitHub issues `#126` through `#157` (`DF-200` through `DF-247`).
 
 ## 2026-06-22 KST Packaged Evidence Index Covers All Open P0s
 
+DF-205 local update: packaged auth and secret lifecycle evidence now has a
+runnable intake at `scripts/produce-df205-packaged-auth-secret-evidence.ts`,
+with schema parsing in `scripts/df205-packaged-auth-secret-evidence-schema.ts`
+and package/session consistency checks in
+`scripts/df205-packaged-auth-secret-evidence-producer.ts`. The package script
+`bun run evidence:df205:produce -- <auth-secret-input.json> [output.json]`
+requires clean or unauthenticated-account login evidence, logout/relogin lock
+proof, packaged Codex OAuth image capability proof, optional OS keychain
+lifecycle proof for any installed API-key fallback, and a clean packaged secret
+scan before returning `ready`. This still does not close DF-205; the missing
+input is the real clean-account packaged auth session bundle.
+
 DF-241 / DF-242 local update: packaged Golden Path and benchmark evidence now
 has a runnable ingestion surface at
 `scripts/produce-df241-df242-packaged-evidence.ts`, with schema parsing in
