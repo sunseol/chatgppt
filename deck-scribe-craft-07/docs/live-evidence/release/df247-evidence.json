@@ -3,58 +3,129 @@
   "issueNumber": 157,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-22T02:25:38Z",
+  "generatedAt": "2026-06-22T10:07:00.000Z",
   "packageArchiveSha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
-  "summary": "The final release gate remains blocked because upstream packaged evidence entries are blocked, DF-245 now has persisted release-trust blocker output rather than passed trust evidence, DF-246 only has current-package manual QA handoff evidence rather than a non-developer session, and the release decision is not approved; borrowed release decision payloads are also blocked before readiness.",
+  "packagedLiveEvidenceIndexPath": "docs/live-evidence/release/packaged-live-evidence-index.json",
+  "releaseGateResult": {
+    "kind": "blocked",
+    "passedBenchmarkCount": 0,
+    "blockers": [
+      {
+        "code": "p0_not_live_verified",
+        "message": "Every P0 Live ticket must be Verified Live before release.",
+        "refs": [
+          "DF-205",
+          "DF-233",
+          "DF-235",
+          "DF-241",
+          "DF-242",
+          "DF-243",
+          "DF-245",
+          "DF-246",
+          "DF-247"
+        ]
+      },
+      {
+        "code": "live_benchmark_shortfall",
+        "message": "At least four of five Live benchmarks must pass.",
+        "refs": [
+          "DF-242"
+        ]
+      },
+      {
+        "code": "golden_path_lineage_missing",
+        "message": "Golden Path lineage evidence is required.",
+        "refs": [
+          "DF-241"
+        ]
+      },
+      {
+        "code": "packaged_live_ticket_blocked",
+        "message": "Packaged Live evidence index cannot be ready while any ticket entry is blocked.",
+        "refs": [
+          "DF-205",
+          "DF-233",
+          "DF-235",
+          "DF-241",
+          "DF-242",
+          "DF-243",
+          "DF-244",
+          "DF-245",
+          "DF-246",
+          "DF-247"
+        ]
+      },
+      {
+        "code": "release_decision_blocked",
+        "message": "Release decision must explicitly approve the Live Initial Version.",
+        "refs": [
+          "blocked"
+        ]
+      }
+    ]
+  },
+  "summary": "DF-247 release gate remains blocked by 5 blocker(s).",
   "currentEvidence": [
     {
       "path": "docs/live-release-decision.md",
-      "kind": "canonical blocked release decision"
+      "kind": "canonical release decision",
+      "sha256": "388dee24f3414a169c25fe65d3adf5d826c2025fc3796c558eed20791f034c4b"
+    },
+    {
+      "path": "docs/live-evidence/release/df205-evidence.json",
+      "kind": "DF-205 packaged auth and secret evidence",
+      "sha256": "8e34a90995fa1b2d0935d2903e900b966964adc142c2adc08ea25e3c162fc801"
+    },
+    {
+      "path": "docs/live-evidence/release/df233-evidence.json",
+      "kind": "DF-233 packaged queue controls evidence",
+      "sha256": "1cfff71c63d13919f31ab19113305a47d158b3becac70ec13e7f9a92bda37abb"
+    },
+    {
+      "path": "docs/live-evidence/release/df235-evidence.json",
+      "kind": "DF-235 packaged review evidence",
+      "sha256": "3139ac5498f73f4c20359956a70fe8a1d4088aad4ea30387c2d4cfd71bf491ec"
+    },
+    {
+      "path": "docs/live-evidence/release/df241-evidence.json",
+      "kind": "DF-241 Golden Path packaged evidence",
+      "sha256": "d92f04bbac3f9fc02545c72a78ceafb4f1381f13694348b6964fb7a926aec9ff"
+    },
+    {
+      "path": "docs/live-evidence/release/df242-evidence.json",
+      "kind": "DF-242 benchmark packaged evidence",
+      "sha256": "268656b1e9c6f2965a84db906332cbb6dc74fe1882c8705d7b35d40157c4f2bc"
+    },
+    {
+      "path": "docs/live-evidence/release/df243-evidence.json",
+      "kind": "DF-243 interruption closure evidence",
+      "sha256": "7d8ff875faf32541a27fd303e83e66895cbca6e1a246ffea6b42b06d9aa4b4e7"
+    },
+    {
+      "path": "docs/live-evidence/release/df244-evidence.json",
+      "kind": "DF-244 packaged usage evidence",
+      "sha256": "58f0c6fae08e31203b23d6362f2f3b1a6393a8aa4da00440dbbb1f2b95fdc6e9"
+    },
+    {
+      "path": "docs/live-evidence/release/df245-evidence.json",
+      "kind": "DF-245 production packaging evidence",
+      "sha256": "111a3d346269e8bff75eb02afd1c9099ab2bf3e91a7d79f82162543809a81244"
+    },
+    {
+      "path": "docs/live-evidence/release/df246-evidence.json",
+      "kind": "DF-246 packaged manual QA evidence",
+      "sha256": "b15d0cc140cc2c01176c6bbae4d5ef3d7353b6159397974b50c034493e30543e"
     },
     {
       "path": "docs/live-evidence/release/packaged-live-evidence-index.json",
       "kind": "shared packaged evidence index"
-    },
-    {
-      "path": "docs/live-evidence/release/df246-evidence.json",
-      "sha256": "b15d0cc140cc2c01176c6bbae4d5ef3d7353b6159397974b50c034493e30543e",
-      "kind": "DF-246 current-package manual QA handoff evidence, still blocked without non-developer session"
-    },
-    {
-      "path": "docs/live-evidence/release/df245-package-recheck-20260622.json",
-      "sha256": "7b9adb24eca8a6f27bedb2adbe1c5221d1ae9c1470a5e420589e391ddaf73a47",
-      "kind": "current package and signing blocker recheck"
-    },
-    {
-      "path": "docs/live-evidence/release/df245-evidence.json",
-      "sha256": "111a3d346269e8bff75eb02afd1c9099ab2bf3e91a7d79f82162543809a81244",
-      "kind": "blocked DF-245 packaging evidence with current release-trust blocker bundle reference"
-    },
-    {
-      "path": "docs/live-evidence/release/df245-release-trust-codesign-notarytool-stapler-spctl-20260622.json",
-      "sha256": "39abe3e0d644cde5797894509909f49eb8224a918ac70baaec807a0eb5361fa7",
-      "kind": "persisted blocked release-trust command bundle for DF-245 final-gate blocker traceability"
-    },
-    {
-      "path": "src/lib/packaged-live-evidence-index.ts",
-      "kind": "packaged evidence index validator with ticket-token path binding"
-    },
-    {
-      "path": "src/lib/live-release-decision-gate.ts",
-      "kind": "release decision payload validator"
-    },
-    {
-      "path": "src/lib/live-release-gate.test.ts",
-      "kind": "borrowed release decision payload regression coverage"
     }
   ],
   "missingEvidence": [
-    "all P0 tickets verified live",
-    "ready DF-241 Golden Path evidence",
-    "ready DF-242 benchmark evidence",
-    "ready DF-243 interruption evidence",
-    "ready DF-245 packaging trust and clean-machine evidence",
-    "ready DF-246 non-developer manual QA evidence",
-    "approved release decision in docs/live-release-decision.md"
+    "p0_not_live_verified:DF-205,DF-233,DF-235,DF-241,DF-242,DF-243,DF-245,DF-246,DF-247",
+    "live_benchmark_shortfall:DF-242",
+    "golden_path_lineage_missing:DF-241",
+    "packaged_live_ticket_blocked:DF-205,DF-233,DF-235,DF-241,DF-242,DF-243,DF-244,DF-245,DF-246,DF-247",
+    "release_decision_blocked:blocked"
   ]
 }

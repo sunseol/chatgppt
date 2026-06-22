@@ -148,6 +148,15 @@ refs in `missingEvidence`. This still does not close DF-247; the missing input i
 the actual approved release-gate bundle after all upstream packaged evidence is
 ready.
 
+DF-247 local update: the current blocked release-gate artifact is now
+regenerable from the committed Packaged Live index via
+`bun run evidence:df247:current --
+docs/live-evidence/release/df247-evidence.json [generatedAt]`. The generator
+marks the still-open P0 release tickets as `live_partial`, carries the exact
+release-gate blocker codes/refs into `missingEvidence`, hashes the upstream
+child evidence files, and deliberately leaves the packaged index reference
+without a SHA-256 digest to avoid a circular DF-247/index hash dependency.
+
 Current package basis for this index: `bun run package:dry-run` produced
 `dist/deckforge-macos-dry-run.tgz` with SHA-256
 `e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6`,

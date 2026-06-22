@@ -129,6 +129,7 @@ const Df247ReleaseGateEvidenceInputSchema = z
   .strict();
 
 export type Df247ReleaseGateEvidenceInput = z.infer<typeof Df247ReleaseGateEvidenceInputSchema>;
+export type Df247PackagedLiveEvidenceIndex = z.infer<typeof PackagedLiveEvidenceIndexSchema>;
 export type Df247ReleaseGateEvidenceReference = z.infer<typeof CurrentEvidenceReferenceSchema>;
 
 export class Df247ReleaseGateEvidenceInputError extends Error {
@@ -149,9 +150,32 @@ export function parseDf247ReleaseGateEvidenceInput(value: unknown): Df247Release
   );
 }
 
+export function parseDf247PackagedLiveEvidenceIndex(
+  value: unknown,
+): Df247PackagedLiveEvidenceIndex {
+  const parsed = PackagedLiveEvidenceIndexSchema.safeParse(value);
+  if (parsed.success) return parsed.data;
+  throw new Df247ReleaseGateEvidenceInputError(
+    parsed.error.issues.map((issue) => `${issue.path.join(".") || "input"}: ${issue.message}`),
+  );
+}
+
 export function parseDf247ReleaseGateEvidenceJson(raw: string): Df247ReleaseGateEvidenceInput {
   try {
     return parseDf247ReleaseGateEvidenceInput(JSON.parse(raw));
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      throw new Df247ReleaseGateEvidenceInputError([error.message]);
+    }
+    throw error;
+  }
+}
+
+export function parseDf247PackagedLiveEvidenceIndexJson(
+  raw: string,
+): Df247PackagedLiveEvidenceIndex {
+  try {
+    return parseDf247PackagedLiveEvidenceIndex(JSON.parse(raw));
   } catch (error) {
     if (error instanceof SyntaxError) {
       throw new Df247ReleaseGateEvidenceInputError([error.message]);
