@@ -5,7 +5,7 @@
   "validationKind": "blocked",
   "generatedAt": "2026-06-22T03:07:35Z",
   "packageArchiveSha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
-  "summary": "The interruption closure manifest materializes the observed text-turn and fetch-shutdown recovery snapshots. Product smokes now prove deterministic cancel, image partial-resume, interrupted approval/export gate writers, and a latest real Codex OAuth in-flight image cancellation path that rejects late App Server image output before storage while writing separate app-storage recovery and cancel-signal JSON, with direct artifact regression coverage for that no-storage cancellation bundle. The release remains blocked until packaged image partial-resume, packaged cancel, and interrupted approval/export artifacts are captured from the app surface and copied into the canonical evidence bundle.",
+  "summary": "The interruption closure manifest materializes the observed text-turn and fetch-shutdown recovery snapshots. Product smokes now prove deterministic cancel, image partial-resume, interrupted approval/export gate writers, and a latest real Codex OAuth in-flight image cancellation path that rejects late App Server image output before storage while writing separate app-storage recovery and cancel-signal JSON, with direct artifact regression coverage for that no-storage cancellation bundle. The product smoke artifacts are reproducibly ingested into a blocked closure candidate that preserves the remaining docs-bundle gap. The release remains blocked until packaged image partial-resume, packaged cancel, and interrupted approval/export artifacts are captured from the app surface and copied into the canonical evidence bundle.",
   "currentEvidence": [
     {
       "path": "docs/live-evidence/lane-h-20260621/df243-closure-evidence.json",
@@ -48,6 +48,16 @@
       "kind": "ready resume and gate scenario matrix from product writer smoke"
     },
     {
+      "path": "docs/live-evidence/release/df243-product-smoke-interruption-matrix-candidate-20260622.json",
+      "sha256": "d93ac9ccca5a619045afcaec43698a210d0b12a68f91bc21d72ffccaf452715d",
+      "kind": "composed product smoke interruption matrix candidate"
+    },
+    {
+      "path": "docs/live-evidence/release/df243-product-smoke-interruption-closure-candidate-20260622.json",
+      "sha256": "b40187d3fc3fa8bc8e318f1d7e38b9de721682b353025adb439024eb39263bdc",
+      "kind": "blocked closure candidate generated from product interruption smokes"
+    },
+    {
       "path": "projects/df243_cancel_product_smoke_20260622/live-evidence/df243-cancel-job-recovery-snapshot-cancel_product_run_20260622.json",
       "sha256": "8adae7e97de4ae38d74e1ad62d2e4790a8542ca38aee0a03b520e96afd3ed942",
       "kind": "product-written cancel-job app-storage recovery snapshot"
@@ -84,6 +94,18 @@
     {
       "path": "scripts/run-df243-resume-gate-product-evidence-smoke.ts",
       "kind": "reproducible product image partial-resume and interrupted gate evidence smoke"
+    },
+    {
+      "path": "scripts/df243-product-smoke-interruption-closure-ingestion.ts",
+      "kind": "product interruption smoke to closure candidate ingestion helper"
+    },
+    {
+      "path": "scripts/produce-df243-product-smoke-interruption-closure-candidate.ts",
+      "kind": "reproducible blocked closure candidate generator for product interruption smokes"
+    },
+    {
+      "path": "scripts/df243-product-smoke-interruption-closure-ingestion.test.ts",
+      "kind": "product interruption smoke ingestion regression coverage"
     },
     {
       "path": "docs/live-interruption-matrix.md",

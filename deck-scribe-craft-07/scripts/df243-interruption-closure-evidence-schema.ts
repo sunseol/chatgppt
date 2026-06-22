@@ -49,6 +49,7 @@ const InterruptionClosureInputSchema = z
   .strict();
 
 export type Df243InterruptionClosureInput = z.infer<typeof InterruptionClosureInputSchema>;
+export type Df243InterruptionMatrix = z.infer<typeof InterruptionMatrixSchema>;
 
 export class Df243InterruptionClosureInputError extends Error {
   readonly issues: readonly string[];
@@ -68,9 +69,28 @@ export function parseDf243InterruptionClosureInput(value: unknown): Df243Interru
   );
 }
 
+export function parseDf243InterruptionMatrix(value: unknown): Df243InterruptionMatrix {
+  const parsed = InterruptionMatrixSchema.safeParse(value);
+  if (parsed.success) return parsed.data;
+  throw new Df243InterruptionClosureInputError(
+    parsed.error.issues.map((issue) => `${issue.path.join(".") || "matrix"}: ${issue.message}`),
+  );
+}
+
 export function parseDf243InterruptionClosureJson(raw: string): Df243InterruptionClosureInput {
   try {
     return parseDf243InterruptionClosureInput(JSON.parse(raw));
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      throw new Df243InterruptionClosureInputError([error.message]);
+    }
+    throw error;
+  }
+}
+
+export function parseDf243InterruptionMatrixJson(raw: string): Df243InterruptionMatrix {
+  try {
+    return parseDf243InterruptionMatrix(JSON.parse(raw));
   } catch (error) {
     if (error instanceof SyntaxError) {
       throw new Df243InterruptionClosureInputError([error.message]);
