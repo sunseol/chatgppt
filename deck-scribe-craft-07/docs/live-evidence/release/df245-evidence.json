@@ -3,9 +3,9 @@
   "issueNumber": 155,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-22T00:55:00Z",
+  "generatedAt": "2026-06-22T02:17:52Z",
   "packageArchiveSha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
-  "summary": "Current dry-run package and unsigned DMG artifacts were rechecked against the active package basis, scan clean locally for configured mock/secret/local-path markers, the dry-run launcher serves the app root plus packaged JS/CSS assets from a temporary HOME with HTTP 200, and release-trust command output is persisted as blocked evidence. Packaging evidence validates release-trust and clean-machine JSON payload shape. The DMG is still unsigned, not notarized, not stapled, and not accepted by Gatekeeper.",
+  "summary": "Current dry-run package and unsigned DMG artifacts were rechecked against the active package basis, scan clean locally for configured mock/secret/local-path markers, the dry-run launcher serves the app root plus packaged JS/CSS assets from a temporary HOME with HTTP 200, release-trust command output is persisted as blocked evidence, and generated DF-245 release artifacts now have direct regression coverage against the current dry-run package hash. The DMG is still unsigned, not notarized, not stapled, and not accepted by Gatekeeper.",
   "currentEvidence": [
     {
       "path": "dist/deckforge-macos-dry-run.tgz",
@@ -67,6 +67,10 @@
     {
       "path": "src/lib/production-packaging-test-fixtures.ts",
       "kind": "clean-machine step payload fixture with matching account identity"
+    },
+    {
+      "path": "src/lib/df245-generated-evidence-artifact.test.ts",
+      "kind": "generated DF-245 package, launch, and release-trust evidence artifact regression"
     }
   ],
   "missingEvidence": [

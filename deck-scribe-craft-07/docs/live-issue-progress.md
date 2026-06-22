@@ -76,6 +76,15 @@ no slide image artifact was stored. DF-233 and DF-243 remain open until packaged
 app evidence captures the corresponding retry/cancel/resume and full
 interruption-matrix artifacts.
 
+DF-245 local update: `src/lib/df245-generated-evidence-artifact.test.ts` now
+reads the three committed DF-245 generator outputs, checks that package recheck,
+dry-run launch smoke, and release-trust blocker evidence all reference the
+current dry-run archive SHA-256, verifies package content scans remain clean,
+and preserves the external signing/notary/Gatekeeper/clean-machine blockers as
+blocked evidence. This protects the evidence pipeline from hash drift but does
+not replace Developer ID signing, notarization, stapling, Gatekeeper acceptance,
+or clean-machine execution evidence.
+
 ## 2026-06-22 KST DF-246 Same-Session Manual QA Payload
 
 DF-246 local update: manual QA readiness now requires the persisted
