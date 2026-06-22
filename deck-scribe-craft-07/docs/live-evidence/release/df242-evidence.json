@@ -5,7 +5,7 @@
   "validationKind": "blocked",
   "generatedAt": "2026-06-22T02:42:39Z",
   "packageArchiveSha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
-  "summary": "The live benchmark validator is implemented and now rejects benchmark output bundle paths borrowed from another DF-242 scenario. The current DF-241/DF-242 candidate collector proves existing live artifacts can be assembled into a blocked Golden Path candidate with direct artifact regression coverage, but there are still zero packaged benchmark output bundles and zero passed live benchmarks.",
+  "summary": "The live benchmark validator is implemented and now rejects benchmark output bundle paths borrowed from another DF-242 scenario. The current DF-241/DF-242 candidate collector proves existing live artifacts can be assembled into a blocked Golden Path candidate with direct artifact regression coverage, and the same bundle now flows through the packaged-run producer as a blocked handoff artifact. There are still zero packaged benchmark output bundles and zero passed live benchmarks.",
   "currentEvidence": [
     {
       "path": "docs/live-benchmark-report.md",
@@ -37,8 +37,21 @@
       "kind": "blocked current-candidate benchmark basis with 0 of 5 passed live benchmarks"
     },
     {
+      "path": "docs/live-evidence/release/df241-df242-packaged-run-candidate-20260622.json",
+      "sha256": "1804f951d00c2bf4b2abba520f09e92c28c9a55d8e6f09ded1fb4de5fec28a44",
+      "kind": "blocked packaged-run handoff generated from the current candidate bundle"
+    },
+    {
       "path": "scripts/collect-df241-df242-candidate-evidence.ts",
       "kind": "reproducible candidate benchmark evidence collector"
+    },
+    {
+      "path": "scripts/produce-df241-df242-packaged-run-candidate.ts",
+      "kind": "reproducible packaged-run candidate generator"
+    },
+    {
+      "path": "scripts/produce-df241-df242-packaged-evidence.ts",
+      "kind": "packaged-run evidence producer CLI"
     },
     {
       "path": "scripts/df241-df242-candidate-evidence-support.test.ts",

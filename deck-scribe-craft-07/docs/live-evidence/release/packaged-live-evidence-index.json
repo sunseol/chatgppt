@@ -37,7 +37,7 @@
       "validationKind": "blocked",
       "packageArchiveSha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
       "artifactPath": "docs/live-evidence/release/df241-evidence.json",
-      "artifactSha256": "d92f04bbac3f9fc02545c72a78ceafb4f1381f13694348b6964fb7a926aec9ff"
+      "artifactSha256": "a5bf8fb52a0bcb3a8e36687d0bb73ae735f540a0e17551d631a107ae20601275"
     },
     {
       "ticketId": "DF-242",
@@ -46,7 +46,7 @@
       "validationKind": "blocked",
       "packageArchiveSha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
       "artifactPath": "docs/live-evidence/release/df242-evidence.json",
-      "artifactSha256": "268656b1e9c6f2965a84db906332cbb6dc74fe1882c8705d7b35d40157c4f2bc"
+      "artifactSha256": "43add1010fbded9b1f28ae2da91cc63ac671495cb6123d3f288f329d397c9647"
     },
     {
       "ticketId": "DF-243",
@@ -91,7 +91,7 @@
       "validationKind": "blocked",
       "packageArchiveSha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
       "artifactPath": "docs/live-evidence/release/df247-evidence.json",
-      "artifactSha256": "5227b89392b31ebdaceca6a87e5dc8ad5ba846f207d589c632f1da5b3a0a34e5"
+      "artifactSha256": "68ddd6d35bc5fd929414be882d16dff0aa1eccc554358af55bc1f0f036b02c58"
     }
   ]
 }

@@ -69,7 +69,7 @@
     {
       "path": "docs/live-release-decision.md",
       "kind": "canonical release decision",
-      "sha256": "7099c8800d36baf197664b2c53c199ea9036fbc78f5a7aef8d2e69b4a3e7600f"
+      "sha256": "c56ff93542914403cfb7b33175ec3a36acaf0f1f911a287e0c6f7ade923bedd7"
     },
     {
       "path": "docs/live-evidence/release/df205-evidence.json",
@@ -89,12 +89,12 @@
     {
       "path": "docs/live-evidence/release/df241-evidence.json",
       "kind": "DF-241 Golden Path packaged evidence",
-      "sha256": "d92f04bbac3f9fc02545c72a78ceafb4f1381f13694348b6964fb7a926aec9ff"
+      "sha256": "a5bf8fb52a0bcb3a8e36687d0bb73ae735f540a0e17551d631a107ae20601275"
     },
     {
       "path": "docs/live-evidence/release/df242-evidence.json",
       "kind": "DF-242 benchmark packaged evidence",
-      "sha256": "268656b1e9c6f2965a84db906332cbb6dc74fe1882c8705d7b35d40157c4f2bc"
+      "sha256": "43add1010fbded9b1f28ae2da91cc63ac671495cb6123d3f288f329d397c9647"
     },
     {
       "path": "docs/live-evidence/release/df243-evidence.json",

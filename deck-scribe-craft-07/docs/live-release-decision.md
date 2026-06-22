@@ -265,6 +265,10 @@ DF-242 benchmark bundle at the JSON boundary, evaluates them through the
 existing release validators, and emits `df241-df242-packaged-run-evidence`
 without synthesizing readiness from partial artifacts. Malformed or incomplete
 input fails before it can be recorded as release evidence.
+`scripts/produce-df241-df242-packaged-run-candidate.ts` materializes the current
+candidate through that same producer at
+`docs/live-evidence/release/df241-df242-packaged-run-candidate-20260622.json`,
+keeping the DF-241 and DF-242 blockers executable rather than prose-only.
 
 Release remains `Blocked`: DF-241 still lacks packaged login/title-edit,
 signed report, screenshots/recording, final validation bundle, and restart

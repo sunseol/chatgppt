@@ -5,7 +5,7 @@
   "validationKind": "blocked",
   "generatedAt": "2026-06-22T02:42:39Z",
   "packageArchiveSha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
-  "summary": "Local Golden Path validators now require regeneration-marked image evidence with canonical input lineage to an initial live image, and the current candidate collector assembles existing live text, source, image, regeneration, and export artifacts into a blocked DF-241/DF-242 evidence bundle with direct artifact regression coverage. No signed packaged production Golden Path has completed from login through export.",
+  "summary": "Local Golden Path validators now require regeneration-marked image evidence with canonical input lineage to an initial live image, and the current candidate collector assembles existing live text, source, image, regeneration, and export artifacts into a blocked DF-241/DF-242 evidence bundle with direct artifact regression coverage. The candidate is now also emitted through the packaged-run producer as a blocked handoff artifact. No signed packaged production Golden Path has completed from login through export.",
   "currentEvidence": [
     {
       "path": "docs/live-golden-path-e2e.md",
@@ -35,8 +35,21 @@
       "kind": "blocked current-candidate Golden Path bundle assembled from existing live artifacts"
     },
     {
+      "path": "docs/live-evidence/release/df241-df242-packaged-run-candidate-20260622.json",
+      "sha256": "1804f951d00c2bf4b2abba520f09e92c28c9a55d8e6f09ded1fb4de5fec28a44",
+      "kind": "blocked packaged-run handoff generated from the current candidate bundle"
+    },
+    {
       "path": "scripts/collect-df241-df242-candidate-evidence.ts",
       "kind": "reproducible candidate evidence collector"
+    },
+    {
+      "path": "scripts/produce-df241-df242-packaged-run-candidate.ts",
+      "kind": "reproducible packaged-run candidate generator"
+    },
+    {
+      "path": "scripts/produce-df241-df242-packaged-evidence.ts",
+      "kind": "packaged-run evidence producer CLI"
     },
     {
       "path": "scripts/df241-df242-candidate-evidence-support.ts",

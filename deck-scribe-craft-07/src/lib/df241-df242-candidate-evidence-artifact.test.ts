@@ -8,6 +8,8 @@ const TEST_PATH = "src/lib/df241-df242-candidate-evidence-artifact.test.ts";
 const DF241_EVIDENCE_PATH = "docs/live-evidence/release/df241-evidence.json";
 const DF242_EVIDENCE_PATH = "docs/live-evidence/release/df242-evidence.json";
 const CANDIDATE_PATH = "docs/live-evidence/release/df241-df242-candidate-20260622.json";
+const PACKAGED_RUN_CANDIDATE_PATH =
+  "docs/live-evidence/release/df241-df242-packaged-run-candidate-20260622.json";
 const SHA256_HEX = /^[a-f0-9]{64}$/;
 
 const ReleaseEvidenceSchema = z
@@ -68,6 +70,33 @@ const CandidateEvidenceSchema = z
   })
   .passthrough();
 
+const PackagedRunCandidateSchema = z
+  .object({
+    evidenceKind: z.literal("df241-df242-packaged-run-evidence"),
+    status: z.literal("blocked"),
+    packageArchiveSha256: z.string().regex(SHA256_HEX),
+    goldenPath: z
+      .object({
+        result: z.object({ kind: z.literal("blocked") }).passthrough(),
+        completedSteps: z.array(z.string().min(1)),
+        sourceCount: z.literal(3),
+        imageArtifactCount: z.literal(6),
+        textLineageCount: z.literal(5),
+      })
+      .passthrough(),
+    benchmark: z
+      .object({
+        result: z
+          .object({ kind: z.literal("blocked"), passedLiveCount: z.literal(0) })
+          .passthrough(),
+        scenarioCount: z.literal(5),
+        passedLiveCount: z.literal(0),
+      })
+      .passthrough(),
+    releaseBlockers: z.array(z.string().min(1)),
+  })
+  .passthrough();
+
 describe("DF-241 and DF-242 current candidate evidence artifact", () => {
   test("keeps the assembled live candidate blocked until packaged runs exist", () => {
     // Given
@@ -75,14 +104,21 @@ describe("DF-241 and DF-242 current candidate evidence artifact", () => {
     const df241 = readJson(DF241_EVIDENCE_PATH, ReleaseEvidenceSchema);
     const df242 = readJson(DF242_EVIDENCE_PATH, ReleaseEvidenceSchema);
     const candidate = readJson(CANDIDATE_PATH, CandidateEvidenceSchema);
+    const packagedRunCandidate = readJson(PACKAGED_RUN_CANDIDATE_PATH, PackagedRunCandidateSchema);
 
     // When
     const goldenPathIssueCodes = candidate.goldenPath.result.issues.map((issue) => issue.code);
     const benchmarkIssueCodes = candidate.benchmark.result.issues.map((issue) => issue.code);
-    const releaseRefs = [releaseRef(df241, CANDIDATE_PATH), releaseRef(df242, CANDIDATE_PATH)];
+    const releaseRefs = [
+      releaseRef(df241, CANDIDATE_PATH),
+      releaseRef(df241, PACKAGED_RUN_CANDIDATE_PATH),
+      releaseRef(df242, CANDIDATE_PATH),
+      releaseRef(df242, PACKAGED_RUN_CANDIDATE_PATH),
+    ];
 
     // Then
     expect(candidate.packageArchiveSha256).toBe(packageSha256);
+    expect(packagedRunCandidate.packageArchiveSha256).toBe(packageSha256);
     expect(df241.packageArchiveSha256).toBe(packageSha256);
     expect(df242.packageArchiveSha256).toBe(packageSha256);
     expect(df241.currentEvidence.some((reference) => reference.path === TEST_PATH)).toBe(true);
@@ -104,6 +140,10 @@ describe("DF-241 and DF-242 current candidate evidence artifact", () => {
         "df235_live_regeneration_lineage_20260622_image_slide_003_v2",
       ),
     ).toBe(true);
+    expect(packagedRunCandidate.releaseBlockers).toEqual([
+      "DF-241 golden path evidence is blocked",
+      "DF-242 benchmark evidence is blocked",
+    ]);
     expect(releaseRefs.flatMap(referenceDigestIssue)).toEqual([]);
     expect(df241.missingEvidence.includes("signed live_e2e_report.md")).toBe(true);
     expect(df242.missingEvidence.includes("five distinct packaged benchmark output bundles")).toBe(
