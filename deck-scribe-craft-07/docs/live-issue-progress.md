@@ -1689,3 +1689,17 @@ This proves the current dry-run package can serve the app root and local
 hydration assets in the developer worktree, but DF-245 remains open because this
 is still unsigned, unnotarized, not Gatekeeper-accepted, and not clean-machine
 evidence.
+
+DF-245 release-trust blocker bundle update:
+`scripts/generate-df245-release-trust-blocker.mjs` now persists the current
+blocked trust assessment at
+`docs/live-evidence/release/df245-release-trust-codesign-notarytool-stapler-spctl-20260622.json`
+(`sha256:39abe3e0d644cde5797894509909f49eb8224a918ac70baaec807a0eb5361fa7`).
+The bundle records `security find-identity` finding 0 valid signing identities,
+`codesign` reporting the DMG is not signed, app `codesign --verify` failing,
+`notarytool history` failing for missing credentials, `stapler validate`
+reporting no stapled ticket, and `spctl` rejecting the DMG with
+`source=no usable signature`. This removes the missing-blocker-record ambiguity
+for release-trust evidence, but DF-245 still needs a passed release-trust bundle
+with Developer ID signing, accepted notarization, stapling, and Gatekeeper
+acceptance before it can close.

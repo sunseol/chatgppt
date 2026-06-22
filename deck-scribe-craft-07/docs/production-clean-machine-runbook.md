@@ -139,7 +139,7 @@ Lane F rechecked packaging from developer worktree `/Users/jake/chatgppt-lane-re
 - Best available isolated smoke used a temporary HOME and served `/` from the dry-run package on port 4179, returning a 12,596-byte HTML response. This does not satisfy clean-machine evidence because it was still run by developer user `jake` and the package is unsigned.
 - Signing state: `security find-identity -v -p codesigning` found 0 valid identities; the app remains ad-hoc signed with `TeamIdentifier=not set`; `codesign --verify --deep --strict --verbose=4 src-tauri/target/release/bundle/macos/DeckForge.app` fails with `code has no resources but signature indicates they must be present`; `codesign -dv --verbose=4 release-artifacts/DeckForge_0.1.0_aarch64.dmg` reports `code object is not signed at all`; `xcrun notarytool history` returns `Must provide credentials`; `spctl --assess --type open --context context:primary-signature --verbose=4 release-artifacts/DeckForge_0.1.0_aarch64.dmg` rejects with `source=no usable signature`.
 
-DF-245 remains open. Next evidence needed: Developer ID Application signing identity, notarization credentials, successful notarization/stapling, Gatekeeper acceptance, persisted release-trust JSON bundle, and clean macOS account install/Codex login/image credential/project launch/first live interview evidence.
+DF-245 remains open. Next evidence needed: Developer ID Application signing identity, notarization credentials, successful notarization/stapling, Gatekeeper acceptance, passed release-trust JSON bundle, and clean macOS account install/Codex login/image credential/project launch/first live interview evidence.
 
 ## 2026-06-21 Lane I Recheck
 

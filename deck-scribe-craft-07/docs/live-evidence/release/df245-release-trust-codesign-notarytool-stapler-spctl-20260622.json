@@ -1,0 +1,97 @@
+{
+  "capturedAt": "2026-06-22T01:20:00Z",
+  "evidenceKind": "df245-release-trust-blocker",
+  "status": "blocked",
+  "reason": "Release trust assessment was persisted, but the current macOS artifact is unsigned, not notarized, not stapled, and Gatekeeper rejects it.",
+  "packageArchive": {
+    "path": "dist/deckforge-macos-dry-run.tgz",
+    "sha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
+    "bytes": 285197
+  },
+  "nativeMacos": {
+    "dmgPath": "release-artifacts/DeckForge_0.1.0_aarch64.dmg",
+    "dmgSha256": "d6849d24c5af4548b7b35e65a68a05c8d139be4b1b5504d7c3da3a3dc9e2d467",
+    "dmgBytes": 1833575,
+    "appPath": "src-tauri/target/release/bundle/macos/DeckForge.app",
+    "binaryPath": "src-tauri/target/release/bundle/macos/DeckForge.app/Contents/MacOS/deckforge",
+    "binarySha256": "f886f3dc8c9e5c968a7a5a80134814a72b629c9fdbf0bff05e570408a7003c65"
+  },
+  "requiredTrust": {
+    "signature": "developer_id",
+    "notarizationStatus": "accepted",
+    "stapled": true,
+    "gatekeeperAccepted": true
+  },
+  "observedTrust": {
+    "signature": "unsigned-or-adhoc",
+    "teamIdentifier": "not set",
+    "notarizationStatus": "missing",
+    "stapled": false,
+    "gatekeeperAccepted": false
+  },
+  "commands": {
+    "codesigningIdentities": {
+      "command": "security find-identity -v -p codesigning",
+      "exitCode": 0,
+      "signal": null,
+      "stdout": [
+        "     0 valid identities found"
+      ],
+      "stderr": []
+    },
+    "dmgCodesign": {
+      "command": "codesign -dv --verbose=4 release-artifacts/DeckForge_0.1.0_aarch64.dmg",
+      "exitCode": 1,
+      "signal": null,
+      "stdout": [],
+      "stderr": [
+        "release-artifacts/DeckForge_0.1.0_aarch64.dmg: code object is not signed at all"
+      ]
+    },
+    "appCodesignVerify": {
+      "command": "codesign --verify --deep --strict --verbose=4 src-tauri/target/release/bundle/macos/DeckForge.app",
+      "exitCode": 1,
+      "signal": null,
+      "stdout": [],
+      "stderr": [
+        "src-tauri/target/release/bundle/macos/DeckForge.app: code has no resources but signature indicates they must be present"
+      ]
+    },
+    "notarytoolHistory": {
+      "command": "xcrun notarytool history",
+      "exitCode": 64,
+      "signal": null,
+      "stdout": [],
+      "stderr": [
+        "Error: Must provide credentials.",
+        "See the 'store-credentials' command, App Store Connect API arguments for Team Keys (--key, --key-id, --issuer), and Individual Keys (--key, --key-id), or app-specific password arguments (--apple-id, --password, --team-id)."
+      ]
+    },
+    "staplerValidateDmg": {
+      "command": "xcrun stapler validate release-artifacts/DeckForge_0.1.0_aarch64.dmg",
+      "exitCode": 65,
+      "signal": null,
+      "stdout": [
+        "Processing: ./release-artifacts/DeckForge_0.1.0_aarch64.dmg",
+        "DeckForge_0.1.0_aarch64.dmg does not have a ticket stapled to it."
+      ],
+      "stderr": []
+    },
+    "gatekeeperAssessDmg": {
+      "command": "spctl --assess --type open --context context:primary-signature --verbose=4 release-artifacts/DeckForge_0.1.0_aarch64.dmg",
+      "exitCode": 3,
+      "signal": null,
+      "stdout": [],
+      "stderr": [
+        "release-artifacts/DeckForge_0.1.0_aarch64.dmg: rejected",
+        "source=no usable signature"
+      ]
+    }
+  },
+  "blockers": [
+    "Developer ID Application signing identity not available",
+    "notarytool credentials and accepted notarization not available",
+    "stapled DMG or app not available",
+    "Gatekeeper rejects the unsigned DMG"
+  ]
+}

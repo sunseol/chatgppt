@@ -73,7 +73,7 @@
       "validationKind": "blocked",
       "packageArchiveSha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
       "artifactPath": "docs/live-evidence/release/df245-evidence.json",
-      "artifactSha256": "c09d522e62b8d1b20eb42e2353890e404e44dc8ea4e3275c1b364d253f2d82f1"
+      "artifactSha256": "f404b948988b333e0416c700fa72ad6f66f3d0332ad6544e52dddaa706460c5f"
     },
     {
       "ticketId": "DF-246",
