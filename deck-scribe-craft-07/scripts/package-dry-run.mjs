@@ -28,6 +28,12 @@ const macosDir = join(contentsDir, "MacOS");
 const resourcesDir = join(contentsDir, "Resources");
 const archivePath = join(distDir, "deckforge-macos-dry-run.tgz");
 const dryRunServerTemplatePath = join(root, "scripts", "templates", "deckforge-dry-run-server.mjs");
+const codexAppServerBridgeSources = [
+  "live-app-server-json-rpc.ts",
+  "live-app-server-session.ts",
+  "live-app-server-turns.ts",
+  "live-app-server-types.ts",
+];
 
 if (import.meta.main) {
   main();
@@ -48,6 +54,7 @@ function main() {
   cpSync(clientDir, join(resourcesDir, "client"), { recursive: true });
   cpSync(serverDir, join(resourcesDir, "server"), { recursive: true });
   copyFileSync(dryRunServerTemplatePath, join(resourcesDir, "dry-run-server.mjs"));
+  copyCodexAppServerBridgeResources();
   writeFileSync(join(contentsDir, "Info.plist"), infoPlist(), "utf8");
   writeFileSync(join(macosDir, "deckforge"), launcherScript(), { encoding: "utf8", mode: 0o755 });
   writeFileSync(join(outputDir, "README.md"), dryRunReadme(), "utf8");
@@ -79,6 +86,14 @@ function run(command, args) {
 function requirePath(path, label) {
   if (!existsSync(path)) {
     throw new Error(`Missing ${label}: ${path}`);
+  }
+}
+
+function copyCodexAppServerBridgeResources() {
+  const targetDir = join(resourcesDir, "app-server");
+  mkdirSync(targetDir, { recursive: true });
+  for (const fileName of codexAppServerBridgeSources) {
+    copyFileSync(join(root, "scripts", fileName), join(targetDir, fileName));
   }
 }
 

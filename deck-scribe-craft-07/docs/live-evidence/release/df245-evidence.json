@@ -4,12 +4,12 @@
   "status": "blocked",
   "validationKind": "blocked",
   "generatedAt": "2026-06-22T02:17:52Z",
-  "packageArchiveSha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
+  "packageArchiveSha256": "79558b1114d295ddd80fa8068818aeb5bb6b74b4b4b0335981f057824e997163",
   "summary": "Current dry-run package and unsigned DMG artifacts were rechecked against the active package basis, scan clean locally for configured mock/secret/local-path markers, the dry-run launcher serves the app root plus packaged JS/CSS assets from a temporary HOME with HTTP 200, release-trust command output is persisted as blocked evidence, and generated DF-245 release artifacts now have direct regression coverage against the current dry-run package hash. The DMG is still unsigned, not notarized, not stapled, and not accepted by Gatekeeper.",
   "currentEvidence": [
     {
       "path": "dist/deckforge-macos-dry-run.tgz",
-      "sha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
+      "sha256": "79558b1114d295ddd80fa8068818aeb5bb6b74b4b4b0335981f057824e997163",
       "kind": "current dry-run package"
     },
     {
@@ -19,17 +19,17 @@
     },
     {
       "path": "docs/live-evidence/release/df245-package-recheck-20260622.json",
-      "sha256": "40fc3c9a4446186bf78b758c1ad623cab051515636d150e45009c305f4bd330f",
+      "sha256": "fce3bdca58dc5b42ffb0bd036b34c63b36e4a639e9eb27da0acc2cc033a15264",
       "kind": "current package and signing blocker recheck"
     },
     {
       "path": "docs/live-evidence/release/df245-dry-run-launch-smoke-20260622.json",
-      "sha256": "c329dc8f1234092c9f9f801ff7b8be2625b7569b91cfa5a0cbf030f4f877cc8c",
+      "sha256": "fd6c0af1bee6c0b118a810c562357e61e9d8075acecea6e30f64220c1a4897ca",
       "kind": "developer-worktree unsigned dry-run launch smoke with temporary HOME, HTTP 200 root probe, and packaged JS/CSS asset probes"
     },
     {
       "path": "docs/live-evidence/release/df245-release-trust-codesign-notarytool-stapler-spctl-20260622.json",
-      "sha256": "39abe3e0d644cde5797894509909f49eb8224a918ac70baaec807a0eb5361fa7",
+      "sha256": "5c6f53cbb218c3008a12e4fee7b4148d96b7ad6ad8d37d10c589c64ac038ad1b",
       "kind": "persisted blocked release-trust command bundle covering codesign, notarytool, stapler, and spctl"
     },
     {

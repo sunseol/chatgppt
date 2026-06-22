@@ -3,6 +3,7 @@ import {
   getDesktopAppServerBridgeStatus,
   runDesktopCodexAppServerSmoke,
   runDesktopCodexAppServerStructuredTurn,
+  type DeckforgeDryRunCodexBridge,
   type DeckforgeTauriRuntime,
 } from "./desktop-app-server-bridge";
 
@@ -18,6 +19,52 @@ describe("desktop app server bridge", () => {
     // Then
     expect(status).toBe("missing");
     expect(result.kind).toBe("missing_bridge");
+  });
+
+  test("uses the packaged dry-run bridge when the Tauri invoke bridge is absent", async () => {
+    // Given
+    const originalFetch = globalThis.fetch;
+    const runtime: DeckforgeTauriRuntime = {};
+    const dryRunBridge: DeckforgeDryRunCodexBridge = {
+      enabled: true,
+      smokeEndpoint: "http://127.0.0.1/api/codex/app-server/smoke",
+      structuredTurnEndpoint: "http://127.0.0.1/api/codex/app-server/structured-turn",
+    };
+    let capturedUrl = "";
+
+    globalThis.fetch = (async (input, init) => {
+      capturedUrl = String(input);
+      expect(init?.method).toBe("POST");
+      return new Response(
+        JSON.stringify({
+          initOk: true,
+          accountType: "chatgpt",
+          threadId: "thread_dry_run",
+          turnId: "turn_dry_run",
+          turnCompleted: true,
+          protocolLineCount: 9,
+          stderrLogLineCount: 0,
+          eventMethods: ["turn/started", "turn/completed"],
+          finalText: '{"status":"ok"}',
+        }),
+        { status: 200, headers: { "content-type": "application/json" } },
+      );
+    }) as typeof fetch;
+
+    try {
+      // When
+      const status = getDesktopAppServerBridgeStatus(runtime, dryRunBridge);
+      const result = await runDesktopCodexAppServerSmoke(runtime, dryRunBridge);
+
+      // Then
+      expect(status).toBe("available");
+      expect(capturedUrl).toBe(dryRunBridge.smokeEndpoint);
+      if (result.kind !== "completed") throw new Error("Expected completed dry-run bridge smoke.");
+      expect(result.evidence.threadId).toBe("thread_dry_run");
+      expect(result.evidence.accountType).toBe("chatgpt");
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
   });
 
   test("parses smoke evidence returned by the Tauri command", async () => {
@@ -93,6 +140,65 @@ describe("desktop app server bridge", () => {
     // Then
     if (result.kind !== "failed") throw new Error("Expected failed bridge smoke.");
     expect(result.error.code).toBe("invalid_smoke_evidence");
+  });
+
+  test("posts structured turns through the packaged dry-run bridge", async () => {
+    // Given
+    const originalFetch = globalThis.fetch;
+    const outputSchema = {
+      type: "object",
+      required: ["status"],
+      properties: { status: { type: "string" } },
+    };
+    const dryRunBridge: DeckforgeDryRunCodexBridge = {
+      enabled: true,
+      smokeEndpoint: "http://127.0.0.1/api/codex/app-server/smoke",
+      structuredTurnEndpoint: "http://127.0.0.1/api/codex/app-server/structured-turn",
+    };
+
+    globalThis.fetch = (async (_input, init) => {
+      expect(JSON.parse(String(init?.body))).toEqual({
+        request: {
+          prompt: "Return JSON only.",
+          outputSchema,
+          networkAccess: false,
+        },
+      });
+      return new Response(
+        JSON.stringify({
+          runtime: "codex app-server --stdio",
+          threadId: "thread_dry_run",
+          turnId: "turn_dry_run",
+          turnCompleted: true,
+          durationMs: 1_200,
+          protocolLineCount: 8,
+          stderrLogLineCount: 0,
+          eventMethods: ["turn/completed"],
+          notifications: [{ method: "turn/completed", params: { threadId: "thread_dry_run" } }],
+        }),
+        { status: 200, headers: { "content-type": "application/json" } },
+      );
+    }) as typeof fetch;
+
+    try {
+      // When
+      const result = await runDesktopCodexAppServerStructuredTurn(
+        {
+          prompt: "Return JSON only.",
+          outputSchema,
+          networkAccess: false,
+        },
+        {},
+        dryRunBridge,
+      );
+
+      // Then
+      if (result.kind !== "completed") throw new Error("Expected completed structured turn.");
+      expect(result.evidence.threadId).toBe("thread_dry_run");
+      expect(result.evidence.eventMethods).toEqual(["turn/completed"]);
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
   });
 
   test("parses structured turn notifications returned by the Tauri command", async () => {

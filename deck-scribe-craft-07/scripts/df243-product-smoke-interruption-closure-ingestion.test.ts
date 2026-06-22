@@ -8,7 +8,7 @@ import {
   parseDf243ResumeGateProductSmokeSummaryJson,
 } from "./df243-product-smoke-interruption-closure-ingestion";
 
-const PACKAGE_SHA = "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6";
+const PACKAGE_SHA = "79558b1114d295ddd80fa8068818aeb5bb6b74b4b4b0335981f057824e997163";
 const CANCEL_SUMMARY_PATH =
   "docs/live-evidence/codex-image/df243-cancel-product-smoke-20260622/summary.json";
 const RESUME_GATE_SUMMARY_PATH =

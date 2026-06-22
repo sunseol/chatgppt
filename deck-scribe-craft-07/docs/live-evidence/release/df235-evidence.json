@@ -4,7 +4,7 @@
   "status": "blocked",
   "validationKind": "blocked",
   "generatedAt": "2026-06-22T03:12:21Z",
-  "packageArchiveSha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
+  "packageArchiveSha256": "79558b1114d295ddd80fa8068818aeb5bb6b74b4b4b0335981f057824e997163",
   "summary": "A lineage-valid live v2 regenerated image now exists with provenance input lineage to the approved original artifact, static before/after preservation evidence exists, the product Review-stage writer has produced approved-candidate DF-235 JSON for that lineage-valid candidate, and the product regeneration runner now writes preserved_after_failure evidence while keeping the approved original selected. Those product smokes are now reproducibly ingested through the packaged review producer as a blocked candidate, preserving the remaining app-surface and docs-bundle gaps. The packaged Review-stage UI has not recorded approval or failed-regeneration preservation.",
   "currentEvidence": [
     {
@@ -52,7 +52,7 @@
     },
     {
       "path": "docs/live-evidence/release/df235-product-smoke-packaged-review-candidate-20260622.json",
-      "sha256": "c37ac56e8f8670aafb9284c584458ef8a2c2cf8a670dcf607cb2c39a07fe8d5d",
+      "sha256": "aa46b9220fe3cf94f26c06b09f71f4de420ae1b5a7dd939fb8b759e556406cce",
       "kind": "blocked packaged review candidate generated from product review smokes"
     },
     {

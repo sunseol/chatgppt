@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ProviderCapabilityMatrix } from "@/components/deck/ProviderCapabilityMatrix";
-import { newProjectProviderMatrixInput } from "@/lib/client-provider-runtime-selection";
+import { createClientNewProjectProviderMatrixInput } from "@/lib/client-provider-runtime-selection";
 import { createProject } from "@/lib/deck-store";
 import { createProviderCapabilityMatrixView } from "@/lib/provider-capability-view";
 
@@ -31,10 +31,6 @@ const SAMPLES = [
   },
 ];
 
-const NEW_PROJECT_PROVIDER_MATRIX = createProviderCapabilityMatrixView(
-  newProjectProviderMatrixInput,
-);
-
 export function NewProjectForm({ onCreated }: { onCreated?: () => void }) {
   const navigate = useNavigate();
   const [name, setName] = useState("");
@@ -42,6 +38,9 @@ export function NewProjectForm({ onCreated }: { onCreated?: () => void }) {
   const [count, setCount] = useState(8);
   const [ratio, setRatio] = useState<"16:9" | "4:3">("16:9");
   const [lang, setLang] = useState<"ko" | "en" | "mixed">("ko");
+  const providerMatrixView = createProviderCapabilityMatrixView(
+    createClientNewProjectProviderMatrixInput(),
+  );
 
   const submit = () => {
     if (!name.trim() || !prompt.trim()) return;
@@ -145,7 +144,7 @@ export function NewProjectForm({ onCreated }: { onCreated?: () => void }) {
         </div>
       </div>
 
-      <ProviderCapabilityMatrix view={NEW_PROJECT_PROVIDER_MATRIX} />
+      <ProviderCapabilityMatrix view={providerMatrixView} />
 
       <div className="flex justify-end">
         <Button onClick={submit} className="bg-foreground text-background hover:bg-foreground/90">

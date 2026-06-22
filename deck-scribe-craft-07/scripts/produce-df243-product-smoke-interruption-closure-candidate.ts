@@ -17,7 +17,7 @@ const DEFAULT_MATRIX_OUTPUT_PATH =
   "docs/live-evidence/release/df243-product-smoke-interruption-matrix-candidate-20260622.json";
 const DEFAULT_OUTPUT_PATH =
   "docs/live-evidence/release/df243-product-smoke-interruption-closure-candidate-20260622.json";
-const DEFAULT_PACKAGE_SHA = "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6";
+const DEFAULT_PACKAGE_SHA = "79558b1114d295ddd80fa8068818aeb5bb6b74b4b4b0335981f057824e997163";
 
 const [
   cancelSummaryPath = DEFAULT_CANCEL_SUMMARY_PATH,

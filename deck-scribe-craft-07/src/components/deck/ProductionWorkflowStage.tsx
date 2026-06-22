@@ -4,10 +4,10 @@ import { ProductionResearchReview } from "@/components/deck/ProductionResearchRe
 import { ProductionResearchWebSearchLauncher } from "@/components/deck/ProductionResearchWebSearchLauncher";
 import { ProductionTextWorkflowLauncher } from "@/components/deck/ProductionTextWorkflowLauncher";
 import { StageHeader, StageScroll, StageShell } from "@/components/deck/stage-shared";
-import { newProjectProviderMatrixInput } from "@/lib/client-provider-runtime-selection";
 import type { DeckProject, StepKey } from "@/lib/deck-types";
 import { getDesktopAppServerBridgeStatus } from "@/lib/desktop-app-server-bridge";
 import { createProviderCapabilityMatrixView } from "@/lib/provider-capability-view";
+import { createNewProjectProviderMatrixInput } from "@/lib/provider-runtime-selection";
 import type { ProductionTextWorkflowBridgeStatus } from "@/lib/production-text-workflow-gate";
 
 export type WorkflowStageProps = {
@@ -92,11 +92,12 @@ const PRODUCTION_STEP_COPY: Record<StepKey, ProductionStepCopy> = {
   },
 };
 
-const PROVIDER_MATRIX_VIEW = createProviderCapabilityMatrixView(newProjectProviderMatrixInput);
-
 export function ProductionWorkflowStage({ project, step, appServerBridge }: WorkflowStageProps) {
   const copy = PRODUCTION_STEP_COPY[step];
   const resolvedAppServerBridge = appServerBridge ?? getDesktopAppServerBridgeStatus();
+  const providerMatrixView = createProviderCapabilityMatrixView(
+    createNewProjectProviderMatrixInput("production", resolvedAppServerBridge),
+  );
 
   return (
     <StageShell>
@@ -131,7 +132,7 @@ export function ProductionWorkflowStage({ project, step, appServerBridge }: Work
           <ProductionResearchReview project={project} />
         ) : null}
         <div className="mt-6">
-          <ProviderCapabilityMatrix view={PROVIDER_MATRIX_VIEW} />
+          <ProviderCapabilityMatrix view={providerMatrixView} />
         </div>
       </StageScroll>
     </StageShell>

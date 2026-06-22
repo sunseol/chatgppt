@@ -9,7 +9,7 @@ import {
 const DEFAULT_OUTPUT_PATH =
   "docs/live-evidence/release/df241-df242-packaged-run-candidate-20260622.json";
 const DEFAULT_CAPTURED_AT = "2026-06-22T02:30:00.000Z";
-const DEFAULT_PACKAGE_SHA = "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6";
+const DEFAULT_PACKAGE_SHA = "79558b1114d295ddd80fa8068818aeb5bb6b74b4b4b0335981f057824e997163";
 
 const [outputPath = DEFAULT_OUTPUT_PATH, capturedAt = DEFAULT_CAPTURED_AT] = process.argv.slice(2);
 const packageArchiveSha256 = process.env.DF241_DF242_PACKAGE_SHA ?? DEFAULT_PACKAGE_SHA;

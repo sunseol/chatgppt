@@ -4,7 +4,7 @@
   "status": "blocked",
   "validationKind": "blocked",
   "generatedAt": "2026-06-22T02:46:03Z",
-  "packageArchiveSha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
+  "packageArchiveSha256": "79558b1114d295ddd80fa8068818aeb5bb6b74b4b4b0335981f057824e997163",
   "summary": "Authenticated Codex runtime, local secret-lifecycle guards including wrong-service disconnect blocking, stale post-logout image gate blocking, and a current-package configured secret/auth marker scan exist. The active dry-run archive and native app scan clean for the configured Codex/OpenAI secret, auth.json, local workspace, and long bearer token markers, with direct artifact regression coverage tying DF-205 to that package scan. The current auth smoke and package recheck now flow through the packaged auth/secret producer as a blocked candidate so runtime-smoke and current-package-only evidence cannot masquerade as clean-account packaged proof. Release evidence still lacks a clean-account login, logout/relogin, and packaged keychain lifecycle run.",
   "currentEvidence": [
     {
@@ -38,12 +38,12 @@
     },
     {
       "path": "docs/live-evidence/release/df245-package-recheck-20260622.json",
-      "sha256": "40fc3c9a4446186bf78b758c1ad623cab051515636d150e45009c305f4bd330f",
+      "sha256": "fce3bdca58dc5b42ffb0bd036b34c63b36e4a639e9eb27da0acc2cc033a15264",
       "kind": "current-package secret and auth marker scan"
     },
     {
       "path": "docs/live-evidence/release/df205-packaged-auth-secret-candidate-20260622.json",
-      "sha256": "4cf3d4d2d74124879b864809fb09120f021eabfeca66c71d9870d4e5af493550",
+      "sha256": "218c1ba1e5acb55fb034aa91252d13d4e8c6c630ab8788076921a8310e27853f",
       "kind": "blocked packaged auth and secret candidate generated from current auth smoke"
     },
     {

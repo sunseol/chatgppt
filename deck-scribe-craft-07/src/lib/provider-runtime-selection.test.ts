@@ -14,6 +14,16 @@ describe("provider runtime selection", () => {
     expect(input.authMode).toBe("codex_session");
   });
 
+  test("marks production Codex capabilities available when the app-server bridge is present", () => {
+    const input = createNewProjectProviderMatrixInput("production", "available");
+
+    expect(input.providerName).toBe("Codex");
+    expect(input.status.providerId).toBe("codex");
+    expect(input.status.kind).toBe("connected");
+    expect(input.capabilities.includes("imageGeneration")).toBe(true);
+    expect(input.capabilities.includes("editableLayers")).toBe(true);
+  });
+
   test("keeps mock selection explicit outside production", () => {
     const input = createNewProjectProviderMatrixInput("development");
 

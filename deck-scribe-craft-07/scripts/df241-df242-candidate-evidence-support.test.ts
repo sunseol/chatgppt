@@ -7,7 +7,7 @@ import {
   produceDf241Df242PackagedEvidence,
 } from "./df241-df242-packaged-evidence-producer";
 
-const PACKAGE_SHA = "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6";
+const PACKAGE_SHA = "79558b1114d295ddd80fa8068818aeb5bb6b74b4b4b0335981f057824e997163";
 const CAPTURED_AT = "2026-06-22T02:30:00.000Z";
 
 describe("DF-241/DF-242 candidate evidence collector", () => {

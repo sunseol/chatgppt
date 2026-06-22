@@ -73,6 +73,12 @@ export type DeckforgeTauriRuntime = {
   };
 };
 
+export type DeckforgeDryRunCodexBridge = {
+  readonly enabled: boolean;
+  readonly smokeEndpoint: string;
+  readonly structuredTurnEndpoint: string;
+};
+
 export type DesktopCodexAppServerSmokeResult =
   | { readonly kind: "missing_bridge" }
   | { readonly kind: "completed"; readonly evidence: CodexAppServerSmokeEvidence }
@@ -86,23 +92,31 @@ export type DesktopCodexAppServerStructuredTurnResult =
 declare global {
   interface Window {
     readonly __TAURI__?: DeckforgeTauriRuntime;
+    readonly __DECKFORGE_DRY_RUN_CODEX_BRIDGE__?: DeckforgeDryRunCodexBridge;
   }
 }
 
 export function getDesktopAppServerBridgeStatus(
   runtime: DeckforgeTauriRuntime | undefined = getTauriRuntime(),
+  dryRunBridge: DeckforgeDryRunCodexBridge | undefined = getDryRunCodexBridge(),
 ): ProductionTextWorkflowBridgeStatus {
-  return runtime?.core?.invoke ? "available" : "missing";
+  if (runtime?.core?.invoke) return "available";
+  return isDryRunCodexBridgeAvailable(dryRunBridge) ? "available" : "missing";
 }
 
 export async function runDesktopCodexAppServerSmoke(
   runtime: DeckforgeTauriRuntime | undefined = getTauriRuntime(),
+  dryRunBridge: DeckforgeDryRunCodexBridge | undefined = getDryRunCodexBridge(),
 ): Promise<DesktopCodexAppServerSmokeResult> {
-  const invoke = runtime?.core?.invoke;
-  if (!invoke) return { kind: "missing_bridge" };
-
   try {
-    const value = await invoke("deckforge_codex_app_server_smoke");
+    const invoked = await invokeCodexAppServerBridge(
+      "deckforge_codex_app_server_smoke",
+      undefined,
+      runtime,
+      dryRunBridge,
+    );
+    if (invoked.kind === "missing_bridge") return invoked;
+    const value = invoked.value;
     const evidence = CodexAppServerSmokeEvidenceSchema.parse(value);
     const issue = smokeEvidenceIssue(evidence);
     if (issue) {
@@ -155,12 +169,17 @@ function smokeEvidenceIssue(evidence: CodexAppServerSmokeEvidence): string | nul
 export async function runDesktopCodexAppServerStructuredTurn(
   request: DesktopCodexAppServerStructuredTurnRequest,
   runtime: DeckforgeTauriRuntime | undefined = getTauriRuntime(),
+  dryRunBridge: DeckforgeDryRunCodexBridge | undefined = getDryRunCodexBridge(),
 ): Promise<DesktopCodexAppServerStructuredTurnResult> {
-  const invoke = runtime?.core?.invoke;
-  if (!invoke) return { kind: "missing_bridge" };
-
   try {
-    const value = await invoke("deckforge_codex_app_server_structured_turn", { request });
+    const invoked = await invokeCodexAppServerBridge(
+      "deckforge_codex_app_server_structured_turn",
+      { request },
+      runtime,
+      dryRunBridge,
+    );
+    if (invoked.kind === "missing_bridge") return invoked;
+    const value = invoked.value;
     const evidence = parseStructuredTurnEvidence(value);
     const issue = structuredTurnEvidenceIssue(evidence);
     if (issue) {
@@ -232,4 +251,68 @@ function structuredTurnEvidenceIssue(
 function getTauriRuntime(): DeckforgeTauriRuntime | undefined {
   if (typeof window === "undefined") return undefined;
   return window.__TAURI__;
+}
+
+function getDryRunCodexBridge(): DeckforgeDryRunCodexBridge | undefined {
+  if (typeof window === "undefined") return undefined;
+  return window.__DECKFORGE_DRY_RUN_CODEX_BRIDGE__;
+}
+
+function isDryRunCodexBridgeAvailable(
+  bridge: DeckforgeDryRunCodexBridge | undefined,
+): bridge is DeckforgeDryRunCodexBridge {
+  return (
+    bridge?.enabled === true &&
+    bridge.smokeEndpoint.trim().length > 0 &&
+    bridge.structuredTurnEndpoint.trim().length > 0
+  );
+}
+
+async function invokeCodexAppServerBridge(
+  command: "deckforge_codex_app_server_smoke" | "deckforge_codex_app_server_structured_turn",
+  args: Readonly<Record<string, unknown>> | undefined,
+  runtime: DeckforgeTauriRuntime | undefined,
+  dryRunBridge: DeckforgeDryRunCodexBridge | undefined,
+): Promise<
+  { readonly kind: "missing_bridge" } | { readonly kind: "completed"; readonly value: unknown }
+> {
+  const invoke = runtime?.core?.invoke;
+  if (invoke) return { kind: "completed", value: await invoke(command, args) };
+
+  if (!isDryRunCodexBridgeAvailable(dryRunBridge)) return { kind: "missing_bridge" };
+  const endpoint =
+    command === "deckforge_codex_app_server_smoke"
+      ? dryRunBridge.smokeEndpoint
+      : dryRunBridge.structuredTurnEndpoint;
+  return { kind: "completed", value: await invokeDryRunCodexBridge(endpoint, args) };
+}
+
+async function invokeDryRunCodexBridge(
+  endpoint: string,
+  args: Readonly<Record<string, unknown>> | undefined,
+): Promise<unknown> {
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(args ?? {}),
+  });
+  const value = await parseDryRunBridgeResponse(response);
+  if (response.ok) return value;
+
+  const parsed = CodexAppServerSmokeErrorSchema.safeParse(value);
+  if (parsed.success) throw parsed.data;
+  throw new Error(`Dry-run Codex bridge request failed with status ${response.status}.`);
+}
+
+async function parseDryRunBridgeResponse(response: Response): Promise<unknown> {
+  const text = await response.text();
+  if (text.trim().length === 0) return {};
+  try {
+    return JSON.parse(text) as unknown;
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      throw new Error("Dry-run Codex bridge returned non-JSON response.");
+    }
+    throw error;
+  }
 }

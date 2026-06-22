@@ -1,26 +1,20 @@
+import { getDesktopAppServerBridgeStatus } from "./desktop-app-server-bridge";
 import type { ProviderCapabilityMatrixInput } from "./provider-capability-view";
-import { ProviderCapabilities } from "./provider-types";
+import type { ExecutionMode } from "./provider-provenance";
+import {
+  createNewProjectProviderMatrixInput,
+  selectImageGenerationProviderId,
+} from "./provider-runtime-selection";
 
-export const newProjectProviderMatrixInput: ProviderCapabilityMatrixInput = import.meta.env.PROD
-  ? {
-      providerName: "Codex",
-      authMode: "codex_session",
-      status: {
-        kind: "requiresAuth",
-        providerId: "codex",
-        message: "Sign in with ChatGPT or complete the Codex device-code flow.",
-      },
-      capabilities: [],
-    }
-  : {
-      providerName: "Mock Provider",
-      authMode: "none",
-      status: {
-        kind: "connected",
-        providerId: "mock",
-        message: "Local workflow prototype provider is connected.",
-      },
-      capabilities: ProviderCapabilities,
-    };
+const clientExecutionMode: ExecutionMode = import.meta.env.PROD ? "production" : "development";
 
-export const imageGenerationProviderId = import.meta.env.PROD ? "codex" : "mock";
+export function createClientNewProjectProviderMatrixInput(): ProviderCapabilityMatrixInput {
+  return createNewProjectProviderMatrixInput(
+    clientExecutionMode,
+    clientExecutionMode === "production" ? getDesktopAppServerBridgeStatus() : "missing",
+  );
+}
+
+export const newProjectProviderMatrixInput = createClientNewProjectProviderMatrixInput();
+
+export const imageGenerationProviderId = selectImageGenerationProviderId(clientExecutionMode);

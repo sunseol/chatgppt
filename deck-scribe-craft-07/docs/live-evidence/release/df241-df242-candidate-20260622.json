@@ -2,7 +2,7 @@
   "capturedAt": "2026-06-22T00:43:56Z",
   "evidenceKind": "df241-df242-current-candidate-evidence",
   "status": "blocked",
-  "packageArchiveSha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
+  "packageArchiveSha256": "79558b1114d295ddd80fa8068818aeb5bb6b74b4b4b0335981f057824e997163",
   "summary": "Existing live text, source, image, regeneration, and export artifacts can be assembled into a reviewable candidate, but they are not one signed packaged Golden Path or five packaged benchmark runs.",
   "goldenPath": {
     "result": {

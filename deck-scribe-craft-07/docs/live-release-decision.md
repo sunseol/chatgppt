@@ -28,7 +28,7 @@ The current worktree has stronger Live-readiness contracts than the previous moc
   shared UI files.
 - `bun run build:package` passes for client, SSR, prerendered `/`, and package-build sanitization.
 - `bun run package:dry-run` creates `dist/deckforge-macos-dry-run.tgz`.
-- Dry-run archive SHA-256: `e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6`; 285,197 bytes, 27 archive members, 18 app files.
+- Dry-run archive SHA-256: `79558b1114d295ddd80fa8068818aeb5bb6b74b4b4b0335981f057824e997163`; 291,462 bytes, 32 archive members, 22 app files.
 - Dry-run packaging is deterministic: `scripts/package-dry-run.mjs` writes a sorted fixed-metadata tar/gzip archive, `scripts/package-path-sanitizer.mjs` normalizes prerendered route-match timestamps, and two consecutive `bun run package:dry-run` runs produced the same SHA-256 above.
 - Current unsigned DMG SHA-256: `d6849d24c5af4548b7b35e65a68a05c8d139be4b1b5504d7c3da3a3dc9e2d467`; 1,833,575 bytes.
 - Current native app binary SHA-256: `f886f3dc8c9e5c968a7a5a80134814a72b629c9fdbf0bff05e570408a7003c65`.
@@ -80,7 +80,7 @@ Release remains `Blocked`. No ticket in the Lane F set can honestly close from t
   incomplete input remains blocked before it can be recorded as closure
   evidence.
 - A DF-235 Review-stage failure-preservation smoke at `docs/live-evidence/codex-image/df235-review-failure-preservation-20260622.json` proves a failed live regeneration preserves the approved original slide and writes `preserved_after_failure` evidence through the product runner. This narrows the local regeneration writer gap, but packaged Review-stage approval and failure-preservation capture are still required.
-- A DF-245 current package recheck at `docs/live-evidence/release/df245-package-recheck-20260622.json` ties the release evidence to the active dry-run archive SHA-256 `e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6`, unsigned DMG SHA-256 `d6849d24c5af4548b7b35e65a68a05c8d139be4b1b5504d7c3da3a3dc9e2d467`, clean configured mock/secret/local-path scans, and current signing/Gatekeeper rejection output. The dry-run launcher now also serves emitted packaged JS/CSS assets from `Resources/client/assets` before falling back to SSR, and `docs/live-evidence/release/df245-release-trust-codesign-notarytool-stapler-spctl-20260622.json` persists the blocked `codesign`, `notarytool`, `stapler`, and `spctl` command results. This removes stale DF-245 hash drift and missing-blocker-record ambiguity, but does not unblock the release because Developer ID signing, accepted notarization, stapling, Gatekeeper acceptance, passed release-trust JSON, and clean-machine evidence are still missing.
+- A DF-245 current package recheck at `docs/live-evidence/release/df245-package-recheck-20260622.json` ties the release evidence to the active dry-run archive SHA-256 `79558b1114d295ddd80fa8068818aeb5bb6b74b4b4b0335981f057824e997163`, unsigned DMG SHA-256 `d6849d24c5af4548b7b35e65a68a05c8d139be4b1b5504d7c3da3a3dc9e2d467`, clean configured mock/secret/local-path scans, and current signing/Gatekeeper rejection output. The dry-run launcher now also serves emitted packaged JS/CSS assets from `Resources/client/assets` before falling back to SSR, and `docs/live-evidence/release/df245-release-trust-codesign-notarytool-stapler-spctl-20260622.json` persists the blocked `codesign`, `notarytool`, `stapler`, and `spctl` command results. This removes stale DF-245 hash drift and missing-blocker-record ambiguity, but does not unblock the release because Developer ID signing, accepted notarization, stapling, Gatekeeper acceptance, passed release-trust JSON, and clean-machine evidence are still missing.
 - `scripts/produce-df245-production-packaging-evidence.ts` now provides the
   handoff surface for a real production package bundle. It parses package,
   native macOS bundle, release-trust, clean-machine, runtime-remediation, and
@@ -237,7 +237,7 @@ DF-246 lacks non-developer manual QA evidence, and the decision must stay
 
 The manual QA release evidence now explicitly ties the current DF-246 checklist
 to the active package archive
-`e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6` and the
+`79558b1114d295ddd80fa8068818aeb5bb6b74b4b4b0335981f057824e997163` and the
 current package/signing blocker recheck at
 `docs/live-evidence/release/df245-package-recheck-20260622.json`.
 `docs/live-evidence/release/df246-packaged-manual-qa-handoff-candidate-20260622.json`

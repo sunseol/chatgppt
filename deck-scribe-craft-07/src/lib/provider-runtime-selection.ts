@@ -1,9 +1,10 @@
 import type { ProviderCapabilityMatrixInput } from "./provider-capability-view";
 import type { ExecutionMode } from "./provider-provenance";
+import type { ProductionTextWorkflowBridgeStatus } from "./production-text-workflow-gate";
 import { ProviderCapabilities } from "./provider-types";
 import type { SlideImageProviderId } from "./slide-image-provider";
 
-const PRODUCTION_CODEX_PROVIDER_MATRIX: ProviderCapabilityMatrixInput = {
+const LOCKED_PRODUCTION_CODEX_PROVIDER_MATRIX: ProviderCapabilityMatrixInput = {
   providerName: "Codex",
   authMode: "codex_session",
   status: {
@@ -12,6 +13,18 @@ const PRODUCTION_CODEX_PROVIDER_MATRIX: ProviderCapabilityMatrixInput = {
     message: "Sign in with ChatGPT or complete the Codex device-code flow.",
   },
   capabilities: [],
+};
+
+const CONNECTED_PRODUCTION_CODEX_PROVIDER_MATRIX: ProviderCapabilityMatrixInput = {
+  providerName: "Codex",
+  authMode: "codex_session",
+  status: {
+    kind: "connected",
+    providerId: "codex",
+    message:
+      "Codex App Server bridge is available; live turns verify the signed-in ChatGPT session before artifacts are produced.",
+  },
+  capabilities: ProviderCapabilities,
 };
 
 const DEVELOPMENT_MOCK_PROVIDER_MATRIX: ProviderCapabilityMatrixInput = {
@@ -27,10 +40,13 @@ const DEVELOPMENT_MOCK_PROVIDER_MATRIX: ProviderCapabilityMatrixInput = {
 
 export function createNewProjectProviderMatrixInput(
   executionMode: ExecutionMode,
+  appServerBridge: ProductionTextWorkflowBridgeStatus = "missing",
 ): ProviderCapabilityMatrixInput {
   switch (executionMode) {
     case "production":
-      return PRODUCTION_CODEX_PROVIDER_MATRIX;
+      return appServerBridge === "available"
+        ? CONNECTED_PRODUCTION_CODEX_PROVIDER_MATRIX
+        : LOCKED_PRODUCTION_CODEX_PROVIDER_MATRIX;
     case "development":
     case "test":
       return DEVELOPMENT_MOCK_PROVIDER_MATRIX;
