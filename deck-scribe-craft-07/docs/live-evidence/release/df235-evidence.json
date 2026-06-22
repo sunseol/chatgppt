@@ -3,9 +3,9 @@
   "issueNumber": 149,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-22T01:29:20Z",
+  "generatedAt": "2026-06-22T02:39:55Z",
   "packageArchiveSha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
-  "summary": "A lineage-valid live v2 regenerated image now exists with provenance input lineage to the approved original artifact, static before/after preservation evidence exists, the product Review-stage writer has produced approved-candidate DF-235 JSON for that lineage-valid candidate, and the product regeneration runner now writes preserved_after_failure evidence while keeping the approved original selected. The packaged Review-stage UI has not recorded approval or failed-regeneration preservation.",
+  "summary": "A lineage-valid live v2 regenerated image now exists with provenance input lineage to the approved original artifact, static before/after preservation evidence exists, the product Review-stage writer has produced approved-candidate DF-235 JSON for that lineage-valid candidate, and the product regeneration runner now writes preserved_after_failure evidence while keeping the approved original selected. Direct artifact regression coverage now ties those local outputs to the blocked release artifact. The packaged Review-stage UI has not recorded approval or failed-regeneration preservation.",
   "currentEvidence": [
     {
       "path": "docs/live-slide-regeneration.md",
@@ -83,6 +83,10 @@
     {
       "path": "src/lib/live-slide-regeneration-provenance.test.ts",
       "kind": "regression coverage for missing approved-original input lineage"
+    },
+    {
+      "path": "src/lib/df235-release-evidence-artifact.test.ts",
+      "kind": "DF-235 release artifact regression tying local regeneration proof to packaged blockers"
     }
   ],
   "missingEvidence": [

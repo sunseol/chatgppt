@@ -1666,6 +1666,16 @@ remains open until the packaged Review-stage UI captures both approval of the
 lineage-valid v2 candidate and failed-regeneration preservation from the app
 surface.
 
+DF-235 release artifact update: `src/lib/df235-release-evidence-artifact.test.ts`
+now reads the lineage-valid regenerated image summary, approval summary, approval
+review JSON, failure-preservation summary, and failure review JSON together. It
+verifies the approved-original input lineage, review output hashes, approved
+candidate outcome, preserved-after-failure outcome, and the explicit packaged
+Review-stage blockers in `docs/live-evidence/release/df235-evidence.json`. This
+guards against treating local product-run smoke artifacts as packaged UI QA, so
+DF-235 remains blocked until the packaged Review-stage approval and failure
+preservation runs are captured from the app surface.
+
 DF-245 current package recheck update:
 `scripts/generate-df245-package-recheck.mjs` records the active dry-run package,
 unsigned DMG, content-scan result, and signing/Gatekeeper blockers at
