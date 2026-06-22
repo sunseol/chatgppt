@@ -137,6 +137,17 @@ ticket order. The current regenerated index still blocks because all ten child
 artifacts remain blocked, but future real evidence can now update DF-247 without
 manual hash editing.
 
+DF-247 local update: final release-gate evidence now has a runnable intake at
+`scripts/produce-df247-release-gate-evidence.ts`, with schema parsing in
+`scripts/df247-release-gate-evidence-schema.ts` and gate evaluation in
+`scripts/df247-release-gate-evidence-producer.ts`. The package script
+`bun run evidence:df247:produce -- <release-gate-input.json> [output.json]`
+evaluates the packaged evidence index through `evaluatePackagedLiveEvidenceIndex`
+and then runs `evaluateLiveInitialReleaseGate`, preserving blocker codes and
+refs in `missingEvidence`. This still does not close DF-247; the missing input is
+the actual approved release-gate bundle after all upstream packaged evidence is
+ready.
+
 Current package basis for this index: `bun run package:dry-run` produced
 `dist/deckforge-macos-dry-run.tgz` with SHA-256
 `e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6`,
