@@ -30,6 +30,18 @@ matrix, then runs the existing DF-243 closure validator. This still does not
 close DF-243; the missing input is the actual packaged app interruption matrix
 and copied `docs/live-evidence/...` artifact bundle.
 
+DF-235 local update: packaged Review-stage evidence now has a runnable intake at
+`scripts/produce-df235-packaged-review-evidence.ts`, with schema parsing in
+`scripts/df235-packaged-review-evidence-schema.ts` and same-session review proof
+assembly in `scripts/df235-packaged-review-evidence-producer.ts`. The package
+script `bun run evidence:df235:produce -- <review-input.json> [output.json]`
+requires packaged Review-stage approval proof, failed-regeneration preservation
+proof, copied `docs/live-evidence/...` review JSON, and visible before/after plus
+preservation display artifacts before returning `ready`. This still does not
+close DF-235; the missing input is the actual packaged Review-stage UI run that
+captures both approval and failure-preservation proof against the current
+package.
+
 DF-244 local update: packaged usage disclosure evidence now has a runnable
 intake at `scripts/produce-df244-packaged-usage-evidence.ts`, with schema
 parsing in `scripts/df244-packaged-usage-evidence-schema.ts` and
