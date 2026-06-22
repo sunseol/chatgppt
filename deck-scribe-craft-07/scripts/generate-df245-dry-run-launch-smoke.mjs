@@ -34,10 +34,20 @@ async function runDryRunLaunchSmoke() {
 
   try {
     const response = await waitForHttpResponse();
+    const assetProbes = await probeLocalAssets(response.body);
+    const shellText = appShellText(response.body);
     return {
       capturedAt: CAPTURED_AT,
       evidenceKind: "df245-dry-run-launch-smoke",
-      status: response.status === 200 && response.bodyBytes > 1000 ? "passed" : "failed",
+      status:
+        response.status === 200 &&
+        response.bodyBytes > 1000 &&
+        assetProbes.every((probe) => probe.status === 200 && probe.bodyBytes > 0) &&
+        shellText.deckForge &&
+        shellText.newProject &&
+        shellText.localData
+          ? "passed"
+          : "failed",
       scope:
         "developer-worktree unsigned dry-run launch smoke; not clean-machine, signed, notarized, or Gatekeeper evidence",
       packageArchive: {
@@ -50,7 +60,14 @@ async function runDryRunLaunchSmoke() {
         port: PORT,
         temporaryHome: "created-and-removed",
       },
-      httpProbe: response,
+      httpProbe: {
+        url: response.url,
+        status: response.status,
+        contentType: response.contentType,
+        bodyBytes: response.bodyBytes,
+      },
+      appShellText: shellText,
+      assetProbes,
       process: {
         stdout: stdout.trim().split("\n").filter(Boolean),
         stderr: stderr.trim().split("\n").filter(Boolean),
@@ -82,12 +99,51 @@ async function waitForHttpResponse() {
         status: response.status,
         contentType: response.headers.get("content-type") ?? "",
         bodyBytes: Buffer.byteLength(body),
+        body,
       };
     } catch (error) {
       if (attempt === 29) throw error;
     }
   }
   throw new Error("Dry-run server did not respond.");
+}
+
+async function probeLocalAssets(html) {
+  const paths = localAssetPaths(html);
+  return Promise.all(
+    paths.map(async (path) => {
+      const response = await fetch(`http://127.0.0.1:${PORT}${path}`);
+      const body = await response.arrayBuffer();
+      return {
+        path,
+        status: response.status,
+        contentType: response.headers.get("content-type") ?? "",
+        bodyBytes: body.byteLength,
+        sha256: sha256Buffer(Buffer.from(body)),
+      };
+    }),
+  );
+}
+
+function localAssetPaths(html) {
+  const paths = new Set();
+  const patterns = [/\s(?:href|src)="(\/assets\/[^"]+)"/g, /import\("(\/assets\/[^"]+)"\)/g];
+  for (const pattern of patterns) {
+    for (const match of html.matchAll(pattern)) {
+      paths.add(match[1]);
+    }
+  }
+  return [...paths].sort();
+}
+
+function appShellText(html) {
+  return {
+    deckForge: html.includes("DeckForge"),
+    newProject: html.includes("새 프로젝트"),
+    localData: html.includes("로컬 데이터"),
+    projectWorkspace: html.includes("Project Workspace"),
+    loadingProjectList: html.includes("프로젝트 목록을 불러오는 중입니다."),
+  };
 }
 
 function wait(ms) {
@@ -98,4 +154,8 @@ async function sha256File(path) {
   return createHash("sha256")
     .update(await readFile(path))
     .digest("hex");
+}
+
+function sha256Buffer(value) {
+  return createHash("sha256").update(value).digest("hex");
 }

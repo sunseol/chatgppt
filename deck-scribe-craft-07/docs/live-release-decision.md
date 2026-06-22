@@ -189,7 +189,7 @@ DF-246 lacks non-developer manual QA evidence, and the decision must stay
 
 The manual QA release evidence now explicitly ties the current DF-246 checklist
 to the active package archive
-`0354291e6c6ac847335ba5095e088d1122a3bf93937589021edabb3e4fbcc913` and the
+`e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6` and the
 current package/signing blocker recheck at
 `docs/live-evidence/release/df245-package-recheck-20260622.json`. This is a
 handoff basis only, not a pass result: no non-developer tester session bundle has
@@ -216,8 +216,9 @@ evidence; DF-242 still has 0 of 5 passed live benchmarks and no output bundles.
 ## 2026-06-22 DF-245 Dry-Run Launch Smoke
 
 The current unsigned dry-run app launcher was executed from a temporary HOME and
-served the app root at `http://127.0.0.1:4186/` with HTTP 200 and a 12,596-byte
-HTML response. The evidence is recorded at
+served the app root at `http://127.0.0.1:4186/` with HTTP 200, verified app
+shell text, and returned HTTP 200 for the packaged JS/CSS asset URLs referenced
+by the HTML. The evidence is recorded at
 `docs/live-evidence/release/df245-dry-run-launch-smoke-20260622.json`.
 
 Release remains `Blocked`: this is developer-worktree dry-run evidence only, not

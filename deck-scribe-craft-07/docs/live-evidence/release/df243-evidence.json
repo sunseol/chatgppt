@@ -4,7 +4,7 @@
   "status": "blocked",
   "validationKind": "blocked",
   "generatedAt": "2026-06-22T00:10:00Z",
-  "packageArchiveSha256": "0354291e6c6ac847335ba5095e088d1122a3bf93937589021edabb3e4fbcc913",
+  "packageArchiveSha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
   "summary": "The interruption closure manifest materializes the observed text-turn and fetch-shutdown recovery snapshots. Product smokes now prove that an in-flight Codex image queue output returned after cancellation is rejected, the job is stored as cancelled with cancelRequested true, the DF-243 cancel writer persists separate app-storage recovery and cancel-signal JSON, the image partial-resume writer persists a pending-to-resumed recovery snapshot, the interrupted artifact gate writer persists distinct approval/export gate JSON, and local project folder export carries those project-scoped artifacts. The release remains blocked until packaged image partial-resume, packaged cancel, and interrupted approval/export artifacts are captured from the app surface and copied into the canonical evidence bundle.",
   "currentEvidence": [
     {

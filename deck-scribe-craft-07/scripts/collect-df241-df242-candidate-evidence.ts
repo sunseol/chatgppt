@@ -5,7 +5,7 @@ import { evaluateLiveBenchmarkEvidence } from "../src/lib/live-benchmark-evidenc
 import { evaluateLiveGoldenPathE2EBundle } from "../src/lib/live-golden-path-e2e";
 import { buildDf241Df242CandidateEvidence } from "./df241-df242-candidate-evidence-support";
 
-const PACKAGE_SHA = "0354291e6c6ac847335ba5095e088d1122a3bf93937589021edabb3e4fbcc913";
+const PACKAGE_SHA = "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6";
 const OUTPUT_PATH = "docs/live-evidence/release/df241-df242-candidate-20260622.json";
 const CAPTURED_AT = "2026-06-22T00:43:56Z";
 

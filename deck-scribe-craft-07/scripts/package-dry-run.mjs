@@ -2,6 +2,7 @@
 
 import { spawnSync } from "node:child_process";
 import {
+  copyFileSync,
   cpSync,
   existsSync,
   mkdirSync,
@@ -26,6 +27,7 @@ const contentsDir = join(appDir, "Contents");
 const macosDir = join(contentsDir, "MacOS");
 const resourcesDir = join(contentsDir, "Resources");
 const archivePath = join(distDir, "deckforge-macos-dry-run.tgz");
+const dryRunServerTemplatePath = join(root, "scripts", "templates", "deckforge-dry-run-server.mjs");
 
 if (import.meta.main) {
   main();
@@ -45,6 +47,7 @@ function main() {
 
   cpSync(clientDir, join(resourcesDir, "client"), { recursive: true });
   cpSync(serverDir, join(resourcesDir, "server"), { recursive: true });
+  copyFileSync(dryRunServerTemplatePath, join(resourcesDir, "dry-run-server.mjs"));
   writeFileSync(join(contentsDir, "Info.plist"), infoPlist(), "utf8");
   writeFileSync(join(macosDir, "deckforge"), launcherScript(), { encoding: "utf8", mode: 0o755 });
   writeFileSync(join(outputDir, "README.md"), dryRunReadme(), "utf8");
@@ -216,7 +219,7 @@ function infoPlist() {
 `;
 }
 
-function launcherScript() {
+export function launcherScript() {
   return `#!/bin/sh
 set -eu
 APP_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
@@ -227,7 +230,8 @@ if ! command -v bun >/dev/null 2>&1; then
   exit 78
 fi
 
-exec bun "$RESOURCE_DIR/server/server.js"
+cd "$RESOURCE_DIR"
+exec bun dry-run-server.mjs
 `;
 }
 

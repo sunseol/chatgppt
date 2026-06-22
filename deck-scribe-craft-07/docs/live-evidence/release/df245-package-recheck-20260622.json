@@ -5,14 +5,14 @@
   "reason": "Current local package and DMG hashes are rechecked, but Developer ID signing, notarization, stapling, Gatekeeper acceptance, and clean-machine execution remain missing.",
   "packageArchive": {
     "path": "dist/deckforge-macos-dry-run.tgz",
-    "sha256": "0354291e6c6ac847335ba5095e088d1122a3bf93937589021edabb3e4fbcc913",
-    "bytes": 284301,
-    "archiveMembers": 26
+    "sha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
+    "bytes": 285197,
+    "archiveMembers": 27
   },
   "dryRunApp": {
     "path": "dist/deckforge-macos-dry-run/DeckForge.app",
-    "fileCount": 17,
-    "sizeKiB": 1030
+    "fileCount": 18,
+    "sizeKiB": 1032
   },
   "nativeMacos": {
     "dmgPath": "release-artifacts/DeckForge_0.1.0_aarch64.dmg",
@@ -41,7 +41,7 @@
       "dist/deckforge-macos-dry-run/DeckForge.app",
       "src-tauri/target/release/bundle/macos/DeckForge.app"
     ],
-    "fileCount": 35,
+    "fileCount": 36,
     "fixedStringHits": {
       "mock-provider": [],
       "MOCK MODE": [],

@@ -4,7 +4,7 @@
   "status": "blocked",
   "validationKind": "blocked",
   "generatedAt": "2026-06-22T00:43:56Z",
-  "packageArchiveSha256": "0354291e6c6ac847335ba5095e088d1122a3bf93937589021edabb3e4fbcc913",
+  "packageArchiveSha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
   "summary": "Local Golden Path validators now require regeneration-marked image evidence with canonical input lineage to an initial live image, and the current candidate collector assembles existing live text, source, image, regeneration, and export artifacts into a blocked DF-241/DF-242 evidence bundle. No signed packaged production Golden Path has completed from login through export.",
   "currentEvidence": [
     {
@@ -31,7 +31,7 @@
     },
     {
       "path": "docs/live-evidence/release/df241-df242-candidate-20260622.json",
-      "sha256": "066cc2a5ff823269beb5f5079c878c3ec5b7aa3d4051a7cbfde2bc6df014744f",
+      "sha256": "28803e04fdb9ec8cc98dc3b17c723fd83530f56371f8c7e3b33c11b866b3f4f1",
       "kind": "blocked current-candidate Golden Path bundle assembled from existing live artifacts"
     },
     {

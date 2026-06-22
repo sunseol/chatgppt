@@ -4,7 +4,7 @@
   "status": "blocked",
   "validationKind": "blocked",
   "generatedAt": "2026-06-22T00:32:47Z",
-  "packageArchiveSha256": "0354291e6c6ac847335ba5095e088d1122a3bf93937589021edabb3e4fbcc913",
+  "packageArchiveSha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
   "summary": "The final release gate remains blocked because upstream packaged evidence entries are blocked, DF-246 only has current-package manual QA handoff evidence rather than a non-developer session, and the release decision is not approved; borrowed release decision payloads are also blocked before readiness.",
   "currentEvidence": [
     {
@@ -17,12 +17,12 @@
     },
     {
       "path": "docs/live-evidence/release/df246-evidence.json",
-      "sha256": "ec94557b56187af25e788c85cfa9a5cbc394c13c643e81f94e9a6ff195f77f0d",
+      "sha256": "329f3e049175002ac377a7d68d469b0d77e787807e3deded8ae53e2e22e10ca4",
       "kind": "DF-246 current-package manual QA handoff evidence, still blocked without non-developer session"
     },
     {
       "path": "docs/live-evidence/release/df245-package-recheck-20260622.json",
-      "sha256": "db4249cea9e39d79a05b9ecb9d3d0a8828b87f630da8dc5e3a37e761850c693a",
+      "sha256": "7b9adb24eca8a6f27bedb2adbe1c5221d1ae9c1470a5e420589e391ddaf73a47",
       "kind": "current package and signing blocker recheck"
     },
     {

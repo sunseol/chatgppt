@@ -1617,10 +1617,10 @@ DF-245 current package recheck update:
 `scripts/generate-df245-package-recheck.mjs` records the active dry-run package,
 unsigned DMG, content-scan result, and signing/Gatekeeper blockers at
 `docs/live-evidence/release/df245-package-recheck-20260622.json`
-(`sha256:db4249cea9e39d79a05b9ecb9d3d0a8828b87f630da8dc5e3a37e761850c693a`).
+(`sha256:7b9adb24eca8a6f27bedb2adbe1c5221d1ae9c1470a5e420589e391ddaf73a47`).
 The active dry-run archive is
-`0354291e6c6ac847335ba5095e088d1122a3bf93937589021edabb3e4fbcc913`
-with 284,301 bytes, 26 archive members, and 17 app files; the unsigned DMG is
+`e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6`
+with 285,197 bytes, 27 archive members, and 18 app files; the unsigned DMG is
 `d6849d24c5af4548b7b35e65a68a05c8d139be4b1b5504d7c3da3a3dc9e2d467`
 with checksum verification `OK`. Fixed-string and credential regex scans pass
 for the configured mock/secret/local-path markers, while `security
@@ -1631,7 +1631,7 @@ and clean macOS account evidence.
 DF-205 current package secret-scan update: the same current-package recheck now
 backs `docs/live-evidence/release/df205-evidence.json` as DF-205 auth/secret
 lifecycle evidence. It proves the active dry-run archive
-`sha256:0354291e6c6ac847335ba5095e088d1122a3bf93937589021edabb3e4fbcc913`
+`sha256:e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6`
 and native app scan clean for configured Codex/OpenAI secret markers, bundled
 `auth.json`, local workspace paths, assigned session/API-key patterns, and long
 Bearer tokens. This removes the stale-current-package scan gap in DF-205
@@ -1641,20 +1641,20 @@ packaged keychain lifecycle, and clean-machine secret leak evidence.
 
 DF-246 current-package manual QA handoff update:
 `docs/live-evidence/release/df246-evidence.json`
-(`sha256:ec94557b56187af25e788c85cfa9a5cbc394c13c643e81f94e9a6ff195f77f0d`)
+(`sha256:329f3e049175002ac377a7d68d469b0d77e787807e3deded8ae53e2e22e10ca4`)
 now binds the manual QA checklist
 (`docs/live-manual-qa-checklist.md`,
 `sha256:b12fb4fa1575ee52763c1e588caf832b0a1bf7ba8a782cb5f734414bcabacbca`)
 to the current package recheck
 (`docs/live-evidence/release/df245-package-recheck-20260622.json`,
-`sha256:db4249cea9e39d79a05b9ecb9d3d0a8828b87f630da8dc5e3a37e761850c693a`).
+`sha256:7b9adb24eca8a6f27bedb2adbe1c5221d1ae9c1470a5e420589e391ddaf73a47`).
 This gives the next QA lane a reviewable candidate package basis without
 pretending that DF-246 has passed. DF-246 remains open until a non-developer
 tester records a persisted `manual-qa` session bundle against the packaged app.
 
 DF-247 release-gate handoff update:
 `docs/live-evidence/release/df247-evidence.json`
-(`sha256:a055ebcc1f0182d8337b88168755b7d5c8e1f09c278e5cf24ee4c4329e0fb786`)
+(`sha256:bdb169769aa45c8970916857d83f8c1a2eafe7fb3ac9b715736fa6eef55108df`)
 now cites the updated DF-246 handoff evidence and current package recheck as
 blocked release-gate inputs. The Packaged Live evidence index was refreshed with
 the new DF-246 and DF-247 artifact digests. DF-247 remains open because the
@@ -1664,7 +1664,7 @@ QA, and approved release decision are still missing.
 DF-241/DF-242 current-candidate evidence update:
 `scripts/collect-df241-df242-candidate-evidence.ts` now regenerates
 `docs/live-evidence/release/df241-df242-candidate-20260622.json`
-(`sha256:066cc2a5ff823269beb5f5079c878c3ec5b7aa3d4051a7cbfde2bc6df014744f`).
+(`sha256:28803e04fdb9ec8cc98dc3b17c723fd83530f56371f8c7e3b33c11b866b3f4f1`).
 The candidate assembles the existing live text lineage, three real source
 artifacts, five initial Codex OAuth images, one regenerated Codex OAuth image,
 and DF-240 export evidence into the DF-241 validator shape, then records the
@@ -1678,10 +1678,12 @@ artifacts can be reused and which evidence must still come from packaged runs.
 DF-245 dry-run launch smoke update:
 `scripts/generate-df245-dry-run-launch-smoke.mjs` now starts the current unsigned
 dry-run app launcher from `dist/deckforge-macos-dry-run/DeckForge.app`, uses a
-temporary HOME, probes `http://127.0.0.1:4186/`, and records HTTP 200 with
-`text/html; charset=utf-8` and 12,596 response bytes at
+temporary HOME, probes `http://127.0.0.1:4186/`, verifies the app shell text, and
+records HTTP 200 for the root plus HTTP 200 for the packaged JS/CSS asset URLs
+emitted by the HTML at
 `docs/live-evidence/release/df245-dry-run-launch-smoke-20260622.json`
-(`sha256:40d36ccff88fbdba486529253d5f4eba3080fdccf20cb29a0da9104a75a32c7a`).
-This proves the current dry-run package can serve the app root in the developer
-worktree, but DF-245 remains open because this is still unsigned, unnotarized,
-not Gatekeeper-accepted, and not clean-machine evidence.
+(`sha256:c329dc8f1234092c9f9f801ff7b8be2625b7569b91cfa5a0cbf030f4f877cc8c`).
+This proves the current dry-run package can serve the app root and local
+hydration assets in the developer worktree, but DF-245 remains open because this
+is still unsigned, unnotarized, not Gatekeeper-accepted, and not clean-machine
+evidence.

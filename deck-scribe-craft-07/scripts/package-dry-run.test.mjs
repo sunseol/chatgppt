@@ -1,11 +1,66 @@
 import { createHash } from "node:crypto";
-import { chmodSync, mkdirSync, readFileSync, rmSync, utimesSync, writeFileSync } from "node:fs";
+import {
+  chmodSync,
+  copyFileSync,
+  mkdirSync,
+  readFileSync,
+  rmSync,
+  utimesSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { describe, expect, test } from "bun:test";
-import { createDeterministicTarGzipArchive } from "./package-dry-run.mjs";
+import { createDeterministicTarGzipArchive, launcherScript } from "./package-dry-run.mjs";
+
+const here = dirname(fileURLToPath(import.meta.url));
+const dryRunServerTemplate = join(here, "templates", "deckforge-dry-run-server.mjs");
 
 describe("package dry-run archive", () => {
+  test("runs the packaged server from the Resources directory", () => {
+    const script = launcherScript();
+
+    expect(script).toContain('cd "$RESOURCE_DIR"');
+    expect(script).toContain("exec bun dry-run-server.mjs");
+  });
+
+  test("serves packaged client assets before the SSR fallback", async () => {
+    const root = join(tmpdir(), `deckforge-dry-run-server-${process.pid}-${Date.now()}`);
+
+    try {
+      mkdirSync(join(root, "client", "assets"), { recursive: true });
+      mkdirSync(join(root, "server"), { recursive: true });
+      copyFileSync(dryRunServerTemplate, join(root, "dry-run-server.mjs"));
+      writeFileSync(join(root, "client", "assets", "app.js"), "console.log('asset');\n");
+      writeFileSync(
+        join(root, "server", "server.js"),
+        "export default { fetch() { return new Response('fallback', { status: 299 }); } };\n",
+      );
+
+      const wrapper = await import(
+        `${pathToFileURL(join(root, "dry-run-server.mjs")).href}?t=${Date.now()}`
+      );
+      const asset = await wrapper.default.fetch(
+        new Request("http://127.0.0.1/assets/app.js"),
+        {},
+        {},
+      );
+      const fallback = await wrapper.default.fetch(
+        new Request("http://127.0.0.1/project/demo/deck-plan"),
+        {},
+        {},
+      );
+
+      expect(asset.status).toBe(200);
+      expect(asset.headers.get("content-type")).toBe("text/javascript; charset=utf-8");
+      expect(await asset.text()).toBe("console.log('asset');\n");
+      expect(fallback.status).toBe(299);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
   test("creates stable archives when source mtimes change", () => {
     const root = join(tmpdir(), `deckforge-dry-run-${process.pid}-${Date.now()}`);
     const sourceDir = join(root, "source");
