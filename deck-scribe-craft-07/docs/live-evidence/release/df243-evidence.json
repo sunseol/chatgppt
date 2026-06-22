@@ -3,9 +3,9 @@
   "issueNumber": 153,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-22T02:08:06Z",
+  "generatedAt": "2026-06-22T02:33:04Z",
   "packageArchiveSha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
-  "summary": "The interruption closure manifest materializes the observed text-turn and fetch-shutdown recovery snapshots. Product smokes now prove deterministic cancel, image partial-resume, interrupted approval/export gate writers, and a latest real Codex OAuth in-flight image cancellation path that rejects late App Server image output before storage while writing separate app-storage recovery and cancel-signal JSON. The release remains blocked until packaged image partial-resume, packaged cancel, and interrupted approval/export artifacts are captured from the app surface and copied into the canonical evidence bundle.",
+  "summary": "The interruption closure manifest materializes the observed text-turn and fetch-shutdown recovery snapshots. Product smokes now prove deterministic cancel, image partial-resume, interrupted approval/export gate writers, and a latest real Codex OAuth in-flight image cancellation path that rejects late App Server image output before storage while writing separate app-storage recovery and cancel-signal JSON, with direct artifact regression coverage for that no-storage cancellation bundle. The release remains blocked until packaged image partial-resume, packaged cancel, and interrupted approval/export artifacts are captured from the app surface and copied into the canonical evidence bundle.",
   "currentEvidence": [
     {
       "path": "docs/live-evidence/lane-h-20260621/df243-closure-evidence.json",
@@ -184,6 +184,10 @@
     {
       "path": "src/lib/live-image-provider-adapter.ts",
       "kind": "pre-storage cancellation hook for live image artifacts"
+    },
+    {
+      "path": "src/lib/df233-df243-live-codex-cancel-artifact.test.ts",
+      "kind": "real Codex OAuth cancellation artifact no-storage regression coverage"
     }
   ],
   "missingEvidence": [

@@ -1639,6 +1639,17 @@ proves all three writer outputs validate as `ready`. DF-233 remains open until
 the equivalent retry, in-flight cancellation, and restart-resume bundle is captured
 from a packaged Codex OAuth image run with real provider jobs.
 
+DF-233/DF-243 real Codex cancellation artifact update:
+`src/lib/df233-df243-live-codex-cancel-artifact.test.ts` now reads the latest
+real Codex OAuth cancellation smoke summary, the DF-233 queue JSON, and the
+DF-243 app-storage recovery/cancel-signal JSON together. It verifies that
+cancellation was requested, the Codex App Server turn recorded no protocol
+errors, the late image produced no stored slide image artifacts, project-folder
+export includes all three product evidence files, and both release artifacts
+still preserve their packaged-run blockers. This protects the evidence bundle
+from drifting into a false-ready state, but DF-233 and DF-243 remain open until
+equivalent packaged-app runs capture the required retry/resume/cancel matrix.
+
 DF-235 product failure-preservation update:
 `scripts/run-df235-review-failure-preservation-smoke.ts` now drives
 `runReviewStageSlideRegeneration` through the live Codex regeneration path with

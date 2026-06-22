@@ -3,9 +3,9 @@
   "issueNumber": 147,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-22T02:08:06Z",
+  "generatedAt": "2026-06-22T02:33:04Z",
   "packageArchiveSha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
-  "summary": "Queue throttling, retry, cancellation, resume, and product evidence writers are implemented. A latest real Codex OAuth cancellation smoke ran through the product slide generation queue, requested cancellation while the App Server image turn was in flight, rejected the late provider output before storage, wrote ready DF-233 queue evidence with no stored image artifacts, and preserved Codex thread/turn provenance. No packaged Codex OAuth image run has captured genuine provider retry, user cancellation, and restart-resume evidence from the app surface.",
+  "summary": "Queue throttling, retry, cancellation, resume, and product evidence writers are implemented. A latest real Codex OAuth cancellation smoke ran through the product slide generation queue, requested cancellation while the App Server image turn was in flight, rejected the late provider output before storage, wrote ready DF-233 queue evidence with no stored image artifacts, preserved Codex thread/turn provenance, and now has direct artifact regression coverage for those no-storage semantics. No packaged Codex OAuth image run has captured genuine provider retry, user cancellation, and restart-resume evidence from the app surface.",
   "currentEvidence": [
     {
       "path": "docs/live-image-queue-controls.md",
@@ -98,6 +98,10 @@
     {
       "path": "src/lib/live-image-provider-adapter.ts",
       "kind": "pre-storage cancellation hook for live image artifacts"
+    },
+    {
+      "path": "src/lib/df233-df243-live-codex-cancel-artifact.test.ts",
+      "kind": "real Codex OAuth cancellation artifact no-storage regression coverage"
     }
   ],
   "missingEvidence": [
