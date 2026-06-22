@@ -184,3 +184,18 @@ benchmark count remains below 4 of 5, no real Golden Path final export lineage
 bundle exists, DF-245 lacks signed/notarized/Gatekeeper/clean-machine evidence,
 DF-246 lacks non-developer manual QA evidence, and the decision must stay
 `Blocked`.
+
+## 2026-06-22 DF-246/DF-247 Evidence Handoff
+
+The manual QA release evidence now explicitly ties the current DF-246 checklist
+to the active package archive
+`0354291e6c6ac847335ba5095e088d1122a3bf93937589021edabb3e4fbcc913` and the
+current package/signing blocker recheck at
+`docs/live-evidence/release/df245-package-recheck-20260622.json`. This is a
+handoff basis only, not a pass result: no non-developer tester session bundle has
+been captured.
+
+The DF-247 release-gate evidence and Packaged Live evidence index were refreshed
+with the updated DF-246/DF-247 artifact hashes. Release remains `Blocked` until
+the upstream packaged evidence entries become ready and the canonical release
+decision is approved.

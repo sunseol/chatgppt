@@ -1638,3 +1638,25 @@ Bearer tokens. This removes the stale-current-package scan gap in DF-205
 release evidence, but DF-205 remains open until a clean account captures fresh
 login, destructive logout/relogin, post-logout provider lock/cancel state,
 packaged keychain lifecycle, and clean-machine secret leak evidence.
+
+DF-246 current-package manual QA handoff update:
+`docs/live-evidence/release/df246-evidence.json`
+(`sha256:ec94557b56187af25e788c85cfa9a5cbc394c13c643e81f94e9a6ff195f77f0d`)
+now binds the manual QA checklist
+(`docs/live-manual-qa-checklist.md`,
+`sha256:b12fb4fa1575ee52763c1e588caf832b0a1bf7ba8a782cb5f734414bcabacbca`)
+to the current package recheck
+(`docs/live-evidence/release/df245-package-recheck-20260622.json`,
+`sha256:db4249cea9e39d79a05b9ecb9d3d0a8828b87f630da8dc5e3a37e761850c693a`).
+This gives the next QA lane a reviewable candidate package basis without
+pretending that DF-246 has passed. DF-246 remains open until a non-developer
+tester records a persisted `manual-qa` session bundle against the packaged app.
+
+DF-247 release-gate handoff update:
+`docs/live-evidence/release/df247-evidence.json`
+(`sha256:a055ebcc1f0182d8337b88168755b7d5c8e1f09c278e5cf24ee4c4329e0fb786`)
+now cites the updated DF-246 handoff evidence and current package recheck as
+blocked release-gate inputs. The Packaged Live evidence index was refreshed with
+the new DF-246 and DF-247 artifact digests. DF-247 remains open because the
+upstream P0 entries, signed/clean-machine package evidence, non-developer manual
+QA, and approved release decision are still missing.
