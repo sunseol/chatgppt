@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "issue": "DF-235",
+  "projectId": "df235_packaged_review_failure_20260622",
+  "eventId": "slide_001_1782111508004",
+  "exportedAt": 1782111508004,
+  "event": {
+    "outcome": "preserved_after_failure",
+    "slideNumber": 1,
+    "originalSlideVersion": 1,
+    "instruction": "차트 영역을 더 크게 만들고 출처 캡션은 유지해줘.",
+    "issues": [
+      "codex_live_regeneration_unavailable"
+    ],
+    "userMessage": "Live review regeneration requires approved Codex OAuth image provenance before editing.",
+    "preservedSlide": {
+      "number": 1,
+      "version": 1,
+      "status": "approved",
+      "imageDescriptor": "codex|16:9|slide_01_layout.png|slide_generation@v1",
+      "notes": "projects/df235_packaged_review_failure_20260622/slides/images/slide_001.v1.png"
+    }
+  }
+}

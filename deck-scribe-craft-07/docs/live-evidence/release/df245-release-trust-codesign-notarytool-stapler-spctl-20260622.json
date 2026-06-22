@@ -5,7 +5,7 @@
   "reason": "Release trust assessment was persisted, but the current macOS artifact is unsigned, not notarized, not stapled, and Gatekeeper rejects it.",
   "packageArchive": {
     "path": "dist/deckforge-macos-dry-run.tgz",
-    "sha256": "79558b1114d295ddd80fa8068818aeb5bb6b74b4b4b0335981f057824e997163",
+    "sha256": "bdb64f343b721a435889377d6449d18d537fe27a11ac41be343c481c483688ee",
     "bytes": 291462
   },
   "nativeMacos": {

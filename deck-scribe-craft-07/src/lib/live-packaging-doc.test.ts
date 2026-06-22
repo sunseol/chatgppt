@@ -8,7 +8,7 @@ const DOCS = {
   decision: new URL("../../docs/live-release-decision.md", import.meta.url),
 } as const;
 
-const CURRENT_DRY_RUN_SHA = "79558b1114d295ddd80fa8068818aeb5bb6b74b4b4b0335981f057824e997163";
+const CURRENT_DRY_RUN_SHA = "bdb64f343b721a435889377d6449d18d537fe27a11ac41be343c481c483688ee";
 const CURRENT_DF245_RECHECK_SHA =
   "fce3bdca58dc5b42ffb0bd036b34c63b36e4a639e9eb27da0acc2cc033a15264";
 

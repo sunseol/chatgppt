@@ -16,8 +16,18 @@ const APPROVAL_REVIEW_PATH =
   "projects/df235_live_regeneration_lineage_20260622/live-evidence/df235-slide-regeneration-review-rev_df235_lineage_20260622.json";
 const FAILURE_REVIEW_PATH =
   "projects/df235_failure_preservation_smoke_20260622/live-evidence/df235-slide-regeneration-review-rev_df235_failure_preservation_20260622.json";
-const PACKAGED_REVIEW_CANDIDATE_PATH =
+const PRODUCT_SMOKE_PACKAGED_REVIEW_CANDIDATE_PATH =
   "docs/live-evidence/release/df235-product-smoke-packaged-review-candidate-20260622.json";
+const PACKAGED_REVIEW_CANDIDATE_PATH =
+  "docs/live-evidence/release/df235-packaged-review-stage-candidate-20260622.json";
+const PACKAGED_APPROVAL_REVIEW_PATH =
+  "docs/live-evidence/codex-image/df235-packaged-review-stage-20260622/approval-review.json";
+const PACKAGED_FAILURE_REVIEW_PATH =
+  "docs/live-evidence/codex-image/df235-packaged-review-stage-20260622/failure-preservation-review.json";
+const PACKAGED_APPROVAL_DISPLAY_PATH =
+  "docs/live-evidence/codex-image/df235-packaged-review-stage-20260622/approval-display.html";
+const PACKAGED_FAILURE_DISPLAY_PATH =
+  "docs/live-evidence/codex-image/df235-packaged-review-stage-20260622/failure-preservation-display.html";
 const REGENERATED_IMAGE_PATH =
   "projects/df235_live_regeneration_lineage_20260622/slides/images/slide_003.v2.png";
 const REGENERATED_IMAGE_SHA = "167127d22caf3a920d843e2a88e929bc37ca98f2f83f8b88b2e678805a64910a";
@@ -29,8 +39,8 @@ const ReleaseEvidenceSchema = z
   .object({
     ticketId: z.literal("DF-235"),
     issueNumber: z.literal(149),
-    status: z.literal("blocked"),
-    validationKind: z.literal("blocked"),
+    status: z.literal("ready"),
+    validationKind: z.literal("ready"),
     packageArchiveSha256: z.string().regex(SHA256_HEX),
     currentEvidence: z.array(
       z
@@ -126,27 +136,31 @@ const FailureReviewSchema = z
 const PackagedReviewCandidateSchema = z
   .object({
     evidenceKind: z.literal("df235-packaged-review-evidence"),
-    status: z.literal("blocked"),
+    status: z.literal("ready"),
     packageArchiveSha256: z.string().regex(SHA256_HEX),
-    reviewSessionId: z.literal("df235_product_review_smoke_20260622"),
+    reviewSessionId: z.literal("df235_packaged_review_stage_20260622"),
     approval: z
       .object({
-        eventId: z.literal(APPROVAL_REQUEST_ID),
-        approvedSlide: z.object({ number: z.literal(3), version: z.literal(2) }).strict(),
+        eventId: z.literal("rev_df235_packaged_approval_20260622"),
+        evidencePath: z.literal(PACKAGED_APPROVAL_REVIEW_PATH),
+        displayEvidencePath: z.literal(PACKAGED_APPROVAL_DISPLAY_PATH),
+        approvedSlide: z.object({ number: z.literal(1), version: z.literal(2) }).strict(),
       })
       .passthrough(),
     failurePreservation: z
       .object({
-        eventId: z.literal(FAILURE_REQUEST_ID),
+        eventId: z.literal("slide_001_1782111508004"),
+        evidencePath: z.literal(PACKAGED_FAILURE_REVIEW_PATH),
+        displayEvidencePath: z.literal(PACKAGED_FAILURE_DISPLAY_PATH),
         preservedSlide: z.object({ number: z.literal(1), version: z.literal(1) }).strict(),
       })
       .passthrough(),
-    releaseBlockers: z.array(z.string().min(1)),
+    releaseBlockers: z.array(z.string()),
   })
   .passthrough();
 
 describe("DF-235 release evidence artifact", () => {
-  test("keeps local regeneration evidence blocked until packaged review-stage QA exists", () => {
+  test("marks packaged review-stage QA ready with approval and failure preservation evidence", () => {
     // Given
     const evidence = readJson(DF235_EVIDENCE_PATH, ReleaseEvidenceSchema);
     const lineage = readJson(LINEAGE_SUMMARY_PATH, LineageSummarySchema);
@@ -168,6 +182,10 @@ describe("DF-235 release evidence artifact", () => {
       releaseRef(evidence, FAILURE_SUMMARY_PATH),
       releaseRef(evidence, FAILURE_REVIEW_PATH),
       releaseRef(evidence, PACKAGED_REVIEW_CANDIDATE_PATH),
+      releaseRef(evidence, PACKAGED_APPROVAL_REVIEW_PATH),
+      releaseRef(evidence, PACKAGED_FAILURE_REVIEW_PATH),
+      releaseRef(evidence, PACKAGED_APPROVAL_DISPLAY_PATH),
+      releaseRef(evidence, PACKAGED_FAILURE_DISPLAY_PATH),
     ];
 
     // Then
@@ -182,21 +200,12 @@ describe("DF-235 release evidence artifact", () => {
     expect(approvalReview.event.outcome).toBe("approved");
     expect(failureReview.event.outcome).toBe("preserved_after_failure");
     expect(packagedCandidate.packageArchiveSha256).toBe(sha256File(PACKAGE_PATH));
-    expect(packagedCandidate.releaseBlockers).toEqual([
-      "DF-235 review session was not captured from the packaged app surface",
-      "DF-235 packaged approval review evidence path is not a committed JSON evidence file",
-      "DF-235 packaged failure-preservation review evidence path is not a committed JSON evidence file",
-      "DF-235 packaged failure-preservation display evidence path is not a committed display artifact",
-    ]);
+    expect(packagedCandidate.releaseBlockers).toEqual([]);
     expect(releaseRefs.flatMap(referenceDigestIssue)).toEqual([]);
+    expect(evidence.missingEvidence).toEqual([]);
     expect(
-      evidence.missingEvidence.includes(
-        "packaged Review-stage UI run approving the lineage-valid v2 regenerated candidate",
-      ),
-    ).toBe(true);
-    expect(
-      evidence.missingEvidence.includes(
-        "packaged Review-stage UI failed-regeneration run proving the approved original remains selected and exportable",
+      evidence.currentEvidence.some(
+        (reference) => reference.path === PRODUCT_SMOKE_PACKAGED_REVIEW_CANDIDATE_PATH,
       ),
     ).toBe(true);
   });

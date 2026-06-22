@@ -5,6 +5,8 @@ import type { LiveTextArtifactRecord } from "./live-text-artifact-record";
 import type { ProjectExportSummary } from "./project-export-summary";
 import type { ImagePathDecisionRecord } from "./image-path-decision";
 import type { Stage, StepKey } from "./workflow-step-types";
+import type { LiveSlideRegenerationCandidate } from "./live-slide-regeneration";
+import type { SlideRevisionComparison } from "./slide-revision-generation";
 
 export type {
   ChartType,
@@ -139,6 +141,11 @@ export interface LiveSlideRegenerationReviewEvidenceRef {
   readonly outcome: "approved" | "preserved_after_approval_blocked" | "preserved_after_failure";
 }
 
+export interface PendingLiveSlideRegenerationReview {
+  readonly comparison: SlideRevisionComparison;
+  readonly liveCandidate: LiveSlideRegenerationCandidate;
+}
+
 export interface EditableLayerModel {
   slideNumber: number;
   layers: {
@@ -183,6 +190,7 @@ export interface DeckProject {
   liveTextArtifacts?: readonly LiveTextArtifactRecord[];
   imagePathDecision?: ImagePathDecisionRecord;
   liveSlideRegenerationReviewEvidence?: readonly LiveSlideRegenerationReviewEvidenceRef[];
+  pendingLiveSlideRegenerationReview?: PendingLiveSlideRegenerationReview | null;
 
   invalidated: Partial<Record<StepKey, boolean>>;
   workflowErrors?: readonly WorkflowErrorRecord[];

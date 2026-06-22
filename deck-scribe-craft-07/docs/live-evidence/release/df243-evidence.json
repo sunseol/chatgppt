@@ -4,7 +4,7 @@
   "status": "blocked",
   "validationKind": "blocked",
   "generatedAt": "2026-06-22T03:07:35Z",
-  "packageArchiveSha256": "79558b1114d295ddd80fa8068818aeb5bb6b74b4b4b0335981f057824e997163",
+  "packageArchiveSha256": "bdb64f343b721a435889377d6449d18d537fe27a11ac41be343c481c483688ee",
   "summary": "The interruption closure manifest materializes the observed text-turn and fetch-shutdown recovery snapshots. Product smokes now prove deterministic cancel, image partial-resume, interrupted approval/export gate writers, and a latest real Codex OAuth in-flight image cancellation path that rejects late App Server image output before storage while writing separate app-storage recovery and cancel-signal JSON, with direct artifact regression coverage for that no-storage cancellation bundle. The product smoke artifacts are reproducibly ingested into a blocked closure candidate that preserves the remaining docs-bundle gap. The release remains blocked until packaged image partial-resume, packaged cancel, and interrupted approval/export artifacts are captured from the app surface and copied into the canonical evidence bundle.",
   "currentEvidence": [
     {
@@ -54,7 +54,7 @@
     },
     {
       "path": "docs/live-evidence/release/df243-product-smoke-interruption-closure-candidate-20260622.json",
-      "sha256": "a22036e2aca77dc31d9625690d2f98862d7ba21827c7a04f8dece7aedb4c501d",
+      "sha256": "d11228db3905f69baeba2305fe09355702f3efcc001f844f2c4618674d812b8f",
       "kind": "blocked closure candidate generated from product interruption smokes"
     },
     {

@@ -7,7 +7,7 @@ import {
 } from "./df233-packaged-queue-product-smoke-ingestion";
 import { parseDf233QueueEvidenceJson } from "./df233-packaged-queue-evidence-schema";
 
-const PACKAGE_SHA = "79558b1114d295ddd80fa8068818aeb5bb6b74b4b4b0335981f057824e997163";
+const PACKAGE_SHA = "bdb64f343b721a435889377d6449d18d537fe27a11ac41be343c481c483688ee";
 const SUMMARY_PATH =
   "docs/live-evidence/codex-image/df233-queue-controls-smoke-20260622/summary.json";
 const SESSION_ID = "df233_product_queue_smoke_20260622";

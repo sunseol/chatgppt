@@ -4,8 +4,8 @@
   "status": "ready",
   "validationKind": "ready",
   "generatedAt": "2026-06-22T06:18:16Z",
-  "packageArchiveSha256": "79558b1114d295ddd80fa8068818aeb5bb6b74b4b4b0335981f057824e997163",
-  "summary": "DF-244 is ready: the current dry-run package captured a packaged app-surface Codex Generate export run through the localhost bridge, generated one real Codex OAuth image, persisted the same-job pre-generation image billing confirmation into the project folder export, copied the image, queue, confirmation, usage summary, and export artifacts into docs/live-evidence, and reproduced a ready packaged usage candidate with latency, retry count, image count, and confirmation display evidence tied to package archive 79558b1114d295ddd80fa8068818aeb5bb6b74b4b4b0335981f057824e997163.",
+  "packageArchiveSha256": "bdb64f343b721a435889377d6449d18d537fe27a11ac41be343c481c483688ee",
+  "summary": "DF-244 is ready: the current dry-run package captured a packaged app-surface Codex Generate export run through the localhost bridge, generated one real Codex OAuth image, persisted the same-job pre-generation image billing confirmation into the project folder export, copied the image, queue, confirmation, usage summary, and export artifacts into docs/live-evidence, and reproduced a ready packaged usage candidate with latency, retry count, image count, and confirmation display evidence tied to package archive bdb64f343b721a435889377d6449d18d537fe27a11ac41be343c481c483688ee.",
   "currentEvidence": [
     {
       "path": "docs/live-usage-summary.md",
@@ -87,7 +87,7 @@
     },
     {
       "path": "docs/live-evidence/release/df244-product-smoke-packaged-usage-candidate-20260622.json",
-      "sha256": "1beaf3c17ccd711f860a0c9f2ad9a3efaa88604b88606329a8e027066436c609",
+      "sha256": "def91b638e1c6a146c845cf877bb2ee144380be0e88f23959d745c85bf769438",
       "kind": "blocked packaged usage candidate generated from product usage smoke"
     },
     {
@@ -206,7 +206,7 @@
     },
     {
       "path": "docs/live-evidence/release/df244-packaged-generate-export-usage-candidate-20260622.json",
-      "sha256": "dec5f7f73f357bbebb0f7a5e92fef10acbc1d6138c209da7ee903deb74de2cfc",
+      "sha256": "f1940c8d866ad07a07095601dd5ba801d42c02a8f408dd534baaf54280049c9d",
       "kind": "ready packaged usage candidate generated from packaged app-surface smoke"
     }
   ],

@@ -13,7 +13,7 @@ import {
   CURRENT_DF247_PACKAGED_INDEX_PATH,
 } from "./df247-current-release-gate-evidence";
 
-const PACKAGE_SHA = "79558b1114d295ddd80fa8068818aeb5bb6b74b4b4b0335981f057824e997163";
+const PACKAGE_SHA = "bdb64f343b721a435889377d6449d18d537fe27a11ac41be343c481c483688ee";
 const ARTIFACT_SHA = "8e34a90924cd487d5cae9608b51a975e352c53285f5b77bc5b2bbd14cc343267";
 const DECISION_SHA = "719f63f024e9e914ee694138257fab95c17e5be0bfca48f38f46c9c70dbb9278";
 
@@ -21,7 +21,9 @@ describe("current DF-247 release gate evidence", () => {
   test("keeps the current open P0 list aligned with the packaged evidence index", () => {
     // Given / When / Then
     expect(CURRENT_DF247_OPEN_P0_TICKET_IDS).toEqual(
-      PACKAGED_LIVE_EVIDENCE_TICKET_IDS.filter((ticketId) => ticketId !== "DF-244"),
+      PACKAGED_LIVE_EVIDENCE_TICKET_IDS.filter(
+        (ticketId) => ticketId !== "DF-235" && ticketId !== "DF-244",
+      ),
     );
   });
 
@@ -81,11 +83,15 @@ describe("current DF-247 release gate evidence", () => {
       `p0_not_live_verified:${CURRENT_DF247_OPEN_P0_TICKET_IDS.join(",")}`,
       "live_benchmark_shortfall:DF-242",
       "golden_path_lineage_missing:DF-241",
-      `packaged_live_ticket_blocked:${PACKAGED_LIVE_EVIDENCE_TICKET_IDS.join(",")}`,
+      `packaged_live_ticket_blocked:${PACKAGED_LIVE_EVIDENCE_TICKET_IDS.filter(
+        (ticketId) => !READY_PACKAGED_TICKET_IDS.has(ticketId),
+      ).join(",")}`,
       "release_decision_blocked:blocked",
     ]);
   });
 });
+
+const READY_PACKAGED_TICKET_IDS = new Set<PackagedLiveEvidenceTicketId>(["DF-235", "DF-244"]);
 
 function blockedPackagedIndex(): PackagedLiveEvidenceIndex {
   return {
@@ -95,13 +101,17 @@ function blockedPackagedIndex(): PackagedLiveEvidenceIndex {
     entries: PACKAGED_LIVE_EVIDENCE_TICKET_IDS.map((ticketId) => ({
       ticketId,
       issueNumber: issueNumber(ticketId),
-      status: "blocked",
-      validationKind: "blocked",
+      status: readyStatus(ticketId),
+      validationKind: readyStatus(ticketId),
       packageArchiveSha256: PACKAGE_SHA,
       artifactPath: `docs/live-evidence/release/${ticketId.toLowerCase()}-evidence.json`,
       artifactSha256: ARTIFACT_SHA,
     })),
   };
+}
+
+function readyStatus(ticketId: PackagedLiveEvidenceTicketId): "ready" | "blocked" {
+  return READY_PACKAGED_TICKET_IDS.has(ticketId) ? "ready" : "blocked";
 }
 
 function issueNumber(ticketId: PackagedLiveEvidenceTicketId): number {

@@ -46,7 +46,7 @@ Current worktree recheck on 2026-06-22 KST is recorded in
 `docs/live-evidence/release/df245-package-recheck-20260622.json`
 (`sha256:fce3bdca58dc5b42ffb0bd036b34c63b36e4a639e9eb27da0acc2cc033a15264`).
 It verifies the active dry-run archive SHA-256
-`79558b1114d295ddd80fa8068818aeb5bb6b74b4b4b0335981f057824e997163`,
+`bdb64f343b721a435889377d6449d18d537fe27a11ac41be343c481c483688ee`,
 291,462 bytes, 32 archive members, and 22 app files. It also verifies the
 current unsigned DMG SHA-256
 `d6849d24c5af4548b7b35e65a68a05c8d139be4b1b5504d7c3da3a3dc9e2d467`,

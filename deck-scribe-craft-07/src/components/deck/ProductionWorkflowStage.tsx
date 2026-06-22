@@ -3,6 +3,7 @@ import { ProductionResearchNetworkPolicy } from "@/components/deck/ProductionRes
 import { ProductionResearchReview } from "@/components/deck/ProductionResearchReview";
 import { ProductionResearchWebSearchLauncher } from "@/components/deck/ProductionResearchWebSearchLauncher";
 import { ProductionTextWorkflowLauncher } from "@/components/deck/ProductionTextWorkflowLauncher";
+import { ReviewStage } from "@/components/deck/ReviewStage";
 import { StageHeader, StageScroll, StageShell } from "@/components/deck/stage-shared";
 import type { DeckProject, StepKey } from "@/lib/deck-types";
 import { getDesktopAppServerBridgeStatus } from "@/lib/desktop-app-server-bridge";
@@ -94,6 +95,10 @@ const PRODUCTION_STEP_COPY: Record<StepKey, ProductionStepCopy> = {
 
 export function ProductionWorkflowStage({ project, step, appServerBridge }: WorkflowStageProps) {
   const copy = PRODUCTION_STEP_COPY[step];
+  if (step === "review") {
+    return <ReviewStage project={project} localFallback="disabled" headerNumber={copy.num} />;
+  }
+
   const resolvedAppServerBridge = appServerBridge ?? getDesktopAppServerBridgeStatus();
   const providerMatrixView = createProviderCapabilityMatrixView(
     createNewProjectProviderMatrixInput("production", resolvedAppServerBridge),

@@ -1,11 +1,11 @@
 {
   "ticketId": "DF-235",
   "issueNumber": 149,
-  "status": "blocked",
-  "validationKind": "blocked",
-  "generatedAt": "2026-06-22T03:12:21Z",
-  "packageArchiveSha256": "79558b1114d295ddd80fa8068818aeb5bb6b74b4b4b0335981f057824e997163",
-  "summary": "A lineage-valid live v2 regenerated image now exists with provenance input lineage to the approved original artifact, static before/after preservation evidence exists, the product Review-stage writer has produced approved-candidate DF-235 JSON for that lineage-valid candidate, and the product regeneration runner now writes preserved_after_failure evidence while keeping the approved original selected. Those product smokes are now reproducibly ingested through the packaged review producer as a blocked candidate, preserving the remaining app-surface and docs-bundle gaps. The packaged Review-stage UI has not recorded approval or failed-regeneration preservation.",
+  "status": "ready",
+  "validationKind": "ready",
+  "generatedAt": "2026-06-22T07:00:10Z",
+  "packageArchiveSha256": "bdb64f343b721a435889377d6449d18d537fe27a11ac41be343c481c483688ee",
+  "summary": "DF-235 is ready: the packaged dry-run Review-stage UI restored a pending lineage-valid v2 selected-slide regeneration candidate, displayed before/after and preservation checks, approved the v2 candidate through the product ReviewStage writer, and separately proved the live-only failure path preserves the approved original and writes preserved_after_failure evidence when Codex OAuth image provenance is unavailable.",
   "currentEvidence": [
     {
       "path": "docs/live-slide-regeneration.md",
@@ -52,7 +52,7 @@
     },
     {
       "path": "docs/live-evidence/release/df235-product-smoke-packaged-review-candidate-20260622.json",
-      "sha256": "aa46b9220fe3cf94f26c06b09f71f4de420ae1b5a7dd939fb8b759e556406cce",
+      "sha256": "cd8da8a5a2d57bf915a9bb599be4410970913f06391e3860c06cff40878ce5ce",
       "kind": "blocked packaged review candidate generated from product review smokes"
     },
     {
@@ -104,11 +104,45 @@
     {
       "path": "src/lib/df235-release-evidence-artifact.test.ts",
       "kind": "DF-235 release artifact regression tying local regeneration proof to packaged blockers"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df235-packaged-review-stage-20260622/approval-review.json",
+      "sha256": "c3bac5cf2e8dc319c9de0f7d749c1a1a7a25390599893c3fcb16fdac1455f03d",
+      "kind": "packaged Review-stage approved-candidate evidence JSON"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df235-packaged-review-stage-20260622/failure-preservation-review.json",
+      "sha256": "d174ac4892951bf66c997d48ec0da467f87c19238dc65977c9c035dd261c69d3",
+      "kind": "packaged Review-stage preserved-after-failure evidence JSON"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df235-packaged-review-stage-20260622/approval-display.html",
+      "sha256": "e5418bb322345431c9c9656e87aa89bad3cfbb56c0ce423009a010ff253f1d95",
+      "kind": "packaged Review-stage approval display evidence"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df235-packaged-review-stage-20260622/failure-preservation-display.html",
+      "sha256": "a9987a83424ae622db1d45317ffc4502bbed39ece5f3645b62158765ead1b98a",
+      "kind": "packaged Review-stage failure-preservation display evidence"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df235-packaged-review-stage-20260622/packaged-review-input.json",
+      "sha256": "099c7e0f46bee554c273f8cbc9e31bd667436cddab203f1abb84f0ef2e352cca",
+      "kind": "packaged Review-stage producer input"
+    },
+    {
+      "path": "docs/live-evidence/release/df235-packaged-review-stage-candidate-20260622.json",
+      "sha256": "aa33e6d972a430feec83c0acf130bb5b4ce96c4f04e98552d3312dbc224d9e50",
+      "kind": "ready packaged Review-stage evidence candidate"
+    },
+    {
+      "path": "src/components/deck/ProductionReviewStage.integration.test.tsx",
+      "kind": "production Review-stage pending candidate regression coverage"
+    },
+    {
+      "path": "src/components/deck/ReviewRequestPanel.tsx",
+      "kind": "Review-stage request panel split to keep review surface maintainable"
     }
   ],
-  "missingEvidence": [
-    "packaged Review-stage UI run approving the lineage-valid v2 regenerated candidate",
-    "packaged Review-stage UI failed-regeneration run proving the approved original remains selected and exportable",
-    "review evidence copied into docs/live-evidence and tied to the current package hash"
-  ]
+  "missingEvidence": []
 }

@@ -16,7 +16,6 @@ export const CURRENT_DF247_PACKAGED_INDEX_PATH =
 export const CURRENT_DF247_OPEN_P0_TICKET_IDS: readonly LiveP0TicketId[] = [
   "DF-205",
   "DF-233",
-  "DF-235",
   "DF-241",
   "DF-242",
   "DF-243",

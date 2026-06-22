@@ -21,11 +21,14 @@ export type ReviewStageRegenerationResult = {
   readonly reviewEvidencePath: string | null;
 };
 
+export type ReviewStageRegenerationLocalFallback = "enabled" | "disabled";
+
 export async function runReviewStageSlideRegeneration(input: {
   readonly project: DeckProject;
   readonly slides: readonly GeneratedSlide[];
   readonly selected: number | null;
   readonly instruction: string;
+  readonly localFallback?: ReviewStageRegenerationLocalFallback;
   readonly client?: CodexImageClient;
   readonly store?: ImageArtifactStore;
   readonly storage?: Storage;
@@ -40,6 +43,20 @@ export async function runReviewStageSlideRegeneration(input: {
   if (canRunCodexLiveRegeneration(input.project, original)) {
     const liveResult = await runCodexReviewRegeneration({ ...input, original, instruction });
     if (liveResult !== undefined) return liveResult;
+  }
+
+  if (input.localFallback === "disabled") {
+    return preservedLiveRegenerationFailure(
+      { ...input, original, instruction },
+      input.store ?? createBrowserImageArtifactStore(input.storage),
+      {
+        eventId: fallbackReviewEventId({ original, now: input.now, createId: input.createId }),
+        issues: ["codex_live_regeneration_unavailable"],
+        userMessage:
+          "Live review regeneration requires approved Codex OAuth image provenance before editing.",
+        preservedSlide: original,
+      },
+    );
   }
 
   await (input.wait ?? (() => fakeAsync(null, 800)))();
@@ -174,7 +191,10 @@ function unchanged(slides: readonly GeneratedSlide[]): ReviewStageRegenerationRe
 function fallbackReviewEventId(input: {
   readonly original: GeneratedSlide;
   readonly now?: () => number;
+  readonly createId?: () => string;
 }): string {
+  const created = input.createId?.();
+  if (created !== undefined) return created;
   return `slide_${String(input.original.number).padStart(3, "0")}_${input.now?.() ?? Date.now()}`;
 }
 

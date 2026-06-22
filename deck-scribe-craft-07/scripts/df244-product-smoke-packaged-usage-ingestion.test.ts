@@ -8,7 +8,7 @@ import {
   parseDf244ProductUsageSummaryJson,
 } from "./df244-product-smoke-packaged-usage-ingestion";
 
-const PACKAGE_SHA = "79558b1114d295ddd80fa8068818aeb5bb6b74b4b4b0335981f057824e997163";
+const PACKAGE_SHA = "bdb64f343b721a435889377d6449d18d537fe27a11ac41be343c481c483688ee";
 const PRODUCT_RUN_SUMMARY_PATH =
   "docs/live-evidence/codex-image/df244-generate-export-smoke-20260622/summary.json";
 const USAGE_SUMMARY_PATH =

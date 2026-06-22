@@ -3,8 +3,8 @@
   "issueNumber": 157,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-22T06:24:28.950Z",
-  "packageArchiveSha256": "79558b1114d295ddd80fa8068818aeb5bb6b74b4b4b0335981f057824e997163",
+  "generatedAt": "2026-06-22T07:16:34.986Z",
+  "packageArchiveSha256": "bdb64f343b721a435889377d6449d18d537fe27a11ac41be343c481c483688ee",
   "packagedLiveEvidenceIndexPath": "docs/live-evidence/release/packaged-live-evidence-index.json",
   "releaseGateResult": {
     "kind": "blocked",
@@ -16,7 +16,6 @@
         "refs": [
           "DF-205",
           "DF-233",
-          "DF-235",
           "DF-241",
           "DF-242",
           "DF-243",
@@ -45,7 +44,6 @@
         "refs": [
           "DF-205",
           "DF-233",
-          "DF-235",
           "DF-241",
           "DF-242",
           "DF-243",
@@ -68,52 +66,52 @@
     {
       "path": "docs/live-release-decision.md",
       "kind": "canonical release decision",
-      "sha256": "3cd3eccc24e2da7b979e4150719d723e02f2b9a43ddcf7cf7bde2963f243e2ba"
+      "sha256": "28ba5d35123b314ea4861a26fc0c58ee5b8ac66fd6825c7df9471283a944a8dd"
     },
     {
       "path": "docs/live-evidence/release/df205-evidence.json",
       "kind": "DF-205 packaged auth and secret evidence",
-      "sha256": "d1b9e08068b6802a758e1fb57429ff4e1515db5d221031b16b98a73fef0ab8d0"
+      "sha256": "0b96d698de96240e1efa7d89e0c8e6401ea892028c2f79a944110d99fdf6d8bd"
     },
     {
       "path": "docs/live-evidence/release/df233-evidence.json",
       "kind": "DF-233 packaged queue controls evidence",
-      "sha256": "5a4a37cacdfab37591e665a50688b382bc7f8668dea7524a99b125f5d351a951"
+      "sha256": "1c2d2cd709a041bd598687c29177ca83765f8a5c5b86507ff256fb5cef984180"
     },
     {
       "path": "docs/live-evidence/release/df235-evidence.json",
       "kind": "DF-235 packaged review evidence",
-      "sha256": "631bfe16b69e647d4bd76d63992f56ac2ca96f7098d976ca0e2711caca282aa9"
+      "sha256": "8fb6c7738e8f1c37ba81de9577d33de0850f004671dc2440749eba45d474cb32"
     },
     {
       "path": "docs/live-evidence/release/df241-evidence.json",
       "kind": "DF-241 Golden Path packaged evidence",
-      "sha256": "c394a4b9aed91a7cc4f16cf519e436e833522f2499d75071f299bd7737596a78"
+      "sha256": "6199e204385febb1711ec3581e4e0ee186ecb57b5e9b01c188efe2cddd6040cf"
     },
     {
       "path": "docs/live-evidence/release/df242-evidence.json",
       "kind": "DF-242 benchmark packaged evidence",
-      "sha256": "d62fe31ae1bdb2fecb1a12e2082a875b139caca961650bf16cdaf7f5ce0ae847"
+      "sha256": "796b10d08bc454a115b2b419a5ba31d82374099f90eccfea232fe13ec6323ecb"
     },
     {
       "path": "docs/live-evidence/release/df243-evidence.json",
       "kind": "DF-243 interruption closure evidence",
-      "sha256": "8a3d1a3645117dc1219b14bd7a9afa0db44e9943cd1bd8013153359d4c0393f1"
+      "sha256": "3c66dfe1b3f4e18d65c146d35ec01867f7bbad17bc1a28b4140567a7f6cbc52b"
     },
     {
       "path": "docs/live-evidence/release/df244-evidence.json",
       "kind": "DF-244 packaged usage evidence",
-      "sha256": "256959cf2b29d7b8c41dc7fce95a7d3b8e7a10a7f6b3de82f2efffbe63965cb6"
+      "sha256": "5d48bb04efdc6393e0299d95c3819279c750a626b3ddc859defacf991350aa93"
     },
     {
       "path": "docs/live-evidence/release/df245-evidence.json",
       "kind": "DF-245 production packaging evidence",
-      "sha256": "c3ad12fe5e1573215a604ded58b7b7fb5bcdd9f3e18b0b3f916a1a13dff064f6"
+      "sha256": "9f0ed3c2b4a54d41561d7b74e60deb83136300e5e6380a19290eda85b7e266fc"
     },
     {
       "path": "docs/live-evidence/release/df246-evidence.json",
       "kind": "DF-246 packaged manual QA evidence",
-      "sha256": "3b0c66f4612c9f74b48d3ff760bae3971591f103c2f53608ccb4ccfbe0849b29"
+      "sha256": "0877bebd6ecbec7f388386f2bf7930c3842cc628bc9923e71a3ff03baf28b78d"
     },
     {
       "path": "docs/live-evidence/release/packaged-live-evidence-index.json",
@@ -121,10 +119,10 @@
     }
   ],
   "missingEvidence": [
-    "p0_not_live_verified:DF-205,DF-233,DF-235,DF-241,DF-242,DF-243,DF-245,DF-246,DF-247",
+    "p0_not_live_verified:DF-205,DF-233,DF-241,DF-242,DF-243,DF-245,DF-246,DF-247",
     "live_benchmark_shortfall:DF-242",
     "golden_path_lineage_missing:DF-241",
-    "packaged_live_ticket_blocked:DF-205,DF-233,DF-235,DF-241,DF-242,DF-243,DF-245,DF-246,DF-247",
+    "packaged_live_ticket_blocked:DF-205,DF-233,DF-241,DF-242,DF-243,DF-245,DF-246,DF-247",
     "release_decision_blocked:blocked"
   ]
 }

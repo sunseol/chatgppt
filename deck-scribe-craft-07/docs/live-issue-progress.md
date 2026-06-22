@@ -55,29 +55,30 @@ matrix, then runs the existing DF-243 closure validator. This still does not
 close DF-243; the missing input is the actual packaged app interruption matrix
 and copied `docs/live-evidence/...` artifact bundle.
 
-DF-235 local update: packaged Review-stage evidence now has a runnable intake at
+DF-235 ready update: packaged Review-stage evidence now has a runnable intake at
 `scripts/produce-df235-packaged-review-evidence.ts`, with schema parsing in
 `scripts/df235-packaged-review-evidence-schema.ts` and same-session review proof
 assembly in `scripts/df235-packaged-review-evidence-producer.ts`. The package
 script `bun run evidence:df235:produce -- <review-input.json> [output.json]`
 requires packaged Review-stage approval proof, failed-regeneration preservation
 proof, copied `docs/live-evidence/...` review JSON, and visible before/after plus
-preservation display artifacts before returning `ready`. This still does not
-close DF-235; the missing input is the actual packaged Review-stage UI run that
-captures both approval and failure-preservation proof against the current
-package.
+preservation display artifacts before returning `ready`. The current
+`docs/live-evidence/release/df235-evidence.json` artifact is now `ready` from a
+packaged dry-run Review-stage UI run that restored a lineage-valid v2 candidate,
+approved it through the product ReviewStage writer, and separately captured the
+live-only failure-preservation path against the current package.
 
-DF-244 local update: packaged usage disclosure evidence now has a runnable
+DF-244 ready update: packaged usage disclosure evidence now has a runnable
 intake at `scripts/produce-df244-packaged-usage-evidence.ts`, with schema
 parsing in `scripts/df244-packaged-usage-evidence-schema.ts` and
 validator-backed usage-stage assembly in
 `scripts/df244-packaged-usage-evidence-producer.ts`. The package script
 `bun run evidence:df244:produce -- <usage-input.json> [output.json]` validates a
 same-run product summary, Codex OAuth billing confirmation record, usage
-summary, and visible display proof through `evaluateLiveUsageSummary`. This
-still does not close DF-244; the missing input is the actual packaged app usage
-bundle with persisted confirmation JSON plus screenshot or recording proof for
-latency, retry count, image count, and confirmation display.
+summary, and visible display proof through `evaluateLiveUsageSummary`. The
+current `docs/live-evidence/release/df244-evidence.json` artifact is `ready`
+from the packaged dry-run Generate/export usage smoke and same-job persisted
+Codex OAuth billing confirmation evidence.
 
 DF-245 local update: production packaging evidence now has a runnable intake at
 `scripts/produce-df245-production-packaging-evidence.ts`, with schema parsing in
@@ -112,20 +113,20 @@ approved selected-slide regeneration, title edit, export, and restart/reopen
 evidence.
 
 DF-247 local update: the Packaged Live evidence index now requires blocked or
-ready JSON artifacts for all ten remaining open P0 tickets: DF-205, DF-233,
-DF-235, DF-241, DF-242, DF-243, DF-244, DF-245, DF-246, and DF-247. The branch
-now includes blocked release evidence artifacts for DF-205 auth/secret
-lifecycle, DF-233 image queue/retry/cancel/resume, DF-235 selected-slide
-regeneration approval/preservation, and DF-244 usage disclosure alongside the
-existing DF-241/242/243/245/246/247 artifacts.
+ready JSON artifacts for all ten tracked release evidence tickets: DF-205,
+DF-233, DF-235, DF-241, DF-242, DF-243, DF-244, DF-245, DF-246, and DF-247.
+DF-235 and DF-244 are ready; the remaining blocked entries are DF-205
+auth/secret lifecycle, DF-233 image queue/retry/cancel/resume, DF-241 Golden
+Path, DF-242 benchmark, DF-243 interruption, DF-245 packaging, DF-246 manual QA,
+and DF-247 release gate.
 
 `src/lib/packaged-live-evidence-index.test.ts` now proves that a six-entry index
-which omits the still-open DF-205/233/235/244 tickets blocks with
+which omits tracked DF-205/233/235/244 tickets blocks with
 `missing_packaged_live_ticket`, and
 `src/lib/packaged-live-evidence-index-artifact.test.ts` verifies all ten
-committed entry SHA-256 digests. This still does not close any ticket; every
-entry remains `blocked` until the corresponding packaged/clean-machine/manual
-QA live evidence is genuinely produced.
+committed entry SHA-256 digests. The current index reports 2 of 10 ready
+entries and remains blocked until the remaining eight packaged/clean-machine/
+manual-QA release evidence artifacts are genuinely produced.
 
 DF-247 local update: the shared Packaged Live evidence index now has a
 regeneration command, `bun run evidence:packaged-index:produce --
@@ -133,7 +134,7 @@ docs/live-evidence/release/packaged-live-evidence-index.json [generatedAt]`.
 It reads the ten canonical child evidence JSON artifacts, recalculates each
 entry SHA-256 digest, preserves each child artifact's `status`,
 `validationKind`, issue number, and package hash, and writes the canonical
-ticket order. The current regenerated index still blocks because all ten child
+ticket order. The current regenerated index still blocks because eight child
 artifacts remain blocked, but future real evidence can now update DF-247 without
 manual hash editing.
 
@@ -159,8 +160,8 @@ without a SHA-256 digest to avoid a circular DF-247/index hash dependency.
 
 Current package basis for this index: `bun run package:dry-run` produced
 `dist/deckforge-macos-dry-run.tgz` with SHA-256
-`79558b1114d295ddd80fa8068818aeb5bb6b74b4b4b0335981f057824e997163`,
-291,462 bytes, 32 archive members, and 22 app files.
+`bdb64f343b721a435889377d6449d18d537fe27a11ac41be343c481c483688ee`,
+336,282 bytes, 32 archive members, and 22 app files.
 The dry-run package path now writes a deterministic sorted tar/gzip archive and
 normalizes prerendered TanStack route-match `u:` timestamps; the current
 launcher runs a package wrapper that serves emitted JS/CSS assets from
@@ -1842,7 +1843,7 @@ unsigned DMG, content-scan result, and signing/Gatekeeper blockers at
 `docs/live-evidence/release/df245-package-recheck-20260622.json`
 (`sha256:fce3bdca58dc5b42ffb0bd036b34c63b36e4a639e9eb27da0acc2cc033a15264`).
 The active dry-run archive is
-`79558b1114d295ddd80fa8068818aeb5bb6b74b4b4b0335981f057824e997163`
+`bdb64f343b721a435889377d6449d18d537fe27a11ac41be343c481c483688ee`
 with 291,462 bytes, 32 archive members, and 22 app files; the unsigned DMG is
 `d6849d24c5af4548b7b35e65a68a05c8d139be4b1b5504d7c3da3a3dc9e2d467`
 with checksum verification `OK`. Fixed-string and credential regex scans pass
@@ -1854,7 +1855,7 @@ and clean macOS account evidence.
 DF-205 current package secret-scan update: the same current-package recheck now
 backs `docs/live-evidence/release/df205-evidence.json` as DF-205 auth/secret
 lifecycle evidence. It proves the active dry-run archive
-`sha256:79558b1114d295ddd80fa8068818aeb5bb6b74b4b4b0335981f057824e997163`
+`sha256:bdb64f343b721a435889377d6449d18d537fe27a11ac41be343c481c483688ee`
 and native app scan clean for configured Codex/OpenAI secret markers, bundled
 `auth.json`, local workspace paths, assigned session/API-key patterns, and long
 Bearer tokens. This removes the stale-current-package scan gap in DF-205

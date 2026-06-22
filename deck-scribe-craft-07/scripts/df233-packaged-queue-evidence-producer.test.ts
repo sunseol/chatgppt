@@ -4,7 +4,7 @@ import {
   produceDf233PackagedQueueEvidence,
 } from "./df233-packaged-queue-evidence-producer";
 
-const PACKAGE_SHA = "79558b1114d295ddd80fa8068818aeb5bb6b74b4b4b0335981f057824e997163";
+const PACKAGE_SHA = "bdb64f343b721a435889377d6449d18d537fe27a11ac41be343c481c483688ee";
 const CAPTURED_AT = "2026-06-22T06:15:00.000Z";
 const SESSION_ID = "df233_packaged_queue_20260622";
 
