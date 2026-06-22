@@ -3,9 +3,9 @@
   "issueNumber": 155,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-21T23:59:57Z",
+  "generatedAt": "2026-06-22T00:55:00Z",
   "packageArchiveSha256": "0354291e6c6ac847335ba5095e088d1122a3bf93937589021edabb3e4fbcc913",
-  "summary": "Current dry-run package and unsigned DMG artifacts were rechecked against the active package basis, scan clean locally for configured mock/secret/local-path markers, and packaging evidence validates release-trust and clean-machine JSON payload shape. The DMG is still unsigned, not notarized, not stapled, and not accepted by Gatekeeper.",
+  "summary": "Current dry-run package and unsigned DMG artifacts were rechecked against the active package basis, scan clean locally for configured mock/secret/local-path markers, and the dry-run launcher serves the app root from a temporary HOME with HTTP 200. Packaging evidence validates release-trust and clean-machine JSON payload shape. The DMG is still unsigned, not notarized, not stapled, and not accepted by Gatekeeper.",
   "currentEvidence": [
     {
       "path": "dist/deckforge-macos-dry-run.tgz",
@@ -23,8 +23,17 @@
       "kind": "current package and signing blocker recheck"
     },
     {
+      "path": "docs/live-evidence/release/df245-dry-run-launch-smoke-20260622.json",
+      "sha256": "40d36ccff88fbdba486529253d5f4eba3080fdccf20cb29a0da9104a75a32c7a",
+      "kind": "developer-worktree unsigned dry-run launch smoke with temporary HOME and HTTP 200 root probe"
+    },
+    {
       "path": "scripts/generate-df245-package-recheck.mjs",
       "kind": "reproducible DF-245 package recheck generator"
+    },
+    {
+      "path": "scripts/generate-df245-dry-run-launch-smoke.mjs",
+      "kind": "reproducible dry-run launch smoke generator"
     },
     {
       "path": "docs/production-clean-machine-runbook.md",
@@ -57,6 +66,7 @@
     "stapled DMG or app",
     "Gatekeeper accepted assessment",
     "persisted release-trust JSON bundle",
-    "clean macOS account install, Codex login, image credential setup, project launch, and first live interview evidence"
+    "clean macOS account install, Codex login, image credential setup, project launch, and first live interview evidence",
+    "signed/notarized packaged launch smoke; current dry-run launch smoke is developer-worktree evidence only"
   ]
 }

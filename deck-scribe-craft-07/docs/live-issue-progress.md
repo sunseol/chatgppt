@@ -1674,3 +1674,14 @@ final validation bundle, and restart/reopen evidence. The same candidate records
 DF-242 as 0 of 5 passed benchmarks with all five output bundles missing. This
 does not close either issue, but it removes ambiguity about which existing live
 artifacts can be reused and which evidence must still come from packaged runs.
+
+DF-245 dry-run launch smoke update:
+`scripts/generate-df245-dry-run-launch-smoke.mjs` now starts the current unsigned
+dry-run app launcher from `dist/deckforge-macos-dry-run/DeckForge.app`, uses a
+temporary HOME, probes `http://127.0.0.1:4186/`, and records HTTP 200 with
+`text/html; charset=utf-8` and 12,596 response bytes at
+`docs/live-evidence/release/df245-dry-run-launch-smoke-20260622.json`
+(`sha256:40d36ccff88fbdba486529253d5f4eba3080fdccf20cb29a0da9104a75a32c7a`).
+This proves the current dry-run package can serve the app root in the developer
+worktree, but DF-245 remains open because this is still unsigned, unnotarized,
+not Gatekeeper-accepted, and not clean-machine evidence.

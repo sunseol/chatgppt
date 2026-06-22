@@ -212,3 +212,14 @@ or five packaged benchmark runs.
 Release remains `Blocked`: DF-241 still lacks packaged login/title-edit,
 signed report, screenshots/recording, final validation bundle, and restart
 evidence; DF-242 still has 0 of 5 passed live benchmarks and no output bundles.
+
+## 2026-06-22 DF-245 Dry-Run Launch Smoke
+
+The current unsigned dry-run app launcher was executed from a temporary HOME and
+served the app root at `http://127.0.0.1:4186/` with HTTP 200 and a 12,596-byte
+HTML response. The evidence is recorded at
+`docs/live-evidence/release/df245-dry-run-launch-smoke-20260622.json`.
+
+Release remains `Blocked`: this is developer-worktree dry-run evidence only, not
+Developer ID signed, notarized, stapled, Gatekeeper-accepted, or clean-machine
+package evidence.

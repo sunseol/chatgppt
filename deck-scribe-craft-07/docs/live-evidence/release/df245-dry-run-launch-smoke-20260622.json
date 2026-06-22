@@ -1,0 +1,35 @@
+{
+  "capturedAt": "2026-06-22T00:55:00Z",
+  "evidenceKind": "df245-dry-run-launch-smoke",
+  "status": "passed",
+  "scope": "developer-worktree unsigned dry-run launch smoke; not clean-machine, signed, notarized, or Gatekeeper evidence",
+  "packageArchive": {
+    "path": "dist/deckforge-macos-dry-run.tgz",
+    "sha256": "0354291e6c6ac847335ba5095e088d1122a3bf93937589021edabb3e4fbcc913"
+  },
+  "dryRunApp": {
+    "launcherPath": "dist/deckforge-macos-dry-run/DeckForge.app/Contents/MacOS/deckforge",
+    "host": "127.0.0.1",
+    "port": "4186",
+    "temporaryHome": "created-and-removed"
+  },
+  "httpProbe": {
+    "url": "http://127.0.0.1:4186/",
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyBytes": 12596
+  },
+  "process": {
+    "stdout": [
+      "Started development server: http://localhost:4186"
+    ],
+    "stderr": [],
+    "terminatedWith": "SIGTERM"
+  },
+  "blockers": [
+    "Developer ID signing not present",
+    "notarization and stapling not present",
+    "Gatekeeper acceptance not present",
+    "clean macOS account execution not present"
+  ]
+}
