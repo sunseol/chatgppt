@@ -3,9 +3,9 @@
   "issueNumber": 152,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-21T22:03:38Z",
+  "generatedAt": "2026-06-22T00:43:56Z",
   "packageArchiveSha256": "0354291e6c6ac847335ba5095e088d1122a3bf93937589021edabb3e4fbcc913",
-  "summary": "The live benchmark validator is implemented and now rejects benchmark output bundle paths borrowed from another DF-242 scenario, but no five-scenario packaged benchmark output bundle set exists.",
+  "summary": "The live benchmark validator is implemented and now rejects benchmark output bundle paths borrowed from another DF-242 scenario. The current DF-241/DF-242 candidate collector proves existing live artifacts can be assembled into a blocked Golden Path candidate, but there are still zero packaged benchmark output bundles and zero passed live benchmarks.",
   "currentEvidence": [
     {
       "path": "docs/live-benchmark-report.md",
@@ -30,12 +30,26 @@
     {
       "path": "docs/live-release-decision.md",
       "kind": "release decision recording 0 of 5 live benchmark passes"
+    },
+    {
+      "path": "docs/live-evidence/release/df241-df242-candidate-20260622.json",
+      "sha256": "066cc2a5ff823269beb5f5079c878c3ec5b7aa3d4051a7cbfde2bc6df014744f",
+      "kind": "blocked current-candidate benchmark basis with 0 of 5 passed live benchmarks"
+    },
+    {
+      "path": "scripts/collect-df241-df242-candidate-evidence.ts",
+      "kind": "reproducible candidate benchmark evidence collector"
+    },
+    {
+      "path": "scripts/df241-df242-candidate-evidence-support.test.ts",
+      "kind": "candidate collector regression coverage"
     }
   ],
   "missingEvidence": [
     "five distinct packaged benchmark output bundles",
     "at least four named live benchmark passes with failureDomain none",
     "scenario reports and live_e2e_report.md paths for each passed benchmark",
-    "per-benchmark source, image, regeneration, screenshot, export, and provider turn evidence tied to the current package hash"
+    "per-benchmark source, image, regeneration, screenshot, export, and provider turn evidence tied to the current package hash",
+    "all five benchmark outputBundlePath values, which the candidate validator still reports as missing"
   ]
 }

@@ -199,3 +199,16 @@ The DF-247 release-gate evidence and Packaged Live evidence index were refreshed
 with the updated DF-246/DF-247 artifact hashes. Release remains `Blocked` until
 the upstream packaged evidence entries become ready and the canonical release
 decision is approved.
+
+## 2026-06-22 DF-241/DF-242 Candidate Evidence
+
+The current evidence collector at `scripts/collect-df241-df242-candidate-evidence.ts`
+materializes a blocked candidate bundle at
+`docs/live-evidence/release/df241-df242-candidate-20260622.json`. It proves the
+existing live text, source, image, regeneration, and export artifacts are
+available for review, but also proves they are not a signed packaged Golden Path
+or five packaged benchmark runs.
+
+Release remains `Blocked`: DF-241 still lacks packaged login/title-edit,
+signed report, screenshots/recording, final validation bundle, and restart
+evidence; DF-242 still has 0 of 5 passed live benchmarks and no output bundles.

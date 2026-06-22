@@ -1660,3 +1660,17 @@ blocked release-gate inputs. The Packaged Live evidence index was refreshed with
 the new DF-246 and DF-247 artifact digests. DF-247 remains open because the
 upstream P0 entries, signed/clean-machine package evidence, non-developer manual
 QA, and approved release decision are still missing.
+
+DF-241/DF-242 current-candidate evidence update:
+`scripts/collect-df241-df242-candidate-evidence.ts` now regenerates
+`docs/live-evidence/release/df241-df242-candidate-20260622.json`
+(`sha256:066cc2a5ff823269beb5f5079c878c3ec5b7aa3d4051a7cbfde2bc6df014744f`).
+The candidate assembles the existing live text lineage, three real source
+artifacts, five initial Codex OAuth images, one regenerated Codex OAuth image,
+and DF-240 export evidence into the DF-241 validator shape, then records the
+honest blocked result. The validator now reports the remaining DF-241 gaps as
+missing packaged login, title edit, signed report, step screenshots/recording,
+final validation bundle, and restart/reopen evidence. The same candidate records
+DF-242 as 0 of 5 passed benchmarks with all five output bundles missing. This
+does not close either issue, but it removes ambiguity about which existing live
+artifacts can be reused and which evidence must still come from packaged runs.
