@@ -4,7 +4,7 @@
   "scenarioId": "cancel_job",
   "projectId": "df243_cancel_product_smoke_20260622",
   "jobId": "cancel_product_run_20260622",
-  "exportedAt": 1782084950182,
+  "exportedAt": 1782091708165,
   "recoverySnapshotScope": "app_storage",
   "jobStatusAfterRestart": "cancelled",
   "completedArtifactIdsBefore": [],
@@ -26,9 +26,9 @@
     "capability": "imageGeneration",
     "description": "Generate slide 1",
     "status": "cancelled",
-    "createdAt": 1782084949190,
-    "startedAt": 1782084949190,
-    "finishedAt": 1782084949191,
+    "createdAt": 1782091707191,
+    "startedAt": 1782091707191,
+    "finishedAt": 1782091707191,
     "attempt": 1,
     "cancelRequested": true,
     "errorMessage": "Provider job \"live_job_cancel_product_1\" was cancelled."
@@ -41,7 +41,7 @@
     "stage": "slide-generation",
     "artifactId": "bundle_deckctx_b17b00d3_slide_01",
     "jobId": "live_job_cancel_product_1",
-    "recordedAt": 1782084949190
+    "recordedAt": 1782091707191
   },
   "cancelSignalEvidencePath": "projects/df243_cancel_product_smoke_20260622/live-evidence/df243-cancel-job-cancel-signal-cancel_product_run_20260622.json"
 }

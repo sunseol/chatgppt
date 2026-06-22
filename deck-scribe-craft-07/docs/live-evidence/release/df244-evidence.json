@@ -3,7 +3,7 @@
   "issueNumber": 154,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-21T23:28:26Z",
+  "generatedAt": "2026-06-22T01:29:20Z",
   "packageArchiveSha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
   "summary": "Live text and image usage display contracts now require Codex OAuth-shaped image confirmation with apiKeyRequired false and confirmation evidence bound to the same provider job. The Generate stage now mirrors confirmed Codex OAuth image billing records into project artifact storage before generation, the desktop image schema is App Server strict, local project folder export includes those project-scoped browser artifact writes, Lane D shows real image latency/count display, and a product-run smoke captured same-job confirmation plus one real Codex image whose product usage summary resolves to confirmed Codex OAuth. No packaged-app run has captured the pre-generation confirmation JSON from the same run.",
   "currentEvidence": [
@@ -82,7 +82,7 @@
     },
     {
       "path": "docs/live-evidence/codex-image/df244-generate-export-usage-summary-20260622.json",
-      "sha256": "a262756f8857306d1f6371b9c13cbd0a0c8844c99d02e651a78d25c6f27fbe2c",
+      "sha256": "0776224d96f02140f7ee6f03a8a09ba5d56b5b8c8c6142b545b7de722e31b49f",
       "kind": "product-run usage summary resolved from same-job confirmation"
     },
     {

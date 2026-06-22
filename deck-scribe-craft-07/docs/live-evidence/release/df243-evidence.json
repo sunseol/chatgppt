@@ -3,7 +3,7 @@
   "issueNumber": 153,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-22T00:10:00Z",
+  "generatedAt": "2026-06-22T01:29:20Z",
   "packageArchiveSha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
   "summary": "The interruption closure manifest materializes the observed text-turn and fetch-shutdown recovery snapshots. Product smokes now prove that an in-flight Codex image queue output returned after cancellation is rejected, the job is stored as cancelled with cancelRequested true, the DF-243 cancel writer persists separate app-storage recovery and cancel-signal JSON, the image partial-resume writer persists a pending-to-resumed recovery snapshot, the interrupted artifact gate writer persists distinct approval/export gate JSON, and local project folder export carries those project-scoped artifacts. The release remains blocked until packaged image partial-resume, packaged cancel, and interrupted approval/export artifacts are captured from the app surface and copied into the canonical evidence bundle.",
   "currentEvidence": [
@@ -29,7 +29,7 @@
     },
     {
       "path": "docs/live-evidence/codex-image/df243-cancel-product-smoke-20260622/summary.json",
-      "sha256": "baca4adc1124248d13fd0c2db38759ff6b25835460cf3f58847e8bc7cc7a7ed8",
+      "sha256": "fe4d6261d769e47e2eb06d274e0165826709c26c8f3fdfc6a82b148ea937646d",
       "kind": "product queue cancel writer smoke summary"
     },
     {
@@ -49,12 +49,12 @@
     },
     {
       "path": "projects/df243_cancel_product_smoke_20260622/live-evidence/df243-cancel-job-recovery-snapshot-cancel_product_run_20260622.json",
-      "sha256": "ff1da9cbfce7afbf36854de2c98c4bb04d123cd453fa6aeb568e896d3c64b049",
+      "sha256": "4478d369a52499dfe7de7d651fa7f0ee5caa4bfc58cb523d81401320d767aee4",
       "kind": "product-written cancel-job app-storage recovery snapshot"
     },
     {
       "path": "projects/df243_cancel_product_smoke_20260622/live-evidence/df243-cancel-job-cancel-signal-cancel_product_run_20260622.json",
-      "sha256": "0ef3c55b969e5111d941feaa9c6f051f1763866457990e0eebee8d3f38629a68",
+      "sha256": "49c03b6030f1a5aabe920f8757a207f64626128baac490ab15d22e0066a7cb27",
       "kind": "product-written cancel signal evidence"
     },
     {

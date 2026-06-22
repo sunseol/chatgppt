@@ -203,7 +203,7 @@ consumes the product-run confirmation JSON from
 `df244_generate_export_smoke_20260622` and emits
 `confirmed_app_surface_pre_generation_codex_oauth` in
 `docs/live-evidence/codex-image/df244-generate-export-usage-summary-20260622.json`
-(`sha256:a262756f8857306d1f6371b9c13cbd0a0c8844c99d02e651a78d25c6f27fbe2c`).
+(`sha256:0776224d96f02140f7ee6f03a8a09ba5d56b5b8c8c6142b545b7de722e31b49f`).
 The summary records provider `codex`, `imageCount: 1`, total latency
 `136903ms`, hidden cost because no billable cost was supplied, and the canonical
 confirmation record path from the same product run. This proves the usage

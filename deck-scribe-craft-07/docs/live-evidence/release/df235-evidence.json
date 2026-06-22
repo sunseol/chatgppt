@@ -3,7 +3,7 @@
   "issueNumber": 149,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-21T23:46:19Z",
+  "generatedAt": "2026-06-22T01:29:20Z",
   "packageArchiveSha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
   "summary": "A lineage-valid live v2 regenerated image now exists with provenance input lineage to the approved original artifact, static before/after preservation evidence exists, the product Review-stage writer has produced approved-candidate DF-235 JSON for that lineage-valid candidate, and the product regeneration runner now writes preserved_after_failure evidence while keeping the approved original selected. The packaged Review-stage UI has not recorded approval or failed-regeneration preservation.",
   "currentEvidence": [
@@ -37,7 +37,7 @@
     },
     {
       "path": "docs/live-evidence/codex-image/df235-review-approval-evidence-20260622.json",
-      "sha256": "d738e4bc6da620250c352594bc0041f196c8667c4cc34421e0c2e9a60e290f11",
+      "sha256": "5d65e568eef17846e30db1fcc0688cecda8ab7a94adfc0f40c326e8af60c104a",
       "kind": "review approval evidence smoke summary"
     },
     {

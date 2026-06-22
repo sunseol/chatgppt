@@ -1504,7 +1504,7 @@ replayed the lineage-valid v2 Codex regeneration candidate through
 (`sha256:cf6487e96a4b7023dd0dc47dceaef98dafb3ce80fced739fa49a65e7d5c105dc`).
 The companion summary at
 `docs/live-evidence/codex-image/df235-review-approval-evidence-20260622.json`
-(`sha256:d738e4bc6da620250c352594bc0041f196c8667c4cc34421e0c2e9a60e290f11`)
+(`sha256:5d65e568eef17846e30db1fcc0688cecda8ab7a94adfc0f40c326e8af60c104a`)
 records outcome `approved`, regenerated slide 3 version 2, the approved
 original artifact id, regenerated background artifact id/hash, and exact
 preservation checks. This removes the product-writer approved JSON gap, but
@@ -1517,7 +1517,7 @@ fed the real product-run confirmation JSON from
 `df244_generate_export_smoke_20260622` through the Lane D confirmation resolver
 and wrote
 `docs/live-evidence/codex-image/df244-generate-export-usage-summary-20260622.json`
-(`sha256:a262756f8857306d1f6371b9c13cbd0a0c8844c99d02e651a78d25c6f27fbe2c`).
+(`sha256:0776224d96f02140f7ee6f03a8a09ba5d56b5b8c8c6142b545b7de722e31b49f`).
 The summary now reports `confirmed_app_surface_pre_generation_codex_oauth`,
 provider `codex`, `imageCount: 1`, latency `136903ms`, hidden cost, and the
 same product confirmation record path. This removes the product-run usage
@@ -1533,13 +1533,13 @@ rejects that late output (`acceptedSlides: []`) while storing job
 DF-243 cancel writer then persists separate app-storage recovery and cancel
 signal JSON at
 `projects/df243_cancel_product_smoke_20260622/live-evidence/df243-cancel-job-recovery-snapshot-cancel_product_run_20260622.json`
-(`sha256:ff1da9cbfce7afbf36854de2c98c4bb04d123cd453fa6aeb568e896d3c64b049`)
+(`sha256:4478d369a52499dfe7de7d651fa7f0ee5caa4bfc58cb523d81401320d767aee4`)
 and
 `projects/df243_cancel_product_smoke_20260622/live-evidence/df243-cancel-job-cancel-signal-cancel_product_run_20260622.json`
-(`sha256:0ef3c55b969e5111d941feaa9c6f051f1763866457990e0eebee8d3f38629a68`).
+(`sha256:49c03b6030f1a5aabe920f8757a207f64626128baac490ab15d22e0066a7cb27`).
 The smoke summary at
 `docs/live-evidence/codex-image/df243-cancel-product-smoke-20260622/summary.json`
-(`sha256:baca4adc1124248d13fd0c2db38759ff6b25835460cf3f58847e8bc7cc7a7ed8`)
+(`sha256:fe4d6261d769e47e2eb06d274e0165826709c26c8f3fdfc6a82b148ea937646d`)
 also records that the local project folder export includes both cancel
 artifacts, and its companion matrix JSON validates as `ready`. This removes the
 local product-writer cancellation gap, but DF-243 remains open until the same
@@ -1580,18 +1580,18 @@ cancellation, and restart-resume paths. The retry run records two transient
 (`server:1:100`, `server:2:200`), succeeds on attempt 3, and writes ready queue
 evidence at
 `projects/df233_queue_retry_smoke_20260622/live-evidence/df233-image-queue-retry_product_run_20260622.json`
-(`sha256:000e84094b6069991c09ed0302ab9d065b017637dcabb81195e58ad28b9284c9`).
+(`sha256:c25ade822845e8a8d7b34a00d0a4f49384132ba933ca763cb983c207cb86798f`).
 The cancellation run requests cancellation while the provider worker returns a
 late slide 1 output, rejects that output (`acceptedSlides: []`), records
 `live_job_cancel_product_1` as `cancelled` with `cancelRequested: true`, and
 writes ready queue evidence at
 `projects/df233_queue_cancel_smoke_20260622/live-evidence/df233-image-queue-cancel_product_run_20260622.json`
-(`sha256:ef8fa5773b21574b99303177090d735d7b77ea40fb84ee4fefdff6e7912a3a2b`).
+(`sha256:285b66b7c12e83e47f975b2254cf1261f638055be63b096e4bfbbde175fa5354`).
 The resume run starts with slide 1 completed, generates only slide 2, includes
 restart-resume proof for the pending/resumed slide 2 artifact, and writes ready
 queue evidence at
 `projects/df233_queue_resume_smoke_20260622/live-evidence/df233-image-queue-resume_product_run_20260622.json`
-(`sha256:b6ad6c6fae246c9b57bacfe499de3c1f76cd134d58624aace1037813803343ff`).
+(`sha256:3ae427c48714afcd45ed9592e12a50cec65d69ce6cd70e642cb017de59cb9fa9`).
 The summary at
 `docs/live-evidence/codex-image/df233-queue-controls-smoke-20260622/summary.json`
 (`sha256:ef3049044d2c844673ee41973280e5fcd44953da771991616b73e371e2ce8a51`)
