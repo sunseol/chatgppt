@@ -210,6 +210,13 @@ existing live text, source, image, regeneration, and export artifacts are
 available for review, but also proves they are not a signed packaged Golden Path
 or five packaged benchmark runs.
 
+`scripts/produce-df241-df242-packaged-evidence.ts` now provides the handoff
+surface for real packaged-run JSON. It parses the DF-241 Golden Path bundle and
+DF-242 benchmark bundle at the JSON boundary, evaluates them through the
+existing release validators, and emits `df241-df242-packaged-run-evidence`
+without synthesizing readiness from partial artifacts. Malformed or incomplete
+input fails before it can be recorded as release evidence.
+
 Release remains `Blocked`: DF-241 still lacks packaged login/title-edit,
 signed report, screenshots/recording, final validation bundle, and restart
 evidence; DF-242 still has 0 of 5 passed live benchmarks and no output bundles.

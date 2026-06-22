@@ -6,6 +6,18 @@ Scope: tracked GitHub issues `#126` through `#157` (`DF-200` through `DF-247`).
 
 ## 2026-06-22 KST Packaged Evidence Index Covers All Open P0s
 
+DF-241 / DF-242 local update: packaged Golden Path and benchmark evidence now
+has a runnable ingestion surface at
+`scripts/produce-df241-df242-packaged-evidence.ts`, with schema parsing in
+`scripts/df241-df242-packaged-evidence-schema.ts` and validator-driven output in
+`scripts/df241-df242-packaged-evidence-producer.ts`. The package script
+`bun run evidence:df241-df242:produce -- <packaged-run.json> [output.json]`
+turns a real packaged-run JSON bundle into
+`df241-df242-packaged-run-evidence` while preserving blocked status when the
+Golden Path or benchmark validators fail. This still does not close DF-241 or
+DF-242; the missing input is the actual packaged app run bundle with signed
+Golden Path evidence and five benchmark output bundles.
+
 DF-241 local update: Golden Path regeneration image evidence now requires both
 a regeneration marker and input lineage to one of the initial live image
 artifacts. A marker-only unrelated regenerated image can no longer satisfy
