@@ -154,6 +154,18 @@ logout, live job lock/cancel state while logged out, relogin, post-relogin App
 Server smoke, packaged secret-store write/read/delete, and a persisted secret
 leak scan.
 
+2026-06-22 KST current-package secret scan evidence is recorded at
+`docs/live-evidence/release/df245-package-recheck-20260622.json`
+(`sha256:db4249cea9e39d79a05b9ecb9d3d0a8828b87f630da8dc5e3a37e761850c693a`).
+The active dry-run archive SHA-256 is
+`0354291e6c6ac847335ba5095e088d1122a3bf93937589021edabb3e4fbcc913`;
+the scan covers `dist/client`, `dist/server`, the dry-run app bundle, and the
+native `.app`, and records 0 fixed-string hits for `CODEX_SESSION=`,
+`OPENAI_API_KEY=`, bundled `auth.json`, `sk-proj-`, or `sk-svcacct-`, plus 0
+regex hits for long Bearer tokens or assigned Codex/OpenAI credentials. This is
+non-destructive developer-worktree evidence only; it does not replace clean
+login/logout/relogin or packaged keychain lifecycle QA.
+
 ## 2026-06-21 Lane I Non-Destructive Auth Recheck
 
 Lane I rechecked only non-destructive auth evidence from developer worktree

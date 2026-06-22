@@ -3,19 +3,28 @@
   "issueNumber": 155,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-21T21:33:10Z",
+  "generatedAt": "2026-06-21T23:59:57Z",
   "packageArchiveSha256": "0354291e6c6ac847335ba5095e088d1122a3bf93937589021edabb3e4fbcc913",
-  "summary": "Current package and DMG artifacts exist and scan clean locally, packaging evidence validates release-trust and clean-machine JSON payload shape, requires clean-machine step payloads to match the clean macOS account identity, and transient package/native bundle artifact paths are blocked before readiness. The DMG is still unsigned, not notarized, not stapled, and not accepted by Gatekeeper.",
+  "summary": "Current dry-run package and unsigned DMG artifacts were rechecked against the active package basis, scan clean locally for configured mock/secret/local-path markers, and packaging evidence validates release-trust and clean-machine JSON payload shape. The DMG is still unsigned, not notarized, not stapled, and not accepted by Gatekeeper.",
   "currentEvidence": [
     {
       "path": "dist/deckforge-macos-dry-run.tgz",
-      "sha256": "aacadd4cd4546ce20b084b1fbf8018e9571a635983ad9aa30b07a123c705985e",
+      "sha256": "0354291e6c6ac847335ba5095e088d1122a3bf93937589021edabb3e4fbcc913",
       "kind": "current dry-run package"
     },
     {
       "path": "release-artifacts/DeckForge_0.1.0_aarch64.dmg",
       "sha256": "d6849d24c5af4548b7b35e65a68a05c8d139be4b1b5504d7c3da3a3dc9e2d467",
       "kind": "current unsigned DMG"
+    },
+    {
+      "path": "docs/live-evidence/release/df245-package-recheck-20260622.json",
+      "sha256": "db4249cea9e39d79a05b9ecb9d3d0a8828b87f630da8dc5e3a37e761850c693a",
+      "kind": "current package and signing blocker recheck"
+    },
+    {
+      "path": "scripts/generate-df245-package-recheck.mjs",
+      "kind": "reproducible DF-245 package recheck generator"
     },
     {
       "path": "docs/production-clean-machine-runbook.md",

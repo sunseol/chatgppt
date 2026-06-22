@@ -42,6 +42,22 @@ Latest local native package build on 2026-06-21 ran `bun run tauri:build`, produ
 
 Signing state remains release-blocking: `codesign -dv --verbose=4` reports `Signature=adhoc` and `TeamIdentifier=not set`; `codesign --verify --deep --strict --verbose=4 src-tauri/target/release/bundle/macos/DeckForge.app` fails with `code has no resources but signature indicates they must be present`; `spctl --assess --type open --context context:primary-signature --verbose=4 release-artifacts/DeckForge_0.1.0_aarch64.dmg` rejects the DMG with `source=no usable signature`.
 
+Current worktree recheck on 2026-06-22 KST is recorded in
+`docs/live-evidence/release/df245-package-recheck-20260622.json`
+(`sha256:db4249cea9e39d79a05b9ecb9d3d0a8828b87f630da8dc5e3a37e761850c693a`).
+It verifies the active dry-run archive SHA-256
+`0354291e6c6ac847335ba5095e088d1122a3bf93937589021edabb3e4fbcc913`,
+284,301 bytes, 26 archive members, and 17 app files. It also verifies the
+current unsigned DMG SHA-256
+`d6849d24c5af4548b7b35e65a68a05c8d139be4b1b5504d7c3da3a3dc9e2d467`,
+1,833,575 bytes, with `shasum -a 256 -c` returning `OK`. Fixed-string scans of
+`dist/client`, `dist/server`, the dry-run app bundle, and native `.app` found 0
+hits for mock provider ids, `MOCK MODE`, mock stage markers, `.omx`,
+`.playwright-mcp`, the active local workspace path, `CODEX_SESSION=`,
+`OPENAI_API_KEY=`, bundled `auth.json`, `sk-proj-`, or `sk-svcacct-`; regex
+scans found 0 long Bearer tokens and 0 assigned Codex/OpenAI credentials. This
+is still developer-worktree evidence, not clean-machine release evidence.
+
 ## Local evidence contract
 
 `src/lib/production-packaging-evidence.ts` validates DF-245 packaging evidence before it can count toward release. Blocking issue codes:

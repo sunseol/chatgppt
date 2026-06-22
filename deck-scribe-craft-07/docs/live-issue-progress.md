@@ -1580,3 +1580,18 @@ removes the local product failed-regeneration preservation writer gap. DF-235
 remains open until the packaged Review-stage UI captures both approval of the
 lineage-valid v2 candidate and failed-regeneration preservation from the app
 surface.
+
+DF-245 current package recheck update:
+`scripts/generate-df245-package-recheck.mjs` records the active dry-run package,
+unsigned DMG, content-scan result, and signing/Gatekeeper blockers at
+`docs/live-evidence/release/df245-package-recheck-20260622.json`
+(`sha256:db4249cea9e39d79a05b9ecb9d3d0a8828b87f630da8dc5e3a37e761850c693a`).
+The active dry-run archive is
+`0354291e6c6ac847335ba5095e088d1122a3bf93937589021edabb3e4fbcc913`
+with 284,301 bytes, 26 archive members, and 17 app files; the unsigned DMG is
+`d6849d24c5af4548b7b35e65a68a05c8d139be4b1b5504d7c3da3a3dc9e2d467`
+with checksum verification `OK`. Fixed-string and credential regex scans pass
+for the configured mock/secret/local-path markers, while `security
+find-identity`, `codesign`, and `spctl` still prove the release remains blocked
+without Developer ID signing, notarization, stapling, Gatekeeper acceptance,
+and clean macOS account evidence.
