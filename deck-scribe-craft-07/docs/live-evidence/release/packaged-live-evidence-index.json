@@ -64,7 +64,7 @@
       "validationKind": "blocked",
       "packageArchiveSha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
       "artifactPath": "docs/live-evidence/release/df244-evidence.json",
-      "artifactSha256": "58f0c6fae08e31203b23d6362f2f3b1a6393a8aa4da00440dbbb1f2b95fdc6e9"
+      "artifactSha256": "5d19f5b1a15b4198dbaf239e924392be9c3df319708aa1bc2d4078c9181bc2e5"
     },
     {
       "ticketId": "DF-245",
@@ -91,7 +91,7 @@
       "validationKind": "blocked",
       "packageArchiveSha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
       "artifactPath": "docs/live-evidence/release/df247-evidence.json",
-      "artifactSha256": "d7238d5f5b90299b484df5af741021cc522e870c3bc3f99fd647993077daeb72"
+      "artifactSha256": "a05d545dc8936425adf97037a4461d5c64ab051637cc4be708ffbf00ea4f8051"
     }
   ]
 }

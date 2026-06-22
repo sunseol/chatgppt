@@ -74,6 +74,9 @@ function retryCount(input: Df244PackagedUsageInput): number {
 
 function consistencyBlockers(input: Df244PackagedUsageInput): readonly string[] {
   return [
+    ...(input.productRunSummary.evidenceKind === "packaged-live-codex-generate-export-smoke"
+      ? []
+      : ["DF-244 product run was not captured from the packaged app surface"]),
     ...(sameRunIdentity(input)
       ? []
       : ["DF-244 confirmation record does not match the packaged run"]),
@@ -83,9 +86,17 @@ function consistencyBlockers(input: Df244PackagedUsageInput): readonly string[] 
     ...(input.usageSummary.confirmationRecordPath.endsWith(input.confirmationRecord.evidencePath)
       ? []
       : ["DF-244 usage summary does not cite the confirmation record path"]),
+    ...(input.usageSummary.confirmationRecordPath.startsWith("docs/live-evidence/")
+      ? []
+      : ["DF-244 confirmation record was not copied into committed evidence bundle"]),
     ...(input.usageSummary.imageCount === input.productRunSummary.slides.length
       ? []
       : ["DF-244 image count does not match the packaged run slides"]),
+    ...(input.productRunSummary.slides.every((slide) =>
+      slide.artifactPath.startsWith("docs/live-evidence/"),
+    )
+      ? []
+      : ["DF-244 packaged image artifact path is not committed evidence"]),
     ...(input.usageSummary.totalLatencyMs === totalLatencyMs(input)
       ? []
       : ["DF-244 latency does not match the packaged run turns"]),

@@ -5,7 +5,7 @@
   "validationKind": "blocked",
   "generatedAt": "2026-06-22T02:59:10Z",
   "packageArchiveSha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
-  "summary": "Live text and image usage display contracts now require Codex OAuth-shaped image confirmation with apiKeyRequired false and confirmation evidence bound to the same provider job. The Generate stage mirrors confirmed Codex OAuth image billing records into project artifact storage before generation, desktop image turns carry a 600000ms timeout for long-running App Server image generation, the image schema is App Server strict, local project folder export includes project-scoped browser artifact writes, Lane D shows real image latency/count display, a refreshed product-run smoke captured same-job confirmation plus one real Codex image in 185181ms whose product usage summary resolves to confirmed Codex OAuth, the Lane D generator now keeps its manifest blocker aligned with whether confirmation evidence is actually present, and direct artifact regression coverage ties those local product-run files together. No packaged-app run has captured the pre-generation confirmation JSON from the same run.",
+  "summary": "Live text and image usage display contracts now require Codex OAuth-shaped image confirmation with apiKeyRequired false and confirmation evidence bound to the same provider job. The Generate stage mirrors confirmed Codex OAuth image billing records into project artifact storage before generation, desktop image turns carry a 600000ms timeout for long-running App Server image generation, the image schema is App Server strict, local project folder export includes project-scoped browser artifact writes, Lane D shows real image latency/count display, a refreshed product-run smoke captured same-job confirmation plus one real Codex image in 185181ms whose product usage summary resolves to confirmed Codex OAuth, the Lane D generator now keeps its manifest blocker aligned with whether confirmation evidence is actually present, and direct artifact regression coverage ties those local product-run files together. The product smoke is now reproducibly ingested through the packaged usage producer as a blocked candidate, preserving the remaining packaged app-surface and committed bundle gaps. No packaged-app run has captured the pre-generation confirmation JSON from the same run.",
   "currentEvidence": [
     {
       "path": "docs/live-usage-summary.md",
@@ -86,8 +86,25 @@
       "kind": "product-run usage summary resolved from same-job confirmation"
     },
     {
+      "path": "docs/live-evidence/release/df244-product-smoke-packaged-usage-candidate-20260622.json",
+      "sha256": "dad5aeca6baf442ed14b37fbc32310abb9aa338d791de5eba3bba707f420b457",
+      "kind": "blocked packaged usage candidate generated from product usage smoke"
+    },
+    {
       "path": "scripts/generate-df244-product-usage-confirmation-summary.mjs",
       "kind": "product-run usage confirmation summary generator"
+    },
+    {
+      "path": "scripts/df244-product-smoke-packaged-usage-ingestion.ts",
+      "kind": "product usage smoke to packaged usage candidate ingestion helper"
+    },
+    {
+      "path": "scripts/produce-df244-product-smoke-packaged-usage-candidate.ts",
+      "kind": "reproducible blocked packaged usage candidate generator"
+    },
+    {
+      "path": "scripts/df244-product-smoke-packaged-usage-ingestion.test.ts",
+      "kind": "product usage smoke ingestion regression coverage"
     },
     {
       "path": "src/lib/live-usage-summary.test.ts",

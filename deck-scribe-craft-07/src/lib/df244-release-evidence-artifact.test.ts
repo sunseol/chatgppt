@@ -12,6 +12,8 @@ const USAGE_SUMMARY_PATH =
   "docs/live-evidence/codex-image/df244-generate-export-usage-summary-20260622.json";
 const CONFIRMATION_RECORD_PATH =
   "projects/df244_generate_export_smoke_20260622/usage/df244_generate_export_smoke_20260622/job_generate_export_smoke_1/image-billing-confirmation.json";
+const PACKAGED_USAGE_CANDIDATE_PATH =
+  "docs/live-evidence/release/df244-product-smoke-packaged-usage-candidate-20260622.json";
 const IMAGE_PATH = "projects/df244_generate_export_smoke_20260622/slides/images/slide_001.v1.png";
 const PROJECT_ID = "df244_generate_export_smoke_20260622";
 const JOB_ID = "job_generate_export_smoke_1";
@@ -98,6 +100,23 @@ const ConfirmationRecordSchema = z
   })
   .passthrough();
 
+const PackagedUsageCandidateSchema = z
+  .object({
+    evidenceKind: z.literal("df244-packaged-usage-evidence"),
+    status: z.literal("blocked"),
+    packageArchiveSha256: z.string().regex(SHA256_HEX),
+    usageValidation: z.object({ kind: z.literal("ready") }).strict(),
+    stage: z
+      .object({
+        jobId: z.literal(JOB_ID),
+        providerKind: z.literal("codex"),
+        usage: z.object({ imageCount: z.literal(1) }).passthrough(),
+      })
+      .passthrough(),
+    releaseBlockers: z.array(z.string().min(1)),
+  })
+  .passthrough();
+
 describe("DF-244 release evidence artifact", () => {
   test("keeps usage disclosure blocked while tied to same-job Codex OAuth confirmation", () => {
     // Given
@@ -105,12 +124,14 @@ describe("DF-244 release evidence artifact", () => {
     const productRun = readJson(PRODUCT_RUN_SUMMARY_PATH, ProductRunSummarySchema);
     const usage = readJson(USAGE_SUMMARY_PATH, UsageSummarySchema);
     const confirmation = readJson(CONFIRMATION_RECORD_PATH, ConfirmationRecordSchema);
+    const packagedCandidate = readJson(PACKAGED_USAGE_CANDIDATE_PATH, PackagedUsageCandidateSchema);
 
     // When
     const releaseRefs = [
       releaseRef(evidence, PRODUCT_RUN_SUMMARY_PATH),
       releaseRef(evidence, USAGE_SUMMARY_PATH),
       releaseRef(evidence, CONFIRMATION_RECORD_PATH),
+      releaseRef(evidence, PACKAGED_USAGE_CANDIDATE_PATH),
       releaseRef(evidence, IMAGE_PATH),
     ];
 
@@ -123,6 +144,12 @@ describe("DF-244 release evidence artifact", () => {
     expect(confirmation.projectId).toBe(productRun.projectId);
     expect(confirmation.apiKeyRequired).toBe(false);
     expect(productRun.appServerTurns.length > 0).toBe(true);
+    expect(packagedCandidate.packageArchiveSha256).toBe(sha256File(PACKAGE_PATH));
+    expect(packagedCandidate.releaseBlockers).toEqual([
+      "DF-244 product run was not captured from the packaged app surface",
+      "DF-244 confirmation record was not copied into committed evidence bundle",
+      "DF-244 packaged image artifact path is not committed evidence",
+    ]);
     expect(releaseRefs.flatMap(referenceDigestIssue)).toEqual([]);
     expect(
       evidence.missingEvidence.includes(

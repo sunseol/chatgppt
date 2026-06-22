@@ -84,7 +84,7 @@ function completeInput() {
     capturedAt: CAPTURED_AT,
     packageArchiveSha256: PACKAGE_SHA,
     productRunSummary: {
-      evidenceKind: "live-codex-generate-export-smoke",
+      evidenceKind: "packaged-live-codex-generate-export-smoke",
       projectId: PROJECT_ID,
       jobId: JOB_ID,
       completedJobStatus: "succeeded",

@@ -69,7 +69,7 @@
     {
       "path": "docs/live-release-decision.md",
       "kind": "canonical release decision",
-      "sha256": "562bb5a166e1e7c33508e25ecd15264601ee0fc90a44154998eb2106e1c2ad53"
+      "sha256": "8a1bf535a77625c90811fdd4ccdf229c73d6442d98dd1cafbe5ca47ea37e564c"
     },
     {
       "path": "docs/live-evidence/release/df205-evidence.json",
@@ -104,7 +104,7 @@
     {
       "path": "docs/live-evidence/release/df244-evidence.json",
       "kind": "DF-244 packaged usage evidence",
-      "sha256": "58f0c6fae08e31203b23d6362f2f3b1a6393a8aa4da00440dbbb1f2b95fdc6e9"
+      "sha256": "5d19f5b1a15b4198dbaf239e924392be9c3df319708aa1bc2d4078c9181bc2e5"
     },
     {
       "path": "docs/live-evidence/release/df245-evidence.json",
