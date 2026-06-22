@@ -67,9 +67,14 @@ export function produceDf235PackagedReviewEvidence(
 }
 
 function reviewSessionBlockers(input: Df235PackagedReviewInput): readonly string[] {
-  return input.reviewSession.packageArchiveSha256 === input.packageArchiveSha256
-    ? []
-    : ["DF-235 packaged review session package hash does not match the release package"];
+  return [
+    ...(input.reviewSession.appSurface === "packaged_review_stage"
+      ? []
+      : ["DF-235 review session was not captured from the packaged app surface"]),
+    ...(input.reviewSession.packageArchiveSha256 === input.packageArchiveSha256
+      ? []
+      : ["DF-235 packaged review session package hash does not match the release package"]),
+  ];
 }
 
 function approvalBlockers(input: Df235PackagedReviewInput): readonly string[] {

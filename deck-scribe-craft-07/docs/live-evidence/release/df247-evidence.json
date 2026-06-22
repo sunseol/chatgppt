@@ -69,7 +69,7 @@
     {
       "path": "docs/live-release-decision.md",
       "kind": "canonical release decision",
-      "sha256": "c56ff93542914403cfb7b33175ec3a36acaf0f1f911a287e0c6f7ade923bedd7"
+      "sha256": "562bb5a166e1e7c33508e25ecd15264601ee0fc90a44154998eb2106e1c2ad53"
     },
     {
       "path": "docs/live-evidence/release/df205-evidence.json",
@@ -84,7 +84,7 @@
     {
       "path": "docs/live-evidence/release/df235-evidence.json",
       "kind": "DF-235 packaged review evidence",
-      "sha256": "3139ac5498f73f4c20359956a70fe8a1d4088aad4ea30387c2d4cfd71bf491ec"
+      "sha256": "511a5915899b107052da5dccad965935a2b6e81720ffc48a155f41002614d54b"
     },
     {
       "path": "docs/live-evidence/release/df241-evidence.json",

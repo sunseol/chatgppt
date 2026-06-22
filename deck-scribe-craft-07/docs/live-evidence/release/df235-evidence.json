@@ -5,7 +5,7 @@
   "validationKind": "blocked",
   "generatedAt": "2026-06-22T03:12:21Z",
   "packageArchiveSha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
-  "summary": "A lineage-valid live v2 regenerated image now exists with provenance input lineage to the approved original artifact, static before/after preservation evidence exists, the product Review-stage writer has produced approved-candidate DF-235 JSON for that lineage-valid candidate, and the product regeneration runner now writes preserved_after_failure evidence while keeping the approved original selected. Direct artifact regression coverage now ties those local outputs to the blocked release artifact. The packaged Review-stage UI has not recorded approval or failed-regeneration preservation.",
+  "summary": "A lineage-valid live v2 regenerated image now exists with provenance input lineage to the approved original artifact, static before/after preservation evidence exists, the product Review-stage writer has produced approved-candidate DF-235 JSON for that lineage-valid candidate, and the product regeneration runner now writes preserved_after_failure evidence while keeping the approved original selected. Those product smokes are now reproducibly ingested through the packaged review producer as a blocked candidate, preserving the remaining app-surface and docs-bundle gaps. The packaged Review-stage UI has not recorded approval or failed-regeneration preservation.",
   "currentEvidence": [
     {
       "path": "docs/live-slide-regeneration.md",
@@ -51,12 +51,29 @@
       "kind": "review failure preservation evidence smoke summary"
     },
     {
+      "path": "docs/live-evidence/release/df235-product-smoke-packaged-review-candidate-20260622.json",
+      "sha256": "c37ac56e8f8670aafb9284c584458ef8a2c2cf8a670dcf607cb2c39a07fe8d5d",
+      "kind": "blocked packaged review candidate generated from product review smokes"
+    },
+    {
       "path": "scripts/run-df235-review-approval-evidence-smoke.ts",
       "kind": "product Review-stage approval evidence smoke"
     },
     {
       "path": "scripts/run-df235-review-failure-preservation-smoke.ts",
       "kind": "product Review-stage failed-regeneration preservation smoke"
+    },
+    {
+      "path": "scripts/df235-product-smoke-packaged-review-ingestion.ts",
+      "kind": "product review smoke to packaged review candidate ingestion helper"
+    },
+    {
+      "path": "scripts/produce-df235-product-smoke-packaged-review-candidate.ts",
+      "kind": "reproducible blocked packaged review candidate generator"
+    },
+    {
+      "path": "scripts/df235-product-smoke-packaged-review-ingestion.test.ts",
+      "kind": "product review smoke ingestion regression coverage"
     },
     {
       "path": "docs/live-evidence/codex-image/lane-d-live-app-surface-20260621/df235-before-after-review.html",

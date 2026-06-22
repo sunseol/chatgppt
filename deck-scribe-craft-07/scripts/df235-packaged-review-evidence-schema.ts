@@ -88,7 +88,7 @@ const FailureDisplayEvidenceSchema = z
 const ReviewSessionSchema = z
   .object({
     sessionId: z.string().min(1),
-    appSurface: z.literal("packaged_review_stage"),
+    appSurface: z.enum(["packaged_review_stage", "product_review_stage_smoke"]),
     packageArchiveSha256: z.string().min(1),
   })
   .strict();
@@ -124,6 +124,7 @@ const PackagedReviewInputSchema = z
 export type Df235PackagedReviewInput = z.infer<typeof PackagedReviewInputSchema>;
 export type Df235PackagedReviewProof = z.infer<typeof ApprovalProofSchema>;
 export type Df235PackagedFailureProof = z.infer<typeof FailurePreservationProofSchema>;
+export type Df235ReviewEvidence = z.infer<typeof ReviewEvidenceSchema>;
 
 export class Df235PackagedReviewInputError extends Error {
   readonly issues: readonly string[];
@@ -143,9 +144,30 @@ export function parseDf235PackagedReviewInput(value: unknown): Df235PackagedRevi
   );
 }
 
+export function parseDf235ReviewEvidence(value: unknown): Df235ReviewEvidence {
+  const parsed = ReviewEvidenceSchema.safeParse(value);
+  if (parsed.success) return parsed.data;
+  throw new Df235PackagedReviewInputError(
+    parsed.error.issues.map(
+      (issue) => `${issue.path.join(".") || "reviewEvidence"}: ${issue.message}`,
+    ),
+  );
+}
+
 export function parseDf235PackagedReviewJson(raw: string): Df235PackagedReviewInput {
   try {
     return parseDf235PackagedReviewInput(JSON.parse(raw));
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      throw new Df235PackagedReviewInputError([error.message]);
+    }
+    throw error;
+  }
+}
+
+export function parseDf235ReviewEvidenceJson(raw: string): Df235ReviewEvidence {
+  try {
+    return parseDf235ReviewEvidence(JSON.parse(raw));
   } catch (error) {
     if (error instanceof SyntaxError) {
       throw new Df235PackagedReviewInputError([error.message]);
