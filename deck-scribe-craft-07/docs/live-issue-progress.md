@@ -1693,6 +1693,13 @@ scan has no hits, and clean-account login/logout, packaged Codex image capabilit
 packaged keychain lifecycle, and signed clean-machine leak-scan blockers remain
 explicit.
 
+DF-244 release artifact update: `src/lib/df244-release-evidence-artifact.test.ts`
+now reads the product Generate smoke summary, generated usage summary, and
+same-job `image-billing-confirmation.json` together. It verifies the Codex OAuth
+confirmation record belongs to the same project/job as the product run, requires
+`apiKeyRequired: false`, confirms the product summary hash, and keeps the packaged
+pre-generation confirmation/exported usage blockers explicit.
+
 DF-245 current package recheck update:
 `scripts/generate-df245-package-recheck.mjs` records the active dry-run package,
 unsigned DMG, content-scan result, and signing/Gatekeeper blockers at
