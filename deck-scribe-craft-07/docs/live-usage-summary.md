@@ -185,11 +185,12 @@ Text artifact payloads are redacted during export while base64 image binaries
 are preserved. DF-244 still requires a packaged Codex image run that actually
 produces and exports this confirmation JSON.
 
-2026-06-22 KST live product-run smoke: desktop Codex image generation now sends
+2026-06-22 KST live product-run smoke rerun: desktop Codex image generation sends
 the App Server response schema with `additionalProperties: false`, which fixed a
 pre-generation `invalid_json_schema` failure. It also sends a 600000ms
-structured-turn timeout for image generation, because the latest real Codex
-image turn completed in `252553ms`, beyond the previous 180s Tauri bridge limit.
+structured-turn timeout for image generation, because real Codex image turns have
+exceeded the previous 180s Tauri bridge limit; the latest rerun completed in
+`185181ms`.
 The smoke runner `scripts/run-live-codex-generate-export-smoke.ts` completed one
 real Codex image turn through the product Generate runner and wrote a same-job
 confirmation JSON, versioned PNG metadata/provenance, DF-233 queue evidence, and
@@ -205,9 +206,9 @@ consumes the product-run confirmation JSON from
 `df244_generate_export_smoke_20260622` and emits
 `confirmed_app_surface_pre_generation_codex_oauth` in
 `docs/live-evidence/codex-image/df244-generate-export-usage-summary-20260622.json`
-(`sha256:19d477e67d91cb35f3787c74b76fa2ce2d5755049a6986d32ae79bfcc19e4297`).
+(`sha256:fcb9d9a17f9b4886758974d68ec310ca03dfdc5b02190e8592b0e89ff8f7b907`).
 The summary records provider `codex`, `imageCount: 1`, total latency
-`252553ms`, hidden cost because no billable cost was supplied, and the canonical
+`185181ms`, hidden cost because no billable cost was supplied, and the canonical
 confirmation record path from the same product run. This proves the usage
 summary resolver can consume persisted product confirmation, but DF-244 still
 needs the same evidence from a packaged app UI run.

@@ -1507,8 +1507,8 @@ those real packaged-run artifacts are produced and copied into
 DF-244/DF-233 live product-run smoke: the desktop Codex image structured-turn
 schema now declares `additionalProperties: false`, fixing the App Server
 `invalid_json_schema` failure observed before image generation. Image generation
-also now requests a 600000ms structured-turn timeout, because the latest real
-Codex image run exceeded the previous 180s Tauri bridge limit before succeeding.
+also now requests a 600000ms structured-turn timeout, because real Codex image
+runs have exceeded the previous 180s Tauri bridge limit before succeeding.
 The smoke runner `scripts/run-live-codex-generate-export-smoke.ts` completed one
 real Codex image turn through the product Generate runner, thread
 `019eed00-dc75-7702-a706-88426836b0a0`, turn
@@ -1557,12 +1557,25 @@ fed the real product-run confirmation JSON from
 `df244_generate_export_smoke_20260622` through the Lane D confirmation resolver
 and wrote
 `docs/live-evidence/codex-image/df244-generate-export-usage-summary-20260622.json`
-(`sha256:19d477e67d91cb35f3787c74b76fa2ce2d5755049a6986d32ae79bfcc19e4297`).
+(`sha256:fcb9d9a17f9b4886758974d68ec310ca03dfdc5b02190e8592b0e89ff8f7b907`).
 The summary now reports `confirmed_app_surface_pre_generation_codex_oauth`,
-provider `codex`, `imageCount: 1`, latency `252553ms`, hidden cost, and the
+provider `codex`, `imageCount: 1`, latency `185181ms`, hidden cost, and the
 same product confirmation record path. This removes the product-run usage
 resolver gap, but DF-244 remains open until packaged UI manual QA captures and
 displays the persisted confirmation from the same real image job.
+
+DF-244 product-run rerun update: the same Codex OAuth/App Server Generate smoke
+was rerun on 2026-06-22 and completed one real image turn on thread
+`019eed41-a44d-7e22-9bbf-c1cae2f3db92`, turn
+`019eed41-a6b8-7e23-838b-ccaa677a084f`, duration `185181ms`. The refreshed
+summary hash is
+`b96e1d1a88c0b6d4e0d397f6ad1b6411cab5736d4f06f5b58caf8f18dc082606`, the
+same-job billing confirmation hash is
+`87af929efa8989a12b81b661366c0e39b5aaa6228a1216c1bdf241489afeb360`, and the
+generated PNG hash is
+`801bb7de18f3c385d05850f75d4960b6fcc375cf072ea66f0e0c8c1e91c117b6`.
+This refresh keeps DF-244 evidence current while preserving the remaining
+packaged UI/manual-QA blocker.
 
 DF-243 product cancel evidence update:
 `scripts/run-df243-cancel-product-evidence-smoke.ts` now runs the real product

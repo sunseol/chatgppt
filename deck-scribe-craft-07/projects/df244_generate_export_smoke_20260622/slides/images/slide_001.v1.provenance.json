@@ -6,12 +6,12 @@
   "authMode": "codex_session",
   "modelOrRuntime": "gpt-image-2",
   "promptVersion": "slide_generation@v1",
-  "durationMs": 252553,
+  "durationMs": 185181,
   "inputArtifactIds": [
     "sha256:3334a742",
     "slide_01_layout.png"
   ],
   "fixture": false,
-  "threadId": "019eed00-dc75-7702-a706-88426836b0a0",
-  "turnId": "019eed00-dea8-70f0-acf6-2b497311136a"
+  "threadId": "019eed41-a44d-7e22-9bbf-c1cae2f3db92",
+  "turnId": "019eed41-a6b8-7e23-838b-ccaa677a084f"
 }
