@@ -2,7 +2,10 @@ import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, test } from "bun:test";
-import { resolveLaneDImageBillingConfirmation } from "./lane-d-live-usage-confirmation.mjs";
+import {
+  laneDImageUsageBlocker,
+  resolveLaneDImageBillingConfirmation,
+} from "./lane-d-live-usage-confirmation.mjs";
 
 describe("lane D live usage confirmation evidence", () => {
   test("uses a persisted canonical Codex OAuth billing confirmation record", async () => {
@@ -100,5 +103,30 @@ describe("lane D live usage confirmation evidence", () => {
     } finally {
       await rm(root, { recursive: true, force: true });
     }
+  });
+
+  test("keeps the manifest blocker aligned with confirmation state", () => {
+    // Given
+    const confirmed = {
+      kind: "confirmed",
+      summary: {
+        userConfirmation: "confirmed_app_surface_pre_generation_codex_oauth",
+      },
+    };
+    const missing = {
+      kind: "missing",
+      summary: {
+        userConfirmation: "missing_app_surface_pre_generation_confirmation",
+      },
+    };
+
+    // When
+    const confirmedBlocker = laneDImageUsageBlocker(confirmed);
+    const missingBlocker = laneDImageUsageBlocker(missing);
+
+    // Then
+    expect(confirmedBlocker.includes("confirmation is present")).toBe(true);
+    expect(confirmedBlocker.includes("no persisted pre-generation user confirmation")).toBe(false);
+    expect(missingBlocker.includes("no persisted pre-generation user confirmation")).toBe(true);
   });
 });

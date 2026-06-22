@@ -10,6 +10,10 @@ const BILLING_OWNER = "codex_oauth_account";
 const SAFE_SEGMENT = /^[a-zA-Z0-9_-]+$/;
 const FORBIDDEN_SEGMENTS = new Set(["unknown"]);
 const SYNTHETIC_MARKERS = ["template", "sample", "example", "placeholder"];
+const CONFIRMED_USAGE_BLOCKER =
+  "Persisted Codex OAuth image usage confirmation is present; packaged manual QA still must verify latency, retry, count, and confirmation display.";
+const MISSING_USAGE_BLOCKER =
+  "Actual image latency/count display is packaged, but no persisted pre-generation user confirmation record from the app surface exists.";
 
 export async function resolveLaneDImageBillingConfirmation(input = {}) {
   const workspaceRoot = input.workspaceRoot ?? ".";
@@ -20,6 +24,10 @@ export async function resolveLaneDImageBillingConfirmation(input = {}) {
     if (summary !== undefined) return { kind: "confirmed", summary };
   }
   return missingConfirmation();
+}
+
+export function laneDImageUsageBlocker(confirmation) {
+  return confirmation.kind === "confirmed" ? CONFIRMED_USAGE_BLOCKER : MISSING_USAGE_BLOCKER;
 }
 
 function missingConfirmation() {

@@ -212,6 +212,15 @@ confirmation record path from the same product run. This proves the usage
 summary resolver can consume persisted product confirmation, but DF-244 still
 needs the same evidence from a packaged app UI run.
 
+2026-06-22 KST generator update: `scripts/generate-lane-d-live-evidence.mjs`
+now derives the DF-244 manifest blocker from the Lane D confirmation resolver.
+When a canonical persisted Codex OAuth confirmation record is present, the
+manifest no longer keeps the stale "no persisted confirmation" blocker text;
+when the record is absent or path-mismatched, the bundle remains blocked as
+`missing_app_surface_pre_generation_confirmation`. This prevents a future
+packaged confirmation capture from being obscured by stale generated wording,
+but it does not mark the current Lane D bundle ready.
+
 ## Generate Stage Live Image Path
 
 2026-06-21 KST product update: after the confirmation record is attached, the

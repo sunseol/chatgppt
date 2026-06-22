@@ -7,7 +7,10 @@ import {
   presentation,
   reviewCard,
 } from "./lane-d-live-evidence-render.mjs";
-import { resolveLaneDImageBillingConfirmation } from "./lane-d-live-usage-confirmation.mjs";
+import {
+  laneDImageUsageBlocker,
+  resolveLaneDImageBillingConfirmation,
+} from "./lane-d-live-usage-confirmation.mjs";
 
 const evidenceDir = "docs/live-evidence/codex-image/lane-d-live-app-surface-20260621";
 const batchProject = "df232_live_codex_batch";
@@ -31,17 +34,6 @@ const bodies = [
   "Compositor output preserves source and chart overlay bounds.",
   "Export lineage remains tied to slide-level image provenance.",
 ];
-const blockers = {
-  df233:
-    "Stored live Codex turns contain successful image generation only; no real 429/5xx retry or user cancellation event was produced.",
-  df149:
-    "Stored v1/v2 images are packaged, but the packaged review UI was not manually driven through candidate approval and failed-regeneration preservation.",
-  df150:
-    "Image/compositor/export artifact evidence is packaged, but production Codex text-turn lineage and final project export QA are absent.",
-  df154:
-    "Actual image latency/count display is packaged, but no persisted pre-generation user confirmation record from the app surface exists.",
-};
-
 await mkdir(evidenceDir, { recursive: true });
 await mkdir(`projects/${batchProject}/exports/svg`, { recursive: true });
 
@@ -54,6 +46,15 @@ const reviewGallery = await writeReviewGallery(compositions);
 const regeneration = await writeRegenerationEvidence(compositions[2]);
 const usage = await writeUsageEvidence(slides);
 const exportLineage = await writeExportLineage(compositions);
+const blockers = {
+  df233:
+    "Stored live Codex turns contain successful image generation only; no real 429/5xx retry or user cancellation event was produced.",
+  df149:
+    "Stored v1/v2 images are packaged, but the packaged review UI was not manually driven through candidate approval and failed-regeneration preservation.",
+  df150:
+    "Image/compositor/export artifact evidence is packaged, but production Codex text-turn lineage and final project export QA are absent.",
+  df154: usage.blocker,
+};
 
 const manifest = {
   generatedAt: "2026-06-21T00:00:00.000Z",
@@ -229,6 +230,7 @@ async function writeUsageEvidence(slides) {
     hash: await sha256File(path),
     summaryPath,
     summaryHash: await sha256File(summaryPath),
+    blocker: laneDImageUsageBlocker(billingConfirmation),
   };
 }
 

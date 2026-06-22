@@ -85,6 +85,15 @@ blocked evidence. This protects the evidence pipeline from hash drift but does
 not replace Developer ID signing, notarization, stapling, Gatekeeper acceptance,
 or clean-machine execution evidence.
 
+DF-244 local update: the Lane D usage evidence generator now derives its
+manifest blocker from `resolveLaneDImageBillingConfirmation`. A future packaged
+Codex OAuth confirmation record can update the manifest away from the stale
+"no persisted confirmation" blocker, while absent or mismatched records still
+leave the summary blocked as `missing_app_surface_pre_generation_confirmation`.
+`scripts/lane-d-live-usage-confirmation.test.mjs` covers the aligned confirmed
+and missing blocker states. DF-244 remains open until packaged app UI evidence
+captures the same-run confirmation and display proof.
+
 ## 2026-06-22 KST DF-246 Same-Session Manual QA Payload
 
 DF-246 local update: manual QA readiness now requires the persisted
