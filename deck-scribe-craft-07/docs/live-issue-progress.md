@@ -1703,3 +1703,14 @@ reporting no stapled ticket, and `spctl` rejecting the DMG with
 for release-trust evidence, but DF-245 still needs a passed release-trust bundle
 with Developer ID signing, accepted notarization, stapling, and Gatekeeper
 acceptance before it can close.
+
+DF-247 release-gate blocker traceability update:
+`docs/live-evidence/release/df247-evidence.json` now directly cites the updated
+DF-245 evidence digest
+`f404b948988b333e0416c700fa72ad6f66f3d0332ad6544e52dddaa706460c5f` and the
+release-trust blocker bundle digest
+`39abe3e0d644cde5797894509909f49eb8224a918ac70baaec807a0eb5361fa7`. The
+shared packaged evidence index now records the updated DF-247 digest
+`38f504a8daa3d672a489bf63d7ec198f376a5321220652f2546411ae1a9cb8e5`. This does
+not unblock DF-247; it makes the final gate point at the current DF-245 blocker
+record instead of only the older package recheck.

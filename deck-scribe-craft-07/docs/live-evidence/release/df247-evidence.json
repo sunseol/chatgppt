@@ -3,9 +3,9 @@
   "issueNumber": 157,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-22T00:32:47Z",
+  "generatedAt": "2026-06-22T01:23:17Z",
   "packageArchiveSha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
-  "summary": "The final release gate remains blocked because upstream packaged evidence entries are blocked, DF-246 only has current-package manual QA handoff evidence rather than a non-developer session, and the release decision is not approved; borrowed release decision payloads are also blocked before readiness.",
+  "summary": "The final release gate remains blocked because upstream packaged evidence entries are blocked, DF-245 now has persisted release-trust blocker output rather than passed trust evidence, DF-246 only has current-package manual QA handoff evidence rather than a non-developer session, and the release decision is not approved; borrowed release decision payloads are also blocked before readiness.",
   "currentEvidence": [
     {
       "path": "docs/live-release-decision.md",
@@ -24,6 +24,16 @@
       "path": "docs/live-evidence/release/df245-package-recheck-20260622.json",
       "sha256": "7b9adb24eca8a6f27bedb2adbe1c5221d1ae9c1470a5e420589e391ddaf73a47",
       "kind": "current package and signing blocker recheck"
+    },
+    {
+      "path": "docs/live-evidence/release/df245-evidence.json",
+      "sha256": "f404b948988b333e0416c700fa72ad6f66f3d0332ad6544e52dddaa706460c5f",
+      "kind": "blocked DF-245 packaging evidence with current release-trust blocker bundle reference"
+    },
+    {
+      "path": "docs/live-evidence/release/df245-release-trust-codesign-notarytool-stapler-spctl-20260622.json",
+      "sha256": "39abe3e0d644cde5797894509909f49eb8224a918ac70baaec807a0eb5361fa7",
+      "kind": "persisted blocked release-trust command bundle for DF-245 final-gate blocker traceability"
     },
     {
       "path": "src/lib/packaged-live-evidence-index.ts",
