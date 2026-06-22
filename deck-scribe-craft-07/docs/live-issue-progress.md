@@ -30,6 +30,14 @@ capability confirmation, so its missing evidence list is down to four items:
 clean-account login, logout/relogin lock/cancel proof, optional keychain
 lifecycle proof, and clean-machine signed-package secret scanning.
 
+DF-233 blocker reduction: `docs/live-evidence/release/df233-evidence.json` now
+cites the DF-244 packaged Generate/export smoke's packaged project-folder
+export, copied DF-233 queue JSON, and stored Codex PNG artifact under
+`docs/live-evidence/codex-image/df244-packaged-generate-export-smoke-20260622/`.
+The remaining DF-233 evidence list is down to three packaged queue-control
+scenarios: genuine 429/5xx retry provenance, real-provider cancellation, and
+restart-resume proof.
+
 ## 2026-06-22 KST Packaged Evidence Index Covers All Open P0s
 
 DF-205 local update: packaged auth and secret lifecycle evidence now has a

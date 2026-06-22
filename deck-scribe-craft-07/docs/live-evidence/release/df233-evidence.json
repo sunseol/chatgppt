@@ -3,9 +3,9 @@
   "issueNumber": 147,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-22T03:12:21Z",
+  "generatedAt": "2026-06-22T07:51:00Z",
   "packageArchiveSha256": "bdb64f343b721a435889377d6449d18d537fe27a11ac41be343c481c483688ee",
-  "summary": "Queue throttling, retry, cancellation, resume, and product evidence writers are implemented. A latest real Codex OAuth cancellation smoke ran through the product slide generation queue, requested cancellation while the App Server image turn was in flight, rejected the late provider output before storage, wrote ready DF-233 queue evidence with no stored image artifacts, preserved Codex thread/turn provenance, and now has direct artifact regression coverage for those no-storage semantics. The product queue-control smoke is reproducibly ingested into an honestly blocked packaged-candidate artifact, preserving the remaining gap that no packaged Codex OAuth image run has captured genuine provider retry, user cancellation, and restart-resume evidence from the app surface.",
+  "summary": "Queue throttling, retry, cancellation, resume, and product evidence writers are implemented. The DF-244 packaged Generate/export smoke now contributes direct packaged app-surface DF-233 queue evidence: the packaged run copied a ready queue JSON, project-folder export, and stored PNG artifact into docs/live-evidence while preserving Codex App Server turn provenance. A latest real Codex OAuth cancellation smoke also ran through the product slide generation queue and rejected a late provider output before storage. DF-233 remains blocked only on packaged queue-control scenarios: genuine 429 or 5xx retry provenance, real-provider user cancellation, and restart-resume evidence proving completed slides are not regenerated.",
   "currentEvidence": [
     {
       "path": "docs/live-image-queue-controls.md",
@@ -48,6 +48,26 @@
       "path": "projects/df244_generate_export_smoke_20260622/live-evidence/df233-image-queue-job_generate_export_smoke_1.json",
       "sha256": "d08c746038123b6b66fbf0f3a1b0c4be50212c89fc70d3076a2bfebe5056558b",
       "kind": "real Codex one-slide product queue evidence smoke"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df244-packaged-generate-export-smoke-20260622/summary.json",
+      "sha256": "223c3af62de88ac22206e47193bb811c09670b635ab6780d4c7687d5cd0fa53c",
+      "kind": "packaged app Generate/export smoke with DF-233 queue evidence and stored PNG"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df244-packaged-generate-export-smoke-20260622/project-folder-export.json",
+      "sha256": "c9257dd5ddab1cbe35849fa34e2ad7a3211e578baaf02a39f2d34bc3e7fc9bee",
+      "kind": "packaged project folder export containing DF-233 queue evidence and image artifacts"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df244-packaged-generate-export-smoke-20260622/artifacts/projects/df244_packaged_generate_export_smoke_20260622/live-evidence/df233-image-queue-job_packaged_generate_export_smoke_1.json",
+      "sha256": "32637e039e19844986225fb0c274b4bb6018d2b82ab25d9d963929015cee2895",
+      "kind": "packaged app-surface DF-233 queue evidence copied into docs/live-evidence"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df244-packaged-generate-export-smoke-20260622/artifacts/projects/df244_packaged_generate_export_smoke_20260622/slides/images/slide_001.v1.png",
+      "sha256": "572d86f2b7e29d4ce44136e4b455a5e5695e8b165dcf96eb7e454296a4244486",
+      "kind": "stored packaged Codex PNG artifact referenced by DF-233 queue evidence"
     },
     {
       "path": "docs/live-evidence/codex-image/df233-queue-controls-smoke-20260622/summary.json",
@@ -119,13 +139,15 @@
     {
       "path": "src/lib/df233-df243-live-codex-cancel-artifact.test.ts",
       "kind": "real Codex OAuth cancellation artifact no-storage regression coverage"
+    },
+    {
+      "path": "src/lib/df233-packaged-generate-export-artifact.test.ts",
+      "kind": "packaged Generate/export queue JSON and stored PNG artifact regression coverage"
     }
   ],
   "missingEvidence": [
     "packaged Codex OAuth image run with genuine 429 or 5xx retry provenance",
     "packaged in-flight user cancellation evidence from a real provider job",
-    "packaged restart-resume evidence proving completed slides are not regenerated",
-    "stored versioned PNG artifact paths for every completed packaged queue slide",
-    "product-generated DF-233 queue evidence JSON from a packaged run exported through project folder and copied into docs/live-evidence"
+    "packaged restart-resume evidence proving completed slides are not regenerated"
   ]
 }
