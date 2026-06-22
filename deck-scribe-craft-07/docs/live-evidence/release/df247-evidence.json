@@ -3,7 +3,7 @@
   "issueNumber": 157,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-22T10:07:00.000Z",
+  "generatedAt": "2026-06-22T10:21:00.000Z",
   "packageArchiveSha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
   "packagedLiveEvidenceIndexPath": "docs/live-evidence/release/packaged-live-evidence-index.json",
   "releaseGateResult": {
@@ -69,12 +69,12 @@
     {
       "path": "docs/live-release-decision.md",
       "kind": "canonical release decision",
-      "sha256": "388dee24f3414a169c25fe65d3adf5d826c2025fc3796c558eed20791f034c4b"
+      "sha256": "0a8233d462ac0cf2a655179f90a7b9e00c244736e4495e8aeac33de3d0681c29"
     },
     {
       "path": "docs/live-evidence/release/df205-evidence.json",
       "kind": "DF-205 packaged auth and secret evidence",
-      "sha256": "8e34a90995fa1b2d0935d2903e900b966964adc142c2adc08ea25e3c162fc801"
+      "sha256": "d95bf68297d11bb594e7fd128f66ea3e141cf7c99020543a3d452a4dc410c11d"
     },
     {
       "path": "docs/live-evidence/release/df233-evidence.json",
@@ -109,12 +109,12 @@
     {
       "path": "docs/live-evidence/release/df245-evidence.json",
       "kind": "DF-245 production packaging evidence",
-      "sha256": "111a3d346269e8bff75eb02afd1c9099ab2bf3e91a7d79f82162543809a81244"
+      "sha256": "ff822ae9582a93d81586d852a36faaaad23ddcf52675fb88050923439b3d9df4"
     },
     {
       "path": "docs/live-evidence/release/df246-evidence.json",
       "kind": "DF-246 packaged manual QA evidence",
-      "sha256": "b15d0cc140cc2c01176c6bbae4d5ef3d7353b6159397974b50c034493e30543e"
+      "sha256": "cd332f328c7dd15f09dc17a1c21f5ea0211f431b7218a0a68d869d5e63f1bebe"
     },
     {
       "path": "docs/live-evidence/release/packaged-live-evidence-index.json",

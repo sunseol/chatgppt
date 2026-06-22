@@ -1841,7 +1841,7 @@ DF-245 current package recheck update:
 `scripts/generate-df245-package-recheck.mjs` records the active dry-run package,
 unsigned DMG, content-scan result, and signing/Gatekeeper blockers at
 `docs/live-evidence/release/df245-package-recheck-20260622.json`
-(`sha256:7b9adb24eca8a6f27bedb2adbe1c5221d1ae9c1470a5e420589e391ddaf73a47`).
+(`sha256:40fc3c9a4446186bf78b758c1ad623cab051515636d150e45009c305f4bd330f`).
 The active dry-run archive is
 `e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6`
 with 285,197 bytes, 27 archive members, and 18 app files; the unsigned DMG is
@@ -1871,7 +1871,7 @@ now binds the manual QA checklist
 `sha256:b12fb4fa1575ee52763c1e588caf832b0a1bf7ba8a782cb5f734414bcabacbca`)
 to the current package recheck
 (`docs/live-evidence/release/df245-package-recheck-20260622.json`,
-`sha256:7b9adb24eca8a6f27bedb2adbe1c5221d1ae9c1470a5e420589e391ddaf73a47`).
+`sha256:40fc3c9a4446186bf78b758c1ad623cab051515636d150e45009c305f4bd330f`).
 This gives the next QA lane a reviewable candidate package basis without
 pretending that DF-246 has passed. DF-246 remains open until a non-developer
 tester records a persisted `manual-qa` session bundle against the packaged app.

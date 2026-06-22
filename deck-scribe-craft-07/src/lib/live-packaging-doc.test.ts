@@ -10,7 +10,7 @@ const DOCS = {
 
 const CURRENT_DRY_RUN_SHA = "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6";
 const CURRENT_DF245_RECHECK_SHA =
-  "7b9adb24eca8a6f27bedb2adbe1c5221d1ae9c1470a5e420589e391ddaf73a47";
+  "40fc3c9a4446186bf78b758c1ad623cab051515636d150e45009c305f4bd330f";
 
 describe("live packaging documentation", () => {
   test("records the current DF-245 dry-run package scan evidence", () => {

@@ -38,7 +38,7 @@
     },
     {
       "path": "docs/live-evidence/release/df245-package-recheck-20260622.json",
-      "sha256": "7b9adb24eca8a6f27bedb2adbe1c5221d1ae9c1470a5e420589e391ddaf73a47",
+      "sha256": "40fc3c9a4446186bf78b758c1ad623cab051515636d150e45009c305f4bd330f",
       "kind": "current-package secret and auth marker scan"
     },
     {

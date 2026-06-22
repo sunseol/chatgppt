@@ -244,7 +244,7 @@ handoff basis only, not a pass result: no non-developer tester session bundle ha
 been captured.
 
 The DF-247 release-gate evidence and Packaged Live evidence index were refreshed
-again at `2026-06-22T10:07:00.000Z` through the current DF-247 generator and the
+again at `2026-06-22T10:21:00.000Z` through the current DF-247 generator and the
 packaged-index generator, preserving the release-gate blocker codes/refs instead
 of a manual blocker summary. Release remains `Blocked` until the upstream
 packaged evidence entries become ready and the canonical release decision is

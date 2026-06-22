@@ -39,6 +39,7 @@ const PackageRecheckSchema = z
     contentScan: z
       .object({
         roots: z.array(z.string().min(1)),
+        localAbsolutePathMarker: z.string().min(1),
         fileCount: z.number().int().positive(),
         fixedStringHits: z.record(z.array(z.string())),
         regexHits: z.record(z.array(z.string())),
@@ -144,6 +145,12 @@ describe("DF-245 generated release evidence artifacts", () => {
     expect(packageRecheck.packageArchive.sha256).toBe(packageSha256);
     expect(dryRunLaunch.packageArchive.sha256).toBe(packageSha256);
     expect(releaseTrust.packageArchive.sha256).toBe(packageSha256);
+    const fixedStringPatterns = Object.keys(packageRecheck.contentScan.fixedStringHits);
+    expect(packageRecheck.contentScan.localAbsolutePathMarker).toBe(process.cwd());
+    expect(fixedStringPatterns.includes(process.cwd())).toBe(true);
+    expect(fixedStringPatterns.includes("/Users/jake/chatgppt-live-product-completion")).toBe(
+      false,
+    );
     expect(scanHits).toEqual([]);
     expect(dryRunLaunch.assetProbes.length > 0).toBe(true);
     expect(releaseTrust.commands.notarytoolHistory.exitCode === 0).toBe(false);

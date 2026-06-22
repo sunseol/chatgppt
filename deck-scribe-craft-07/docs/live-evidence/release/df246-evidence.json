@@ -14,7 +14,7 @@
     },
     {
       "path": "docs/live-evidence/release/df245-package-recheck-20260622.json",
-      "sha256": "7b9adb24eca8a6f27bedb2adbe1c5221d1ae9c1470a5e420589e391ddaf73a47",
+      "sha256": "40fc3c9a4446186bf78b758c1ad623cab051515636d150e45009c305f4bd330f",
       "kind": "current package and signing blocker recheck for manual QA handoff"
     },
     {
@@ -44,7 +44,7 @@
     "checklistPath": "docs/live-manual-qa-checklist.md",
     "checklistSha256": "b12fb4fa1575ee52763c1e588caf832b0a1bf7ba8a782cb5f734414bcabacbca",
     "packageRecheckPath": "docs/live-evidence/release/df245-package-recheck-20260622.json",
-    "packageRecheckSha256": "7b9adb24eca8a6f27bedb2adbe1c5221d1ae9c1470a5e420589e391ddaf73a47",
+    "packageRecheckSha256": "40fc3c9a4446186bf78b758c1ad623cab051515636d150e45009c305f4bd330f",
     "releaseHandling": "blocked until a non-developer tester records the persisted manual-qa session bundle against this current package basis"
   },
   "missingEvidence": [

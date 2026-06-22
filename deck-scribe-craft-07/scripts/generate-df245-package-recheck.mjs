@@ -4,6 +4,10 @@ import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
+import {
+  buildDf245FixedStringPatterns,
+  normalizeDf245ScanPathMarker,
+} from "./df245-package-recheck-support.mjs";
 
 const CAPTURED_AT = "2026-06-21T23:59:57Z";
 const OUTPUT_PATH = "docs/live-evidence/release/df245-package-recheck-20260622.json";
@@ -14,19 +18,8 @@ const DMG_CHECKSUM_PATH = "release-artifacts/DeckForge_0.1.0_aarch64.dmg.sha256"
 const NATIVE_APP = "src-tauri/target/release/bundle/macos/DeckForge.app";
 const NATIVE_BINARY = `${NATIVE_APP}/Contents/MacOS/deckforge`;
 const SCAN_ROOTS = ["dist/client", "dist/server", DRY_RUN_APP, NATIVE_APP];
-const FIXED_STRING_PATTERNS = [
-  "mock-provider",
-  "MOCK MODE",
-  "mock_stage",
-  ".omx",
-  ".playwright-mcp",
-  "/Users/jake/chatgppt-live-product-completion",
-  "CODEX_SESSION=",
-  "OPENAI_API_KEY=",
-  "auth.json",
-  "sk-proj-",
-  "sk-svcacct-",
-];
+const LOCAL_ABSOLUTE_PATH_MARKER = normalizeDf245ScanPathMarker(process.cwd());
+const FIXED_STRING_PATTERNS = buildDf245FixedStringPatterns(LOCAL_ABSOLUTE_PATH_MARKER);
 const REGEX_PATTERNS = {
   longBearerToken: "Bearer\\s+[A-Za-z0-9._-]{20,}",
   assignedOpenAiApiKey: "OPENAI_API_KEY\\s*=",
@@ -152,6 +145,7 @@ function scanContent() {
 
   return {
     roots: SCAN_ROOTS,
+    localAbsolutePathMarker: LOCAL_ABSOLUTE_PATH_MARKER,
     fileCount: files.length,
     fixedStringHits,
     regexHits,

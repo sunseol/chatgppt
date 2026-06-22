@@ -41,6 +41,7 @@
       "dist/deckforge-macos-dry-run/DeckForge.app",
       "src-tauri/target/release/bundle/macos/DeckForge.app"
     ],
+    "localAbsolutePathMarker": "/Users/jake/chatgppt-live-product-completion/deck-scribe-craft-07",
     "fileCount": 36,
     "fixedStringHits": {
       "mock-provider": [],
@@ -48,12 +49,12 @@
       "mock_stage": [],
       ".omx": [],
       ".playwright-mcp": [],
-      "/Users/jake/chatgppt-live-product-completion": [],
       "CODEX_SESSION=": [],
       "OPENAI_API_KEY=": [],
       "auth.json": [],
       "sk-proj-": [],
-      "sk-svcacct-": []
+      "sk-svcacct-": [],
+      "/Users/jake/chatgppt-live-product-completion/deck-scribe-craft-07": []
     },
     "regexHits": {
       "longBearerToken": [],
