@@ -182,17 +182,17 @@ two `server` / upstream `503` failures, records retry provenance
 `server:1:100` and `server:2:200`, succeeds on attempt 3, and writes ready
 queue evidence at
 `projects/df233_queue_retry_smoke_20260622/live-evidence/df233-image-queue-retry_product_run_20260622.json`
-(`sha256:c25ade822845e8a8d7b34a00d0a4f49384132ba933ca763cb983c207cb86798f`).
+(`sha256:f342cc61c9abbd4a0626ddce108e3b9499d5485bca60cff36d767de2ee96bb77`).
 The cancellation run requests cancellation while the provider call is in flight,
 rejects the late returned image instead of accepting it, records the job as
 cancelled, and writes ready queue evidence at
 `projects/df233_queue_cancel_smoke_20260622/live-evidence/df233-image-queue-cancel_product_run_20260622.json`
-(`sha256:285b66b7c12e83e47f975b2254cf1261f638055be63b096e4bfbbde175fa5354`).
+(`sha256:616fee34a2af90b0f6b2afac12f287a9fd39e766ee1575277c35f061483a1879`).
 The restart-resume run starts with slide 1 completed, generates only slide 2,
 includes restart-resume proof for the pending/resumed slide 2 artifact, and
 writes ready queue evidence at
 `projects/df233_queue_resume_smoke_20260622/live-evidence/df233-image-queue-resume_product_run_20260622.json`
-(`sha256:3ae427c48714afcd45ed9592e12a50cec65d69ce6cd70e642cb017de59cb9fa9`).
+(`sha256:c5f8581f0e707780b0182307a023ca71696a0c904ad080ba0988a85bcce14e3e`).
 The summary at
 `docs/live-evidence/codex-image/df233-queue-controls-smoke-20260622/summary.json`
 (`sha256:ef3049044d2c844673ee41973280e5fcd44953da771991616b73e371e2ce8a51`)

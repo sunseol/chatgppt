@@ -148,7 +148,7 @@ writer produced approved DF-235 review evidence at
 (`sha256:cf6487e96a4b7023dd0dc47dceaef98dafb3ce80fced739fa49a65e7d5c105dc`)
 and summary
 `docs/live-evidence/codex-image/df235-review-approval-evidence-20260622.json`
-(`sha256:5d65e568eef17846e30db1fcc0688cecda8ab7a94adfc0f40c326e8af60c104a`).
+(`sha256:d3d61c3511d70ef35eb66d865f974d2ebdae7ce270f233392c3830dcd0e8a869`).
 The approved evidence names regenerated slide 3 version 2, the selected
 approved original artifact `df232_live_codex_batch_image_slide_003_v1`, the
 regenerated background artifact
