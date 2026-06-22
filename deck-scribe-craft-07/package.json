@@ -21,6 +21,7 @@
     "evidence:df243:produce": "bun scripts/produce-df243-interruption-closure-evidence.ts",
     "evidence:df235:produce": "bun scripts/produce-df235-packaged-review-evidence.ts",
     "evidence:df244:produce": "bun scripts/produce-df244-packaged-usage-evidence.ts",
+    "evidence:df245:produce": "bun scripts/produce-df245-production-packaging-evidence.ts",
     "evidence:df246:produce": "bun scripts/produce-df246-packaged-manual-qa-evidence.ts",
     "evidence:df241-df242:produce": "bun scripts/produce-df241-df242-packaged-evidence.ts",
     "tauri": "tauri",

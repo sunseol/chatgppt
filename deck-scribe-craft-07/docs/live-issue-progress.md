@@ -67,6 +67,16 @@ still does not close DF-244; the missing input is the actual packaged app usage
 bundle with persisted confirmation JSON plus screenshot or recording proof for
 latency, retry count, image count, and confirmation display.
 
+DF-245 local update: production packaging evidence now has a runnable intake at
+`scripts/produce-df245-production-packaging-evidence.ts`, with schema parsing in
+`scripts/df245-production-packaging-evidence-schema.ts` and validator-backed
+output in `scripts/df245-production-packaging-evidence-producer.ts`. The package
+script `bun run evidence:df245:produce -- <packaging-input.json> [output.json]`
+runs `evaluateProductionPackagingEvidence` against a captured production package,
+release-trust, clean-machine, and runbook bundle. This still does not close
+DF-245; the missing input is a real Developer ID signed, notarized, stapled, and
+Gatekeeper-accepted package plus clean macOS account evidence.
+
 DF-246 local update: packaged manual QA session evidence now has a runnable
 intake at `scripts/produce-df246-packaged-manual-qa-evidence.ts`, with schema
 parsing in `scripts/df246-packaged-manual-qa-evidence-schema.ts` and
