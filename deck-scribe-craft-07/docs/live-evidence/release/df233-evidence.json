@@ -5,7 +5,7 @@
   "validationKind": "blocked",
   "generatedAt": "2026-06-22T03:12:21Z",
   "packageArchiveSha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
-  "summary": "Queue throttling, retry, cancellation, resume, and product evidence writers are implemented. A latest real Codex OAuth cancellation smoke ran through the product slide generation queue, requested cancellation while the App Server image turn was in flight, rejected the late provider output before storage, wrote ready DF-233 queue evidence with no stored image artifacts, preserved Codex thread/turn provenance, and now has direct artifact regression coverage for those no-storage semantics. No packaged Codex OAuth image run has captured genuine provider retry, user cancellation, and restart-resume evidence from the app surface.",
+  "summary": "Queue throttling, retry, cancellation, resume, and product evidence writers are implemented. A latest real Codex OAuth cancellation smoke ran through the product slide generation queue, requested cancellation while the App Server image turn was in flight, rejected the late provider output before storage, wrote ready DF-233 queue evidence with no stored image artifacts, preserved Codex thread/turn provenance, and now has direct artifact regression coverage for those no-storage semantics. The product queue-control smoke is reproducibly ingested into an honestly blocked packaged-candidate artifact, preserving the remaining gap that no packaged Codex OAuth image run has captured genuine provider retry, user cancellation, and restart-resume evidence from the app surface.",
   "currentEvidence": [
     {
       "path": "docs/live-image-queue-controls.md",
@@ -55,6 +55,11 @@
       "kind": "product queue retry, cancellation, and restart-resume smoke summary"
     },
     {
+      "path": "docs/live-evidence/release/df233-product-smoke-packaged-candidate-20260622.json",
+      "sha256": "c25b09088d44a5a31ac6d6574d669534ffa16fd6a574aa113b1e408855628a8a",
+      "kind": "blocked packaged candidate generated from product queue-control smoke"
+    },
+    {
       "path": "projects/df233_queue_retry_smoke_20260622/live-evidence/df233-image-queue-retry_product_run_20260622.json",
       "sha256": "f342cc61c9abbd4a0626ddce108e3b9499d5485bca60cff36d767de2ee96bb77",
       "kind": "ready product queue 5xx retry evidence"
@@ -76,6 +81,18 @@
     {
       "path": "scripts/df233-queue-controls-product-evidence-smoke-support.ts",
       "kind": "product queue-control smoke scenario support"
+    },
+    {
+      "path": "scripts/df233-packaged-queue-product-smoke-ingestion.ts",
+      "kind": "product smoke to packaged queue candidate ingestion helper"
+    },
+    {
+      "path": "scripts/produce-df233-packaged-queue-product-smoke-candidate.ts",
+      "kind": "reproducible blocked packaged candidate generator for product queue smoke"
+    },
+    {
+      "path": "scripts/df233-packaged-queue-product-smoke-ingestion.test.ts",
+      "kind": "product smoke ingestion regression coverage"
     },
     {
       "path": "docs/live-evidence/codex-image/df243-live-codex-cancel-smoke-20260622/summary.json",

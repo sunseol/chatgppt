@@ -58,9 +58,14 @@ export function produceDf233PackagedQueueEvidence(
 }
 
 function queueSessionBlockers(input: Df233PackagedQueueInput): readonly string[] {
-  return input.queueSession.packageArchiveSha256 === input.packageArchiveSha256
-    ? []
-    : ["DF-233 packaged queue session package hash does not match the release package"];
+  return [
+    ...(input.queueSession.appSurface === "packaged_image_queue"
+      ? []
+      : ["DF-233 queue session was not captured from the packaged app surface"]),
+    ...(input.queueSession.packageArchiveSha256 === input.packageArchiveSha256
+      ? []
+      : ["DF-233 packaged queue session package hash does not match the release package"]),
+  ];
 }
 
 function projectFolderExportBlockers(input: Df233PackagedQueueInput): readonly string[] {

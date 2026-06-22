@@ -19,6 +19,7 @@
     "package:dry-run": "bun scripts/package-dry-run.mjs",
     "evidence:df205:produce": "bun scripts/produce-df205-packaged-auth-secret-evidence.ts",
     "evidence:df233:produce": "bun scripts/produce-df233-packaged-queue-evidence.ts",
+    "evidence:df233:from-product-smoke": "bun scripts/produce-df233-packaged-queue-product-smoke-candidate.ts",
     "evidence:df243:produce": "bun scripts/produce-df243-interruption-closure-evidence.ts",
     "evidence:df235:produce": "bun scripts/produce-df235-packaged-review-evidence.ts",
     "evidence:df244:produce": "bun scripts/produce-df244-packaged-usage-evidence.ts",

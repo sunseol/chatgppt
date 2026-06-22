@@ -86,7 +86,7 @@ const QueueEvidenceSchema = z
 const QueueSessionSchema = z
   .object({
     sessionId: z.string().min(1),
-    appSurface: z.literal("packaged_image_queue"),
+    appSurface: z.enum(["packaged_image_queue", "product_image_queue_smoke"]),
     packageArchiveSha256: z.string().min(1),
   })
   .strict();
@@ -126,6 +126,7 @@ const PackagedQueueInputSchema = z
 
 export type Df233PackagedQueueInput = z.infer<typeof PackagedQueueInputSchema>;
 export type Df233PackagedQueueProof = z.infer<typeof QueueProofSchema>;
+export type Df233QueueEvidence = z.infer<typeof QueueEvidenceSchema>;
 
 export class Df233PackagedQueueInputError extends Error {
   readonly issues: readonly string[];
@@ -145,9 +146,30 @@ export function parseDf233PackagedQueueInput(value: unknown): Df233PackagedQueue
   );
 }
 
+export function parseDf233QueueEvidence(value: unknown): Df233QueueEvidence {
+  const parsed = QueueEvidenceSchema.safeParse(value);
+  if (parsed.success) return parsed.data;
+  throw new Df233PackagedQueueInputError(
+    parsed.error.issues.map(
+      (issue) => `${issue.path.join(".") || "queueEvidence"}: ${issue.message}`,
+    ),
+  );
+}
+
 export function parseDf233PackagedQueueJson(raw: string): Df233PackagedQueueInput {
   try {
     return parseDf233PackagedQueueInput(JSON.parse(raw));
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      throw new Df233PackagedQueueInputError([error.message]);
+    }
+    throw error;
+  }
+}
+
+export function parseDf233QueueEvidenceJson(raw: string): Df233QueueEvidence {
+  try {
+    return parseDf233QueueEvidence(JSON.parse(raw));
   } catch (error) {
     if (error instanceof SyntaxError) {
       throw new Df233PackagedQueueInputError([error.message]);
