@@ -8,9 +8,9 @@ const DOCS = {
   decision: new URL("../../docs/live-release-decision.md", import.meta.url),
 } as const;
 
-const CURRENT_DRY_RUN_SHA = "0354291e6c6ac847335ba5095e088d1122a3bf93937589021edabb3e4fbcc913";
+const CURRENT_DRY_RUN_SHA = "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6";
 const CURRENT_DF245_RECHECK_SHA =
-  "db4249cea9e39d79a05b9ecb9d3d0a8828b87f630da8dc5e3a37e761850c693a";
+  "7b9adb24eca8a6f27bedb2adbe1c5221d1ae9c1470a5e420589e391ddaf73a47";
 
 describe("live packaging documentation", () => {
   test("records the current DF-245 dry-run package scan evidence", () => {
@@ -23,8 +23,8 @@ describe("live packaging documentation", () => {
       expect(doc.includes(CURRENT_DRY_RUN_SHA)).toBe(true);
     }
     expect(runbook.includes(CURRENT_DF245_RECHECK_SHA)).toBe(true);
-    expect(runbook.includes("284,301 bytes")).toBe(true);
-    expect(runbook.includes("26 archive members")).toBe(true);
+    expect(runbook.includes("285,197 bytes")).toBe(true);
+    expect(runbook.includes("27 archive members")).toBe(true);
     expect(runbook.includes("OPENAI_API_KEY` string appears only in redaction guard code")).toBe(
       true,
     );

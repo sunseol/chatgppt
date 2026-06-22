@@ -17,7 +17,7 @@
     },
     {
       "path": "docs/live-evidence/release/df246-evidence.json",
-      "sha256": "329f3e049175002ac377a7d68d469b0d77e787807e3deded8ae53e2e22e10ca4",
+      "sha256": "b392ec1f8a2a6c791957dbad15c56a9c83866f1404e30676024f08b0bb67398d",
       "kind": "DF-246 current-package manual QA handoff evidence, still blocked without non-developer session"
     },
     {

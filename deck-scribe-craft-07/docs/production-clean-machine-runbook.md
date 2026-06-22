@@ -44,10 +44,10 @@ Signing state remains release-blocking: `codesign -dv --verbose=4` reports `Sign
 
 Current worktree recheck on 2026-06-22 KST is recorded in
 `docs/live-evidence/release/df245-package-recheck-20260622.json`
-(`sha256:db4249cea9e39d79a05b9ecb9d3d0a8828b87f630da8dc5e3a37e761850c693a`).
+(`sha256:7b9adb24eca8a6f27bedb2adbe1c5221d1ae9c1470a5e420589e391ddaf73a47`).
 It verifies the active dry-run archive SHA-256
-`0354291e6c6ac847335ba5095e088d1122a3bf93937589021edabb3e4fbcc913`,
-284,301 bytes, 26 archive members, and 17 app files. It also verifies the
+`e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6`,
+285,197 bytes, 27 archive members, and 18 app files. It also verifies the
 current unsigned DMG SHA-256
 `d6849d24c5af4548b7b35e65a68a05c8d139be4b1b5504d7c3da3a3dc9e2d467`,
 1,833,575 bytes, with `shasum -a 256 -c` returning `OK`. Fixed-string scans of
@@ -55,8 +55,10 @@ current unsigned DMG SHA-256
 hits for mock provider ids, `MOCK MODE`, mock stage markers, `.omx`,
 `.playwright-mcp`, the active local workspace path, `CODEX_SESSION=`,
 `OPENAI_API_KEY=`, bundled `auth.json`, `sk-proj-`, or `sk-svcacct-`; regex
-scans found 0 long Bearer tokens and 0 assigned Codex/OpenAI credentials. This
-is still developer-worktree evidence, not clean-machine release evidence.
+scans found 0 long Bearer tokens and 0 assigned Codex/OpenAI credentials. The
+dry-run launcher also now serves emitted packaged JS/CSS assets from
+`Resources/client/assets` before falling back to SSR. This is still
+developer-worktree evidence, not clean-machine release evidence.
 
 ## Local evidence contract
 

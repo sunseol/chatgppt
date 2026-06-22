@@ -35,10 +35,12 @@ QA live evidence is genuinely produced.
 
 Current package basis for this index: `bun run package:dry-run` produced
 `dist/deckforge-macos-dry-run.tgz` with SHA-256
-`0354291e6c6ac847335ba5095e088d1122a3bf93937589021edabb3e4fbcc913`,
-284,301 bytes, 26 archive members, and 17 app files.
+`e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6`,
+285,197 bytes, 27 archive members, and 18 app files.
 The dry-run package path now writes a deterministic sorted tar/gzip archive and
-normalizes prerendered TanStack route-match `u:` timestamps; two consecutive
+normalizes prerendered TanStack route-match `u:` timestamps; the current
+launcher runs a package wrapper that serves emitted JS/CSS assets from
+`Resources/client/assets` before the SSR fallback, and two consecutive
 `bun run package:dry-run` runs produced the same SHA-256 above.
 
 DF-247 local update: each Packaged Live evidence index entry now carries the
@@ -1641,7 +1643,7 @@ packaged keychain lifecycle, and clean-machine secret leak evidence.
 
 DF-246 current-package manual QA handoff update:
 `docs/live-evidence/release/df246-evidence.json`
-(`sha256:329f3e049175002ac377a7d68d469b0d77e787807e3deded8ae53e2e22e10ca4`)
+(`sha256:b392ec1f8a2a6c791957dbad15c56a9c83866f1404e30676024f08b0bb67398d`)
 now binds the manual QA checklist
 (`docs/live-manual-qa-checklist.md`,
 `sha256:b12fb4fa1575ee52763c1e588caf832b0a1bf7ba8a782cb5f734414bcabacbca`)
@@ -1654,7 +1656,7 @@ tester records a persisted `manual-qa` session bundle against the packaged app.
 
 DF-247 release-gate handoff update:
 `docs/live-evidence/release/df247-evidence.json`
-(`sha256:bdb169769aa45c8970916857d83f8c1a2eafe7fb3ac9b715736fa6eef55108df`)
+(`sha256:8cb491fabbd0fafd16c2914fec5666726e8473f21f16b0b594b348c4b08bca69`)
 now cites the updated DF-246 handoff evidence and current package recheck as
 blocked release-gate inputs. The Packaged Live evidence index was refreshed with
 the new DF-246 and DF-247 artifact digests. DF-247 remains open because the
