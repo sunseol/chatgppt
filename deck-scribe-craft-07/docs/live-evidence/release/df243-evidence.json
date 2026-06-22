@@ -3,9 +3,9 @@
   "issueNumber": 153,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-21T23:35:49Z",
+  "generatedAt": "2026-06-22T00:10:00Z",
   "packageArchiveSha256": "0354291e6c6ac847335ba5095e088d1122a3bf93937589021edabb3e4fbcc913",
-  "summary": "The interruption closure manifest materializes the observed text-turn and fetch-shutdown recovery snapshots. A product queue smoke now proves that an in-flight Codex image queue output returned after cancellation is rejected, the job is stored as cancelled with cancelRequested true, the DF-243 cancel writer persists separate app-storage recovery and cancel-signal JSON, and local project folder export carries those project-scoped artifacts. The release remains blocked until packaged image partial-resume, packaged cancel, and interrupted approval/export artifacts are captured from the app surface.",
+  "summary": "The interruption closure manifest materializes the observed text-turn and fetch-shutdown recovery snapshots. Product smokes now prove that an in-flight Codex image queue output returned after cancellation is rejected, the job is stored as cancelled with cancelRequested true, the DF-243 cancel writer persists separate app-storage recovery and cancel-signal JSON, the image partial-resume writer persists a pending-to-resumed recovery snapshot, the interrupted artifact gate writer persists distinct approval/export gate JSON, and local project folder export carries those project-scoped artifacts. The release remains blocked until packaged image partial-resume, packaged cancel, and interrupted approval/export artifacts are captured from the app surface and copied into the canonical evidence bundle.",
   "currentEvidence": [
     {
       "path": "docs/live-evidence/lane-h-20260621/df243-closure-evidence.json",
@@ -38,6 +38,16 @@
       "kind": "ready cancel scenario matrix from product queue smoke"
     },
     {
+      "path": "docs/live-evidence/codex-image/df243-resume-gate-product-smoke-20260622/summary.json",
+      "sha256": "e7272e0c8c0b2c1da7bc709c75c41f69cf3b50d4c8e12b212b27d0d239ddf9fe",
+      "kind": "product image partial-resume and interrupted gate writer smoke summary"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df243-resume-gate-product-smoke-20260622/df243-resume-gate-product-smoke-matrix.json",
+      "sha256": "ac1c78a587d0eba4a6e6edc5d05a6aea558054b0d0a310b9141e557644acf26d",
+      "kind": "ready resume and gate scenario matrix from product writer smoke"
+    },
+    {
       "path": "projects/df243_cancel_product_smoke_20260622/live-evidence/df243-cancel-job-recovery-snapshot-cancel_product_run_20260622.json",
       "sha256": "ff1da9cbfce7afbf36854de2c98c4bb04d123cd453fa6aeb568e896d3c64b049",
       "kind": "product-written cancel-job app-storage recovery snapshot"
@@ -48,8 +58,32 @@
       "kind": "product-written cancel signal evidence"
     },
     {
+      "path": "projects/df243_resume_gate_smoke_20260622/live-evidence/df243-image-partial-resume-recovery-snapshot-resume_gate_product_run_20260622.json",
+      "sha256": "8cdbd1b990a864e8ec86fb113da14a9a37937b9fe384a7dbde21878f2e4ddf0f",
+      "kind": "product-written image partial-resume recovery snapshot"
+    },
+    {
+      "path": "projects/df243_resume_gate_smoke_20260622/live-evidence/df243-interrupted-artifact-gate-recovery-snapshot-resume_gate_product_run_20260622.json",
+      "sha256": "d6ba4154ce0cfb01b9827200f3697494d5db60c86c240302e58c96d4d45aa86c",
+      "kind": "product-written interrupted artifact gate recovery snapshot"
+    },
+    {
+      "path": "projects/df243_resume_gate_smoke_20260622/live-evidence/df243-interrupted-artifact-gate-approval-resume_gate_product_run_20260622.json",
+      "sha256": "1ecb6bdc436fd8f89fc1cef8a5dc57e863361b9efd7a8dc7f90abb0c61b19cdd",
+      "kind": "product-written interrupted approval gate evidence"
+    },
+    {
+      "path": "projects/df243_resume_gate_smoke_20260622/live-evidence/df243-interrupted-artifact-gate-export-resume_gate_product_run_20260622.json",
+      "sha256": "8ddf9c1fa329de29e6f3500264c3f30db8bbdcced315458cb03d818dba26b7f4",
+      "kind": "product-written interrupted export gate evidence"
+    },
+    {
       "path": "scripts/run-df243-cancel-product-evidence-smoke.ts",
       "kind": "reproducible product queue cancel evidence smoke"
+    },
+    {
+      "path": "scripts/run-df243-resume-gate-product-evidence-smoke.ts",
+      "kind": "reproducible product image partial-resume and interrupted gate evidence smoke"
     },
     {
       "path": "docs/live-interruption-matrix.md",

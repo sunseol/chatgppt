@@ -1545,6 +1545,31 @@ cancel artifacts, image partial-resume artifacts, and interrupted approval/expor
 gate artifacts are captured from a packaged app run and copied into the
 canonical `docs/live-evidence/...` bundle.
 
+DF-243 product resume/gate evidence update:
+`scripts/run-df243-resume-gate-product-evidence-smoke.ts` now exercises the real
+DF-243 product evidence writers for image partial resume and interrupted
+artifact gates. It persists a pending-to-resumed image snapshot at
+`projects/df243_resume_gate_smoke_20260622/live-evidence/df243-image-partial-resume-recovery-snapshot-resume_gate_product_run_20260622.json`
+(`sha256:8cdbd1b990a864e8ec86fb113da14a9a37937b9fe384a7dbde21878f2e4ddf0f`),
+an interrupted gate recovery snapshot at
+`projects/df243_resume_gate_smoke_20260622/live-evidence/df243-interrupted-artifact-gate-recovery-snapshot-resume_gate_product_run_20260622.json`
+(`sha256:d6ba4154ce0cfb01b9827200f3697494d5db60c86c240302e58c96d4d45aa86c`),
+and distinct approval/export gate JSON at
+`projects/df243_resume_gate_smoke_20260622/live-evidence/df243-interrupted-artifact-gate-approval-resume_gate_product_run_20260622.json`
+(`sha256:1ecb6bdc436fd8f89fc1cef8a5dc57e863361b9efd7a8dc7f90abb0c61b19cdd`)
+and
+`projects/df243_resume_gate_smoke_20260622/live-evidence/df243-interrupted-artifact-gate-export-resume_gate_product_run_20260622.json`
+(`sha256:8ddf9c1fa329de29e6f3500264c3f30db8bbdcced315458cb03d818dba26b7f4`).
+The summary at
+`docs/live-evidence/codex-image/df243-resume-gate-product-smoke-20260622/summary.json`
+(`sha256:e7272e0c8c0b2c1da7bc709c75c41f69cf3b50d4c8e12b212b27d0d239ddf9fe`)
+records matrix result `ready` for the generated product-writer rows and confirms
+that local project folder export includes the image resume snapshot plus both
+gate files. This removes the local product-writer resume/gate gap, but DF-243
+remains open until a packaged app run captures the same artifact classes and the
+full five-scenario interruption closure bundle is copied into
+`docs/live-evidence/...`.
+
 DF-233 product queue-control evidence update:
 `scripts/run-df233-queue-controls-product-evidence-smoke.ts` now runs the
 product slide-generation queue and DF-233 evidence writer for retry and
