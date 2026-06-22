@@ -18,6 +18,19 @@ Golden Path or benchmark validators fail. This still does not close DF-241 or
 DF-242; the missing input is the actual packaged app run bundle with signed
 Golden Path evidence and five benchmark output bundles.
 
+DF-233 local update: packaged image queue evidence now has a runnable intake at
+`scripts/produce-df233-packaged-queue-evidence.ts`, with schema parsing in
+`scripts/df233-packaged-queue-evidence-schema.ts` and retry/cancel/restart-resume
+proof assembly in `scripts/df233-packaged-queue-evidence-producer.ts`. The
+package script
+`bun run evidence:df233:produce -- <queue-input.json> [output.json]` requires
+same-session packaged retry, cancellation, and restart-resume queue evidence,
+copied `docs/live-evidence/...` JSON paths, project-folder export proof, Codex
+image provider jobs, and ready product queue validation before returning
+`ready`. This still does not close DF-233; the missing input is the actual
+packaged Codex OAuth image run with exported queue evidence for all three
+scenarios.
+
 DF-243 local update: packaged interruption evidence now has a runnable closure
 intake at `scripts/produce-df243-interruption-closure-evidence.ts`, with schema
 parsing in `scripts/df243-interruption-closure-evidence-schema.ts` and
