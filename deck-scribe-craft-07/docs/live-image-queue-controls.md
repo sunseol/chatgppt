@@ -161,8 +161,9 @@ restart-resume evidence.
 ## Live Generate Export Smoke
 
 2026-06-22 KST product-run smoke tightened the desktop Codex image App Server
-response schema with `additionalProperties: false` and then ran one real Codex
-image turn through the product Generate runner. The run wrote queue evidence at
+response schema with `additionalProperties: false`, extended image structured
+turns to a 600000ms timeout, and then ran one real Codex image turn through the
+product Generate runner in `252553ms`. The run wrote queue evidence at
 `projects/df244_generate_export_smoke_20260622/live-evidence/df233-image-queue-job_generate_export_smoke_1.json`,
 recorded one succeeded Codex image job, stored
 `projects/df244_generate_export_smoke_20260622/slides/images/slide_001.v1.png`,

@@ -59,6 +59,7 @@ export type DesktopCodexAppServerStructuredTurnRequest = {
   readonly outputSchema: unknown;
   readonly model?: string;
   readonly networkAccess?: boolean;
+  readonly turnTimeoutMs?: number;
 };
 
 export type DeckforgeTauriInvoke = (

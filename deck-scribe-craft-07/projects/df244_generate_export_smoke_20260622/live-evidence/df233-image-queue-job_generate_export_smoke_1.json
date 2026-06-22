@@ -3,7 +3,7 @@
   "issue": "DF-233",
   "projectId": "df244_generate_export_smoke_20260622",
   "jobId": "job_generate_export_smoke_1",
-  "exportedAt": 1782083207237,
+  "exportedAt": 1782092717908,
   "resultStatus": "succeeded",
   "context": {
     "deckContextId": "deckctx_2f619adc",
@@ -30,9 +30,9 @@
       "capability": "imageGeneration",
       "description": "Generate slide 1",
       "status": "succeeded",
-      "createdAt": 1782083206241,
-      "startedAt": 1782083206242,
-      "finishedAt": 1782083343177,
+      "createdAt": 1782092716929,
+      "startedAt": 1782092716930,
+      "finishedAt": 1782092969512,
       "attempt": 1,
       "cancelRequested": false
     }
@@ -46,7 +46,7 @@
       "stage": "slide-generation",
       "artifactId": "bundle_deckctx_2f619adc_slide_01",
       "jobId": "slide_job_1",
-      "recordedAt": 1782083206241
+      "recordedAt": 1782092716929
     }
   ],
   "retryProvenance": [],

@@ -10,6 +10,7 @@ export type StructuredTurnRequest = {
   readonly outputSchema: unknown;
   readonly model?: string;
   readonly networkAccess?: boolean;
+  readonly turnTimeoutMs?: number;
 };
 
 export type StructuredTurnEvidence = {

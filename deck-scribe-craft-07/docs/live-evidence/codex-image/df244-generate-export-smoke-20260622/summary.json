@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-06-21T23:09:03.201Z",
+  "capturedAt": "2026-06-22T01:49:29.539Z",
   "evidenceKind": "live-codex-generate-export-smoke",
   "runtime": "codex app-server --stdio via product Generate runner",
   "projectId": "df244_generate_export_smoke_20260622",
@@ -67,7 +67,7 @@
     {
       "path": "projects/df244_generate_export_smoke_20260622/slides/images/slide_001.v1.png",
       "kind": "binary",
-      "bytes": 2017331
+      "bytes": 2107841
     },
     {
       "path": "projects/df244_generate_export_smoke_20260622/slides/images/slide_001.v1.metadata.json",
@@ -86,19 +86,19 @@
     }
   ],
   "projectFolderExport": {
-    "hash": "sha256:750765f7",
-    "bytes": 2787181,
+    "hash": "sha256:0a93de6b",
+    "bytes": 2907861,
     "projectArtifactWriteCount": 5,
     "includesOtherProjects": false,
     "leaksSyntheticSecret": false
   },
   "appServerTurns": [
     {
-      "threadId": "019eec6f-bc99-78c1-abc4-8905807608a4",
-      "turnId": "019eec6f-bf06-7803-9349-637f743172cd",
-      "durationMs": 136903,
-      "protocolLineCount": 132,
-      "stderrLogLineCount": 183,
+      "threadId": "019eed00-dc75-7702-a706-88426836b0a0",
+      "turnId": "019eed00-dea8-70f0-acf6-2b497311136a",
+      "durationMs": 252553,
+      "protocolLineCount": 247,
+      "stderrLogLineCount": 301,
       "eventMethods": [
         "remoteControl/status/changed",
         "thread/started",
@@ -110,9 +110,9 @@
         "hook/completed",
         "item/started",
         "item/completed",
+        "turn/plan/updated",
         "thread/tokenUsage/updated",
         "account/rateLimits/updated",
-        "turn/plan/updated",
         "item/commandExecution/terminalInteraction",
         "item/agentMessage/delta",
         "turn/completed"

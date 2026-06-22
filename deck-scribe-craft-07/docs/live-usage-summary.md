@@ -187,12 +187,14 @@ produces and exports this confirmation JSON.
 
 2026-06-22 KST live product-run smoke: desktop Codex image generation now sends
 the App Server response schema with `additionalProperties: false`, which fixed a
-pre-generation `invalid_json_schema` failure. The smoke runner
-`scripts/run-live-codex-generate-export-smoke.ts` completed one real Codex image
-turn through the product Generate runner and wrote a same-job confirmation JSON,
-versioned PNG metadata/provenance, DF-233 queue evidence, and a project folder
-export summary with `5` project artifact writes and no cross-project writes. The
-summary lives at
+pre-generation `invalid_json_schema` failure. It also sends a 600000ms
+structured-turn timeout for image generation, because the latest real Codex
+image turn completed in `252553ms`, beyond the previous 180s Tauri bridge limit.
+The smoke runner `scripts/run-live-codex-generate-export-smoke.ts` completed one
+real Codex image turn through the product Generate runner and wrote a same-job
+confirmation JSON, versioned PNG metadata/provenance, DF-233 queue evidence, and
+a project folder export summary with `5` project artifact writes and no
+cross-project writes. The summary lives at
 `docs/live-evidence/codex-image/df244-generate-export-smoke-20260622/summary.json`.
 This is product-run evidence for the Generate path and export contract, not a
 packaged UI manual QA pass; DF-244 remains open until a packaged app run
@@ -203,9 +205,9 @@ consumes the product-run confirmation JSON from
 `df244_generate_export_smoke_20260622` and emits
 `confirmed_app_surface_pre_generation_codex_oauth` in
 `docs/live-evidence/codex-image/df244-generate-export-usage-summary-20260622.json`
-(`sha256:0776224d96f02140f7ee6f03a8a09ba5d56b5b8c8c6142b545b7de722e31b49f`).
+(`sha256:19d477e67d91cb35f3787c74b76fa2ce2d5755049a6986d32ae79bfcc19e4297`).
 The summary records provider `codex`, `imageCount: 1`, total latency
-`136903ms`, hidden cost because no billable cost was supplied, and the canonical
+`252553ms`, hidden cost because no billable cost was supplied, and the canonical
 confirmation record path from the same product run. This proves the usage
 summary resolver can consume persisted product confirmation, but DF-244 still
 needs the same evidence from a packaged app UI run.

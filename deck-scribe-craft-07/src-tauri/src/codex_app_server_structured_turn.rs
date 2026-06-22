@@ -9,6 +9,7 @@ use std::time::{Duration, Instant};
 
 const REQUEST_TIMEOUT: Duration = Duration::from_secs(60);
 const TURN_TIMEOUT: Duration = Duration::from_secs(180);
+const MAX_TURN_TIMEOUT_MS: u64 = 30 * 60 * 1_000;
 const DEFAULT_MODEL: &str = "gpt-5.4";
 
 #[derive(Debug, Clone, Deserialize)]
@@ -18,6 +19,7 @@ pub struct CodexAppServerStructuredTurnRequest {
     pub output_schema: Value,
     pub model: Option<String>,
     pub network_access: Option<bool>,
+    pub turn_timeout_ms: Option<u64>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -43,7 +45,7 @@ pub fn run_codex_app_server_structured_turn(
     initialize_session(&mut session)?;
     let thread_id = start_thread(&mut session, &request)?;
     let turn_id = start_turn(&mut session, &thread_id, &request)?;
-    session.wait_for_method("turn/completed", TURN_TIMEOUT)?;
+    session.wait_for_method("turn/completed", turn_timeout(&request))?;
     let duration_ms = duration_millis(started_at.elapsed());
     let notifications = session.take_notifications();
     let event_methods = collect_event_methods(&notifications);
@@ -168,6 +170,14 @@ fn validate_request(request: &CodexAppServerStructuredTurnRequest) -> SmokeResul
             "outputSchema must be a JSON object".to_owned(),
         ));
     }
+    if let Some(timeout_ms) = request.turn_timeout_ms {
+        if timeout_ms == 0 || timeout_ms > MAX_TURN_TIMEOUT_MS {
+            return Err(CodexAppServerSmokeError::new(
+                "invalid_structured_turn_request",
+                format!("turnTimeoutMs must be between 1 and {MAX_TURN_TIMEOUT_MS}"),
+            ));
+        }
+    }
     Ok(())
 }
 
@@ -180,6 +190,13 @@ fn model_name(request: &CodexAppServerStructuredTurnRequest) -> String {
 
 fn network_access(request: &CodexAppServerStructuredTurnRequest) -> bool {
     request.network_access == Some(true)
+}
+
+fn turn_timeout(request: &CodexAppServerStructuredTurnRequest) -> Duration {
+    request
+        .turn_timeout_ms
+        .map(Duration::from_millis)
+        .unwrap_or(TURN_TIMEOUT)
 }
 
 fn collect_event_methods(notifications: &[Value]) -> Vec<String> {
@@ -205,7 +222,7 @@ fn duration_millis(duration: Duration) -> u64 {
 #[cfg(test)]
 mod tests {
     use super::{
-        build_turn_start_params, collect_event_methods, model_name,
+        build_turn_start_params, collect_event_methods, model_name, turn_timeout, validate_request,
         CodexAppServerStructuredTurnRequest,
     };
     use serde_json::json;
@@ -223,6 +240,7 @@ mod tests {
             }),
             model: Some("gpt-5.4-mini".to_owned()),
             network_access: Some(false),
+            turn_timeout_ms: None,
         };
 
         let params = build_turn_start_params("thread_live", &request);
@@ -234,6 +252,41 @@ mod tests {
         assert_eq!(params["sandboxPolicy"]["type"], "readOnly");
         assert_eq!(params["sandboxPolicy"]["networkAccess"], false);
         assert_eq!(model_name(&request), "gpt-5.4-mini");
+    }
+
+    #[test]
+    fn uses_custom_turn_timeout_without_changing_turn_params() {
+        let request = CodexAppServerStructuredTurnRequest {
+            prompt: "Return JSON only.".to_owned(),
+            output_schema: json!({ "type": "object" }),
+            model: None,
+            network_access: None,
+            turn_timeout_ms: Some(600_000),
+        };
+
+        let params = build_turn_start_params("thread_live", &request);
+
+        assert!(validate_request(&request).is_ok());
+        assert_eq!(turn_timeout(&request), std::time::Duration::from_secs(600));
+        assert!(params.get("turnTimeoutMs").is_none());
+    }
+
+    #[test]
+    fn rejects_out_of_range_turn_timeout() {
+        let request = CodexAppServerStructuredTurnRequest {
+            prompt: "Return JSON only.".to_owned(),
+            output_schema: json!({ "type": "object" }),
+            model: None,
+            network_access: None,
+            turn_timeout_ms: Some(0),
+        };
+
+        let error = validate_request(&request).err();
+
+        assert_eq!(
+            error.as_ref().map(|error| error.code.as_str()),
+            Some("invalid_structured_turn_request")
+        );
     }
 
     #[test]

@@ -112,6 +112,7 @@ describe("desktop app server bridge", () => {
               outputSchema,
               model: "gpt-5.4",
               networkAccess: false,
+              turnTimeoutMs: 600_000,
             },
           });
           return {
@@ -145,6 +146,7 @@ describe("desktop app server bridge", () => {
         outputSchema,
         model: "gpt-5.4",
         networkAccess: false,
+        turnTimeoutMs: 600_000,
       },
       runtime,
     );

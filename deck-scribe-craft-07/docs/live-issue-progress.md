@@ -1468,11 +1468,13 @@ those real packaged-run artifacts are produced and copied into
 
 DF-244/DF-233 live product-run smoke: the desktop Codex image structured-turn
 schema now declares `additionalProperties: false`, fixing the App Server
-`invalid_json_schema` failure observed before image generation. The smoke runner
-`scripts/run-live-codex-generate-export-smoke.ts` completed one real Codex image
-turn through the product Generate runner, thread
-`019eec6f-bc99-78c1-abc4-8905807608a4`, turn
-`019eec6f-bf06-7803-9349-637f743172cd`, duration `136903ms`, and wrote
+`invalid_json_schema` failure observed before image generation. Image generation
+also now requests a 600000ms structured-turn timeout, because the latest real
+Codex image run exceeded the previous 180s Tauri bridge limit before succeeding.
+The smoke runner `scripts/run-live-codex-generate-export-smoke.ts` completed one
+real Codex image turn through the product Generate runner, thread
+`019eed00-dc75-7702-a706-88426836b0a0`, turn
+`019eed00-dea8-70f0-acf6-2b497311136a`, duration `252553ms`, and wrote
 `docs/live-evidence/codex-image/df244-generate-export-smoke-20260622/summary.json`.
 The run produced
 `projects/df244_generate_export_smoke_20260622/slides/images/slide_001.v1.png`,
@@ -1517,9 +1519,9 @@ fed the real product-run confirmation JSON from
 `df244_generate_export_smoke_20260622` through the Lane D confirmation resolver
 and wrote
 `docs/live-evidence/codex-image/df244-generate-export-usage-summary-20260622.json`
-(`sha256:0776224d96f02140f7ee6f03a8a09ba5d56b5b8c8c6142b545b7de722e31b49f`).
+(`sha256:19d477e67d91cb35f3787c74b76fa2ce2d5755049a6986d32ae79bfcc19e4297`).
 The summary now reports `confirmed_app_surface_pre_generation_codex_oauth`,
-provider `codex`, `imageCount: 1`, latency `136903ms`, hidden cost, and the
+provider `codex`, `imageCount: 1`, latency `252553ms`, hidden cost, and the
 same product confirmation record path. This removes the product-run usage
 resolver gap, but DF-244 remains open until packaged UI manual QA captures and
 displays the persisted confirmation from the same real image job.

@@ -3,9 +3,9 @@
   "issueNumber": 154,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-22T01:29:20Z",
+  "generatedAt": "2026-06-22T01:50:14Z",
   "packageArchiveSha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
-  "summary": "Live text and image usage display contracts now require Codex OAuth-shaped image confirmation with apiKeyRequired false and confirmation evidence bound to the same provider job. The Generate stage now mirrors confirmed Codex OAuth image billing records into project artifact storage before generation, the desktop image schema is App Server strict, local project folder export includes those project-scoped browser artifact writes, Lane D shows real image latency/count display, and a product-run smoke captured same-job confirmation plus one real Codex image whose product usage summary resolves to confirmed Codex OAuth. No packaged-app run has captured the pre-generation confirmation JSON from the same run.",
+  "summary": "Live text and image usage display contracts now require Codex OAuth-shaped image confirmation with apiKeyRequired false and confirmation evidence bound to the same provider job. The Generate stage mirrors confirmed Codex OAuth image billing records into project artifact storage before generation, desktop image turns now carry a 600000ms timeout for long-running App Server image generation, the image schema is App Server strict, local project folder export includes those project-scoped browser artifact writes, Lane D shows real image latency/count display, and a product-run smoke captured same-job confirmation plus one real Codex image in 252553ms whose product usage summary resolves to confirmed Codex OAuth. No packaged-app run has captured the pre-generation confirmation JSON from the same run.",
   "currentEvidence": [
     {
       "path": "docs/live-usage-summary.md",
@@ -67,22 +67,22 @@
     },
     {
       "path": "docs/live-evidence/codex-image/df244-generate-export-smoke-20260622/summary.json",
-      "sha256": "57721e5ac6b1c6a245c6a1e6ac39059560d5ffca34d0c7d2ea893aff18198de5",
+      "sha256": "dc582fc56cfe21c7cc32fd3a8eba2b01d0b5d3e58ee3c1870926097d5215f4e8",
       "kind": "real Codex product Generate export summary"
     },
     {
       "path": "projects/df244_generate_export_smoke_20260622/usage/df244_generate_export_smoke_20260622/job_generate_export_smoke_1/image-billing-confirmation.json",
-      "sha256": "7e0c5cfa6d9322361b9abf1c6d03c46e8aa2c306074c01857dda7fa03b615844",
+      "sha256": "54cf9cda6cdb4e9255ac08f11023274387b27246aa3ddff0b7c63e8bab2e519f",
       "kind": "same-job Codex OAuth image billing confirmation"
     },
     {
       "path": "projects/df244_generate_export_smoke_20260622/slides/images/slide_001.v1.png",
-      "sha256": "72a9cccd871e29e5d1ba2561c3669291c5683c04e891efa74b0478dd2e4d9eb7",
+      "sha256": "43df0393618a6989a777ff5aa279c248b7bfb2c640921a8ee99db932104ddaf3",
       "kind": "real Codex product Generate image"
     },
     {
       "path": "docs/live-evidence/codex-image/df244-generate-export-usage-summary-20260622.json",
-      "sha256": "0776224d96f02140f7ee6f03a8a09ba5d56b5b8c8c6142b545b7de722e31b49f",
+      "sha256": "19d477e67d91cb35f3787c74b76fa2ce2d5755049a6986d32ae79bfcc19e4297",
       "kind": "product-run usage summary resolved from same-job confirmation"
     },
     {
@@ -116,6 +116,18 @@
     {
       "path": "src/lib/live-usage-summary-billing-evidence.test.ts",
       "kind": "display and summary regression for API-key-required confirmation"
+    },
+    {
+      "path": "src/lib/desktop-app-server-bridge.ts",
+      "kind": "typed structured turn timeout contract for long-running Codex image turns"
+    },
+    {
+      "path": "src-tauri/src/codex_app_server_structured_turn.rs",
+      "kind": "Tauri App Server structured-turn timeout enforcement and validation"
+    },
+    {
+      "path": "scripts/live-app-server-turns.ts",
+      "kind": "live App Server evidence runner honors per-turn timeout overrides"
     }
   ],
   "missingEvidence": [

@@ -24,6 +24,7 @@ describe("desktop Codex image generation", () => {
           expect(JSON.stringify(args).includes("slide_001_layout.png")).toBe(true);
           const request = structuredTurnRequest(args);
           expect(findLooseObjectSchemaPaths(request.outputSchema)).toEqual([]);
+          expect(request.turnTimeoutMs).toBe(600_000);
           return {
             runtime: "codex app-server --stdio",
             threadId: "thread_codex_image",
@@ -117,11 +118,18 @@ async function captureProviderError(
   }
 }
 
-function structuredTurnRequest(args: unknown): { readonly outputSchema: unknown } {
+function structuredTurnRequest(args: unknown): {
+  readonly outputSchema: unknown;
+  readonly turnTimeoutMs?: number;
+} {
   if (!isRecord(args)) throw new Error("Expected invoke args.");
   const request = args["request"];
   if (!isRecord(request)) throw new Error("Expected structured turn request.");
-  return { outputSchema: request["outputSchema"] };
+  return {
+    outputSchema: request["outputSchema"],
+    turnTimeoutMs:
+      typeof request["turnTimeoutMs"] === "number" ? request["turnTimeoutMs"] : undefined,
+  };
 }
 
 function findLooseObjectSchemaPaths(value: unknown, path = "$"): readonly string[] {

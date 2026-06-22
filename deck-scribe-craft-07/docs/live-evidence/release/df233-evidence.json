@@ -3,9 +3,9 @@
   "issueNumber": 147,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-22T01:29:20Z",
+  "generatedAt": "2026-06-22T01:50:14Z",
   "packageArchiveSha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
-  "summary": "Queue throttling, retry, cancellation, resume, and product evidence writers are implemented. One real Codex Generate-runner smoke produced a succeeded one-slide queue artifact, and a deterministic product queue-control smoke now writes ready DF-233 evidence for bounded 5xx retry, in-flight cancellation that rejects a late provider output, and restart-resume that does not regenerate a completed slide. No packaged Codex OAuth image run has captured genuine provider retry, user cancellation, and restart-resume evidence from the app surface.",
+  "summary": "Queue throttling, retry, cancellation, resume, and product evidence writers are implemented. A latest real Codex Generate-runner smoke produced a succeeded one-slide queue artifact after a 252553ms App Server image turn, and a deterministic product queue-control smoke writes ready DF-233 evidence for bounded 5xx retry, in-flight cancellation that rejects a late provider output, and restart-resume that does not regenerate a completed slide. No packaged Codex OAuth image run has captured genuine provider retry, user cancellation, and restart-resume evidence from the app surface.",
   "currentEvidence": [
     {
       "path": "docs/live-image-queue-controls.md",
@@ -46,7 +46,7 @@
     },
     {
       "path": "projects/df244_generate_export_smoke_20260622/live-evidence/df233-image-queue-job_generate_export_smoke_1.json",
-      "sha256": "0c0b2dc64b57f8c86c87a06c367819bd8c839353e0571a4cd4e5bf99ce960df9",
+      "sha256": "89b755cb442e3f0c3c8b4d22b112fffd91c2df3ec26ee5f0f201b38feb5caecc",
       "kind": "real Codex one-slide product queue evidence smoke"
     },
     {

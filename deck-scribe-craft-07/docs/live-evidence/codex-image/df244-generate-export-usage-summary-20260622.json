@@ -1,17 +1,17 @@
 {
-  "capturedAt": "2026-06-22T01:28:27.160Z",
+  "capturedAt": "2026-06-22T01:50:14.761Z",
   "evidenceKind": "df244-product-usage-confirmation-summary",
   "projectId": "df244_generate_export_smoke_20260622",
   "providerKind": "codex",
   "imageCount": 1,
-  "totalLatencyMs": 136903,
+  "totalLatencyMs": 252553,
   "costDisplay": "hidden_provider_did_not_supply_cost",
   "productRunSummaryPath": "docs/live-evidence/codex-image/df244-generate-export-smoke-20260622/summary.json",
-  "productRunSummarySha256": "57721e5ac6b1c6a245c6a1e6ac39059560d5ffca34d0c7d2ea893aff18198de5",
+  "productRunSummarySha256": "dc582fc56cfe21c7cc32fd3a8eba2b01d0b5d3e58ee3c1870926097d5215f4e8",
   "userConfirmation": "confirmed_app_surface_pre_generation_codex_oauth",
   "confirmationEvidencePath": "usage/df244_generate_export_smoke_20260622/job_generate_export_smoke_1/image-billing-confirmation.json",
   "confirmationRecordPath": "projects/df244_generate_export_smoke_20260622/usage/df244_generate_export_smoke_20260622/job_generate_export_smoke_1/image-billing-confirmation.json",
   "confirmationLabel": "Codex image usage confirmed",
   "billingOwner": "codex_oauth_account",
-  "confirmedAt": 1782083206232
+  "confirmedAt": 1782092716903
 }

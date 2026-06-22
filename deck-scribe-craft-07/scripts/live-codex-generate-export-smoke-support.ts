@@ -10,6 +10,7 @@ import { mockBrief, mockDesign, mockLayout, mockPlan, mockResearch } from "../sr
 import { runStructuredTurn, type StructuredTurnEvidence } from "./live-app-server-json-rpc";
 
 const IMAGE_TURN_MODEL = "gpt-5.4";
+const IMAGE_TURN_TIMEOUT_MS = 600_000;
 
 const IMAGE_GENERATION_OUTPUT_SCHEMA = {
   type: "object",
@@ -200,6 +201,7 @@ function buildImageTurnRequest(request: CodexImageClientRequest) {
     outputSchema: IMAGE_GENERATION_OUTPUT_SCHEMA,
     model: IMAGE_TURN_MODEL,
     networkAccess: false,
+    turnTimeoutMs: IMAGE_TURN_TIMEOUT_MS,
   };
 }
 

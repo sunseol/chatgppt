@@ -24,7 +24,7 @@ export async function runStructuredTurn(
     await initializeSession(session, "deckforge-live-app-surface");
     const threadId = await startThread(session, request);
     const turnId = await startTurn(session, threadId, request);
-    await session.waitForMethod("turn/completed", TURN_TIMEOUT_MS);
+    await session.waitForMethod("turn/completed", turnTimeoutMs(request));
     const notifications = session.notifications();
     return {
       runtime: "codex app-server --stdio",
@@ -159,6 +159,10 @@ function validateStructuredTurnRequest(request: StructuredTurnRequest): void {
 function modelName(request: Pick<StructuredTurnRequest, "model">): string {
   const trimmed = request.model?.trim();
   return trimmed && trimmed.length > 0 ? trimmed : DEFAULT_MODEL;
+}
+
+function turnTimeoutMs(request: Pick<StructuredTurnRequest, "turnTimeoutMs">): number {
+  return request.turnTimeoutMs ?? TURN_TIMEOUT_MS;
 }
 
 function collectEventMethods(notifications: readonly JsonRpcNotification[]): readonly string[] {
