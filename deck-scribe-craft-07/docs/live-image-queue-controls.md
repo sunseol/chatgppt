@@ -176,20 +176,47 @@ restart-resume, so DF-233 remains open for those real packaged-run events.
 
 2026-06-22 KST product queue-control smoke:
 `scripts/run-df233-queue-controls-product-evidence-smoke.ts` runs the product
-queue and DF-233 writer in two deterministic scenarios. The retry run throws
+queue and DF-233 writer in three deterministic scenarios. The retry run throws
 two `server` / upstream `503` failures, records retry provenance
 `server:1:100` and `server:2:200`, succeeds on attempt 3, and writes ready
 queue evidence at
 `projects/df233_queue_retry_smoke_20260622/live-evidence/df233-image-queue-retry_product_run_20260622.json`
-(`sha256:b162c6c406778b43449bbfd84f6e30a9cc76896d853b57e40f8f314464856ffe`).
+(`sha256:c25ade822845e8a8d7b34a00d0a4f49384132ba933ca763cb983c207cb86798f`).
+The cancellation run requests cancellation while the provider call is in flight,
+rejects the late returned image instead of accepting it, records the job as
+cancelled, and writes ready queue evidence at
+`projects/df233_queue_cancel_smoke_20260622/live-evidence/df233-image-queue-cancel_product_run_20260622.json`
+(`sha256:285b66b7c12e83e47f975b2254cf1261f638055be63b096e4bfbbde175fa5354`).
 The restart-resume run starts with slide 1 completed, generates only slide 2,
 includes restart-resume proof for the pending/resumed slide 2 artifact, and
 writes ready queue evidence at
 `projects/df233_queue_resume_smoke_20260622/live-evidence/df233-image-queue-resume_product_run_20260622.json`
-(`sha256:4c9916e639dbf0b8c07ff62713ea31abec9d5a09a9376fd1ca0fa30a1ae5f4ab`).
+(`sha256:3ae427c48714afcd45ed9592e12a50cec65d69ce6cd70e642cb017de59cb9fa9`).
 The summary at
 `docs/live-evidence/codex-image/df233-queue-controls-smoke-20260622/summary.json`
-(`sha256:078631d92f8276e6e47fd77b872e81faebae04966a4258dbcd3733b954a3a7b7`)
-proves both exported evidence files validate as `ready`. DF-233 remains open
+(`sha256:ef3049044d2c844673ee41973280e5fcd44953da771991616b73e371e2ce8a51`)
+proves all three exported evidence files validate as `ready`. DF-233 remains open
 until equivalent retry, cancellation, and restart-resume evidence is captured
 from a packaged Codex OAuth image run against real provider jobs.
+
+## Real Codex OAuth Cancellation Smoke
+
+2026-06-22 KST real-provider smoke:
+`scripts/run-live-codex-cancel-product-evidence-smoke.ts` ran a Codex OAuth
+App Server image turn through the product slide generation queue, requested
+cancellation immediately after the live request was dispatched, waited for the
+real turn to finish, and verified the returned image was not written to
+`projects/{projectId}/slides/images/...`. The run completed App Server thread
+`019eed0f-b516-7cc1-9b4d-f53ca1ec1d7c`, turn
+`019eed0f-b799-7f91-98d7-67617abcb758`, in `254542ms` with no protocol errors.
+
+The smoke summary at
+`docs/live-evidence/codex-image/df243-live-codex-cancel-smoke-20260622/summary.json`
+(`sha256:520a4fe9120aefd470299e26bab224de0b00d9e491553f54ba95108311a7101d`)
+records `wroteSlideImageArtifacts: false`; the exported DF-233 queue evidence at
+`projects/df243_live_codex_cancel_smoke_20260622/live-evidence/df233-image-queue-live_codex_cancel_product_run_20260622.json`
+(`sha256:65ebd4608aa3df5a55144f5f8fe747ea49b3461e03982746a8d413e4ec4d8641`)
+validates as `ready` for the cancelled queue path. This proves the real Codex
+OAuth queue now rejects late in-flight image output before storage, but DF-233
+still needs packaged app evidence for real retry, cancellation, and restart
+resume before issue closure.

@@ -169,3 +169,27 @@ gate evidence files. This removes the local product-writer resume/gate gap, but
 DF-243 remains open until a packaged app run captures the same artifact classes
 from the app surface and the copied `docs/live-evidence/...` closure bundle
 contains the full five-scenario matrix.
+
+## Real Codex OAuth Cancel Smoke
+
+2026-06-22 KST real-provider update:
+`scripts/run-live-codex-cancel-product-evidence-smoke.ts` exercised the DF-243
+`cancel_job` path through a live Codex OAuth App Server image turn. The product
+queue requested cancellation after dispatch, waited for App Server thread
+`019eed0f-b516-7cc1-9b4d-f53ca1ec1d7c`, turn
+`019eed0f-b799-7f91-98d7-67617abcb758`, to complete in `254542ms`, and rejected
+the late image before any slide image artifact was stored.
+
+The run wrote the smoke summary at
+`docs/live-evidence/codex-image/df243-live-codex-cancel-smoke-20260622/summary.json`
+(`sha256:520a4fe9120aefd470299e26bab224de0b00d9e491553f54ba95108311a7101d`),
+the app-storage recovery snapshot at
+`projects/df243_live_codex_cancel_smoke_20260622/live-evidence/df243-cancel-job-recovery-snapshot-live_codex_cancel_product_run_20260622.json`
+(`sha256:53b0a4db896b80ba856eb2a9e145afdafbe84467863685784188e40facd9d317`),
+and the distinct cancel-signal evidence at
+`projects/df243_live_codex_cancel_smoke_20260622/live-evidence/df243-cancel-job-cancel-signal-live_codex_cancel_product_run_20260622.json`
+(`sha256:2f27310202cc9a45baad260948bcc04ffbb5421f15ffedc4ba8b35515a98c6ef`).
+This proves the real Codex OAuth cancellation path now has separate app-storage
+cancel snapshot and cancel-signal artifacts, but DF-243 still remains open until
+the packaged app captures the full five-scenario matrix and copies the closure
+artifacts into committed `docs/live-evidence/...` bundles.

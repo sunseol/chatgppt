@@ -3,9 +3,9 @@
   "issueNumber": 147,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-22T01:50:14Z",
+  "generatedAt": "2026-06-22T02:08:06Z",
   "packageArchiveSha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
-  "summary": "Queue throttling, retry, cancellation, resume, and product evidence writers are implemented. A latest real Codex Generate-runner smoke produced a succeeded one-slide queue artifact after a 252553ms App Server image turn, and a deterministic product queue-control smoke writes ready DF-233 evidence for bounded 5xx retry, in-flight cancellation that rejects a late provider output, and restart-resume that does not regenerate a completed slide. No packaged Codex OAuth image run has captured genuine provider retry, user cancellation, and restart-resume evidence from the app surface.",
+  "summary": "Queue throttling, retry, cancellation, resume, and product evidence writers are implemented. A latest real Codex OAuth cancellation smoke ran through the product slide generation queue, requested cancellation while the App Server image turn was in flight, rejected the late provider output before storage, wrote ready DF-233 queue evidence with no stored image artifacts, and preserved Codex thread/turn provenance. No packaged Codex OAuth image run has captured genuine provider retry, user cancellation, and restart-resume evidence from the app surface.",
   "currentEvidence": [
     {
       "path": "docs/live-image-queue-controls.md",
@@ -76,6 +76,28 @@
     {
       "path": "scripts/df233-queue-controls-product-evidence-smoke-support.ts",
       "kind": "product queue-control smoke scenario support"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df243-live-codex-cancel-smoke-20260622/summary.json",
+      "sha256": "520a4fe9120aefd470299e26bab224de0b00d9e491553f54ba95108311a7101d",
+      "kind": "real Codex OAuth cancellation smoke summary with no late image storage"
+    },
+    {
+      "path": "projects/df243_live_codex_cancel_smoke_20260622/live-evidence/df233-image-queue-live_codex_cancel_product_run_20260622.json",
+      "sha256": "65ebd4608aa3df5a55144f5f8fe747ea49b3461e03982746a8d413e4ec4d8641",
+      "kind": "real Codex OAuth cancelled queue evidence with ready validation"
+    },
+    {
+      "path": "scripts/run-live-codex-cancel-product-evidence-smoke.ts",
+      "kind": "reproducible real Codex OAuth queue cancellation smoke"
+    },
+    {
+      "path": "src/lib/live-slide-generation-session.test.ts",
+      "kind": "late cancellation before image storage regression coverage"
+    },
+    {
+      "path": "src/lib/live-image-provider-adapter.ts",
+      "kind": "pre-storage cancellation hook for live image artifacts"
     }
   ],
   "missingEvidence": [

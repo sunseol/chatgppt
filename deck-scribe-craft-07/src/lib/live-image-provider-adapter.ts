@@ -32,6 +32,7 @@ export async function generateAndStoreSlideImageArtifact(input: {
   readonly version: number;
   readonly createdAt: number;
   readonly extraInputArtifactIds?: readonly string[];
+  readonly beforeStore?: () => void;
 }): Promise<StoredLiveSlideImageResult> {
   if (input.provider.id === "mock") {
     return {
@@ -50,6 +51,7 @@ export async function generateAndStoreSlideImageArtifact(input: {
     case "failed":
       return { kind: "failed", failure: result.failure };
     case "ready": {
+      input.beforeStore?.();
       const stored = await storeProviderArtifactResult(input, result.artifact);
       if (stored.kind === "failed") return { kind: "failed", failure: stored.failure };
       return {

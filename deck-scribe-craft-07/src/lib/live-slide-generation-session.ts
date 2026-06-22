@@ -80,6 +80,7 @@ async function generateAndStoreCodexSlide(input: {
     projectId: input.project.id,
     version: input.worker.attempt,
     createdAt: input.createdAt,
+    beforeStore: input.worker.throwIfCancellationRequested,
   });
 
   switch (result.kind) {

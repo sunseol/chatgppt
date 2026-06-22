@@ -1,0 +1,93 @@
+{
+  "capturedAt": "2026-06-22T02:05:43.886Z",
+  "evidenceKind": "df243-live-codex-cancel-product-evidence-smoke",
+  "runtime": "codex app-server --stdio via product slide generation queue",
+  "projectId": "df243_live_codex_cancel_smoke_20260622",
+  "runId": "live_codex_cancel_product_run_20260622",
+  "cancelRequested": true,
+  "cancelRequestedAt": 1782093689300,
+  "queueStatus": "failed",
+  "acceptedSlides": [],
+  "failures": [
+    {
+      "jobId": "live_job_cancel_codex_1",
+      "bundleId": "bundle_deckctx_ab62949e_slide_01",
+      "slideNumber": 1,
+      "retryable": true,
+      "attempts": 1,
+      "failureKind": "cancelled",
+      "retryDelaysMs": [],
+      "errorMessage": "Provider job \"live_job_cancel_codex_1\" was cancelled.",
+      "userMessage": "Slide 1 was cancelled. Retry is available."
+    }
+  ],
+  "jobs": [
+    {
+      "id": "live_job_cancel_codex_1",
+      "status": "cancelled",
+      "attempt": 1,
+      "cancelRequested": true,
+      "errorMessage": "Provider job \"live_job_cancel_codex_1\" was cancelled."
+    }
+  ],
+  "queueEvidencePath": "projects/df243_live_codex_cancel_smoke_20260622/live-evidence/df233-image-queue-live_codex_cancel_product_run_20260622.json",
+  "queueEvidenceValidation": {
+    "kind": "ready"
+  },
+  "recoverySnapshotPath": "projects/df243_live_codex_cancel_smoke_20260622/live-evidence/df243-cancel-job-recovery-snapshot-live_codex_cancel_product_run_20260622.json",
+  "cancelSignalEvidencePath": "projects/df243_live_codex_cancel_smoke_20260622/live-evidence/df243-cancel-job-cancel-signal-live_codex_cancel_product_run_20260622.json",
+  "artifactWrites": [
+    {
+      "path": "projects/df243_live_codex_cancel_smoke_20260622/live-evidence/df233-image-queue-live_codex_cancel_product_run_20260622.json",
+      "kind": "text",
+      "bytes": 2030
+    },
+    {
+      "path": "projects/df243_live_codex_cancel_smoke_20260622/live-evidence/df243-cancel-job-recovery-snapshot-live_codex_cancel_product_run_20260622.json",
+      "kind": "text",
+      "bytes": 1659
+    },
+    {
+      "path": "projects/df243_live_codex_cancel_smoke_20260622/live-evidence/df243-cancel-job-cancel-signal-live_codex_cancel_product_run_20260622.json",
+      "kind": "text",
+      "bytes": 492
+    }
+  ],
+  "wroteSlideImageArtifacts": false,
+  "projectFolderExport": {
+    "hash": "sha256:b3dc76a6",
+    "bytes": 97512,
+    "projectArtifactWriteCount": 3,
+    "includesQueueEvidence": true,
+    "includesCancelSnapshot": true,
+    "includesCancelSignal": true
+  },
+  "appServerTurns": [
+    {
+      "threadId": "019eed0f-b516-7cc1-9b4d-f53ca1ec1d7c",
+      "turnId": "019eed0f-b799-7f91-98d7-67617abcb758",
+      "durationMs": 254542,
+      "protocolLineCount": 202,
+      "stderrLogLineCount": 274,
+      "eventMethods": [
+        "remoteControl/status/changed",
+        "thread/started",
+        "warning",
+        "mcpServer/startupStatus/updated",
+        "thread/status/changed",
+        "turn/started",
+        "hook/started",
+        "hook/completed",
+        "item/started",
+        "item/completed",
+        "thread/tokenUsage/updated",
+        "account/rateLimits/updated",
+        "turn/plan/updated",
+        "item/commandExecution/terminalInteraction",
+        "item/agentMessage/delta",
+        "turn/completed"
+      ],
+      "errors": []
+    }
+  ]
+}

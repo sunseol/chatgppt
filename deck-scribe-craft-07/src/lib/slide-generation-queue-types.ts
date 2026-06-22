@@ -28,6 +28,7 @@ export interface SlideGenerationWorkerInput {
   readonly layoutPrototypeId: string;
   readonly promptUsage: PromptUsageRecord;
   readonly attempt: number;
+  readonly throwIfCancellationRequested: () => void;
 }
 
 export interface SlideGenerationQueueProgress {

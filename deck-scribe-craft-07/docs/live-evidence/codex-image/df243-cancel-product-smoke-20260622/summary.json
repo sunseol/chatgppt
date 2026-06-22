@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-06-22T01:28:27.200Z",
+  "capturedAt": "2026-06-22T01:58:37.726Z",
   "evidenceKind": "df243-cancel-product-evidence-smoke",
   "runtime": "product slide generation queue plus DF-243 cancel writer",
   "projectId": "df243_cancel_product_smoke_20260622",
@@ -51,7 +51,7 @@
     }
   ],
   "projectFolderExport": {
-    "hash": "sha256:2ba25368",
+    "hash": "sha256:c5b6db47",
     "bytes": 94915,
     "projectArtifactWriteCount": 2,
     "includesCancelSnapshot": true,

@@ -63,6 +63,19 @@ artifact ids inside completed-before, completed-after, pending, or resumed
 artifact lists. Duplicate ids now block with `invalid_restart_resume_evidence`
 instead of being collapsed by set-based subset checks.
 
+DF-233 / DF-243 real Codex OAuth update: the product slide generation queue now
+propagates cancellation into `generateAndStoreSlideImageArtifact` immediately
+before storage, so a live App Server image that returns after user cancellation
+is recorded as cancelled and never writes PNG/metadata/provenance sidecars. The
+real OAuth smoke at
+`docs/live-evidence/codex-image/df243-live-codex-cancel-smoke-20260622/summary.json`
+completed App Server thread `019eed0f-b516-7cc1-9b4d-f53ca1ec1d7c`, turn
+`019eed0f-b799-7f91-98d7-67617abcb758`, in `254542ms`, wrote ready DF-233 queue
+evidence plus DF-243 app-storage recovery and cancel-signal JSON, and confirmed
+no slide image artifact was stored. DF-233 and DF-243 remain open until packaged
+app evidence captures the corresponding retry/cancel/resume and full
+interruption-matrix artifacts.
+
 ## 2026-06-22 KST DF-246 Same-Session Manual QA Payload
 
 DF-246 local update: manual QA readiness now requires the persisted

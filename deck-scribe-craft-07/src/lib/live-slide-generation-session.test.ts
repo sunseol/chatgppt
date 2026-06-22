@@ -93,6 +93,56 @@ describe("Codex live slide generation session", () => {
     });
     expect(requests).toEqual([]);
   });
+
+  test("does not store a late Codex image after cancellation is requested", async () => {
+    // Given
+    const requests: CodexLiveSlideGenerationClientRequest[] = [];
+    const writes: ImageArtifactStoreWrite[] = [];
+    let cancelRequested = false;
+
+    // When
+    const result = await runCodexLiveSlideGenerationSession({
+      project: approvedProject(),
+      client: {
+        async generate(request) {
+          requests.push(request);
+          cancelRequested = true;
+          return {
+            imageDataUrl: encodeSolidPngDataUrl({
+              width: 1,
+              height: 1,
+              color: { r: 120, g: 40, b: 80, a: 255 },
+            }),
+            model: "gpt-image-2",
+            runtime: "codex_app_server",
+            threadId: "thread_late_cancel",
+            turnId: "turn_late_cancel",
+            latencyMs: 4_200,
+            usage: { imageCount: 1 },
+          };
+        },
+      },
+      store: {
+        write: async (entry) => {
+          writes.push(entry);
+        },
+      },
+      manager: createProviderJobManager({ createId: sequentialIds("job_codex_cancel") }),
+      maxParallel: 1,
+      isCancellationRequested: () => cancelRequested,
+      now: clock(1_789_900_000),
+    });
+
+    // Then
+    expect(result.kind).toBe("ready");
+    if (result.kind !== "ready") return;
+    expect(result.status).toBe("failed");
+    expect(result.slides).toEqual([]);
+    expect(result.failures.every((failure) => failure.failureKind === "cancelled")).toBe(true);
+    expect(result.jobs.every((job) => job.status === "cancelled")).toBe(true);
+    expect(requests.length).toBe(1);
+    expect(writes).toEqual([]);
+  });
 });
 
 function approvedProject(): DeckProject {

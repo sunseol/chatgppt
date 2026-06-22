@@ -3,9 +3,9 @@
   "issueNumber": 153,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-22T01:29:20Z",
+  "generatedAt": "2026-06-22T02:08:06Z",
   "packageArchiveSha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
-  "summary": "The interruption closure manifest materializes the observed text-turn and fetch-shutdown recovery snapshots. Product smokes now prove that an in-flight Codex image queue output returned after cancellation is rejected, the job is stored as cancelled with cancelRequested true, the DF-243 cancel writer persists separate app-storage recovery and cancel-signal JSON, the image partial-resume writer persists a pending-to-resumed recovery snapshot, the interrupted artifact gate writer persists distinct approval/export gate JSON, and local project folder export carries those project-scoped artifacts. The release remains blocked until packaged image partial-resume, packaged cancel, and interrupted approval/export artifacts are captured from the app surface and copied into the canonical evidence bundle.",
+  "summary": "The interruption closure manifest materializes the observed text-turn and fetch-shutdown recovery snapshots. Product smokes now prove deterministic cancel, image partial-resume, interrupted approval/export gate writers, and a latest real Codex OAuth in-flight image cancellation path that rejects late App Server image output before storage while writing separate app-storage recovery and cancel-signal JSON. The release remains blocked until packaged image partial-resume, packaged cancel, and interrupted approval/export artifacts are captured from the app surface and copied into the canonical evidence bundle.",
   "currentEvidence": [
     {
       "path": "docs/live-evidence/lane-h-20260621/df243-closure-evidence.json",
@@ -29,7 +29,7 @@
     },
     {
       "path": "docs/live-evidence/codex-image/df243-cancel-product-smoke-20260622/summary.json",
-      "sha256": "fe4d6261d769e47e2eb06d274e0165826709c26c8f3fdfc6a82b148ea937646d",
+      "sha256": "200bee274a2c6a7759c6482f5edd664994c016b01f8c81ea565d7e715fddfe7e",
       "kind": "product queue cancel writer smoke summary"
     },
     {
@@ -49,12 +49,12 @@
     },
     {
       "path": "projects/df243_cancel_product_smoke_20260622/live-evidence/df243-cancel-job-recovery-snapshot-cancel_product_run_20260622.json",
-      "sha256": "4478d369a52499dfe7de7d651fa7f0ee5caa4bfc58cb523d81401320d767aee4",
+      "sha256": "4b5623f751bc6851161a3061feebf86d406b9350e0550695d40e0cf72aa958b5",
       "kind": "product-written cancel-job app-storage recovery snapshot"
     },
     {
       "path": "projects/df243_cancel_product_smoke_20260622/live-evidence/df243-cancel-job-cancel-signal-cancel_product_run_20260622.json",
-      "sha256": "49c03b6030f1a5aabe920f8757a207f64626128baac490ab15d22e0066a7cb27",
+      "sha256": "10652201109b4cafb883befea5c3befdeedf6de3bdc7ed7d49796565c55733cb",
       "kind": "product-written cancel signal evidence"
     },
     {
@@ -148,6 +148,42 @@
     {
       "path": "src/lib/live-interruption-closure-evidence.test.ts",
       "kind": "borrowed matrix payload regression coverage"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df243-live-codex-cancel-smoke-20260622/summary.json",
+      "sha256": "520a4fe9120aefd470299e26bab224de0b00d9e491553f54ba95108311a7101d",
+      "kind": "real Codex OAuth cancel smoke summary with App Server thread and turn evidence"
+    },
+    {
+      "path": "projects/df243_live_codex_cancel_smoke_20260622/live-evidence/df243-cancel-job-recovery-snapshot-live_codex_cancel_product_run_20260622.json",
+      "sha256": "53b0a4db896b80ba856eb2a9e145afdafbe84467863685784188e40facd9d317",
+      "kind": "real Codex OAuth app-storage cancel recovery snapshot"
+    },
+    {
+      "path": "projects/df243_live_codex_cancel_smoke_20260622/live-evidence/df243-cancel-job-cancel-signal-live_codex_cancel_product_run_20260622.json",
+      "sha256": "2f27310202cc9a45baad260948bcc04ffbb5421f15ffedc4ba8b35515a98c6ef",
+      "kind": "real Codex OAuth cancel signal evidence"
+    },
+    {
+      "path": "projects/df243_live_codex_cancel_smoke_20260622/live-evidence/df233-image-queue-live_codex_cancel_product_run_20260622.json",
+      "sha256": "65ebd4608aa3df5a55144f5f8fe747ea49b3461e03982746a8d413e4ec4d8641",
+      "kind": "real Codex OAuth cancelled queue evidence linked to cancel scenario"
+    },
+    {
+      "path": "scripts/run-live-codex-cancel-product-evidence-smoke.ts",
+      "kind": "reproducible real Codex OAuth cancel evidence smoke"
+    },
+    {
+      "path": "src/lib/live-slide-generation-session.test.ts",
+      "kind": "late cancellation before image storage regression coverage"
+    },
+    {
+      "path": "src/lib/slide-generation-queue-executor.ts",
+      "kind": "pre-storage in-flight cancellation propagation"
+    },
+    {
+      "path": "src/lib/live-image-provider-adapter.ts",
+      "kind": "pre-storage cancellation hook for live image artifacts"
     }
   ],
   "missingEvidence": [

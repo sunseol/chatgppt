@@ -4,7 +4,7 @@
   "scenarioId": "cancel_job",
   "projectId": "df243_cancel_product_smoke_20260622",
   "jobId": "cancel_product_run_20260622",
-  "exportedAt": 1782091708165,
+  "exportedAt": 1782093518699,
   "liveJobId": "live_job_cancel_product_1",
   "cancelSignalJobId": "live_job_cancel_product_1",
   "providerId": "codex",
@@ -12,5 +12,5 @@
   "promptBundleId": "bundle_deckctx_b17b00d3_slide_01",
   "slideNumber": 1,
   "attempt": 1,
-  "cancelledAt": 1782091707191
+  "cancelledAt": 1782093517720
 }

@@ -70,6 +70,8 @@ export async function runSlideGenerationTask(input: {
           layoutPrototypeId: input.context.layoutPrototypeId,
           promptUsage: input.task.promptUsage,
           attempt: currentJob.attempt,
+          throwIfCancellationRequested: () =>
+            assertNotCancelled(input.manager, currentJob.id, job, input.options),
         });
         assertNotCancelled(input.manager, currentJob.id, job, input.options);
         return slide;

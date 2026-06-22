@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "issue": "DF-233",
+  "projectId": "df243_live_codex_cancel_smoke_20260622",
+  "jobId": "live_codex_cancel_product_run_20260622",
+  "exportedAt": 1782093691281,
+  "resultStatus": "failed",
+  "context": {
+    "deckContextId": "deckctx_ab62949e",
+    "deckContextHash": "sha256:ab62949e",
+    "designSystemId": "design_generate_export_smoke",
+    "designTokenHash": "sha256:0b5cc4c3",
+    "layoutPrototypeId": "layout_generate_export_smoke",
+    "slideCount": 1
+  },
+  "slides": [],
+  "failures": [
+    {
+      "jobId": "live_job_cancel_codex_1",
+      "bundleId": "bundle_deckctx_ab62949e_slide_01",
+      "slideNumber": 1,
+      "retryable": true,
+      "attempts": 1,
+      "failureKind": "cancelled",
+      "retryDelaysMs": [],
+      "errorMessage": "Provider job \"live_job_cancel_codex_1\" was cancelled.",
+      "userMessage": "Slide 1 was cancelled. Retry is available."
+    }
+  ],
+  "jobs": [
+    {
+      "id": "live_job_cancel_codex_1",
+      "providerId": "codex",
+      "capability": "imageGeneration",
+      "description": "Generate slide 1",
+      "status": "cancelled",
+      "createdAt": 1782093689299,
+      "startedAt": 1782093689299,
+      "finishedAt": 1782093943882,
+      "attempt": 1,
+      "cancelRequested": true,
+      "errorMessage": "Provider job \"live_job_cancel_codex_1\" was cancelled."
+    }
+  ],
+  "promptUsages": [
+    {
+      "promptId": "slide_generation",
+      "promptVersion": "v1",
+      "promptHash": "sha256:3334a742",
+      "promptFilePath": "prompts/slide_generation.v1.md",
+      "stage": "slide-generation",
+      "artifactId": "bundle_deckctx_ab62949e_slide_01",
+      "jobId": "live_job_cancel_codex_1",
+      "recordedAt": 1782093689299
+    }
+  ],
+  "retryProvenance": [],
+  "concurrency": {
+    "requestedMaxParallel": 1,
+    "effectiveMaxParallel": 1,
+    "observedMaxRunning": 1
+  },
+  "progress": {
+    "completed": 0,
+    "failed": 1,
+    "total": 1,
+    "percent": 100
+  },
+  "storedImageArtifactPaths": [],
+  "validation": {
+    "kind": "ready"
+  }
+}
