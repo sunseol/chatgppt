@@ -3,9 +3,9 @@
   "issueNumber": 156,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-22T00:32:47Z",
+  "generatedAt": "2026-06-22T02:25:38Z",
   "packageArchiveSha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
-  "summary": "Manual QA validator, checklist, and current-package handoff evidence exist, and borrowed session JSON payloads from another evidence path are blocked before readiness, but no non-developer packaged-app manual QA session bundle has been recorded.",
+  "summary": "Manual QA validator, checklist, current-package handoff evidence, and direct release-artifact regression coverage exist, and borrowed session JSON payloads from another evidence path are blocked before readiness, but no non-developer packaged-app manual QA session bundle has been recorded.",
   "currentEvidence": [
     {
       "path": "docs/live-manual-qa-checklist.md",
@@ -32,6 +32,10 @@
     {
       "path": "src/lib/live-manual-qa-test-fixtures.ts",
       "kind": "manual QA same-session payload fixtures"
+    },
+    {
+      "path": "src/lib/df246-release-evidence-artifact.test.ts",
+      "kind": "DF-246 release handoff package, checklist, and package-recheck hash regression"
     }
   ],
   "handoffEvidence": {

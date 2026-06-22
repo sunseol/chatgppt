@@ -3,7 +3,7 @@
   "issueNumber": 157,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-22T02:17:52Z",
+  "generatedAt": "2026-06-22T02:25:38Z",
   "packageArchiveSha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
   "summary": "The final release gate remains blocked because upstream packaged evidence entries are blocked, DF-245 now has persisted release-trust blocker output rather than passed trust evidence, DF-246 only has current-package manual QA handoff evidence rather than a non-developer session, and the release decision is not approved; borrowed release decision payloads are also blocked before readiness.",
   "currentEvidence": [
@@ -17,7 +17,7 @@
     },
     {
       "path": "docs/live-evidence/release/df246-evidence.json",
-      "sha256": "b392ec1f8a2a6c791957dbad15c56a9c83866f1404e30676024f08b0bb67398d",
+      "sha256": "b15d0cc140cc2c01176c6bbae4d5ef3d7353b6159397974b50c034493e30543e",
       "kind": "DF-246 current-package manual QA handoff evidence, still blocked without non-developer session"
     },
     {

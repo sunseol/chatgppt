@@ -96,6 +96,13 @@ captures the same-run confirmation and display proof.
 
 ## 2026-06-22 KST DF-246 Same-Session Manual QA Payload
 
+DF-246 local update: `src/lib/df246-release-evidence-artifact.test.ts` now
+reads the committed DF-246 release JSON and verifies that the manual QA handoff
+package SHA, checklist SHA, and package-recheck SHA all match the current files.
+It also preserves the non-developer session and zero-critical-issue missing
+evidence as blocked requirements. This protects the handoff from hash drift but
+does not replace the required non-developer packaged-app QA session.
+
 DF-246 local update: manual QA readiness now requires the persisted
 `sessionEvidencePath` JSON to provide a `manual_qa_session` payload that matches
 the same evidence path and observed session fields. A copied payload from
