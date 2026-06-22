@@ -30,6 +30,18 @@ matrix, then runs the existing DF-243 closure validator. This still does not
 close DF-243; the missing input is the actual packaged app interruption matrix
 and copied `docs/live-evidence/...` artifact bundle.
 
+DF-244 local update: packaged usage disclosure evidence now has a runnable
+intake at `scripts/produce-df244-packaged-usage-evidence.ts`, with schema
+parsing in `scripts/df244-packaged-usage-evidence-schema.ts` and
+validator-backed usage-stage assembly in
+`scripts/df244-packaged-usage-evidence-producer.ts`. The package script
+`bun run evidence:df244:produce -- <usage-input.json> [output.json]` validates a
+same-run product summary, Codex OAuth billing confirmation record, usage
+summary, and visible display proof through `evaluateLiveUsageSummary`. This
+still does not close DF-244; the missing input is the actual packaged app usage
+bundle with persisted confirmation JSON plus screenshot or recording proof for
+latency, retry count, image count, and confirmation display.
+
 DF-241 local update: Golden Path regeneration image evidence now requires both
 a regeneration marker and input lineage to one of the initial live image
 artifacts. A marker-only unrelated regenerated image can no longer satisfy
