@@ -1,0 +1,72 @@
+{
+  "capturedAt": "2026-06-22T00:55:00Z",
+  "evidenceKind": "df245-dry-run-launch-smoke",
+  "status": "passed",
+  "scope": "developer-worktree unsigned dry-run launch smoke; not clean-machine, signed, notarized, or Gatekeeper evidence",
+  "packageArchive": {
+    "path": "dist/deckforge-macos-dry-run.tgz",
+    "sha256": "33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc"
+  },
+  "dryRunApp": {
+    "launcherPath": "dist/deckforge-macos-dry-run/DeckForge.app/Contents/MacOS/deckforge",
+    "host": "127.0.0.1",
+    "port": "4186",
+    "temporaryHome": "created-and-removed"
+  },
+  "httpProbe": {
+    "url": "http://127.0.0.1:4186/",
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyBytes": 12783
+  },
+  "appShellText": {
+    "deckForge": true,
+    "newProject": true,
+    "localData": true,
+    "projectWorkspace": true,
+    "loadingProjectList": true
+  },
+  "assetProbes": [
+    {
+      "path": "/assets/index-CcWfZ1Ww.js",
+      "status": 200,
+      "contentType": "text/javascript; charset=utf-8",
+      "bodyBytes": 27669,
+      "sha256": "216eded595381bc1f4801e09417ab6891306c8f1eb78bfd803361e54c185a896"
+    },
+    {
+      "path": "/assets/index-vsO34ssg.js",
+      "status": 200,
+      "contentType": "text/javascript; charset=utf-8",
+      "bodyBytes": 351134,
+      "sha256": "1f17c8c6b7bb4516ef8869f06ce333753a579ca0f721d1263cdce1817d84df07"
+    },
+    {
+      "path": "/assets/provider-capability-view-n9rlh7C7.js",
+      "status": 200,
+      "contentType": "text/javascript; charset=utf-8",
+      "bodyBytes": 146928,
+      "sha256": "11d3797aee9df3af3a5d6226e4cd4bde4fada199cc1041c81df6ae989654d747"
+    },
+    {
+      "path": "/assets/styles-DrCKIb93.css",
+      "status": 200,
+      "contentType": "text/css; charset=utf-8",
+      "bodyBytes": 89357,
+      "sha256": "1632be8df4c457b08ebda974f8960d23124c664d66bdc42fc5139536557a7059"
+    }
+  ],
+  "process": {
+    "stdout": [
+      "Started development server: http://localhost:4186"
+    ],
+    "stderr": [],
+    "terminatedWith": "SIGTERM"
+  },
+  "blockers": [
+    "Developer ID signing not present",
+    "notarization and stapling not present",
+    "Gatekeeper acceptance not present",
+    "clean macOS account execution not present"
+  ]
+}

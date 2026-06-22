@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "issue": "DF-243",
+  "scenarioId": "cancel_job",
+  "projectId": "df243_cancel_product_smoke_20260622",
+  "jobId": "cancel_product_run_20260622",
+  "exportedAt": 1782097656483,
+  "liveJobId": "live_job_cancel_product_1",
+  "cancelSignalJobId": "live_job_cancel_product_1",
+  "providerId": "codex",
+  "capability": "imageGeneration",
+  "promptBundleId": "bundle_deckctx_b17b00d3_slide_01",
+  "slideNumber": 1,
+  "attempt": 1,
+  "cancelledAt": 1782097655493
+}

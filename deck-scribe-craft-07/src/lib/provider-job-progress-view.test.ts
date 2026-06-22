@@ -38,6 +38,156 @@ describe("provider job progress view", () => {
     expect(view.failureSummary?.includes("internal/render.ts")).toBe(false);
     expect(view.failureSummary?.includes("sk-secret")).toBe(false);
   });
+
+  test("summarizes provider duration retry count and supplied usage", () => {
+    const view = createProviderJobProgressView({
+      stageLabel: "Live text turn",
+      job: {
+        ...runningJob(),
+        providerId: "codex",
+        capability: "deckPlan",
+        status: "succeeded",
+        startedAt: 10,
+        finishedAt: 7_168,
+        attempt: 2,
+        usageSummary: {
+          inputTokens: 25_006,
+          outputTokens: 141,
+          estimatedCostUsd: 0.04,
+        },
+      },
+      recovered: false,
+    });
+
+    expect(view.providerLabel).toBe("codex");
+    expect(view.durationLabel).toBe("7158ms");
+    expect(view.retryLabel).toBe("retries 1");
+    expect(view.usageItems).toEqual(["input 25006", "output 141", "cost estimate $0.0400"]);
+  });
+
+  test("omits invalid provider usage amounts from the app progress surface", () => {
+    // Given
+    const job: ProviderJob = {
+      ...runningJob(),
+      usageSummary: {
+        inputTokens: -1,
+        outputTokens: 0.5,
+        imageCount: 5,
+        estimatedCostUsd: Number.NaN,
+      },
+    };
+
+    // When
+    const view = createProviderJobProgressView({
+      stageLabel: "Live image generation",
+      job,
+      recovered: false,
+    });
+
+    // Then
+    expect(view.usageItems).toEqual(["images 5"]);
+  });
+
+  test("does not render unconfirmed image usage disclosures as confirmed", () => {
+    // Given
+    const job: ProviderJob = {
+      ...runningJob(),
+      usageSummary: {
+        imageCount: 1,
+        imageBillingDisclosure: {
+          apiKeyRequired: true,
+          userConfirmed: false,
+          label: "Codex image usage confirmed",
+        },
+      },
+    };
+
+    // When
+    const view = createProviderJobProgressView({
+      stageLabel: "Live image generation",
+      job,
+      recovered: false,
+    });
+
+    // Then
+    expect(view.usageItems).toEqual(["images 1", "Codex image usage not confirmed"]);
+  });
+
+  test("does not render confirmed-looking image usage labels without user confirmation", () => {
+    // Given
+    const job: ProviderJob = {
+      ...runningJob(),
+      usageSummary: {
+        imageCount: 1,
+        imageBillingDisclosure: {
+          apiKeyRequired: false,
+          userConfirmed: false,
+          label: "Codex image usage confirmed",
+        },
+      },
+    };
+
+    // When
+    const view = createProviderJobProgressView({
+      stageLabel: "Live image generation",
+      job,
+      recovered: false,
+    });
+
+    // Then
+    expect(view.usageItems).toEqual(["images 1", "Codex image usage not confirmed"]);
+  });
+
+  test("does not render image usage confirmations without evidence as confirmed", () => {
+    // Given
+    const job: ProviderJob = {
+      ...runningJob(),
+      usageSummary: {
+        imageCount: 1,
+        imageBillingDisclosure: {
+          apiKeyRequired: true,
+          userConfirmed: true,
+          label: "Codex image usage confirmed",
+        },
+      },
+    };
+
+    // When
+    const view = createProviderJobProgressView({
+      stageLabel: "Live image generation",
+      job,
+      recovered: false,
+    });
+
+    // Then
+    expect(view.usageItems).toEqual(["images 1", "Codex image usage not confirmed"]);
+  });
+
+  test("does not render local image usage evidence paths as confirmed", () => {
+    // Given
+    const job: ProviderJob = {
+      ...runningJob(),
+      usageSummary: {
+        imageCount: 1,
+        imageBillingDisclosure: {
+          apiKeyRequired: true,
+          userConfirmed: true,
+          label: "Codex image usage confirmed",
+          confirmationEvidencePath: "/Users/jake/chatgppt/manual-qa/image-billing.json",
+        },
+      },
+    };
+
+    // When
+    const view = createProviderJobProgressView({
+      stageLabel: "Live image generation",
+      job,
+      recovered: false,
+    });
+
+    // Then
+    expect(view.usageItems).toEqual(["images 1", "Codex image usage not confirmed"]);
+  });
 });
 
 function runningJob(): ProviderJob {

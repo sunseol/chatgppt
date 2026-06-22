@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "issue": "DF-243",
+  "scenarioId": "cancel_job",
+  "projectId": "df243_live_codex_cancel_smoke_20260622",
+  "jobId": "live_codex_cancel_product_run_20260622",
+  "exportedAt": 1782093692281,
+  "recoverySnapshotScope": "app_storage",
+  "jobStatusAfterRestart": "cancelled",
+  "completedArtifactIdsBefore": [],
+  "completedArtifactIdsAfter": [],
+  "failure": {
+    "jobId": "live_job_cancel_codex_1",
+    "bundleId": "bundle_deckctx_ab62949e_slide_01",
+    "slideNumber": 1,
+    "retryable": true,
+    "attempts": 1,
+    "failureKind": "cancelled",
+    "retryDelaysMs": [],
+    "errorMessage": "Provider job \"live_job_cancel_codex_1\" was cancelled.",
+    "userMessage": "Slide 1 was cancelled. Retry is available."
+  },
+  "job": {
+    "id": "live_job_cancel_codex_1",
+    "providerId": "codex",
+    "capability": "imageGeneration",
+    "description": "Generate slide 1",
+    "status": "cancelled",
+    "createdAt": 1782093689299,
+    "startedAt": 1782093689299,
+    "finishedAt": 1782093943882,
+    "attempt": 1,
+    "cancelRequested": true,
+    "errorMessage": "Provider job \"live_job_cancel_codex_1\" was cancelled."
+  },
+  "promptUsage": {
+    "promptId": "slide_generation",
+    "promptVersion": "v1",
+    "promptHash": "sha256:3334a742",
+    "promptFilePath": "prompts/slide_generation.v1.md",
+    "stage": "slide-generation",
+    "artifactId": "bundle_deckctx_ab62949e_slide_01",
+    "jobId": "live_job_cancel_codex_1",
+    "recordedAt": 1782093689299
+  },
+  "cancelSignalEvidencePath": "projects/df243_live_codex_cancel_smoke_20260622/live-evidence/df243-cancel-job-cancel-signal-live_codex_cancel_product_run_20260622.json"
+}

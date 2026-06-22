@@ -1,0 +1,35 @@
+{
+  "capturedAt": "2026-06-22T06:15:01.336Z",
+  "evidenceKind": "df244-packaged-usage-evidence",
+  "status": "ready",
+  "packageArchiveSha256": "33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc",
+  "usageValidation": {
+    "kind": "ready"
+  },
+  "stage": {
+    "stageId": "generate_job_packaged_generate_export_smoke_1",
+    "jobId": "job_packaged_generate_export_smoke_1",
+    "providerKind": "codex",
+    "durationMs": 176538,
+    "retryCount": 0,
+    "providerUsageProvided": true,
+    "usage": {
+      "imageCount": 1,
+      "imageBillingDisclosure": {
+        "apiKeyRequired": false,
+        "userConfirmed": true,
+        "label": "Codex image usage confirmed",
+        "confirmationEvidencePath": "usage/df244_packaged_generate_export_smoke_20260622/job_packaged_generate_export_smoke_1/image-billing-confirmation.json"
+      }
+    },
+    "costLabel": "hidden"
+  },
+  "displayEvidence": {
+    "evidencePath": "docs/live-evidence/codex-image/lane-d-live-app-surface-20260621/df244-usage-display.html",
+    "latencyVisible": true,
+    "retryCountVisible": true,
+    "imageCountVisible": true,
+    "confirmationVisible": true
+  },
+  "releaseBlockers": []
+}

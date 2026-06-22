@@ -3,34 +3,49 @@ import { useNavigate } from "@tanstack/react-router";
 import { GateBar } from "@/components/deck/GateBar";
 import { GeneratedSlideGrid } from "@/components/deck/GeneratedSlideGrid";
 import { ProviderJobProgressPanel } from "@/components/deck/ProviderJobProgressPanel";
-import { EmptyAction, StageHeader, StageScroll, StageShell } from "@/components/deck/stage-shared";
+import { runCodexGenerateStageJob } from "@/components/deck/generate-stage-codex-runner";
+import {
+  EmptyAction,
+  StageErrorBanner,
+  StageHeader,
+  StageScroll,
+  StageShell,
+} from "@/components/deck/stage-shared";
 import { fakeAsync } from "@/components/deck/stage-timing";
 import { invalidateDownstream, updateProject } from "@/lib/deck-store";
 import type { DeckProject, GeneratedSlide } from "@/lib/deck-types";
+import { readGenerateRecovery, writeGenerateRecovery } from "@/lib/generate-stage-recovery";
+import { createBrowserImageArtifactStore } from "@/lib/browser-image-artifact-store";
+import type { ImageArtifactStore } from "@/lib/image-artifact-store";
+import { prepareCodexImageBillingJob } from "@/lib/live-image-billing-job";
 import { mockSlides } from "@/lib/mock-ai";
+import {
+  createProductionImageGenerationGate,
+  type ImageGenerationExecutionMode,
+} from "@/lib/production-image-generation-gate";
 import {
   createProviderJobManager,
   ProviderJobCancelledError,
   type ProviderJob,
   type ProviderJobManager,
 } from "@/lib/provider-job-manager";
-import {
-  findRecoveredProviderJob,
-  parseProviderJobRecoverySnapshot,
-  providerJobRecoveryKey,
-  serializeProviderJobRecoverySnapshot,
-  type ProviderJobRecoverySnapshot,
-} from "@/lib/provider-job-recovery";
+import type { ProviderStatus } from "@/lib/provider-types";
 
-const GENERATE_STEP = "generate";
-
-type GenerateRecovery = {
-  readonly snapshot: ProviderJobRecoverySnapshot;
-  readonly job: ProviderJob;
-};
-
-export function GenerateStage({ project }: { readonly project: DeckProject }) {
+export function GenerateStage({
+  project,
+  executionMode = defaultExecutionMode(),
+  providerStatuses = [],
+}: {
+  readonly project: DeckProject;
+  readonly executionMode?: ImageGenerationExecutionMode;
+  readonly providerStatuses?: readonly ProviderStatus[];
+}) {
   const navigate = useNavigate();
+  const imageGenerationGate = createProductionImageGenerationGate({
+    executionMode,
+    imagePathDecision: project.imagePathDecision,
+    providerStatuses,
+  });
   const initialRecovery = readGenerateRecovery(project.id);
   const [manager] = useState<ProviderJobManager>(() =>
     createProviderJobManager({
@@ -45,14 +60,29 @@ export function GenerateStage({ project }: { readonly project: DeckProject }) {
   const [recovered, setRecovered] = useState(initialRecovery !== undefined);
 
   const generate = async () => {
-    if (!project.plan || !project.design) return;
+    if (!project.plan || !project.design || imageGenerationGate.kind !== "ready") return;
     const queued = manager.enqueue({
-      providerId: "mock",
+      providerId: imageGenerationGate.providerId,
       capability: "imageGeneration",
       description: "슬라이드 이미지 생성",
     });
-    syncJob(project.id, manager, queued, setJob, setRecovered);
-    await runGeneration(queued.id);
+    let evidenceStore: ImageArtifactStore | undefined;
+    if (imageGenerationGate.providerId === "codex") {
+      evidenceStore = createBrowserImageArtifactStore();
+      const billing = await prepareCodexImageBillingJob({
+        projectId: project.id,
+        jobId: queued.id,
+        providerId: imageGenerationGate.providerId,
+        slideCount: project.plan.slides.length,
+        manager,
+        evidenceStore,
+      });
+      syncJob(project.id, manager, billing.job, setJob, setRecovered);
+      if (billing.kind !== "confirmed") return;
+    } else {
+      syncJob(project.id, manager, queued, setJob, setRecovered);
+    }
+    await runGeneration(queued.id, evidenceStore);
   };
 
   const retry = async () => {
@@ -68,10 +98,27 @@ export function GenerateStage({ project }: { readonly project: DeckProject }) {
     syncJob(project.id, manager, cancelled, setJob, setRecovered);
   };
 
-  const runGeneration = async (jobId: string) => {
-    if (!project.plan || !project.design) return;
+  const runGeneration = async (jobId: string, evidenceStore?: ImageArtifactStore) => {
+    if (!project.plan || !project.design || imageGenerationGate.kind !== "ready") return;
     setBusy(true);
     setProgress(0);
+    if (imageGenerationGate.providerId === "codex") {
+      const completed = await runCodexGenerateStageJob({
+        project,
+        jobId,
+        manager,
+        ...(evidenceStore === undefined ? {} : { store: evidenceStore }),
+        onJob: (nextJob) => syncJob(project.id, manager, nextJob, setJob, setRecovered),
+        onSlides: (nextSlides) => setSlides([...nextSlides]),
+        onProgress: setProgress,
+      });
+      syncJob(project.id, manager, completed, setJob, setRecovered);
+      setBusy(false);
+      if (completed.status !== "succeeded" || completed.output === undefined) return;
+      updateProject(project.id, { slides: [...completed.output], stage: "SLIDE_REVIEW_PENDING" });
+      invalidateDownstream(project.id, "generate");
+      return;
+    }
     const target = mockSlides(project.plan);
     const draft: GeneratedSlide[] = target.map((slide) => ({ ...slide, status: "generating" }));
     setSlides(draft);
@@ -127,6 +174,12 @@ export function GenerateStage({ project }: { readonly project: DeckProject }) {
     <StageShell>
       <StageScroll className="mx-auto max-w-6xl px-8">
         <StageHeader num="06" sub="Generate" title="슬라이드 이미지 생성" />
+        {imageGenerationGate.kind === "blocked" ? (
+          <StageErrorBanner
+            title="실제 이미지 경로 Lock 필요"
+            message={imageGenerationGate.issues.map((issue) => issue.message).join(" ")}
+          />
+        ) : null}
         {job ? (
           <ProviderJobProgressPanel
             stageLabel="슬라이드 이미지 생성"
@@ -140,8 +193,13 @@ export function GenerateStage({ project }: { readonly project: DeckProject }) {
         ) : null}
         {!slides ? (
           <EmptyAction
-            label="승인한 레이아웃으로 슬라이드 이미지 생성"
+            label={
+              imageGenerationGate.kind === "blocked"
+                ? "실제 이미지 경로 결정 레코드가 필요합니다."
+                : "승인한 레이아웃으로 슬라이드 이미지 생성"
+            }
             busy={busy}
+            disabled={imageGenerationGate.kind === "blocked"}
             onClick={generate}
           />
         ) : (
@@ -184,36 +242,13 @@ function syncJob(
 ): void {
   setJob(nextJob);
   setRecovered(false);
-  writeGenerateRecovery(projectId, nextJob.id, manager.snapshot());
+  writeGenerateRecovery({
+    projectId,
+    currentJobId: nextJob.id,
+    jobs: manager.snapshot(),
+  });
 }
 
-function readGenerateRecovery(projectId: string): GenerateRecovery | undefined {
-  if (!isBrowser()) return undefined;
-  const snapshot = parseProviderJobRecoverySnapshot(
-    window.localStorage.getItem(providerJobRecoveryKey(projectId, GENERATE_STEP)),
-  );
-  if (!snapshot) return undefined;
-  const job = findRecoveredProviderJob(snapshot, snapshot.currentJobId);
-  return job === undefined ? undefined : { snapshot, job };
-}
-
-function writeGenerateRecovery(
-  projectId: string,
-  currentJobId: string,
-  jobs: readonly ProviderJob[],
-): void {
-  if (!isBrowser()) return;
-  window.localStorage.setItem(
-    providerJobRecoveryKey(projectId, GENERATE_STEP),
-    serializeProviderJobRecoverySnapshot({
-      projectId,
-      step: GENERATE_STEP,
-      currentJobId,
-      jobs,
-    }),
-  );
-}
-
-function isBrowser(): boolean {
-  return typeof window !== "undefined";
+function defaultExecutionMode(): ImageGenerationExecutionMode {
+  return import.meta.env.PROD ? "production" : "development";
 }

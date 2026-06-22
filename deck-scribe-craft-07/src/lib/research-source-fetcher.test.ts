@@ -26,6 +26,64 @@ describe("research source fetcher", () => {
     expect(result.kind).toBe("web_page");
   });
 
+  test("captures live URL response metadata and a content hash", async () => {
+    const result = await fetchResearchSource(
+      {
+        id: "fetch_pdf",
+        kind: "pdf",
+        sourceType: "government",
+        url: "https://example.gov/report.pdf",
+        transferTarget: "local",
+        method: "GET",
+      },
+      {
+        now: () => 1_789_200_010,
+        fetchUrl: async () => ({
+          rawContent: "PDF text",
+          finalUrl: "https://cdn.example.gov/report.pdf",
+          mimeType: "application/pdf",
+          statusCode: 200,
+        }),
+        readFile: async () => "unused",
+      },
+    );
+
+    expect(result.status).toBe("succeeded");
+    expect(result.rawContent).toBe("PDF text");
+    expect(result.originalUrl).toBe("https://example.gov/report.pdf");
+    expect(result.finalUrl).toBe("https://cdn.example.gov/report.pdf");
+    expect(result.mimeType).toBe("application/pdf");
+    expect(result.statusCode).toBe(200);
+    expect(result.contentHash?.startsWith("sha256:")).toBe(true);
+  });
+
+  test("blocks non GET or HEAD network methods before fetch", async () => {
+    let fetchCount = 0;
+    const result = await fetchResearchSource(
+      {
+        id: "fetch_post",
+        kind: "web_page",
+        sourceType: "company",
+        url: "https://example.com/form",
+        transferTarget: "local",
+        method: "POST",
+      },
+      {
+        now: () => 1_789_200_011,
+        fetchUrl: async () => {
+          fetchCount += 1;
+          return "<html>should not fetch</html>";
+        },
+        readFile: async () => "unused",
+      },
+    );
+
+    expect(result.status).toBe("blocked");
+    expect(result.retryable).toBe(false);
+    expect(result.error?.includes("GET/HEAD")).toBe(true);
+    expect(fetchCount).toBe(0);
+  });
+
   test("reads local data files with file metadata", async () => {
     const result = await fetchResearchSource(
       {

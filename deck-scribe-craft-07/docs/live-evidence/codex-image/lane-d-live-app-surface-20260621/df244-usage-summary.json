@@ -1,0 +1,7 @@
+{
+  "providerKind": "codex",
+  "imageCount": 5,
+  "totalLatencyMs": 197953,
+  "costDisplay": "hidden_provider_did_not_supply_cost",
+  "userConfirmation": "missing_app_surface_pre_generation_confirmation"
+}

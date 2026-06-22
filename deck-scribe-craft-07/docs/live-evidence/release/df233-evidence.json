@@ -1,0 +1,153 @@
+{
+  "ticketId": "DF-233",
+  "issueNumber": 147,
+  "status": "blocked",
+  "validationKind": "blocked",
+  "generatedAt": "2026-06-22T07:51:00Z",
+  "packageArchiveSha256": "33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc",
+  "summary": "Queue throttling, retry, cancellation, resume, and product evidence writers are implemented. The DF-244 packaged Generate/export smoke now contributes direct packaged app-surface DF-233 queue evidence: the packaged run copied a ready queue JSON, project-folder export, and stored PNG artifact into docs/live-evidence while preserving Codex App Server turn provenance. A latest real Codex OAuth cancellation smoke also ran through the product slide generation queue and rejected a late provider output before storage. DF-233 remains blocked only on packaged queue-control scenarios: genuine 429 or 5xx retry provenance, real-provider user cancellation, and restart-resume evidence proving completed slides are not regenerated.",
+  "currentEvidence": [
+    {
+      "path": "docs/live-image-queue-controls.md",
+      "kind": "image queue control contract"
+    },
+    {
+      "path": "src/lib/live-image-queue-evidence-export.ts",
+      "kind": "product queue evidence writer with stored image artifact path validation"
+    },
+    {
+      "path": "src/lib/live-image-queue-evidence-export.test.ts",
+      "kind": "stored image artifact path false-ready regression tests"
+    },
+    {
+      "path": "src/lib/live-image-queue-restart-resume-evidence.ts",
+      "kind": "restart-resume evidence validator with duplicate and overlap artifact id blocking"
+    },
+    {
+      "path": "src/lib/live-image-queue-evidence-export-resume.test.ts",
+      "kind": "restart-resume artifact overlap regression tests"
+    },
+    {
+      "path": "src/lib/local-data-control.ts",
+      "kind": "project folder export includes project-scoped browser artifact writes"
+    },
+    {
+      "path": "src/lib/local-data-control.test.ts",
+      "kind": "project artifact write export, filtering, and redaction regression"
+    },
+    {
+      "path": "src/components/deck/HomeProjectList.tsx",
+      "kind": "project folder download wires current browser artifact writes into export"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/lane-g-closure-recheck-20260621/issue-closure-evidence.json",
+      "sha256": "cce49011bc94260509f1f4c4e0fb8753ecaff53e8a4313206cea8de1b718f13d",
+      "kind": "blocked image/export/usage closure recheck"
+    },
+    {
+      "path": "projects/df244_generate_export_smoke_20260622/live-evidence/df233-image-queue-job_generate_export_smoke_1.json",
+      "sha256": "d08c746038123b6b66fbf0f3a1b0c4be50212c89fc70d3076a2bfebe5056558b",
+      "kind": "real Codex one-slide product queue evidence smoke"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df244-packaged-generate-export-smoke-20260622/summary.json",
+      "sha256": "223c3af62de88ac22206e47193bb811c09670b635ab6780d4c7687d5cd0fa53c",
+      "kind": "packaged app Generate/export smoke with DF-233 queue evidence and stored PNG"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df244-packaged-generate-export-smoke-20260622/project-folder-export.json",
+      "sha256": "c9257dd5ddab1cbe35849fa34e2ad7a3211e578baaf02a39f2d34bc3e7fc9bee",
+      "kind": "packaged project folder export containing DF-233 queue evidence and image artifacts"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df244-packaged-generate-export-smoke-20260622/artifacts/projects/df244_packaged_generate_export_smoke_20260622/live-evidence/df233-image-queue-job_packaged_generate_export_smoke_1.json",
+      "sha256": "32637e039e19844986225fb0c274b4bb6018d2b82ab25d9d963929015cee2895",
+      "kind": "packaged app-surface DF-233 queue evidence copied into docs/live-evidence"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df244-packaged-generate-export-smoke-20260622/artifacts/projects/df244_packaged_generate_export_smoke_20260622/slides/images/slide_001.v1.png",
+      "sha256": "572d86f2b7e29d4ce44136e4b455a5e5695e8b165dcf96eb7e454296a4244486",
+      "kind": "stored packaged Codex PNG artifact referenced by DF-233 queue evidence"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df233-queue-controls-smoke-20260622/summary.json",
+      "sha256": "ef3049044d2c844673ee41973280e5fcd44953da771991616b73e371e2ce8a51",
+      "kind": "product queue retry, cancellation, and restart-resume smoke summary"
+    },
+    {
+      "path": "docs/live-evidence/release/df233-product-smoke-packaged-candidate-20260622.json",
+      "sha256": "28a3a7b0b4cb2ba182595cefc5e0a28cdc543a52fed3cd9f997d24b144d96294",
+      "kind": "blocked packaged candidate generated from product queue-control smoke"
+    },
+    {
+      "path": "projects/df233_queue_retry_smoke_20260622/live-evidence/df233-image-queue-retry_product_run_20260622.json",
+      "sha256": "f342cc61c9abbd4a0626ddce108e3b9499d5485bca60cff36d767de2ee96bb77",
+      "kind": "ready product queue 5xx retry evidence"
+    },
+    {
+      "path": "projects/df233_queue_cancel_smoke_20260622/live-evidence/df233-image-queue-cancel_product_run_20260622.json",
+      "sha256": "616fee34a2af90b0f6b2afac12f287a9fd39e766ee1575277c35f061483a1879",
+      "kind": "ready product queue in-flight cancellation evidence"
+    },
+    {
+      "path": "projects/df233_queue_resume_smoke_20260622/live-evidence/df233-image-queue-resume_product_run_20260622.json",
+      "sha256": "c5f8581f0e707780b0182307a023ca71696a0c904ad080ba0988a85bcce14e3e",
+      "kind": "ready product queue restart-resume evidence"
+    },
+    {
+      "path": "scripts/run-df233-queue-controls-product-evidence-smoke.ts",
+      "kind": "reproducible product queue-control evidence smoke"
+    },
+    {
+      "path": "scripts/df233-queue-controls-product-evidence-smoke-support.ts",
+      "kind": "product queue-control smoke scenario support"
+    },
+    {
+      "path": "scripts/df233-packaged-queue-product-smoke-ingestion.ts",
+      "kind": "product smoke to packaged queue candidate ingestion helper"
+    },
+    {
+      "path": "scripts/produce-df233-packaged-queue-product-smoke-candidate.ts",
+      "kind": "reproducible blocked packaged candidate generator for product queue smoke"
+    },
+    {
+      "path": "scripts/df233-packaged-queue-product-smoke-ingestion.test.ts",
+      "kind": "product smoke ingestion regression coverage"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df243-live-codex-cancel-smoke-20260622/summary.json",
+      "sha256": "520a4fe9120aefd470299e26bab224de0b00d9e491553f54ba95108311a7101d",
+      "kind": "real Codex OAuth cancellation smoke summary with no late image storage"
+    },
+    {
+      "path": "projects/df243_live_codex_cancel_smoke_20260622/live-evidence/df233-image-queue-live_codex_cancel_product_run_20260622.json",
+      "sha256": "65ebd4608aa3df5a55144f5f8fe747ea49b3461e03982746a8d413e4ec4d8641",
+      "kind": "real Codex OAuth cancelled queue evidence with ready validation"
+    },
+    {
+      "path": "scripts/run-live-codex-cancel-product-evidence-smoke.ts",
+      "kind": "reproducible real Codex OAuth queue cancellation smoke"
+    },
+    {
+      "path": "src/lib/live-slide-generation-session.test.ts",
+      "kind": "late cancellation before image storage regression coverage"
+    },
+    {
+      "path": "src/lib/live-image-provider-adapter.ts",
+      "kind": "pre-storage cancellation hook for live image artifacts"
+    },
+    {
+      "path": "src/lib/df233-df243-live-codex-cancel-artifact.test.ts",
+      "kind": "real Codex OAuth cancellation artifact no-storage regression coverage"
+    },
+    {
+      "path": "src/lib/df233-packaged-generate-export-artifact.test.ts",
+      "kind": "packaged Generate/export queue JSON and stored PNG artifact regression coverage"
+    }
+  ],
+  "missingEvidence": [
+    "packaged Codex OAuth image run with genuine 429 or 5xx retry provenance",
+    "packaged in-flight user cancellation evidence from a real provider job",
+    "packaged restart-resume evidence proving completed slides are not regenerated"
+  ]
+}

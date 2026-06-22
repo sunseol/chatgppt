@@ -1,0 +1,12 @@
+{
+  "type": "deckforge_live_image_billing_confirmation",
+  "version": 1,
+  "projectId": "df244_generate_export_smoke_20260622",
+  "jobId": "job_generate_export_smoke_1",
+  "providerId": "codex",
+  "evidencePath": "usage/df244_generate_export_smoke_20260622/job_generate_export_smoke_1/image-billing-confirmation.json",
+  "label": "Codex image usage confirmed",
+  "apiKeyRequired": false,
+  "billingOwner": "codex_oauth_account",
+  "confirmedAt": 1782096961053
+}

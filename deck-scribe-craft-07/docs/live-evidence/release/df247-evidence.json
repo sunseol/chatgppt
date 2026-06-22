@@ -1,0 +1,126 @@
+{
+  "ticketId": "DF-247",
+  "issueNumber": 157,
+  "status": "blocked",
+  "validationKind": "blocked",
+  "generatedAt": "2026-06-22T11:02:15.000Z",
+  "packageArchiveSha256": "33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc",
+  "packagedLiveEvidenceIndexPath": "docs/live-evidence/release/packaged-live-evidence-index.json",
+  "releaseGateResult": {
+    "kind": "blocked",
+    "passedBenchmarkCount": 0,
+    "blockers": [
+      {
+        "code": "p0_not_live_verified",
+        "message": "Every P0 Live ticket must be Verified Live before release.",
+        "refs": [
+          "DF-205",
+          "DF-233",
+          "DF-241",
+          "DF-242",
+          "DF-245",
+          "DF-246",
+          "DF-247"
+        ]
+      },
+      {
+        "code": "live_benchmark_shortfall",
+        "message": "At least four of five Live benchmarks must pass.",
+        "refs": [
+          "DF-242"
+        ]
+      },
+      {
+        "code": "golden_path_lineage_missing",
+        "message": "Golden Path lineage evidence is required.",
+        "refs": [
+          "DF-241"
+        ]
+      },
+      {
+        "code": "packaged_live_ticket_blocked",
+        "message": "Packaged Live evidence index cannot be ready while any ticket entry is blocked.",
+        "refs": [
+          "DF-205",
+          "DF-233",
+          "DF-241",
+          "DF-242",
+          "DF-245",
+          "DF-246",
+          "DF-247"
+        ]
+      },
+      {
+        "code": "release_decision_blocked",
+        "message": "Release decision must explicitly approve the Live Initial Version.",
+        "refs": [
+          "blocked"
+        ]
+      }
+    ]
+  },
+  "summary": "DF-247 release gate remains blocked by 5 blocker(s).",
+  "currentEvidence": [
+    {
+      "path": "docs/live-release-decision.md",
+      "kind": "canonical release decision",
+      "sha256": "871289b481e76dc1a5c1b4ed38ffa03140338a3cf48bbf8e4dc61d92e5e18f9c"
+    },
+    {
+      "path": "docs/live-evidence/release/df205-evidence.json",
+      "kind": "DF-205 packaged auth and secret evidence",
+      "sha256": "4b5e627ca37e8300cf61072fb6726f6393dfe2aa5e2a7cb1157289925fa04d2f"
+    },
+    {
+      "path": "docs/live-evidence/release/df233-evidence.json",
+      "kind": "DF-233 packaged queue controls evidence",
+      "sha256": "501f4a3787e27f19fc6aaa25b0d9da2bcacdac8c627b7eabc50a4acdbc3b9362"
+    },
+    {
+      "path": "docs/live-evidence/release/df235-evidence.json",
+      "kind": "DF-235 packaged review evidence",
+      "sha256": "092c5bb8071e0b09f48adb49a6e1d97444da22c22da2e1635ae035fd1c1120af"
+    },
+    {
+      "path": "docs/live-evidence/release/df241-evidence.json",
+      "kind": "DF-241 Golden Path packaged evidence",
+      "sha256": "9154404c1d391cd186aa071c8b6ef572493c9ac6ed3e2c37861a01a2a1852f1a"
+    },
+    {
+      "path": "docs/live-evidence/release/df242-evidence.json",
+      "kind": "DF-242 benchmark packaged evidence",
+      "sha256": "391532d25aba634d55eba623b6c6ee5056eb018a00cbaf46fd7e11733c715b8d"
+    },
+    {
+      "path": "docs/live-evidence/release/df243-evidence.json",
+      "kind": "DF-243 interruption closure evidence",
+      "sha256": "92f7a7d19bd05114b5120528e602ebf3d164b30f8e1e217fb86ceed0f46b5a91"
+    },
+    {
+      "path": "docs/live-evidence/release/df244-evidence.json",
+      "kind": "DF-244 packaged usage evidence",
+      "sha256": "5e30d4da87a5b92ed8974c4511790a79eca049a57b7ed63389e7fe405b1ff049"
+    },
+    {
+      "path": "docs/live-evidence/release/df245-evidence.json",
+      "kind": "DF-245 production packaging evidence",
+      "sha256": "06aa28d077d4a4bb3ccd9d9637655a1878f639478ff4324460dc9d439e8082fc"
+    },
+    {
+      "path": "docs/live-evidence/release/df246-evidence.json",
+      "kind": "DF-246 packaged manual QA evidence",
+      "sha256": "eebc394d5c78936251b675f7225a78f3e620f9b29c1280fd8233f646b32faa44"
+    },
+    {
+      "path": "docs/live-evidence/release/packaged-live-evidence-index.json",
+      "kind": "shared packaged evidence index"
+    }
+  ],
+  "missingEvidence": [
+    "p0_not_live_verified:DF-205,DF-233,DF-241,DF-242,DF-245,DF-246,DF-247",
+    "live_benchmark_shortfall:DF-242",
+    "golden_path_lineage_missing:DF-241",
+    "packaged_live_ticket_blocked:DF-205,DF-233,DF-241,DF-242,DF-245,DF-246,DF-247",
+    "release_decision_blocked:blocked"
+  ]
+}

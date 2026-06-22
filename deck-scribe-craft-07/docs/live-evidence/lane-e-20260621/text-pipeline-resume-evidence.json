@@ -1,0 +1,27 @@
+{
+  "threadId": "019ee6af-e51b-72d1-97b8-b4291523e4df",
+  "previousTurnId": "019ee6af-e7a7-74a0-b469-074a261db193",
+  "nextTurnId": "019ee6b0-1a9c-7cf1-9a46-dada230836ff",
+  "completed": true,
+  "providerKind": "codex",
+  "authMode": "codex_session",
+  "executionMode": "production",
+  "protocolLineCount": 487,
+  "stderrLogLineCount": 53,
+  "eventMethods": [
+    "remoteControl/status/changed",
+    "thread/started",
+    "warning",
+    "mcpServer/startupStatus/updated",
+    "thread/status/changed",
+    "turn/started",
+    "hook/started",
+    "hook/completed",
+    "item/started",
+    "item/completed",
+    "item/agentMessage/delta",
+    "thread/tokenUsage/updated",
+    "account/rateLimits/updated",
+    "turn/completed"
+  ]
+}

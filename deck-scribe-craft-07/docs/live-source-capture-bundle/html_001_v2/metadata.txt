@@ -1,0 +1,6 @@
+fetched_at=2026-06-18T13:48:40Z
+https://www.w3.org/TR/WCAG22/
+200
+text/html; charset=utf-8
+raw_sha256=6e3c5fe397257cae509a2fb4752b73062cf8cbeb92c2cec618989b17e4cf7057
+text_sha256=0d5abfbe2419f468f0656cd75ab0720dba75adda41bafbc50a3488a71c585c47

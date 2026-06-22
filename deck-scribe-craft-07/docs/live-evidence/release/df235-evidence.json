@@ -1,0 +1,148 @@
+{
+  "ticketId": "DF-235",
+  "issueNumber": 149,
+  "status": "ready",
+  "validationKind": "ready",
+  "generatedAt": "2026-06-22T07:00:10Z",
+  "packageArchiveSha256": "33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc",
+  "summary": "DF-235 is ready: the packaged dry-run Review-stage UI restored a pending lineage-valid v2 selected-slide regeneration candidate, displayed before/after and preservation checks, approved the v2 candidate through the product ReviewStage writer, and separately proved the live-only failure path preserves the approved original and writes preserved_after_failure evidence when Codex OAuth image provenance is unavailable.",
+  "currentEvidence": [
+    {
+      "path": "docs/live-slide-regeneration.md",
+      "kind": "selected-slide regeneration contract"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df235-selected-slide-regeneration-summary.json",
+      "kind": "earlier live regenerated image summary superseded by lineage-valid rerun"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df235-selected-slide-regeneration-lineage-20260622.json",
+      "sha256": "9a00a97cd9ad0383c2f91939bd1d6a90b8c8fc2f445d6b4f3624779a33839bd1",
+      "kind": "live regenerated image summary with approved-original input lineage"
+    },
+    {
+      "path": "projects/df235_live_regeneration_lineage_20260622/slides/images/slide_003.v2.png",
+      "sha256": "167127d22caf3a920d843e2a88e929bc37ca98f2f83f8b88b2e678805a64910a",
+      "kind": "lineage-valid regenerated PNG binary"
+    },
+    {
+      "path": "projects/df235_live_regeneration_lineage_20260622/slides/images/slide_003.v2.provenance.json",
+      "sha256": "13060593f96f06395b85b303c90c3f766b80e637bda2b98d5c15473a03c7f7fa",
+      "kind": "provenance sidecar citing df232_live_codex_batch_image_slide_003_v1"
+    },
+    {
+      "path": "projects/df235_live_regeneration_lineage_20260622/live-evidence/df235-slide-regeneration-review-rev_df235_lineage_20260622.json",
+      "sha256": "cf6487e96a4b7023dd0dc47dceaef98dafb3ce80fced739fa49a65e7d5c105dc",
+      "kind": "product Review-stage approved-candidate evidence JSON"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df235-review-approval-evidence-20260622.json",
+      "sha256": "d3d61c3511d70ef35eb66d865f974d2ebdae7ce270f233392c3830dcd0e8a869",
+      "kind": "review approval evidence smoke summary"
+    },
+    {
+      "path": "projects/df235_failure_preservation_smoke_20260622/live-evidence/df235-slide-regeneration-review-rev_df235_failure_preservation_20260622.json",
+      "sha256": "e97ad5aa22987bb0c0f4c711d1a97b65a9f57f6c6df7213c90e1ef6afa092018",
+      "kind": "product Review-stage preserved-after-failure evidence JSON"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df235-review-failure-preservation-20260622.json",
+      "sha256": "3fe4be2a2fa20103409810f601d4eaa8ab88f879f1fb775531665f3dce282fc6",
+      "kind": "review failure preservation evidence smoke summary"
+    },
+    {
+      "path": "docs/live-evidence/release/df235-product-smoke-packaged-review-candidate-20260622.json",
+      "sha256": "07df442358dee2efd53723c500db046e6840006fb2b7a391686954df495a7e79",
+      "kind": "blocked packaged review candidate generated from product review smokes"
+    },
+    {
+      "path": "scripts/run-df235-review-approval-evidence-smoke.ts",
+      "kind": "product Review-stage approval evidence smoke"
+    },
+    {
+      "path": "scripts/run-df235-review-failure-preservation-smoke.ts",
+      "kind": "product Review-stage failed-regeneration preservation smoke"
+    },
+    {
+      "path": "scripts/df235-product-smoke-packaged-review-ingestion.ts",
+      "kind": "product review smoke to packaged review candidate ingestion helper"
+    },
+    {
+      "path": "scripts/produce-df235-product-smoke-packaged-review-candidate.ts",
+      "kind": "reproducible blocked packaged review candidate generator"
+    },
+    {
+      "path": "scripts/df235-product-smoke-packaged-review-ingestion.test.ts",
+      "kind": "product review smoke ingestion regression coverage"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/lane-d-live-app-surface-20260621/df235-before-after-review.html",
+      "sha256": "8c170b78a077345816d39ec244711569082bb91152d09fa0b412a59403862a1b",
+      "kind": "static before/after review evidence"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/lane-d-live-app-surface-20260621/df235-preservation-record.json",
+      "sha256": "f3b3d5c3cf28f4ef7e49d31545f67e28ec7e724edcd1e0d51e65107360eb57f2",
+      "kind": "static preservation evidence"
+    },
+    {
+      "path": "src/lib/live-slide-regeneration-review-evidence.ts",
+      "kind": "review evidence path validator"
+    },
+    {
+      "path": "src/lib/live-slide-regeneration-input-lineage.ts",
+      "kind": "candidate input-lineage validator requiring the approved original artifact"
+    },
+    {
+      "path": "src/lib/live-slide-regeneration-review-evidence.test.ts",
+      "kind": "scratch review evidence path regression tests"
+    },
+    {
+      "path": "src/lib/live-slide-regeneration-provenance.test.ts",
+      "kind": "regression coverage for missing approved-original input lineage"
+    },
+    {
+      "path": "src/lib/df235-release-evidence-artifact.test.ts",
+      "kind": "DF-235 release artifact regression tying local regeneration proof to packaged blockers"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df235-packaged-review-stage-20260622/approval-review.json",
+      "sha256": "c3bac5cf2e8dc319c9de0f7d749c1a1a7a25390599893c3fcb16fdac1455f03d",
+      "kind": "packaged Review-stage approved-candidate evidence JSON"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df235-packaged-review-stage-20260622/failure-preservation-review.json",
+      "sha256": "d174ac4892951bf66c997d48ec0da467f87c19238dc65977c9c035dd261c69d3",
+      "kind": "packaged Review-stage preserved-after-failure evidence JSON"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df235-packaged-review-stage-20260622/approval-display.html",
+      "sha256": "e5418bb322345431c9c9656e87aa89bad3cfbb56c0ce423009a010ff253f1d95",
+      "kind": "packaged Review-stage approval display evidence"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df235-packaged-review-stage-20260622/failure-preservation-display.html",
+      "sha256": "a9987a83424ae622db1d45317ffc4502bbed39ece5f3645b62158765ead1b98a",
+      "kind": "packaged Review-stage failure-preservation display evidence"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df235-packaged-review-stage-20260622/packaged-review-input.json",
+      "sha256": "d0959313d94b51c9f9c2e6d5c3a7bdb5b3aa105409636a50b301f900f0c0a847",
+      "kind": "packaged Review-stage producer input"
+    },
+    {
+      "path": "docs/live-evidence/release/df235-packaged-review-stage-candidate-20260622.json",
+      "sha256": "f10cc52753395ccd2467ed88c02b0315ed7d809240bb77b12717e967808f17c9",
+      "kind": "ready packaged Review-stage evidence candidate"
+    },
+    {
+      "path": "src/components/deck/ProductionReviewStage.integration.test.tsx",
+      "kind": "production Review-stage pending candidate regression coverage"
+    },
+    {
+      "path": "src/components/deck/ReviewRequestPanel.tsx",
+      "kind": "Review-stage request panel split to keep review surface maintainable"
+    }
+  ],
+  "missingEvidence": []
+}

@@ -1,0 +1,28 @@
+{
+  "capturedAt": "2026-06-22T07:00:10.409Z",
+  "evidenceKind": "df235-packaged-review-evidence",
+  "status": "ready",
+  "packageArchiveSha256": "33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc",
+  "reviewSessionId": "df235_packaged_review_stage_20260622",
+  "approval": {
+    "evidencePath": "docs/live-evidence/codex-image/df235-packaged-review-stage-20260622/approval-review.json",
+    "projectId": "df235_packaged_review_approval_20260622",
+    "eventId": "rev_df235_packaged_approval_20260622",
+    "approvedSlide": {
+      "number": 1,
+      "version": 2
+    },
+    "displayEvidencePath": "docs/live-evidence/codex-image/df235-packaged-review-stage-20260622/approval-display.html"
+  },
+  "failurePreservation": {
+    "evidencePath": "docs/live-evidence/codex-image/df235-packaged-review-stage-20260622/failure-preservation-review.json",
+    "projectId": "df235_packaged_review_failure_20260622",
+    "eventId": "slide_001_1782111508004",
+    "preservedSlide": {
+      "number": 1,
+      "version": 1
+    },
+    "displayEvidencePath": "docs/live-evidence/codex-image/df235-packaged-review-stage-20260622/failure-preservation-display.html"
+  },
+  "releaseBlockers": []
+}

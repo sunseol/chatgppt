@@ -3,6 +3,7 @@ import { ArrowRight, Plus, Trash2 } from "lucide-react";
 import { LocalProjectDataControls } from "@/components/deck/LocalProjectDataControls";
 import { ProjectDeckThumbnail } from "@/components/deck/ProjectVisualPreview";
 import { Button } from "@/components/ui/button";
+import { readBrowserImageArtifactWrites } from "@/lib/browser-image-artifact-store";
 import { deleteProject } from "@/lib/deck-store";
 import { buildLocalProjectFolderExport } from "@/lib/local-data-control";
 import { stageToStep, STEPS, type DeckProject } from "@/lib/deck-types";
@@ -127,7 +128,9 @@ function ProjectRow({
 }
 
 function downloadLocalProjectFolder(project: Parameters<typeof buildLocalProjectFolderExport>[0]) {
-  const file = buildLocalProjectFolderExport(project);
+  const file = buildLocalProjectFolderExport(project, {
+    artifactWrites: readBrowserImageArtifactWrites(),
+  });
   const blob = new Blob([file.content], { type: file.mime });
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");

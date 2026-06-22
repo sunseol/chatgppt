@@ -1,0 +1,81 @@
+{
+  "capturedAt": "2026-06-22T11:02:15Z",
+  "evidenceKind": "computer-use-packaged-live-interview-brief-smoke",
+  "status": "passed",
+  "scope": "developer-worktree unsigned dry-run packaged app surface; direct Chrome computer-use run against localhost bridge",
+  "packageArchive": {
+    "path": "dist/deckforge-macos-dry-run.tgz",
+    "sha256": "33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc"
+  },
+  "server": {
+    "launcherPath": "dist/deckforge-macos-dry-run/DeckForge.app/Contents/MacOS/deckforge",
+    "url": "http://localhost:4197",
+    "stdout": ["Started development server: http://localhost:4197"]
+  },
+  "computerUseRun": {
+    "browser": "Google Chrome via Playwright",
+    "projectId": "p_1hdqxx3f",
+    "projectName": "Computer Use Complete Prompt Brief QA 20260622",
+    "appServerBridge": "available",
+    "productionStep": "interview",
+    "answerInputCount": 11,
+    "allStandardInterviewFieldsVisible": true,
+    "runButton": "Run live interview turns",
+    "resultMessage": "Live interview brief is ready.",
+    "finalStage": "INTERVIEW_APPROVAL_PENDING"
+  },
+  "artifacts": [
+    {
+      "artifactId": "p_1hdqxx3f_questions_live",
+      "artifactType": "interview_questions",
+      "hash": "sha256:29ea6381",
+      "path": "projects/p_1hdqxx3f/briefs/p_1hdqxx3f_questions_live.json",
+      "threadId": "019eeefd-cb6e-7e90-81fb-95326eaf0593",
+      "turnId": "019eeefd-cde5-7280-b501-74abd980f538"
+    },
+    {
+      "artifactId": "p_1hdqxx3f_brief_live",
+      "artifactType": "interview_brief",
+      "hash": "sha256:c737e895",
+      "path": "projects/p_1hdqxx3f/briefs/p_1hdqxx3f_brief_live.json",
+      "threadId": "019eeefe-1668-73b2-a311-aa175cfe2481",
+      "turnId": "019eeefe-1862-7693-a5e8-6070913744e7"
+    }
+  ],
+  "screenshots": {
+    "home": "docs/live-evidence/release/computer-use-packaged-app-home-20260622.png",
+    "newProject": "docs/live-evidence/release/computer-use-packaged-app-new-project-20260622.png",
+    "fullAnswerUi": "docs/live-evidence/release/computer-use-packaged-app-full-answer-ui-20260622.png",
+    "fullAnswerUiFilled": "docs/live-evidence/release/computer-use-packaged-app-full-answer-ui-filled-20260622.png",
+    "briefReady": "docs/live-evidence/release/computer-use-packaged-app-full-brief-after-run-20260622.png"
+  },
+  "discoveryScreenshots": {
+    "scope": "pre-final-package computer-use screenshots retained for regression context; not the final package evidence basis",
+    "files": [
+      "docs/live-evidence/release/computer-use-packaged-app-answer-ui-20260622.png",
+      "docs/live-evidence/release/computer-use-packaged-app-answer-ui-filled-20260622.png",
+      "docs/live-evidence/release/computer-use-packaged-app-project-created-20260622.png",
+      "docs/live-evidence/release/computer-use-packaged-app-interview-after-run-20260622.png",
+      "docs/live-evidence/release/computer-use-packaged-app-interview-polled-20260622.png",
+      "docs/live-evidence/release/computer-use-packaged-app-live-brief-after-run-20260622.png"
+    ]
+  },
+  "fixValidated": {
+    "problem": "The packaged production interview screen previously exposed only local heuristic missing fields, so a live App Server question plan could require fields the user could not answer before the brief turn.",
+    "change": "The production interview surface now renders every standard interview field before a live brief exists and passes those answers into the live interview workflow.",
+    "targetedVerification": [
+      "bun test src/components/deck/ProductionTextWorkflowPanel.integration.test.tsx",
+      "bun run typecheck",
+      "bun test src/lib/live-interview-answer-map.test.ts src/lib/desktop-live-interview-artifact-patch.test.ts src/components/deck/ProductionTextWorkflowPanel.integration.test.tsx",
+      "bun run package:dry-run"
+    ]
+  },
+  "releaseImpact": {
+    "narrows": ["DF-241 packaged live interview step"],
+    "doesNotClose": [
+      "DF-241 Golden Path still lacks signed report, title edit re-export, recording, final validation bundle, and restart reopen evidence.",
+      "DF-242 benchmark bundle still has no 4-of-5 packaged live benchmark passes.",
+      "DF-245 package remains unsigned, unnotarized, unstapled, and not clean-machine verified."
+    ]
+  }
+}

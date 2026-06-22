@@ -1,0 +1,60 @@
+{
+  "capturedAt": "2026-06-22T03:07:35.497Z",
+  "evidenceKind": "df243-cancel-product-evidence-smoke",
+  "runtime": "product slide generation queue plus DF-243 cancel writer",
+  "projectId": "df243_cancel_product_smoke_20260622",
+  "runId": "cancel_product_run_20260622",
+  "queueStatus": "failed",
+  "providerReturnedSlides": [
+    1
+  ],
+  "acceptedSlides": [],
+  "lateOutputRejected": true,
+  "failures": [
+    {
+      "jobId": "live_job_cancel_product_1",
+      "bundleId": "bundle_deckctx_b17b00d3_slide_01",
+      "slideNumber": 1,
+      "retryable": true,
+      "attempts": 1,
+      "failureKind": "cancelled",
+      "retryDelaysMs": [],
+      "errorMessage": "Provider job \"live_job_cancel_product_1\" was cancelled.",
+      "userMessage": "Slide 1 was cancelled. Retry is available."
+    }
+  ],
+  "jobs": [
+    {
+      "id": "live_job_cancel_product_1",
+      "status": "cancelled",
+      "attempt": 1,
+      "cancelRequested": true,
+      "errorMessage": "Provider job \"live_job_cancel_product_1\" was cancelled."
+    }
+  ],
+  "recoverySnapshotPath": "projects/df243_cancel_product_smoke_20260622/live-evidence/df243-cancel-job-recovery-snapshot-cancel_product_run_20260622.json",
+  "cancelSignalEvidencePath": "projects/df243_cancel_product_smoke_20260622/live-evidence/df243-cancel-job-cancel-signal-cancel_product_run_20260622.json",
+  "matrixPath": "docs/live-evidence/codex-image/df243-cancel-product-smoke-20260622/df243-cancel-product-smoke-matrix.json",
+  "matrixResult": {
+    "kind": "ready"
+  },
+  "artifactWrites": [
+    {
+      "path": "projects/df243_cancel_product_smoke_20260622/live-evidence/df243-cancel-job-recovery-snapshot-cancel_product_run_20260622.json",
+      "kind": "text",
+      "bytes": 1641
+    },
+    {
+      "path": "projects/df243_cancel_product_smoke_20260622/live-evidence/df243-cancel-job-cancel-signal-cancel_product_run_20260622.json",
+      "kind": "text",
+      "bytes": 482
+    }
+  ],
+  "projectFolderExport": {
+    "hash": "sha256:03039fb0",
+    "bytes": 94915,
+    "projectArtifactWriteCount": 2,
+    "includesCancelSnapshot": true,
+    "includesCancelSignal": true
+  }
+}

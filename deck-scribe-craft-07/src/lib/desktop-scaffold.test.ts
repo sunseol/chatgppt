@@ -32,13 +32,13 @@ describe("desktop scaffold", () => {
     expect(pkg.scripts?.quality).toBe("bun run quality:ts && bun run quality:rust");
   });
 
-  test("configures the desktop app against the existing Vite build", () => {
+  test("configures the desktop app against the sanitized package build", () => {
     const config = readJson<TauriConfig>("../../src-tauri/tauri.conf.json");
 
     expect(config.productName).toBe("DeckForge");
     expect(config.identifier).toBe("app.deckforge.desktop");
     expect(config.build?.beforeDevCommand).toBe("bun run dev");
-    expect(config.build?.beforeBuildCommand).toBe("bun run build");
+    expect(config.build?.beforeBuildCommand).toBe("bun run build:package");
     expect(config.build?.devUrl).toBe("http://localhost:5173");
     expect(config.build?.frontendDist).toBe("../dist/client");
     expect(config.bundle?.active).toBe(true);

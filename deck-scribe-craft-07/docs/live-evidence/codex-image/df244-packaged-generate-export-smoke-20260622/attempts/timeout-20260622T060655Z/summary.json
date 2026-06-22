@@ -1,0 +1,86 @@
+{
+  "capturedAt": "2026-06-22T06:06:55.247Z",
+  "evidenceKind": "packaged-live-codex-generate-export-smoke",
+  "runtime": "DeckForge dry-run package localhost bridge -> codex app-server --stdio",
+  "packageSurface": {
+    "baseUrl": "http://127.0.0.1:4195",
+    "stdout": [
+      "Started development server: http://localhost:4195"
+    ],
+    "stderr": []
+  },
+  "projectId": "df244_packaged_generate_export_smoke_20260622",
+  "jobId": "job_packaged_generate_export_smoke_1",
+  "billingJobStatus": "queued",
+  "completedJobStatus": "failed",
+  "partialResult": {
+    "kind": "live_slide_images",
+    "label": "0 Codex slide images",
+    "artifactId": "df244_packaged_generate_export_smoke_20260622",
+    "queueEvidencePath": "projects/df244_packaged_generate_export_smoke_20260622/live-evidence/df233-image-queue-job_packaged_generate_export_smoke_1.json"
+  },
+  "progress": [
+    0,
+    100,
+    100
+  ],
+  "jobs": [
+    {
+      "id": "job_packaged_generate_export_smoke_1",
+      "status": "queued",
+      "attempt": 1
+    },
+    {
+      "id": "job_packaged_generate_export_smoke_1",
+      "status": "queued",
+      "attempt": 1
+    },
+    {
+      "id": "job_packaged_generate_export_smoke_1",
+      "status": "running",
+      "attempt": 1
+    },
+    {
+      "id": "job_packaged_generate_export_smoke_1",
+      "status": "running",
+      "attempt": 1
+    },
+    {
+      "id": "job_packaged_generate_export_smoke_1",
+      "status": "running",
+      "attempt": 1,
+      "partialResult": {
+        "kind": "live_slide_images",
+        "label": "0 Codex slide images",
+        "artifactId": "df244_packaged_generate_export_smoke_20260622",
+        "queueEvidencePath": "projects/df244_packaged_generate_export_smoke_20260622/live-evidence/df233-image-queue-job_packaged_generate_export_smoke_1.json"
+      }
+    }
+  ],
+  "slides": [],
+  "artifactWrites": [
+    {
+      "originalPath": "projects/df244_packaged_generate_export_smoke_20260622/usage/df244_packaged_generate_export_smoke_20260622/job_packaged_generate_export_smoke_1/image-billing-confirmation.json",
+      "path": "docs/live-evidence/codex-image/df244-packaged-generate-export-smoke-20260622/artifacts/projects/df244_packaged_generate_export_smoke_20260622/usage/df244_packaged_generate_export_smoke_20260622/job_packaged_generate_export_smoke_1/image-billing-confirmation.json",
+      "kind": "text",
+      "bytes": 497
+    },
+    {
+      "originalPath": "projects/df244_packaged_generate_export_smoke_20260622/live-evidence/df233-image-queue-job_packaged_generate_export_smoke_1.json",
+      "path": "docs/live-evidence/codex-image/df244-packaged-generate-export-smoke-20260622/artifacts/projects/df244_packaged_generate_export_smoke_20260622/live-evidence/df233-image-queue-job_packaged_generate_export_smoke_1.json",
+      "kind": "text",
+      "bytes": 1952
+    }
+  ],
+  "projectFolderExport": {
+    "evidencePath": "docs/live-evidence/codex-image/df244-packaged-generate-export-smoke-20260622/project-folder-export.json",
+    "hash": "sha256:ca2753a5",
+    "bytes": 95468,
+    "projectArtifactWriteCount": 2,
+    "includesOtherProjects": false,
+    "leaksSyntheticSecret": false
+  },
+  "usageSummaryPath": "docs/live-evidence/codex-image/df244-packaged-generate-export-smoke-20260622/usage-summary.json",
+  "confirmationRecordPath": "docs/live-evidence/codex-image/df244-packaged-generate-export-smoke-20260622/artifacts/projects/df244_packaged_generate_export_smoke_20260622/usage/df244_packaged_generate_export_smoke_20260622/job_packaged_generate_export_smoke_1/image-billing-confirmation.json",
+  "appServerTurns": []
+}

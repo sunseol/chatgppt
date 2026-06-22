@@ -10,7 +10,8 @@ export type ImageProviderId = Extract<ProviderKind, "codex" | "openaiImage">;
 export type ImageProviderSetup =
   | "ready"
   | "requiresApiCredential"
-  | "requiresOrganizationVerification";
+  | "requiresOrganizationVerification"
+  | "requiresCodexImageCapability";
 
 export interface ImageProviderFeasibilityInput {
   readonly codexImageCapability: CodexImageCapability;
@@ -57,28 +58,21 @@ export function decideImageProviderFeasibility(
   }
 
   return {
-    providerId: "openaiImage",
-    authMode: "openaiApiKey",
+    providerId: "codex",
+    authMode: "codexOAuth",
     targetModel: TARGET_IMAGE_MODEL,
-    setup: getOpenAIImageSetup(input),
+    setup: "requiresCodexImageCapability",
     excludedRoutes: [
       {
-        route: "codexOAuth",
-        reason: "Codex image generation is not confirmed for this runtime.",
+        route: "openaiApiKey",
+        reason: "OpenAI API-key image generation is not the production route.",
       },
     ],
     productCopy: {
       connection:
-        "Image generation uses a separate OpenAI API credential; Codex login does not unlock this path by itself.",
-      billing:
-        "Image usage may be billed to the API organization/project that owns the credential.",
-      permission: "Some GPT Image models may require organization verification before use.",
+        "Image generation uses the connected Codex OAuth session; no separate key is required.",
+      billing: "Image usage follows the signed-in Codex account usage limits and entitlements.",
+      permission: "Codex image generation must be enabled for this runtime.",
     },
   };
-}
-
-function getOpenAIImageSetup(input: ImageProviderFeasibilityInput): ImageProviderSetup {
-  if (input.apiCredential === "missing") return "requiresApiCredential";
-  if (input.organizationVerification === "required") return "requiresOrganizationVerification";
-  return "ready";
 }

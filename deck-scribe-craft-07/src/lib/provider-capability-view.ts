@@ -1,5 +1,11 @@
 import type { OpenAIImageFallbackPublicState } from "./image-provider-fallback";
+import type { ProviderAuthMode } from "./provider-provenance";
 import type { ProviderCapability, ProviderStatus } from "./provider-types";
+import {
+  createProviderStatusLock,
+  providerAuthModeLabel,
+  providerStatusLabel,
+} from "./provider-status-view";
 
 export type ProviderFeatureKey =
   | "text_planning"
@@ -20,12 +26,16 @@ export type ProviderCapabilityRow = {
 
 export type ProviderCapabilityMatrixView = {
   readonly providerName: string;
+  readonly selectedProviderId: string;
+  readonly authModeLabel: string;
+  readonly statusLabel: string;
   readonly providerStatusMessage: string;
   readonly rows: readonly ProviderCapabilityRow[];
 };
 
 export type ProviderCapabilityMatrixInput = {
   readonly providerName: string;
+  readonly authMode: ProviderAuthMode;
   readonly status: ProviderStatus;
   readonly capabilities: readonly ProviderCapability[];
   readonly imageFallback?: OpenAIImageFallbackPublicState;
@@ -64,6 +74,9 @@ export function createProviderCapabilityMatrixView(
   const imageRow = createImageGenerationRow(input);
   return {
     providerName: input.providerName,
+    selectedProviderId: input.status.providerId,
+    authModeLabel: providerAuthModeLabel(input.authMode),
+    statusLabel: providerStatusLabel(input.status),
     providerStatusMessage: input.status.message,
     rows: [
       createProviderFeatureRow(input, TEXT_PLANNING),
@@ -78,7 +91,7 @@ function createProviderFeatureRow(
   input: ProviderCapabilityMatrixInput,
   definition: FeatureDefinition,
 ): ProviderCapabilityRow {
-  const statusLock = providerStatusLock(input);
+  const statusLock = createProviderStatusLock(input.providerName, input.status);
   if (statusLock !== undefined) {
     return lockedRow(definition.key, definition.label, statusLock.reason, statusLock.actionLabel);
   }
@@ -100,7 +113,7 @@ function createProviderFeatureRow(
 }
 
 function createImageGenerationRow(input: ProviderCapabilityMatrixInput): ProviderCapabilityRow {
-  const statusLock = providerStatusLock(input);
+  const statusLock = createProviderStatusLock(input.providerName, input.status);
   if (statusLock === undefined && input.capabilities.includes("imageGeneration")) {
     return availableRow(
       "image_generation",
@@ -121,7 +134,7 @@ function createImageGenerationRow(input: ProviderCapabilityMatrixInput): Provide
     "image_generation",
     "이미지 생성",
     "Connected provider does not expose image generation.",
-    "OpenAI 이미지 fallback 설정",
+    "Codex 이미지 생성 확인",
   );
 }
 
@@ -138,7 +151,7 @@ function createRevisionGenerationRow(
     );
   }
 
-  const statusLock = providerStatusLock(input);
+  const statusLock = createProviderStatusLock(input.providerName, input.status);
   if (statusLock !== undefined) {
     return lockedRow("revision_generation", "수정 생성", statusLock.reason, statusLock.actionLabel);
   }
@@ -160,59 +173,35 @@ function createRevisionGenerationRow(
 }
 
 function imageFallbackRow(fallback: OpenAIImageFallbackPublicState): ProviderCapabilityRow {
+  if (fallback.providerId !== "codex" || fallback.authMode !== "codexOAuth") {
+    return codexImageCapabilityLockedRow();
+  }
+
   switch (fallback.setup) {
     case "ready":
-      if (fallback.credentialState === "sessionConfigured") {
-        return availableRow(
-          "image_generation",
-          "이미지 생성",
-          "OpenAI image fallback is configured for this session.",
-        );
-      }
-      return lockedRow(
+      return availableRow(
         "image_generation",
         "이미지 생성",
-        "OpenAI image fallback requires a session API key.",
-        "세션 API Key 입력",
+        "Codex image generation is confirmed for this runtime.",
       );
     case "requiresApiCredential":
-      return lockedRow(
-        "image_generation",
-        "이미지 생성",
-        "OpenAI image fallback requires a session API key.",
-        "세션 API Key 입력",
-      );
+      return codexImageCapabilityLockedRow();
     case "requiresOrganizationVerification":
-      return lockedRow(
-        "image_generation",
-        "이미지 생성",
-        "OpenAI organization verification is required for the selected image model.",
-        "OpenAI 조직 인증 확인",
-      );
+      return codexImageCapabilityLockedRow();
+    case "requiresCodexImageCapability":
+      return codexImageCapabilityLockedRow();
     default:
       return assertNever(fallback.setup);
   }
 }
 
-function providerStatusLock(
-  input: ProviderCapabilityMatrixInput,
-): { readonly reason: string; readonly actionLabel: string } | undefined {
-  switch (input.status.kind) {
-    case "connected":
-      return undefined;
-    case "requiresAuth":
-      return {
-        reason: `${input.providerName} requires authentication: ${input.status.message}`,
-        actionLabel: "Provider 로그인",
-      };
-    case "unavailable":
-      return {
-        reason: `${input.providerName} is unavailable: ${input.status.message}`,
-        actionLabel: "Provider 상태 확인",
-      };
-    default:
-      return assertNever(input.status);
-  }
+function codexImageCapabilityLockedRow(): ProviderCapabilityRow {
+  return lockedRow(
+    "image_generation",
+    "이미지 생성",
+    "Codex image generation must be confirmed for this runtime.",
+    "Codex 이미지 생성 확인",
+  );
 }
 
 function availableRow(

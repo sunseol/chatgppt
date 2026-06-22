@@ -1,0 +1,85 @@
+{
+  "ticketId": "DF-245",
+  "issueNumber": 155,
+  "status": "blocked",
+  "validationKind": "blocked",
+  "generatedAt": "2026-06-22T02:17:52Z",
+  "packageArchiveSha256": "33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc",
+  "summary": "Current dry-run package and unsigned DMG artifacts were rechecked against the active package basis, scan clean locally for configured mock/secret/local-path markers, the dry-run launcher serves the app root plus packaged JS/CSS assets from a temporary HOME with HTTP 200, release-trust command output is persisted as blocked evidence, and generated DF-245 release artifacts now have direct regression coverage against the current dry-run package hash. The DMG is still unsigned, not notarized, not stapled, and not accepted by Gatekeeper.",
+  "currentEvidence": [
+    {
+      "path": "dist/deckforge-macos-dry-run.tgz",
+      "sha256": "33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc",
+      "kind": "current dry-run package"
+    },
+    {
+      "path": "release-artifacts/DeckForge_0.1.0_aarch64.dmg",
+      "sha256": "d6849d24c5af4548b7b35e65a68a05c8d139be4b1b5504d7c3da3a3dc9e2d467",
+      "kind": "current unsigned DMG"
+    },
+    {
+      "path": "docs/live-evidence/release/df245-package-recheck-20260622.json",
+      "sha256": "09a4abc43a469c77fdd4b5d345a824dd354582ce432f7b60b6759838f12f9f96",
+      "kind": "current package and signing blocker recheck"
+    },
+    {
+      "path": "docs/live-evidence/release/df245-dry-run-launch-smoke-20260622.json",
+      "sha256": "7235b36c705f1041ebfd27623892653d71eed27f4925d61a7f1818239b6ab813",
+      "kind": "developer-worktree unsigned dry-run launch smoke with temporary HOME, HTTP 200 root probe, and packaged JS/CSS asset probes"
+    },
+    {
+      "path": "docs/live-evidence/release/df245-release-trust-codesign-notarytool-stapler-spctl-20260622.json",
+      "sha256": "b8e2bb3b7716599c79c4febd90698d035dc283276e1205bbcb86bb0820c37418",
+      "kind": "persisted blocked release-trust command bundle covering codesign, notarytool, stapler, and spctl"
+    },
+    {
+      "path": "scripts/generate-df245-package-recheck.mjs",
+      "kind": "reproducible DF-245 package recheck generator"
+    },
+    {
+      "path": "scripts/generate-df245-dry-run-launch-smoke.mjs",
+      "kind": "reproducible dry-run launch smoke generator"
+    },
+    {
+      "path": "scripts/generate-df245-release-trust-blocker.mjs",
+      "kind": "reproducible blocked release-trust command bundle generator"
+    },
+    {
+      "path": "docs/production-clean-machine-runbook.md",
+      "kind": "clean-machine runbook and current blocked signing state"
+    },
+    {
+      "path": "src/lib/production-packaging-evidence.ts",
+      "kind": "production artifact path and packaging evidence validator"
+    },
+    {
+      "path": "src/lib/production-packaging-artifact-path.test.ts",
+      "kind": "transient package/native bundle path regression tests"
+    },
+    {
+      "path": "src/lib/production-packaging-evidence-payload.ts",
+      "kind": "release-trust and clean-machine payload validator"
+    },
+    {
+      "path": "src/lib/production-packaging-evidence-payload.test.ts",
+      "kind": "payload false-ready and clean-account identity regression tests"
+    },
+    {
+      "path": "src/lib/production-packaging-test-fixtures.ts",
+      "kind": "clean-machine step payload fixture with matching account identity"
+    },
+    {
+      "path": "src/lib/df245-generated-evidence-artifact.test.ts",
+      "kind": "generated DF-245 package, launch, and release-trust evidence artifact regression"
+    }
+  ],
+  "missingEvidence": [
+    "Developer ID Application signing identity",
+    "notarytool credentials and successful notarization",
+    "stapled DMG or app",
+    "Gatekeeper accepted assessment",
+    "passed release-trust JSON bundle with Developer ID signing, accepted notarization, stapling, and Gatekeeper acceptance",
+    "clean macOS account install, Codex login, image credential setup, project launch, and first live interview evidence",
+    "signed/notarized packaged launch smoke; current dry-run launch smoke is developer-worktree evidence only"
+  ]
+}

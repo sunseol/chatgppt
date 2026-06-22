@@ -1,0 +1,258 @@
+import { ImageArtifactStoreError, type ImageArtifactStore } from "./image-artifact-store";
+import { parseVersionedProjectImageArtifactPath } from "./image-artifact-path";
+import {
+  evaluateLiveImageQueueEvidence,
+  type LiveImageQueueEvidenceIssue,
+  type LiveImageQueueEvidenceValidation,
+} from "./live-image-queue-evidence";
+import {
+  restartResumeEvidenceIssues,
+  type LiveImageQueueRestartResumeEvidence,
+} from "./live-image-queue-restart-resume-evidence";
+import type { ProviderJob } from "./provider-job-manager";
+import type { SlideGenerationQueueResult } from "./slide-generation-queue";
+
+const NON_PRODUCTION_IMAGE_ARTIFACT_MARKERS = [
+  "mock",
+  "fixture",
+  "test",
+  "fake",
+  "tmp",
+  "temp",
+  "sample",
+  "example",
+  "placeholder",
+  "generic",
+  "observer",
+] as const;
+
+type ReadySlideGenerationQueueResult = Extract<
+  SlideGenerationQueueResult,
+  { readonly kind: "ready" }
+>;
+
+export type LiveImageQueueEvidenceJob = {
+  readonly id: string;
+  readonly providerId: string;
+  readonly capability: ProviderJob["capability"];
+  readonly description: string;
+  readonly status: ProviderJob["status"];
+  readonly createdAt: number;
+  readonly startedAt?: number;
+  readonly finishedAt?: number;
+  readonly attempt: number;
+  readonly progress?: ProviderJob["progress"];
+  readonly cancelRequested: boolean;
+  readonly usageSummary?: ProviderJob["usageSummary"];
+  readonly errorMessage?: string;
+};
+
+export type LiveImageQueueEvidenceExport = {
+  readonly schemaVersion: 1;
+  readonly issue: "DF-233";
+  readonly projectId: string;
+  readonly jobId: string;
+  readonly exportedAt: number;
+  readonly resultStatus: ReadySlideGenerationQueueResult["status"];
+  readonly context: ReadySlideGenerationQueueResult["context"];
+  readonly slides: ReadySlideGenerationQueueResult["slides"];
+  readonly failures: ReadySlideGenerationQueueResult["failures"];
+  readonly jobs: readonly LiveImageQueueEvidenceJob[];
+  readonly promptUsages: ReadySlideGenerationQueueResult["promptUsages"];
+  readonly retryProvenance: ReadySlideGenerationQueueResult["retryProvenance"];
+  readonly concurrency: ReadySlideGenerationQueueResult["concurrency"];
+  readonly progress: ReadySlideGenerationQueueResult["progress"];
+  readonly storedImageArtifactPaths: readonly string[];
+  readonly restartResumeEvidence?: LiveImageQueueRestartResumeEvidence;
+  readonly validation: LiveImageQueueEvidenceValidation;
+};
+
+export type StoredLiveImageQueueEvidenceExport = {
+  readonly path: string;
+  readonly evidence: LiveImageQueueEvidenceExport;
+};
+
+export async function writeLiveImageQueueEvidenceExport(input: {
+  readonly store: ImageArtifactStore;
+  readonly projectId: string;
+  readonly jobId: string;
+  readonly exportedAt: number;
+  readonly result: ReadySlideGenerationQueueResult;
+  readonly storedImageArtifactPaths: readonly string[];
+  readonly restartResumeEvidence?: LiveImageQueueRestartResumeEvidence;
+}): Promise<StoredLiveImageQueueEvidenceExport> {
+  const evidence = liveImageQueueEvidenceExport(input);
+  const path = liveImageQueueEvidencePath(input.projectId, input.jobId);
+  await input.store.write({
+    path,
+    content: JSON.stringify(evidence, null, 2),
+  });
+  return { path, evidence };
+}
+
+function liveImageQueueEvidenceExport(input: {
+  readonly projectId: string;
+  readonly jobId: string;
+  readonly exportedAt: number;
+  readonly result: ReadySlideGenerationQueueResult;
+  readonly storedImageArtifactPaths: readonly string[];
+  readonly restartResumeEvidence?: LiveImageQueueRestartResumeEvidence;
+}): LiveImageQueueEvidenceExport {
+  return {
+    schemaVersion: 1,
+    issue: "DF-233",
+    projectId: input.projectId,
+    jobId: input.jobId,
+    exportedAt: input.exportedAt,
+    resultStatus: input.result.status,
+    context: input.result.context,
+    slides: input.result.slides,
+    failures: input.result.failures,
+    jobs: input.result.jobs.map(evidenceJob),
+    promptUsages: input.result.promptUsages,
+    retryProvenance: input.result.retryProvenance,
+    concurrency: input.result.concurrency,
+    progress: input.result.progress,
+    storedImageArtifactPaths: input.storedImageArtifactPaths,
+    ...(input.restartResumeEvidence === undefined
+      ? {}
+      : { restartResumeEvidence: input.restartResumeEvidence }),
+    validation: evaluateLiveImageQueueExportEvidence(input),
+  };
+}
+
+function evaluateLiveImageQueueExportEvidence(input: {
+  readonly projectId: string;
+  readonly result: ReadySlideGenerationQueueResult;
+  readonly storedImageArtifactPaths: readonly string[];
+  readonly restartResumeEvidence?: LiveImageQueueRestartResumeEvidence;
+}): LiveImageQueueEvidenceValidation {
+  const queueValidation = evaluateLiveImageQueueEvidence(input.result);
+  const queueIssues = queueValidation.kind === "blocked" ? queueValidation.issues : [];
+  const storedArtifactIssues = storedImageArtifactIssues(
+    input.projectId,
+    input.result.slides,
+    input.storedImageArtifactPaths,
+  );
+  const issues = [
+    ...queueIssues,
+    ...storedArtifactIssues,
+    ...restartResumeEvidenceIssues({
+      projectId: input.projectId,
+      result: input.result,
+      evidence: input.restartResumeEvidence,
+    }),
+  ];
+  return issues.length === 0 ? { kind: "ready" } : { kind: "blocked", issues };
+}
+
+function storedImageArtifactIssues(
+  projectId: string,
+  slides: ReadySlideGenerationQueueResult["slides"],
+  storedImageArtifactPaths: readonly string[],
+): readonly LiveImageQueueEvidenceIssue[] {
+  const expectedPaths = slides.map((slide) =>
+    expectedStoredImageArtifactPath(projectId, slide.number, slide.version),
+  );
+  const storedPaths = new Set(storedImageArtifactPaths);
+  return [
+    ...invalidStoredImageArtifactPathIssues(projectId, storedImageArtifactPaths),
+    ...duplicateStoredImageArtifactPathIssues(storedImageArtifactPaths),
+    ...expectedPaths
+      .filter((path) => !storedPaths.has(path))
+      .map((path) => ({
+        code: "stored_image_artifact_missing" as const,
+        message: `Completed image artifact is missing from queue evidence: ${path}.`,
+      })),
+    ...storedImageArtifactPaths
+      .filter(
+        (path) => isVersionedImageArtifactPath(projectId, path) && !expectedPaths.includes(path),
+      )
+      .map((path) => ({
+        code: "stored_image_artifact_unmatched" as const,
+        message: `Stored image artifact path does not match a completed queue slide: ${path}.`,
+      })),
+  ];
+}
+
+function invalidStoredImageArtifactPathIssues(
+  projectId: string,
+  storedImageArtifactPaths: readonly string[],
+): readonly LiveImageQueueEvidenceIssue[] {
+  return storedImageArtifactPaths
+    .filter((path) => !isVersionedImageArtifactPath(projectId, path))
+    .map((path) => ({
+      code: "stored_image_artifact_path_invalid" as const,
+      message: `Stored image artifact path must point to versioned project image storage: ${path}.`,
+    }));
+}
+
+function duplicateStoredImageArtifactPathIssues(
+  storedImageArtifactPaths: readonly string[],
+): readonly LiveImageQueueEvidenceIssue[] {
+  const seen = new Set<string>();
+  const duplicates = new Set<string>();
+  for (const path of storedImageArtifactPaths) {
+    if (seen.has(path)) duplicates.add(path);
+    seen.add(path);
+  }
+  return Array.from(duplicates).map((path) => ({
+    code: "stored_image_artifact_duplicate" as const,
+    message: `Stored image artifact path is duplicated in queue evidence: ${path}.`,
+  }));
+}
+
+function isVersionedImageArtifactPath(projectId: string, path: string): boolean {
+  if (path.length === 0 || path !== path.trim()) return false;
+  if (hasSyntheticEvidenceMarker(path)) return false;
+  const address = parseVersionedProjectImageArtifactPath(path);
+  if (address === undefined) return false;
+  return path.startsWith(`projects/${projectId}/slides/images/`);
+}
+
+function expectedStoredImageArtifactPath(
+  projectId: string,
+  slideNumber: number,
+  version: number,
+): string {
+  return `projects/${projectId}/slides/images/slide_${pad3(slideNumber)}.v${version}.png`;
+}
+
+function pad3(value: number): string {
+  return String(value).padStart(3, "0");
+}
+
+function hasSyntheticEvidenceMarker(value: string): boolean {
+  const normalized = value.toLowerCase();
+  return NON_PRODUCTION_IMAGE_ARTIFACT_MARKERS.some((marker) => normalized.includes(marker));
+}
+
+function evidenceJob(job: ProviderJob): LiveImageQueueEvidenceJob {
+  return {
+    id: job.id,
+    providerId: job.providerId,
+    capability: job.capability,
+    description: job.description,
+    status: job.status,
+    createdAt: job.createdAt,
+    ...(job.startedAt === undefined ? {} : { startedAt: job.startedAt }),
+    ...(job.finishedAt === undefined ? {} : { finishedAt: job.finishedAt }),
+    attempt: job.attempt,
+    ...(job.progress === undefined ? {} : { progress: job.progress }),
+    cancelRequested: job.cancelRequested,
+    ...(job.usageSummary === undefined ? {} : { usageSummary: job.usageSummary }),
+    ...(job.errorMessage === undefined ? {} : { errorMessage: job.errorMessage }),
+  };
+}
+
+function liveImageQueueEvidencePath(projectId: string, jobId: string): string {
+  return `projects/${safeSegment(projectId, "project id")}/live-evidence/df233-image-queue-${safeSegment(
+    jobId,
+    "job id",
+  )}.json`;
+}
+
+function safeSegment(value: string, label: string): string {
+  if (/^[A-Za-z0-9_-]+$/.test(value)) return value;
+  throw new ImageArtifactStoreError(`Live image queue evidence ${label} must be safe.`);
+}

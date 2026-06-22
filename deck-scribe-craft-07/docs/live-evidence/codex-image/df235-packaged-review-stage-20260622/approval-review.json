@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "issue": "DF-235",
+  "projectId": "df235_packaged_review_approval_20260622",
+  "eventId": "rev_df235_packaged_approval_20260622",
+  "exportedAt": 1782111462060,
+  "event": {
+    "outcome": "approved",
+    "candidate": {
+      "requestId": "rev_df235_packaged_approval_20260622",
+      "slide": {
+        "number": 1,
+        "version": 2,
+        "status": "ready",
+        "imageDescriptor": "live-regeneration|request=rev_df235_packaged_approval_20260622|background=df235_packaged_review_approval_20260622_image_slide_001_v2|deckContext=deckctx_df235_packaged|designSystem=df235_packaged_review_approval_20260622_design",
+        "notes": "chart area size"
+      },
+      "originalBackgroundArtifactId": "df235_packaged_review_approval_20260622_image_slide_001_v1",
+      "backgroundArtifactId": "df235_packaged_review_approval_20260622_image_slide_001_v2",
+      "backgroundArtifactHash": "sha256:167127d22caf3a920d843e2a88e929bc37ca98f2f83f8b88b2e678805a64910a",
+      "deckContextId": "deckctx_df235_packaged",
+      "designSystemId": "df235_packaged_review_approval_20260622_design",
+      "mustKeep": [
+        "title text",
+        "source caption",
+        "approved color palette"
+      ],
+      "mustChange": [
+        "chart area size"
+      ],
+      "beforeImageDescriptor": "codex|16:9|slide_01_layout.png|slide_generation@v1",
+      "afterImageDescriptor": "live-regeneration|request=rev_df235_packaged_approval_20260622|background=df235_packaged_review_approval_20260622_image_slide_001_v2|deckContext=deckctx_df235_packaged|designSystem=df235_packaged_review_approval_20260622_design"
+    },
+    "comparison": {
+      "slideNumber": 1,
+      "originalSlideVersion": 1,
+      "revisedSlideVersion": 2,
+      "beforeImageDescriptor": "codex|16:9|slide_01_layout.png|slide_generation@v1",
+      "afterImageDescriptor": "live-regeneration|request=rev_df235_packaged_approval_20260622|background=df235_packaged_review_approval_20260622_image_slide_001_v2|deckContext=deckctx_df235_packaged|designSystem=df235_packaged_review_approval_20260622_design",
+      "requestedChanges": [
+        "chart area size"
+      ],
+      "preservedTargets": [
+        "title text",
+        "source caption",
+        "approved color palette"
+      ],
+      "preservationChecks": [
+        {
+          "target": "title text",
+          "status": "kept",
+          "message": "title text preserved by live regeneration request rev_df235_packaged_approval_20260622."
+        },
+        {
+          "target": "source caption",
+          "status": "kept",
+          "message": "source caption preserved by live regeneration request rev_df235_packaged_approval_20260622."
+        },
+        {
+          "target": "approved color palette",
+          "status": "kept",
+          "message": "approved color palette preserved by live regeneration request rev_df235_packaged_approval_20260622."
+        }
+      ],
+      "summary": "Slide 1 live regeneration rev_df235_packaged_approval_20260622 is ready for approval."
+    },
+    "approvedSlide": {
+      "number": 1,
+      "version": 2,
+      "status": "approved",
+      "imageDescriptor": "live-regeneration|request=rev_df235_packaged_approval_20260622|background=df235_packaged_review_approval_20260622_image_slide_001_v2|deckContext=deckctx_df235_packaged|designSystem=df235_packaged_review_approval_20260622_design",
+      "notes": "chart area size"
+    }
+  }
+}

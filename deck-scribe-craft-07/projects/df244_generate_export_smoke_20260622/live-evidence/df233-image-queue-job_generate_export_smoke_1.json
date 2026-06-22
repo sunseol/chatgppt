@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "issue": "DF-233",
+  "projectId": "df244_generate_export_smoke_20260622",
+  "jobId": "job_generate_export_smoke_1",
+  "exportedAt": 1782096962058,
+  "resultStatus": "succeeded",
+  "context": {
+    "deckContextId": "deckctx_2f619adc",
+    "deckContextHash": "sha256:2f619adc",
+    "designSystemId": "design_generate_export_smoke",
+    "designTokenHash": "sha256:0b5cc4c3",
+    "layoutPrototypeId": "layout_generate_export_smoke",
+    "slideCount": 1
+  },
+  "slides": [
+    {
+      "number": 1,
+      "version": 1,
+      "status": "ready",
+      "imageDescriptor": "codex|16:9|slide_01_layout.png|slide_generation@v1",
+      "notes": "projects/df244_generate_export_smoke_20260622/slides/images/slide_001.v1.png"
+    }
+  ],
+  "failures": [],
+  "jobs": [
+    {
+      "id": "slide_job_1",
+      "providerId": "codex",
+      "capability": "imageGeneration",
+      "description": "Generate slide 1",
+      "status": "succeeded",
+      "createdAt": 1782096961062,
+      "startedAt": 1782096961063,
+      "finishedAt": 1782097146273,
+      "attempt": 1,
+      "cancelRequested": false
+    }
+  ],
+  "promptUsages": [
+    {
+      "promptId": "slide_generation",
+      "promptVersion": "v1",
+      "promptHash": "sha256:3334a742",
+      "promptFilePath": "prompts/slide_generation.v1.md",
+      "stage": "slide-generation",
+      "artifactId": "bundle_deckctx_2f619adc_slide_01",
+      "jobId": "slide_job_1",
+      "recordedAt": 1782096961062
+    }
+  ],
+  "retryProvenance": [],
+  "concurrency": {
+    "requestedMaxParallel": 3,
+    "effectiveMaxParallel": 1,
+    "observedMaxRunning": 1
+  },
+  "progress": {
+    "completed": 1,
+    "failed": 0,
+    "total": 1,
+    "percent": 100
+  },
+  "storedImageArtifactPaths": [
+    "projects/df244_generate_export_smoke_20260622/slides/images/slide_001.v1.png"
+  ],
+  "validation": {
+    "kind": "ready"
+  }
+}

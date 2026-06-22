@@ -1,0 +1,213 @@
+import type { SlideGenerationQueueResult } from "./slide-generation-queue-types";
+import type { ImageProviderFailureKind } from "./image-provider-errors";
+import type { PromptUsageRecord } from "./prompt-assets";
+import { concurrencyIssues } from "./live-image-queue-concurrency";
+import { cancellationIssues } from "./live-image-queue-cancellation";
+import { providerFailureIssues } from "./live-image-queue-provider-failure";
+import { retrySlideIssues } from "./live-image-queue-retry-slide";
+import { retryDelayIssues } from "./live-image-queue-retry-delay";
+import { queueProgressIssues } from "./live-image-queue-progress";
+
+export type LiveImageQueueEvidenceIssueCode =
+  | "queue_result_blocked"
+  | "queue_progress_count_mismatch"
+  | "queue_status_count_mismatch"
+  | "missing_concurrency_evidence"
+  | "invalid_concurrency_evidence"
+  | "concurrency_limit_exceeded"
+  | "retry_job_not_found"
+  | "retry_attempt_count_mismatch"
+  | "retry_attempt_sequence_mismatch"
+  | "retry_slide_mismatch"
+  | "retry_delay_invalid"
+  | "retry_delay_history_mismatch"
+  | "retry_prompt_usage_missing"
+  | "retry_bundle_mismatch"
+  | "retry_non_transient_failure"
+  | "failure_job_not_found"
+  | "failure_without_failed_job"
+  | "failure_attempt_count_mismatch"
+  | "failure_prompt_usage_missing"
+  | "failure_bundle_mismatch"
+  | "cancelled_job_missing_failure"
+  | "cancel_failure_without_cancelled_job"
+  | "cancel_prompt_usage_missing"
+  | "cancel_bundle_mismatch"
+  | "cancel_attempt_count_mismatch"
+  | "cancel_failure_without_cancel_signal"
+  | "stored_image_artifact_missing"
+  | "stored_image_artifact_path_invalid"
+  | "stored_image_artifact_duplicate"
+  | "stored_image_artifact_unmatched"
+  | "missing_restart_resume_evidence"
+  | "invalid_restart_resume_evidence"
+  | "noncanonical_queue_evidence_identity";
+
+export type LiveImageQueueEvidenceIssue = {
+  readonly code: LiveImageQueueEvidenceIssueCode;
+  readonly jobId?: string;
+  readonly slideNumber?: number;
+  readonly message: string;
+};
+
+export type LiveImageQueueEvidenceValidation =
+  | { readonly kind: "ready" }
+  | { readonly kind: "blocked"; readonly issues: readonly LiveImageQueueEvidenceIssue[] };
+
+export function evaluateLiveImageQueueEvidence(
+  result: SlideGenerationQueueResult,
+): LiveImageQueueEvidenceValidation {
+  if (result.kind === "blocked") {
+    return {
+      kind: "blocked",
+      issues: [
+        {
+          code: "queue_result_blocked",
+          message: result.issues.join(" "),
+        },
+      ],
+    };
+  }
+  const issues = [
+    ...queueEvidenceIdentityIssues(result),
+    ...queueProgressIssues(result),
+    ...concurrencyIssues(result.concurrency),
+    ...providerFailureIssues(result.jobs, result.failures, result.promptUsages),
+    ...retryJobIssues(result.jobs, result.retryProvenance),
+    ...retryAttemptIssues(result.jobs, result.retryProvenance),
+    ...retrySlideIssues(result.jobs, result.failures, result.retryProvenance),
+    ...retryDelayIssues(result.failures, result.retryProvenance),
+    ...retryBundleIssues(result.promptUsages, result.retryProvenance),
+    ...retryFailureKindIssues(result.retryProvenance),
+    ...cancellationIssues(result.jobs, result.failures, result.promptUsages),
+  ];
+  return issues.length === 0 ? { kind: "ready" } : { kind: "blocked", issues };
+}
+
+type ReadyQueueResult = Extract<SlideGenerationQueueResult, { readonly kind: "ready" }>;
+
+function queueEvidenceIdentityIssues(
+  result: ReadyQueueResult,
+): readonly LiveImageQueueEvidenceIssue[] {
+  const ids = [
+    result.context.deckContextId,
+    result.context.deckContextHash,
+    result.context.designSystemId,
+    result.context.designTokenHash,
+    result.context.layoutPrototypeId,
+    ...result.jobs.map((job) => job.id),
+    ...result.failures.flatMap((failure) => [failure.jobId, failure.bundleId]),
+    ...result.promptUsages.flatMap((usage) => [usage.artifactId, usage.jobId]),
+    ...result.retryProvenance.flatMap((event) => [event.jobId, event.bundleId]),
+  ];
+  return ids.some((id) => id !== undefined && !isCanonicalQueueEvidenceId(id))
+    ? [
+        {
+          code: "noncanonical_queue_evidence_identity" as const,
+          message: "Queue evidence ids must be nonblank and boundary-whitespace-free.",
+        },
+      ]
+    : [];
+}
+
+function isCanonicalQueueEvidenceId(value: string): boolean {
+  return value.trim() !== "" && value === value.trim();
+}
+
+function retryJobIssues(
+  jobs: ReadyQueueResult["jobs"],
+  retryProvenance: ReadyQueueResult["retryProvenance"],
+): readonly LiveImageQueueEvidenceIssue[] {
+  const jobIds = new Set(jobs.map((job) => job.id));
+  return retryProvenance.flatMap((event) =>
+    jobIds.has(event.jobId)
+      ? []
+      : [
+          {
+            code: "retry_job_not_found" as const,
+            jobId: event.jobId,
+            slideNumber: event.slideNumber,
+            message: "Retry provenance must reference a recorded provider job.",
+          },
+        ],
+  );
+}
+
+function retryAttemptIssues(
+  jobs: ReadyQueueResult["jobs"],
+  retryProvenance: ReadyQueueResult["retryProvenance"],
+): readonly LiveImageQueueEvidenceIssue[] {
+  return jobs.flatMap((job): readonly LiveImageQueueEvidenceIssue[] => {
+    const retryEvents = retryProvenance.filter((event) => event.jobId === job.id);
+    const retryCount = retryEvents.length;
+    const expectedRetryCount = Math.max(0, job.attempt - 1);
+    if (retryCount !== expectedRetryCount) {
+      return [
+        {
+          code: "retry_attempt_count_mismatch" as const,
+          jobId: job.id,
+          message: `Retry evidence for ${job.id} does not match final attempt ${job.attempt}.`,
+        },
+      ];
+    }
+    return retryEvents.every((event, index) => event.attempt === index + 1)
+      ? []
+      : [
+          {
+            code: "retry_attempt_sequence_mismatch" as const,
+            jobId: job.id,
+            message: `Retry evidence for ${job.id} must preserve attempts 1 through ${expectedRetryCount}.`,
+          },
+        ];
+  });
+}
+
+function retryBundleIssues(
+  promptUsages: readonly PromptUsageRecord[],
+  retryProvenance: ReadyQueueResult["retryProvenance"],
+): readonly LiveImageQueueEvidenceIssue[] {
+  return retryProvenance.flatMap((event): readonly LiveImageQueueEvidenceIssue[] => {
+    const bundleId = promptUsages.find((usage) => usage.jobId === event.jobId)?.artifactId;
+    if (bundleId === undefined) {
+      return [
+        {
+          code: "retry_prompt_usage_missing" as const,
+          jobId: event.jobId,
+          slideNumber: event.slideNumber,
+          message: "Retry provenance must be tied to recorded slide-generation prompt usage.",
+        },
+      ];
+    }
+    return bundleId === event.bundleId
+      ? []
+      : [
+          {
+            code: "retry_bundle_mismatch" as const,
+            jobId: event.jobId,
+            slideNumber: event.slideNumber,
+            message: "Retry provenance must reference the same bundle as the slide prompt usage.",
+          },
+        ];
+  });
+}
+
+function retryFailureKindIssues(
+  retryProvenance: ReadyQueueResult["retryProvenance"],
+): readonly LiveImageQueueEvidenceIssue[] {
+  return retryProvenance.flatMap((event) =>
+    isTransientFailure(event.failureKind)
+      ? []
+      : [
+          {
+            code: "retry_non_transient_failure" as const,
+            jobId: event.jobId,
+            slideNumber: event.slideNumber,
+            message: "Retry provenance may only count transient image provider failures.",
+          },
+        ],
+  );
+}
+
+function isTransientFailure(kind: ImageProviderFailureKind): boolean {
+  return kind === "rate_limit" || kind === "server" || kind === "unknown";
+}

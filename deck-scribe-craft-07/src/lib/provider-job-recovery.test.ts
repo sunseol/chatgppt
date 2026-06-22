@@ -33,6 +33,38 @@ describe("provider job recovery", () => {
       undefined,
     );
   });
+
+  test("rejects snapshots with any malformed job entry", () => {
+    // Given
+    const raw = JSON.stringify({
+      projectId: "p_jobs",
+      step: "generate",
+      currentJobId: "job_restore",
+      jobs: [jobFixture(), { ...jobFixture(), id: 42 }],
+    });
+
+    // When
+    const snapshot = parseProviderJobRecoverySnapshot(raw);
+
+    // Then
+    expect(snapshot).toBe(undefined);
+  });
+
+  test("rejects snapshots whose current job is absent", () => {
+    // Given
+    const raw = JSON.stringify({
+      projectId: "p_jobs",
+      step: "generate",
+      currentJobId: "job_missing",
+      jobs: [jobFixture()],
+    });
+
+    // When
+    const snapshot = parseProviderJobRecoverySnapshot(raw);
+
+    // Then
+    expect(snapshot).toBe(undefined);
+  });
 });
 
 function jobFixture(): ProviderJob {

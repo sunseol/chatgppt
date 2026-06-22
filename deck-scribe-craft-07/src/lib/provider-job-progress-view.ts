@@ -1,5 +1,6 @@
-import type { ProviderJob, ProviderJobStatus } from "./provider-job-manager";
+import type { ProviderJob, ProviderJobStatus, ProviderUsageSummary } from "./provider-job-manager";
 import { redactSensitiveText } from "./redaction";
+import { hasConfirmedCodexImageBillingDisclosure } from "./live-usage-billing-evidence";
 
 export type ProviderJobArtifactView = {
   readonly label: string;
@@ -14,6 +15,10 @@ export type ProviderJobProgressView = {
   readonly percent: number;
   readonly message: string;
   readonly attemptLabel: string;
+  readonly providerLabel: string;
+  readonly durationLabel: string;
+  readonly retryLabel: string;
+  readonly usageItems: readonly string[];
   readonly canCancel: boolean;
   readonly canRetry: boolean;
   readonly recovered: boolean;
@@ -36,6 +41,10 @@ export function createProviderJobProgressView(input: {
     percent: clampPercent(progress?.percent ?? fallbackPercent(input.job.status)),
     message: oneLine(progress?.message ?? input.job.description),
     attemptLabel: `${input.job.attempt}회차`,
+    providerLabel: input.job.providerId,
+    durationLabel: durationLabel(input.job),
+    retryLabel: `retries ${Math.max(0, input.job.attempt - 1)}`,
+    usageItems: usageItems(input.job.usageSummary, input.job.id),
     canCancel:
       (input.job.status === "queued" || input.job.status === "running") &&
       !input.job.cancelRequested,
@@ -92,6 +101,56 @@ function oneLine(text: string): string {
       .find((line) => line.length > 0 && !line.startsWith("at ")) ??
     "작업 상태를 확인하는 중입니다."
   );
+}
+
+function durationLabel(job: ProviderJob): string {
+  if (job.startedAt === undefined) return "not started";
+  if (job.finishedAt === undefined) return "running";
+  const durationMs = job.finishedAt - job.startedAt;
+  return Number.isFinite(durationMs) && durationMs >= 0
+    ? `${Math.round(durationMs)}ms`
+    : "duration unavailable";
+}
+
+function usageItems(
+  usageSummary: ProviderUsageSummary | undefined,
+  jobId: string,
+): readonly string[] {
+  if (usageSummary === undefined) return [];
+  return [
+    usageAmountItem("input", usageSummary.inputTokens),
+    usageAmountItem("output", usageSummary.outputTokens),
+    usageAmountItem("images", usageSummary.imageCount),
+    costEstimateItem(usageSummary.estimatedCostUsd),
+    imageBillingDisclosureItem(usageSummary, jobId),
+  ].filter(isNonEmpty);
+}
+
+function usageAmountItem(label: string, amount: number | undefined): string {
+  return amount === undefined || !validUsageAmount(amount) ? "" : `${label} ${amount}`;
+}
+
+function costEstimateItem(cost: number | undefined): string {
+  return cost === undefined || !Number.isFinite(cost) || cost < 0
+    ? ""
+    : `cost estimate $${cost.toFixed(4)}`;
+}
+
+function imageBillingDisclosureItem(usageSummary: ProviderUsageSummary, jobId: string): string {
+  const disclosure = usageSummary.imageBillingDisclosure;
+  if (disclosure === undefined) return "";
+  if (!hasConfirmedCodexImageBillingDisclosure(disclosure, { expectedJobId: jobId })) {
+    return "Codex image usage not confirmed";
+  }
+  return redactSensitiveText(disclosure.label.trim());
+}
+
+function isNonEmpty(value: string): boolean {
+  return value.length > 0;
+}
+
+function validUsageAmount(amount: number): boolean {
+  return Number.isInteger(amount) && amount >= 0;
 }
 
 function summarizeFailure(errorMessage: string | undefined): string | undefined {

@@ -1,0 +1,107 @@
+{
+  "capturedAt": "2026-06-22T02:30:00.000Z",
+  "evidenceKind": "df241-df242-packaged-run-evidence",
+  "status": "blocked",
+  "packageArchiveSha256": "33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc",
+  "goldenPath": {
+    "result": {
+      "kind": "blocked",
+      "issues": [
+        {
+          "code": "missing_e2e_step",
+          "message": "Live Golden Path must complete every required step.",
+          "refs": [
+            "login",
+            "title_edit"
+          ]
+        },
+        {
+          "code": "unsigned_live_e2e_report",
+          "message": "Signed live_e2e_report.md is required.",
+          "refs": [
+            "docs/live-evidence/release/df241-df242-candidate-20260622/live_e2e_report.md"
+          ]
+        },
+        {
+          "code": "insufficient_step_evidence",
+          "message": "Step-level screenshots and a recording are required.",
+          "refs": [
+            "0",
+            "missing"
+          ]
+        },
+        {
+          "code": "missing_validation_bundle",
+          "message": "Final validation bundle is required.",
+          "refs": [
+            "missing"
+          ]
+        },
+        {
+          "code": "missing_restart_reopen_evidence",
+          "message": "Project must reopen after restart with a timestamp and the same final export artifact.",
+          "refs": [
+            "",
+            ""
+          ]
+        }
+      ]
+    },
+    "completedSteps": [
+      "live_interview",
+      "live_research",
+      "live_deck_plan",
+      "live_design_system",
+      "live_layout_ir",
+      "live_image_generation",
+      "live_slide_regeneration",
+      "export"
+    ],
+    "sourceCount": 3,
+    "imageArtifactCount": 6,
+    "textLineageCount": 5
+  },
+  "benchmark": {
+    "result": {
+      "kind": "blocked",
+      "passedLiveCount": 0,
+      "issues": [
+        {
+          "code": "missing_output_bundle",
+          "message": "Each Live benchmark requires an output bundle.",
+          "refs": [
+            "korean_business",
+            "market_research",
+            "chart_report",
+            "image_intro",
+            "revision_regeneration"
+          ]
+        },
+        {
+          "code": "output_bundle_report_missing",
+          "message": "Output bundle manifests must include the scenario report path.",
+          "refs": [
+            "korean_business",
+            "market_research",
+            "chart_report",
+            "image_intro",
+            "revision_regeneration"
+          ]
+        },
+        {
+          "code": "live_benchmark_shortfall",
+          "message": "At least four of five Live benchmarks must pass.",
+          "refs": [
+            "0"
+          ]
+        }
+      ]
+    },
+    "scenarioCount": 5,
+    "passedLiveCount": 0
+  },
+  "releaseBlockers": [
+    "DF-241 golden path evidence is blocked",
+    "DF-242 benchmark evidence is blocked"
+  ]
+}

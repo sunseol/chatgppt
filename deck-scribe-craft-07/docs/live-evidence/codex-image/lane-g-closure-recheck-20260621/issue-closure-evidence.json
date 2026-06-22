@@ -1,0 +1,100 @@
+{
+  "generatedAt": "2026-06-21T05:55:00+09:00",
+  "lane": "G",
+  "scope": "remaining image export usage issues",
+  "branch": "jacobex/live-lane-image-export-usage",
+  "disposition": {
+    "147": "blocked",
+    "149": "blocked",
+    "150": "blocked",
+    "154": "blocked"
+  },
+  "positiveEvidence": {
+    "laneDManifest": {
+      "path": "docs/live-evidence/codex-image/lane-d-live-app-surface-20260621/manifest.json",
+      "sha256": "caa4036a28a40886a953a1b547059fd1073cabe35e67f73dc56418b02c02676f"
+    },
+    "laneETextPipelineSummary": {
+      "path": "docs/live-evidence/lane-e-20260621/text-pipeline-summary.json",
+      "sha256": "78c08cc5e49f05587279a7258772c63791545813e0f11fee1f0dc4c6ab903286",
+      "stageTurns": [
+        {
+          "stage": "deck_plan",
+          "threadId": "019ee6ac-a94c-7381-a126-f78b449605d1",
+          "turnId": "019ee6ac-ab9b-79b1-84a0-7459ccc9f4e2"
+        },
+        {
+          "stage": "design_system",
+          "threadId": "019ee6ad-751b-7191-a5b8-0c2335f7e7b7",
+          "turnId": "019ee6ad-77b7-76d2-a2ab-8b6844e93623"
+        },
+        {
+          "stage": "layout_ir",
+          "threadId": "019ee6af-e51b-72d1-97b8-b4291523e4df",
+          "turnId": "019ee6af-e7a7-74a0-b469-074a261db193"
+        }
+      ]
+    },
+    "laneDImageCompositorLineage": {
+      "path": "docs/live-evidence/codex-image/lane-d-live-app-surface-20260621/df240-image-compositor-export-lineage.json",
+      "sha256": "ad313eca0ac30db6e6f9fef609899281cf477f6062909b0ecdc27c9eda86b716",
+      "slideCount": 5,
+      "lineageScope": "image-compositor-partial"
+    },
+    "df235BeforeAfterReview": {
+      "path": "docs/live-evidence/codex-image/lane-d-live-app-surface-20260621/df235-before-after-review.html",
+      "sha256": "8c170b78a077345816d39ec244711569082bb91152d09fa0b412a59403862a1b"
+    },
+    "df235PreservationRecord": {
+      "path": "docs/live-evidence/codex-image/lane-d-live-app-surface-20260621/df235-preservation-record.json",
+      "sha256": "f3b3d5c3cf28f4ef7e49d31545f67e28ec7e724edcd1e0d51e65107360eb57f2"
+    },
+    "df235RegeneratedImage": {
+      "path": "projects/df235_live_regeneration/slides/images/slide_003.v2.png",
+      "sha256": "fec63060405bbe50246c9216447c8759fc5426eed8f14d5c1dfb7b8df5d0d202"
+    },
+    "df244UsageSummary": {
+      "path": "docs/live-evidence/codex-image/lane-d-live-app-surface-20260621/df244-usage-summary.json",
+      "sha256": "01b6043d35d12a744ffd898486a8ae7157110fd7561ce2c1c5e96587688dd4a9",
+      "imageCount": 5,
+      "totalMeasuredImageLatencyMs": 197953
+    }
+  },
+  "absenceEvidence": {
+    "projectExportFiles": [
+      "projects/df232_live_codex_batch/exports/svg/slide_01.svg"
+    ],
+    "releaseArtifacts": [
+      "release-artifacts/DeckForge_0.1.0_aarch64.dmg",
+      "release-artifacts/DeckForge_0.1.0_aarch64.dmg.sha256",
+      "release-artifacts/README.md"
+    ],
+    "exportEvidenceJsonFiles": [
+      "docs/live-evidence/codex-image/lane-d-live-app-surface-20260621/df240-image-compositor-export-lineage.json",
+      "docs/live-evidence/lane-e-20260621/project-thread-manifest-restart-gate.json",
+      "docs/live-evidence/lane-e-20260621/project-thread-restart-protocol.json"
+    ]
+  },
+  "issueFindings": {
+    "147": {
+      "title": "DF-233 Live Image Queue Rate Limit Cancellation",
+      "result": "blocked",
+      "reason": "Stored live Codex image turns are successful completions only. No genuine 429/5xx retry event, in-flight user cancellation event, or packaged restart-resume trace exists."
+    },
+    "149": {
+      "title": "DF-235 Selected Slide Live Full Regeneration",
+      "result": "blocked",
+      "reason": "The real v2 regenerated image and static before/after preservation files exist, but no packaged review UI run proves candidate approval or failed-regeneration preservation through the app surface."
+    },
+    "150": {
+      "title": "DF-240 Live Generation Report Export Provenance",
+      "result": "blocked",
+      "reason": "Lane E has real text-stage turn ids, and Lane D has real image/compositor partial lineage. The production final export gate still cannot pass because there are no persisted slide-level text artifact ids/provider provenance sidecars, no final PNG export hashes, and no non-synthetic final project/export JSON package QA tied to compositor hashes."
+    },
+    "154": {
+      "title": "DF-244 Live Cost Latency Usage Display",
+      "result": "blocked",
+      "reason": "Lane D proves visible image latency/count display from actual Codex image turns, with cost hidden because no provider cost was supplied. No persisted pre-generation user confirmation JSON from the packaged app surface exists."
+    }
+  }
+}

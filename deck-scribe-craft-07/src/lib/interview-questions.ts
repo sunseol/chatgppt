@@ -135,18 +135,19 @@ function extractSuccessCriteria(prompt: string): readonly string[] {
 
 function createQuestions(draft: InterviewDraft): readonly InterviewQuestion[] {
   const questions: InterviewQuestion[] = [];
-  if (draft.goal === undefined) questions.push(question("goal"));
-  if (draft.audience === undefined) questions.push(question("audience"));
-  if (draft.desiredOutcome === undefined) questions.push(question("desiredOutcome"));
-  if (draft.coreMessage === undefined) questions.push(question("coreMessage"));
-  if (draft.tone.length === 0) questions.push(question("tone"));
-  if (draft.mustInclude.length === 0) questions.push(question("mustInclude"));
-  if (draft.mustAvoid.length === 0) questions.push(question("mustAvoid"));
-  if (draft.successCriteria.length === 0) questions.push(question("successCriteria"));
+  if (draft.goal === undefined) questions.push(createInterviewQuestion("goal"));
+  if (draft.audience === undefined) questions.push(createInterviewQuestion("audience"));
+  if (draft.desiredOutcome === undefined) questions.push(createInterviewQuestion("desiredOutcome"));
+  if (draft.coreMessage === undefined) questions.push(createInterviewQuestion("coreMessage"));
+  if (draft.tone.length === 0) questions.push(createInterviewQuestion("tone"));
+  if (draft.mustInclude.length === 0) questions.push(createInterviewQuestion("mustInclude"));
+  if (draft.mustAvoid.length === 0) questions.push(createInterviewQuestion("mustAvoid"));
+  if (draft.successCriteria.length === 0)
+    questions.push(createInterviewQuestion("successCriteria"));
   return questions;
 }
 
-function question(field: InterviewQuestionField): InterviewQuestion {
+export function createInterviewQuestion(field: InterviewQuestionField): InterviewQuestion {
   return {
     field,
     question: QUESTION_TEXT[field],

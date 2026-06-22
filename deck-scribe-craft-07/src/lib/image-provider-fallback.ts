@@ -63,7 +63,10 @@ export function createOpenAIImageFallbackPublicState(input: {
     targetModel: input.decision.targetModel,
     setup: input.decision.setup,
     fallbackMode: input.decision.providerId === "openaiImage",
-    credentialState: input.credential === undefined ? "missing" : "sessionConfigured",
+    credentialState:
+      input.decision.providerId === "openaiImage" && input.credential !== undefined
+        ? "sessionConfigured"
+        : "missing",
     connectionCopy: copy.connection,
     billingCopy: copy.billing,
     permissionCopy: copy.permission,

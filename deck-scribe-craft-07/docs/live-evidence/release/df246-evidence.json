@@ -1,0 +1,76 @@
+{
+  "ticketId": "DF-246",
+  "issueNumber": 156,
+  "status": "blocked",
+  "validationKind": "blocked",
+  "generatedAt": "2026-06-22T02:25:38Z",
+  "packageArchiveSha256": "33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc",
+  "summary": "Manual QA validator, checklist, current-package handoff evidence, and direct release-artifact regression coverage exist, and borrowed session JSON payloads from another evidence path are blocked before readiness. The current checklist and package recheck now flow through the packaged manual QA producer as a blocked handoff candidate without fabricating a tester session, but no non-developer packaged-app manual QA session bundle has been recorded.",
+  "currentEvidence": [
+    {
+      "path": "docs/live-manual-qa-checklist.md",
+      "sha256": "b12fb4fa1575ee52763c1e588caf832b0a1bf7ba8a782cb5f734414bcabacbca",
+      "kind": "manual QA checklist"
+    },
+    {
+      "path": "docs/live-evidence/release/df245-package-recheck-20260622.json",
+      "sha256": "09a4abc43a469c77fdd4b5d345a824dd354582ce432f7b60b6759838f12f9f96",
+      "kind": "current package and signing blocker recheck for manual QA handoff"
+    },
+    {
+      "path": "docs/live-evidence/release/df246-packaged-manual-qa-handoff-candidate-20260622.json",
+      "sha256": "c081d2eacedf2ab2ddb32958a080550e1574184c641d31e5dd680a885e4fa65b",
+      "kind": "blocked packaged manual QA candidate generated from current handoff evidence"
+    },
+    {
+      "path": "docs/live-release-decision.md",
+      "kind": "release decision recording missing non-developer manual QA"
+    },
+    {
+      "path": "scripts/df246-packaged-manual-qa-handoff-ingestion.ts",
+      "kind": "manual QA handoff to blocked packaged candidate ingestion helper"
+    },
+    {
+      "path": "scripts/produce-df246-packaged-manual-qa-handoff-candidate.ts",
+      "kind": "reproducible blocked packaged manual QA handoff candidate generator"
+    },
+    {
+      "path": "scripts/df246-packaged-manual-qa-handoff-ingestion.test.ts",
+      "kind": "manual QA handoff ingestion regression coverage"
+    },
+    {
+      "path": "src/lib/live-manual-qa-session-evidence.ts",
+      "kind": "manual QA session evidence path and payload validator"
+    },
+    {
+      "path": "src/lib/live-manual-qa-session-evidence.test.ts",
+      "kind": "borrowed session payload regression coverage"
+    },
+    {
+      "path": "src/lib/live-manual-qa-test-fixtures.ts",
+      "kind": "manual QA same-session payload fixtures"
+    },
+    {
+      "path": "src/lib/df246-release-evidence-artifact.test.ts",
+      "kind": "DF-246 release handoff package, checklist, package-recheck, and blocked candidate hash regression"
+    }
+  ],
+  "handoffEvidence": {
+    "capturedAt": "2026-06-22T00:32:47Z",
+    "manualQaCandidatePackageSha256": "33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc",
+    "checklistPath": "docs/live-manual-qa-checklist.md",
+    "checklistSha256": "b12fb4fa1575ee52763c1e588caf832b0a1bf7ba8a782cb5f734414bcabacbca",
+    "packageRecheckPath": "docs/live-evidence/release/df245-package-recheck-20260622.json",
+    "packageRecheckSha256": "09a4abc43a469c77fdd4b5d345a824dd354582ce432f7b60b6759838f12f9f96",
+    "releaseHandling": "blocked until a non-developer tester records the persisted manual-qa session bundle against this current package basis"
+  },
+  "missingEvidence": [
+    "non-developer tester session evidence JSON",
+    "setup under ten minutes with new project, login check, and prompt input",
+    "research_pack, slide_generation, and export approval target checks",
+    "real source opened and linked in final report",
+    "regeneration and title edit actions",
+    "PNG, project, and report export opens",
+    "severity issue list with zero P0 and zero critical errors"
+  ]
+}

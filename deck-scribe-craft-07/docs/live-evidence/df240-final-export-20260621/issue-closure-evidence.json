@@ -1,0 +1,23 @@
+{
+  "issue": "#150",
+  "ticket": "DF-240",
+  "status": "ready_for_close",
+  "acceptanceCriteria": [
+    "slide-level source, text turn, image request, and prompt version lineage",
+    "fixture status is visible in the Live Slide Lineage report section",
+    "production final export gate blocks contamination and returns no warnings for this evidence",
+    "exported PNG hashes are produced from compositor SVG renders and reused as compositor hashes",
+    "project export content and report markdown pass the secret-like text redaction scan"
+  ],
+  "gatePath": "docs/live-evidence/df240-final-export-20260621/final-export-gate-result.json",
+  "reportPath": "docs/live-evidence/df240-final-export-20260621/live-generation-report.md",
+  "exportSummaryPath": "projects/df240_live_final_export/exports/df240-final-export-summary.json",
+  "projectFilePath": "projects/df240_live_final_export/exports/df240-final-project-export.json",
+  "finalGate": {
+    "kind": "ready",
+    "exportArtifactId": "df240_live_final_export_export_v1",
+    "exportArtifactHash": "sha256:55b68f1615e44f537d3dff68eb1ddf77b903478bd9f3cb8c3a4a406385f123f3",
+    "reportHash": "sha256:09489415",
+    "warnings": []
+  }
+}

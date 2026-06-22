@@ -1,0 +1,133 @@
+{
+  "reportPath": "docs/live-interruption-matrix.md",
+  "scenarios": [
+    {
+      "id": "text_turn_shutdown",
+      "jobStatusAfterRestart": "interrupted",
+      "completedArtifactIdsBefore": [],
+      "completedArtifactIdsAfter": [],
+      "liveJobId": "019edc5a-0cc0-7031-915a-5fc6d65c6d86",
+      "recoverySnapshotPath": "docs/live-evidence/lane-h-20260621/text-turn-shutdown-recovery-snapshot.json",
+      "recoverySnapshotScope": "protocol_probe",
+      "cancellationRecorded": true,
+      "pendingImageArtifactIds": [],
+      "resumedArtifactIds": [],
+      "cancelledJobStillRunning": false,
+      "interruptedArtifactIds": [
+        "turn:019edc5a-0cc0-7031-915a-5fc6d65c6d86"
+      ],
+      "approvableArtifactIds": [],
+      "exportableArtifactIds": [],
+      "approvalGateChecked": false,
+      "exportGateChecked": false
+    },
+    {
+      "id": "fetch_shutdown",
+      "jobStatusAfterRestart": "failed",
+      "completedArtifactIdsBefore": [],
+      "completedArtifactIdsAfter": [],
+      "liveJobId": "fetch_shutdown_live_20260619",
+      "recoverySnapshotPath": "docs/live-evidence/lane-h-20260621/fetch-shutdown-recovery-snapshot.json",
+      "recoverySnapshotScope": "protocol_probe",
+      "cancellationRecorded": true,
+      "pendingImageArtifactIds": [],
+      "resumedArtifactIds": [],
+      "cancelledJobStillRunning": false,
+      "interruptedArtifactIds": [
+        "fetch:fetch_shutdown_live_20260619"
+      ],
+      "approvableArtifactIds": [],
+      "exportableArtifactIds": [],
+      "approvalGateChecked": false,
+      "exportGateChecked": false
+    },
+    {
+      "id": "image_partial_resume",
+      "jobStatusAfterRestart": "interrupted",
+      "completedArtifactIdsBefore": [
+        "df243_resume_gate_smoke_20260622_image_slide_001_v1",
+        "df243_resume_gate_smoke_20260622_image_slide_002_v1"
+      ],
+      "completedArtifactIdsAfter": [
+        "df243_resume_gate_smoke_20260622_image_slide_001_v1",
+        "df243_resume_gate_smoke_20260622_image_slide_002_v1",
+        "df243_resume_gate_smoke_20260622_image_slide_003_v1"
+      ],
+      "liveJobId": "live_job_image_partial_resume_product_1",
+      "recoverySnapshotPath": "docs/live-evidence/codex-image/df243-packaged-interruption-closure-20260622/artifacts/projects/df243_resume_gate_smoke_20260622/live-evidence/df243-image-partial-resume-recovery-snapshot-resume_gate_product_run_20260622.json",
+      "recoverySnapshotScope": "app_storage",
+      "cancellationRecorded": true,
+      "pendingImageArtifactIds": [
+        "df243_resume_gate_smoke_20260622_image_slide_003_v1"
+      ],
+      "resumedArtifactIds": [
+        "df243_resume_gate_smoke_20260622_image_slide_003_v1"
+      ],
+      "cancelledJobStillRunning": false,
+      "interruptedArtifactIds": [
+        "df243_resume_gate_smoke_20260622_image_slide_003_v1"
+      ],
+      "approvableArtifactIds": [],
+      "exportableArtifactIds": [],
+      "approvalGateChecked": false,
+      "exportGateChecked": false
+    },
+    {
+      "id": "cancel_job",
+      "jobStatusAfterRestart": "cancelled",
+      "completedArtifactIdsBefore": [],
+      "completedArtifactIdsAfter": [],
+      "liveJobId": "live_job_cancel_product_1",
+      "recoverySnapshotPath": "docs/live-evidence/codex-image/df243-packaged-interruption-closure-20260622/artifacts/projects/df243_cancel_product_smoke_20260622/live-evidence/df243-cancel-job-recovery-snapshot-cancel_product_run_20260622.json",
+      "recoverySnapshotScope": "app_storage",
+      "cancellationRecorded": true,
+      "cancelSignalEvidencePath": "docs/live-evidence/codex-image/df243-packaged-interruption-closure-20260622/artifacts/projects/df243_cancel_product_smoke_20260622/live-evidence/df243-cancel-job-cancel-signal-cancel_product_run_20260622.json",
+      "cancelSignalJobId": "live_job_cancel_product_1",
+      "pendingImageArtifactIds": [],
+      "resumedArtifactIds": [],
+      "cancelledJobStillRunning": false,
+      "interruptedArtifactIds": [],
+      "approvableArtifactIds": [],
+      "exportableArtifactIds": [],
+      "approvalGateChecked": false,
+      "exportGateChecked": false
+    },
+    {
+      "id": "interrupted_artifact_gate",
+      "jobStatusAfterRestart": "interrupted",
+      "completedArtifactIdsBefore": [
+        "df243_resume_gate_smoke_20260622_image_slide_001_v1",
+        "df243_resume_gate_smoke_20260622_image_slide_002_v1"
+      ],
+      "completedArtifactIdsAfter": [
+        "df243_resume_gate_smoke_20260622_image_slide_001_v1",
+        "df243_resume_gate_smoke_20260622_image_slide_002_v1",
+        "df243_resume_gate_smoke_20260622_image_slide_003_v1"
+      ],
+      "liveJobId": "live_job_interrupted_artifact_gate_product_1",
+      "recoverySnapshotPath": "docs/live-evidence/codex-image/df243-packaged-interruption-closure-20260622/artifacts/projects/df243_resume_gate_smoke_20260622/live-evidence/df243-interrupted-artifact-gate-recovery-snapshot-resume_gate_product_run_20260622.json",
+      "recoverySnapshotScope": "app_storage",
+      "cancellationRecorded": true,
+      "pendingImageArtifactIds": [],
+      "resumedArtifactIds": [],
+      "cancelledJobStillRunning": false,
+      "interruptedArtifactIds": [
+        "df243_resume_gate_smoke_20260622_partial_export_bundle_001"
+      ],
+      "approvableArtifactIds": [
+        "df243_resume_gate_smoke_20260622_image_slide_001_v1",
+        "df243_resume_gate_smoke_20260622_image_slide_002_v1",
+        "df243_resume_gate_smoke_20260622_image_slide_003_v1"
+      ],
+      "exportableArtifactIds": [
+        "df243_resume_gate_smoke_20260622_image_slide_001_v1",
+        "df243_resume_gate_smoke_20260622_image_slide_002_v1",
+        "df243_resume_gate_smoke_20260622_image_slide_003_v1"
+      ],
+      "approvalGateChecked": true,
+      "approvalGateEvidencePath": "docs/live-evidence/codex-image/df243-packaged-interruption-closure-20260622/artifacts/projects/df243_resume_gate_smoke_20260622/live-evidence/df243-interrupted-artifact-gate-approval-resume_gate_product_run_20260622.json",
+      "exportGateChecked": true,
+      "exportGateEvidencePath": "docs/live-evidence/codex-image/df243-packaged-interruption-closure-20260622/artifacts/projects/df243_resume_gate_smoke_20260622/live-evidence/df243-interrupted-artifact-gate-export-resume_gate_product_run_20260622.json"
+    }
+  ]
+}

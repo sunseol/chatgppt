@@ -1,0 +1,77 @@
+{
+  "ticketId": "DF-205",
+  "issueNumber": 131,
+  "status": "blocked",
+  "validationKind": "blocked",
+  "generatedAt": "2026-06-22T04:55:00Z",
+  "packageArchiveSha256": "33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc",
+  "summary": "Authenticated Codex runtime, local secret-lifecycle guards, a current-package configured secret/auth marker scan, and a packaged dry-run Codex OAuth image capability confirmation now exist. The active dry-run archive and native app scan clean for configured Codex/OpenAI secrets, auth.json, local workspace, and long bearer token markers, and DF-244 packaged generate/export evidence proves the packaged app surface can drive Codex OAuth image generation without an API key. Release evidence still lacks clean-account login/logout-relogin, packaged keychain lifecycle, and clean-machine signed-package secret scanning.",
+  "currentEvidence": [
+    {
+      "path": "docs/live-auth-secret-lifecycle.md",
+      "kind": "auth and secret lifecycle contract"
+    },
+    {
+      "path": "docs/live-evidence/lane-e-20260621/auth-bootstrap-smoke.json",
+      "sha256": "4803348fa684e1eaeb6662be04d7877e180ce8178340db2d92049e2d1a465dff",
+      "kind": "authenticated Codex App Server smoke"
+    },
+    {
+      "path": "src/lib/live-auth-lifecycle.ts",
+      "kind": "auth logout and provider lock model"
+    },
+    {
+      "path": "src/lib/live-auth-lifecycle-disconnect-scope.test.ts",
+      "kind": "wrong-service keychain disconnect regression"
+    },
+    {
+      "path": "src/lib/production-image-generation-gate.test.ts",
+      "kind": "stale post-logout production image gate regression"
+    },
+    {
+      "path": "src/components/deck/GenerateStage.integration.test.tsx",
+      "kind": "Generate stage provider auth lock surface regression"
+    },
+    {
+      "path": "src/lib/live-secret-material-candidates.ts",
+      "kind": "secret material redaction and candidate detection"
+    },
+    {
+      "path": "docs/live-evidence/release/df245-package-recheck-20260622.json",
+      "sha256": "09a4abc43a469c77fdd4b5d345a824dd354582ce432f7b60b6759838f12f9f96",
+      "kind": "current-package secret and auth marker scan"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df244-packaged-generate-export-smoke-20260622/summary.json",
+      "sha256": "223c3af62de88ac22206e47193bb811c09670b635ab6780d4c7687d5cd0fa53c",
+      "kind": "packaged dry-run Codex OAuth image capability confirmation from DF-244 generate/export smoke"
+    },
+    {
+      "path": "docs/live-evidence/release/df205-packaged-auth-secret-candidate-20260622.json",
+      "sha256": "d571b95a0f1930bd483a22d0ecef376b543f210cdb95ad84d9491bcfa2ce8997",
+      "kind": "blocked packaged auth and secret candidate generated from current auth smoke"
+    },
+    {
+      "path": "scripts/df205-current-release-auth-secret-ingestion.ts",
+      "kind": "current auth smoke to packaged auth secret candidate ingestion helper"
+    },
+    {
+      "path": "scripts/produce-df205-current-release-auth-secret-candidate.ts",
+      "kind": "reproducible blocked packaged auth secret candidate generator"
+    },
+    {
+      "path": "scripts/df205-current-release-auth-secret-ingestion.test.ts",
+      "kind": "current auth smoke ingestion regression coverage"
+    },
+    {
+      "path": "src/lib/df205-release-evidence-artifact.test.ts",
+      "kind": "DF-205 release artifact regression tying auth blockers to current package scan and blocked candidate"
+    }
+  ],
+  "missingEvidence": [
+    "fresh login manual QA from an unauthenticated or clean macOS account",
+    "logout/relogin QA proving active live jobs cancel and provider actions stay locked until login is restored",
+    "packaged OS keychain write/read/delete lifecycle proof for any installed API-key fallback",
+    "clean-machine persisted secret leak scan from the signed packaged run"
+  ]
+}

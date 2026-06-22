@@ -1,0 +1,139 @@
+{
+  "capturedAt": "2026-06-22T06:15:01.336Z",
+  "evidenceKind": "packaged-live-codex-generate-export-smoke",
+  "runtime": "DeckForge dry-run package localhost bridge -> codex app-server --stdio",
+  "packageSurface": {
+    "baseUrl": "http://127.0.0.1:4195",
+    "stdout": [
+      "Started development server: http://localhost:4195"
+    ],
+    "stderr": []
+  },
+  "projectId": "df244_packaged_generate_export_smoke_20260622",
+  "jobId": "job_packaged_generate_export_smoke_1",
+  "billingJobStatus": "queued",
+  "completedJobStatus": "succeeded",
+  "partialResult": {
+    "kind": "live_slide_images",
+    "label": "1 Codex slide images",
+    "artifactId": "df244_packaged_generate_export_smoke_20260622",
+    "queueEvidencePath": "projects/df244_packaged_generate_export_smoke_20260622/live-evidence/df233-image-queue-job_packaged_generate_export_smoke_1.json"
+  },
+  "progress": [
+    0,
+    100,
+    100
+  ],
+  "jobs": [
+    {
+      "id": "job_packaged_generate_export_smoke_1",
+      "status": "queued",
+      "attempt": 1
+    },
+    {
+      "id": "job_packaged_generate_export_smoke_1",
+      "status": "queued",
+      "attempt": 1
+    },
+    {
+      "id": "job_packaged_generate_export_smoke_1",
+      "status": "running",
+      "attempt": 1
+    },
+    {
+      "id": "job_packaged_generate_export_smoke_1",
+      "status": "running",
+      "attempt": 1
+    },
+    {
+      "id": "job_packaged_generate_export_smoke_1",
+      "status": "running",
+      "attempt": 1,
+      "partialResult": {
+        "kind": "live_slide_images",
+        "label": "1 Codex slide images",
+        "artifactId": "df244_packaged_generate_export_smoke_20260622",
+        "queueEvidencePath": "projects/df244_packaged_generate_export_smoke_20260622/live-evidence/df233-image-queue-job_packaged_generate_export_smoke_1.json"
+      }
+    }
+  ],
+  "slides": [
+    {
+      "slideNumber": 1,
+      "status": "ready",
+      "imageDescriptor": "codex|16:9|slide_01_layout.png|slide_generation@v1",
+      "originalArtifactPath": "projects/df244_packaged_generate_export_smoke_20260622/slides/images/slide_001.v1.png",
+      "artifactPath": "docs/live-evidence/codex-image/df244-packaged-generate-export-smoke-20260622/artifacts/projects/df244_packaged_generate_export_smoke_20260622/slides/images/slide_001.v1.png"
+    }
+  ],
+  "artifactWrites": [
+    {
+      "originalPath": "projects/df244_packaged_generate_export_smoke_20260622/usage/df244_packaged_generate_export_smoke_20260622/job_packaged_generate_export_smoke_1/image-billing-confirmation.json",
+      "path": "docs/live-evidence/codex-image/df244-packaged-generate-export-smoke-20260622/artifacts/projects/df244_packaged_generate_export_smoke_20260622/usage/df244_packaged_generate_export_smoke_20260622/job_packaged_generate_export_smoke_1/image-billing-confirmation.json",
+      "kind": "text",
+      "bytes": 497
+    },
+    {
+      "originalPath": "projects/df244_packaged_generate_export_smoke_20260622/slides/images/slide_001.v1.png",
+      "path": "docs/live-evidence/codex-image/df244-packaged-generate-export-smoke-20260622/artifacts/projects/df244_packaged_generate_export_smoke_20260622/slides/images/slide_001.v1.png",
+      "kind": "binary",
+      "bytes": 1830981
+    },
+    {
+      "originalPath": "projects/df244_packaged_generate_export_smoke_20260622/slides/images/slide_001.v1.metadata.json",
+      "path": "docs/live-evidence/codex-image/df244-packaged-generate-export-smoke-20260622/artifacts/projects/df244_packaged_generate_export_smoke_20260622/slides/images/slide_001.v1.metadata.json",
+      "kind": "text",
+      "bytes": 700
+    },
+    {
+      "originalPath": "projects/df244_packaged_generate_export_smoke_20260622/slides/images/slide_001.v1.provenance.json",
+      "path": "docs/live-evidence/codex-image/df244-packaged-generate-export-smoke-20260622/artifacts/projects/df244_packaged_generate_export_smoke_20260622/slides/images/slide_001.v1.provenance.json",
+      "kind": "text",
+      "bytes": 593
+    },
+    {
+      "originalPath": "projects/df244_packaged_generate_export_smoke_20260622/live-evidence/df233-image-queue-job_packaged_generate_export_smoke_1.json",
+      "path": "docs/live-evidence/codex-image/df244-packaged-generate-export-smoke-20260622/artifacts/projects/df244_packaged_generate_export_smoke_20260622/live-evidence/df233-image-queue-job_packaged_generate_export_smoke_1.json",
+      "kind": "text",
+      "bytes": 1901
+    }
+  ],
+  "projectFolderExport": {
+    "evidencePath": "docs/live-evidence/codex-image/df244-packaged-generate-export-smoke-20260622/project-folder-export.json",
+    "hash": "sha256:93f143fd",
+    "bytes": 2539019,
+    "projectArtifactWriteCount": 5,
+    "includesOtherProjects": false,
+    "leaksSyntheticSecret": false
+  },
+  "usageSummaryPath": "docs/live-evidence/codex-image/df244-packaged-generate-export-smoke-20260622/usage-summary.json",
+  "confirmationRecordPath": "docs/live-evidence/codex-image/df244-packaged-generate-export-smoke-20260622/artifacts/projects/df244_packaged_generate_export_smoke_20260622/usage/df244_packaged_generate_export_smoke_20260622/job_packaged_generate_export_smoke_1/image-billing-confirmation.json",
+  "appServerTurns": [
+    {
+      "threadId": "019eedf5-21a7-73c2-ba4e-672f3a4785c2",
+      "turnId": "019eedf5-242f-7140-8b1e-78ee9ecd43bf",
+      "durationMs": 176538,
+      "protocolLineCount": 197,
+      "stderrLogLineCount": 222,
+      "eventMethods": [
+        "remoteControl/status/changed",
+        "thread/started",
+        "warning",
+        "mcpServer/startupStatus/updated",
+        "thread/status/changed",
+        "turn/started",
+        "hook/started",
+        "hook/completed",
+        "item/started",
+        "item/completed",
+        "thread/tokenUsage/updated",
+        "account/rateLimits/updated",
+        "turn/plan/updated",
+        "item/commandExecution/outputDelta",
+        "item/agentMessage/delta",
+        "turn/completed"
+      ],
+      "errors": []
+    }
+  ]
+}

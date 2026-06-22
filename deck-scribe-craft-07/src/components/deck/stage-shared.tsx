@@ -69,10 +69,12 @@ export function EmptyAction({
   label,
   onClick,
   busy,
+  disabled = false,
 }: {
   readonly label: string;
   readonly onClick: () => void;
   readonly busy: boolean;
+  readonly disabled?: boolean;
 }) {
   return (
     <div className="flex flex-col items-center gap-4 border border-dashed border-border bg-paper py-16">
@@ -80,7 +82,7 @@ export function EmptyAction({
       <div className="text-sm text-muted-foreground">{label}</div>
       <Button
         onClick={onClick}
-        disabled={busy}
+        disabled={busy || disabled}
         className="bg-foreground text-background hover:bg-foreground/90"
       >
         {busy ? "생성 중..." : "초안 생성"}

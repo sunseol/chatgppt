@@ -1,0 +1,112 @@
+{
+  "capturedAt": "2026-06-21T23:59:57Z",
+  "evidenceKind": "df245-current-package-recheck",
+  "status": "blocked",
+  "reason": "Current local package and DMG hashes are rechecked, but Developer ID signing, notarization, stapling, Gatekeeper acceptance, and clean-machine execution remain missing.",
+  "packageArchive": {
+    "path": "dist/deckforge-macos-dry-run.tgz",
+    "sha256": "33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc",
+    "bytes": 340252,
+    "archiveMembers": 32
+  },
+  "dryRunApp": {
+    "path": "dist/deckforge-macos-dry-run/DeckForge.app",
+    "fileCount": 29,
+    "sizeKiB": 1254
+  },
+  "nativeMacos": {
+    "dmgPath": "release-artifacts/DeckForge_0.1.0_aarch64.dmg",
+    "dmgSha256": "d6849d24c5af4548b7b35e65a68a05c8d139be4b1b5504d7c3da3a3dc9e2d467",
+    "dmgBytes": 1833575,
+    "checksumPath": "release-artifacts/DeckForge_0.1.0_aarch64.dmg.sha256",
+    "checksumSha256": "1f6b5f819215a468dff7b9a62bd185aeb2a56904cf835a9e28d3f4919608ef0a",
+    "checksumVerification": {
+      "command": "shasum -a 256 -c release-artifacts/DeckForge_0.1.0_aarch64.dmg.sha256",
+      "exitCode": 0,
+      "signal": null,
+      "stdout": [
+        "release-artifacts/DeckForge_0.1.0_aarch64.dmg: OK"
+      ],
+      "stderr": []
+    },
+    "appPath": "src-tauri/target/release/bundle/macos/DeckForge.app",
+    "appBundleSizeKiB": 4975,
+    "binaryPath": "src-tauri/target/release/bundle/macos/DeckForge.app/Contents/MacOS/deckforge",
+    "binarySha256": "f886f3dc8c9e5c968a7a5a80134814a72b629c9fdbf0bff05e570408a7003c65"
+  },
+  "contentScan": {
+    "roots": [
+      "dist/client",
+      "dist/server",
+      "dist/deckforge-macos-dry-run/DeckForge.app",
+      "src-tauri/target/release/bundle/macos/DeckForge.app"
+    ],
+    "localAbsolutePathMarker": "/Users/jake/chatgppt-live-product-completion/deck-scribe-craft-07",
+    "fileCount": 47,
+    "fixedStringHits": {
+      "mock-provider": [],
+      "MOCK MODE": [],
+      "mock_stage": [],
+      ".omx": [],
+      ".playwright-mcp": [],
+      "CODEX_SESSION=": [],
+      "OPENAI_API_KEY=": [],
+      "auth.json": [],
+      "sk-proj-": [],
+      "sk-svcacct-": [],
+      "/Users/jake/chatgppt-live-product-completion/deck-scribe-craft-07": []
+    },
+    "regexHits": {
+      "longBearerToken": [],
+      "assignedOpenAiApiKey": [],
+      "assignedCodexSession": []
+    },
+    "passed": true
+  },
+  "signingAndTrust": {
+    "codesigningIdentities": {
+      "command": "security find-identity -v -p codesigning",
+      "exitCode": 0,
+      "signal": null,
+      "stdout": [
+        "     0 valid identities found"
+      ],
+      "stderr": []
+    },
+    "dmgCodesign": {
+      "command": "codesign -dv --verbose=4 release-artifacts/DeckForge_0.1.0_aarch64.dmg",
+      "exitCode": 1,
+      "signal": null,
+      "stdout": [],
+      "stderr": [
+        "release-artifacts/DeckForge_0.1.0_aarch64.dmg: code object is not signed at all"
+      ]
+    },
+    "appCodesignVerify": {
+      "command": "codesign --verify --deep --strict --verbose=4 src-tauri/target/release/bundle/macos/DeckForge.app",
+      "exitCode": 1,
+      "signal": null,
+      "stdout": [],
+      "stderr": [
+        "src-tauri/target/release/bundle/macos/DeckForge.app: code has no resources but signature indicates they must be present"
+      ]
+    },
+    "gatekeeperAssess": {
+      "command": "spctl --assess --type open --context context:primary-signature --verbose=4 release-artifacts/DeckForge_0.1.0_aarch64.dmg",
+      "exitCode": 3,
+      "signal": null,
+      "stdout": [],
+      "stderr": [
+        "release-artifacts/DeckForge_0.1.0_aarch64.dmg: rejected",
+        "source=no usable signature"
+      ]
+    }
+  },
+  "blockers": [
+    "Developer ID Application signing identity not available",
+    "notarytool credentials and accepted notarization not available",
+    "stapled DMG or app not available",
+    "Gatekeeper assessment rejects the unsigned DMG",
+    "clean macOS account install/login/image credential/project launch/live interview evidence not recorded"
+  ]
+}

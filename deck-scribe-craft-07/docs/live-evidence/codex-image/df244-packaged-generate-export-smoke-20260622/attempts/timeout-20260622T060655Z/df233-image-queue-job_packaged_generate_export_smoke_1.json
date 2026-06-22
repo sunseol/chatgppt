@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "issue": "DF-233",
+  "projectId": "df244_packaged_generate_export_smoke_20260622",
+  "jobId": "job_packaged_generate_export_smoke_1",
+  "exportedAt": 1782108115962,
+  "resultStatus": "failed",
+  "context": {
+    "deckContextId": "deckctx_3b0ca5db",
+    "deckContextHash": "sha256:3b0ca5db",
+    "designSystemId": "design_generate_export_smoke",
+    "designTokenHash": "sha256:0b5cc4c3",
+    "layoutPrototypeId": "layout_generate_export_smoke",
+    "slideCount": 1
+  },
+  "slides": [],
+  "failures": [
+    {
+      "jobId": "slide_job_1",
+      "bundleId": "bundle_deckctx_3b0ca5db_slide_01",
+      "slideNumber": 1,
+      "retryable": true,
+      "attempts": 1,
+      "failureKind": "unknown",
+      "retryDelaysMs": [],
+      "errorMessage": "The operation timed out.",
+      "userMessage": "Slide 1 failed: The operation timed out.. Retry is available."
+    }
+  ],
+  "jobs": [
+    {
+      "id": "slide_job_1",
+      "providerId": "codex",
+      "capability": "imageGeneration",
+      "description": "Generate slide 1",
+      "status": "failed",
+      "createdAt": 1782108115324,
+      "startedAt": 1782108115324,
+      "finishedAt": 1782108415235,
+      "attempt": 1,
+      "cancelRequested": false,
+      "errorMessage": "The operation timed out."
+    }
+  ],
+  "promptUsages": [
+    {
+      "promptId": "slide_generation",
+      "promptVersion": "v1",
+      "promptHash": "sha256:3334a742",
+      "promptFilePath": "prompts/slide_generation.v1.md",
+      "stage": "slide-generation",
+      "artifactId": "bundle_deckctx_3b0ca5db_slide_01",
+      "jobId": "slide_job_1",
+      "recordedAt": 1782108115324
+    }
+  ],
+  "retryProvenance": [],
+  "concurrency": {
+    "requestedMaxParallel": 3,
+    "effectiveMaxParallel": 1,
+    "observedMaxRunning": 1
+  },
+  "progress": {
+    "completed": 0,
+    "failed": 1,
+    "total": 1,
+    "percent": 100
+  },
+  "storedImageArtifactPaths": [],
+  "validation": {
+    "kind": "ready"
+  }
+}

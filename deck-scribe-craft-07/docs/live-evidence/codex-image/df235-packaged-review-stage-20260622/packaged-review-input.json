@@ -1,0 +1,109 @@
+{
+  "capturedAt": "2026-06-22T07:00:10.409Z",
+  "packageArchiveSha256": "33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc",
+  "reviewSession": {
+    "sessionId": "df235_packaged_review_stage_20260622",
+    "appSurface": "packaged_review_stage",
+    "packageArchiveSha256": "33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc"
+  },
+  "approvalProof": {
+    "sessionId": "df235_packaged_review_stage_20260622",
+    "evidencePath": "docs/live-evidence/codex-image/df235-packaged-review-stage-20260622/approval-review.json",
+    "reviewEvidence": {
+      "schemaVersion": 1,
+      "issue": "DF-235",
+      "projectId": "df235_packaged_review_approval_20260622",
+      "eventId": "rev_df235_packaged_approval_20260622",
+      "exportedAt": 1782111462060,
+      "event": {
+        "outcome": "approved",
+        "candidate": {
+          "requestId": "rev_df235_packaged_approval_20260622",
+          "slide": {
+            "number": 1,
+            "version": 2,
+            "status": "ready",
+            "imageDescriptor": "live-regeneration|request=rev_df235_packaged_approval_20260622|background=df235_packaged_review_approval_20260622_image_slide_001_v2|deckContext=deckctx_df235_packaged|designSystem=df235_packaged_review_approval_20260622_design"
+          },
+          "originalBackgroundArtifactId": "df235_packaged_review_approval_20260622_image_slide_001_v1",
+          "backgroundArtifactId": "df235_packaged_review_approval_20260622_image_slide_001_v2",
+          "beforeImageDescriptor": "codex|16:9|slide_01_layout.png|slide_generation@v1",
+          "afterImageDescriptor": "live-regeneration|request=rev_df235_packaged_approval_20260622|background=df235_packaged_review_approval_20260622_image_slide_001_v2|deckContext=deckctx_df235_packaged|designSystem=df235_packaged_review_approval_20260622_design"
+        },
+        "comparison": {
+          "slideNumber": 1,
+          "originalSlideVersion": 1,
+          "revisedSlideVersion": 2,
+          "requestedChanges": [
+            "chart area size"
+          ],
+          "preservedTargets": [
+            "title text",
+            "source caption",
+            "approved color palette"
+          ],
+          "preservationChecks": [
+            {
+              "target": "title text",
+              "status": "kept"
+            },
+            {
+              "target": "source caption",
+              "status": "kept"
+            },
+            {
+              "target": "approved color palette",
+              "status": "kept"
+            }
+          ]
+        },
+        "approvedSlide": {
+          "number": 1,
+          "version": 2,
+          "status": "approved",
+          "imageDescriptor": "live-regeneration|request=rev_df235_packaged_approval_20260622|background=df235_packaged_review_approval_20260622_image_slide_001_v2|deckContext=deckctx_df235_packaged|designSystem=df235_packaged_review_approval_20260622_design"
+        }
+      }
+    },
+    "displayEvidence": {
+      "evidencePath": "docs/live-evidence/codex-image/df235-packaged-review-stage-20260622/approval-display.html",
+      "beforeVisible": true,
+      "afterVisible": true,
+      "approvalVisible": true,
+      "preservationChecksVisible": true
+    }
+  },
+  "failurePreservationProof": {
+    "sessionId": "df235_packaged_review_stage_20260622",
+    "evidencePath": "docs/live-evidence/codex-image/df235-packaged-review-stage-20260622/failure-preservation-review.json",
+    "reviewEvidence": {
+      "schemaVersion": 1,
+      "issue": "DF-235",
+      "projectId": "df235_packaged_review_failure_20260622",
+      "eventId": "slide_001_1782111508004",
+      "exportedAt": 1782111508004,
+      "event": {
+        "outcome": "preserved_after_failure",
+        "slideNumber": 1,
+        "originalSlideVersion": 1,
+        "instruction": "차트 영역을 더 크게 만들고 출처 캡션은 유지해줘.",
+        "issues": [
+          "codex_live_regeneration_unavailable"
+        ],
+        "userMessage": "Live review regeneration requires approved Codex OAuth image provenance before editing.",
+        "preservedSlide": {
+          "number": 1,
+          "version": 1,
+          "status": "approved",
+          "imageDescriptor": "codex|16:9|slide_01_layout.png|slide_generation@v1"
+        }
+      }
+    },
+    "displayEvidence": {
+      "evidencePath": "docs/live-evidence/codex-image/df235-packaged-review-stage-20260622/failure-preservation-display.html",
+      "approvedOriginalVisible": true,
+      "failureMessageVisible": true,
+      "exportableOriginalVisible": true
+    }
+  }
+}

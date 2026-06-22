@@ -1,0 +1,97 @@
+{
+  "path": "docs/live-evidence/release/packaged-live-evidence-index.json",
+  "packageArchiveSha256": "33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc",
+  "generatedAt": "2026-06-22T11:02:15.000Z",
+  "entries": [
+    {
+      "ticketId": "DF-205",
+      "issueNumber": 131,
+      "status": "blocked",
+      "validationKind": "blocked",
+      "packageArchiveSha256": "33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc",
+      "artifactPath": "docs/live-evidence/release/df205-evidence.json",
+      "artifactSha256": "4b5e627ca37e8300cf61072fb6726f6393dfe2aa5e2a7cb1157289925fa04d2f"
+    },
+    {
+      "ticketId": "DF-233",
+      "issueNumber": 147,
+      "status": "blocked",
+      "validationKind": "blocked",
+      "packageArchiveSha256": "33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc",
+      "artifactPath": "docs/live-evidence/release/df233-evidence.json",
+      "artifactSha256": "501f4a3787e27f19fc6aaa25b0d9da2bcacdac8c627b7eabc50a4acdbc3b9362"
+    },
+    {
+      "ticketId": "DF-235",
+      "issueNumber": 149,
+      "status": "ready",
+      "validationKind": "ready",
+      "packageArchiveSha256": "33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc",
+      "artifactPath": "docs/live-evidence/release/df235-evidence.json",
+      "artifactSha256": "092c5bb8071e0b09f48adb49a6e1d97444da22c22da2e1635ae035fd1c1120af"
+    },
+    {
+      "ticketId": "DF-241",
+      "issueNumber": 151,
+      "status": "blocked",
+      "validationKind": "blocked",
+      "packageArchiveSha256": "33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc",
+      "artifactPath": "docs/live-evidence/release/df241-evidence.json",
+      "artifactSha256": "9154404c1d391cd186aa071c8b6ef572493c9ac6ed3e2c37861a01a2a1852f1a"
+    },
+    {
+      "ticketId": "DF-242",
+      "issueNumber": 152,
+      "status": "blocked",
+      "validationKind": "blocked",
+      "packageArchiveSha256": "33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc",
+      "artifactPath": "docs/live-evidence/release/df242-evidence.json",
+      "artifactSha256": "391532d25aba634d55eba623b6c6ee5056eb018a00cbaf46fd7e11733c715b8d"
+    },
+    {
+      "ticketId": "DF-243",
+      "issueNumber": 153,
+      "status": "ready",
+      "validationKind": "ready",
+      "packageArchiveSha256": "33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc",
+      "artifactPath": "docs/live-evidence/release/df243-evidence.json",
+      "artifactSha256": "92f7a7d19bd05114b5120528e602ebf3d164b30f8e1e217fb86ceed0f46b5a91"
+    },
+    {
+      "ticketId": "DF-244",
+      "issueNumber": 154,
+      "status": "ready",
+      "validationKind": "ready",
+      "packageArchiveSha256": "33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc",
+      "artifactPath": "docs/live-evidence/release/df244-evidence.json",
+      "artifactSha256": "5e30d4da87a5b92ed8974c4511790a79eca049a57b7ed63389e7fe405b1ff049"
+    },
+    {
+      "ticketId": "DF-245",
+      "issueNumber": 155,
+      "status": "blocked",
+      "validationKind": "blocked",
+      "packageArchiveSha256": "33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc",
+      "artifactPath": "docs/live-evidence/release/df245-evidence.json",
+      "artifactSha256": "06aa28d077d4a4bb3ccd9d9637655a1878f639478ff4324460dc9d439e8082fc"
+    },
+    {
+      "ticketId": "DF-246",
+      "issueNumber": 156,
+      "status": "blocked",
+      "validationKind": "blocked",
+      "packageArchiveSha256": "33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc",
+      "artifactPath": "docs/live-evidence/release/df246-evidence.json",
+      "artifactSha256": "eebc394d5c78936251b675f7225a78f3e620f9b29c1280fd8233f646b32faa44"
+    },
+    {
+      "ticketId": "DF-247",
+      "issueNumber": 157,
+      "status": "blocked",
+      "validationKind": "blocked",
+      "packageArchiveSha256": "33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc",
+      "artifactPath": "docs/live-evidence/release/df247-evidence.json",
+      "artifactSha256": "1c1695633ca397ef4b8ef13c09bd6f348ed73979584ebec3b7e4e65403a73062"
+    }
+  ]
+}

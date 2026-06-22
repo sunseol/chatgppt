@@ -1,0 +1,76 @@
+{
+  "ticketId": "DF-241",
+  "issueNumber": 151,
+  "status": "blocked",
+  "validationKind": "blocked",
+  "generatedAt": "2026-06-22T02:42:39Z",
+  "packageArchiveSha256": "33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc",
+  "summary": "Local Golden Path validators now require regeneration-marked image evidence with canonical input lineage to an initial live image, and the current candidate collector assembles existing live text, source, image, regeneration, and export artifacts into a blocked DF-241/DF-242 evidence bundle with direct artifact regression coverage. The candidate is now also emitted through the packaged-run producer as a blocked handoff artifact. No signed packaged production Golden Path has completed from login through export.",
+  "currentEvidence": [
+    {
+      "path": "docs/live-golden-path-e2e.md",
+      "kind": "contract"
+    },
+    {
+      "path": "src/lib/live-golden-path-image-evidence.ts",
+      "kind": "local validator requiring regeneration marker plus canonical live-image input lineage"
+    },
+    {
+      "path": "src/lib/live-golden-path-regeneration-image.test.ts",
+      "kind": "regression coverage for marker-only and trim-only-input regeneration rejection"
+    },
+    {
+      "path": "docs/live-evidence/lane-e-20260621/text-pipeline-summary.json",
+      "sha256": "78c08cc5e49f05587279a7258772c63791545813e0f11fee1f0dc4c6ab903286",
+      "kind": "library-level live text pipeline"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/lane-d-live-app-surface-20260621/manifest.json",
+      "sha256": "caa4036a28a40886a953a1b547059fd1073cabe35e67f73dc56418b02c02676f",
+      "kind": "partial Codex OAuth image and review evidence"
+    },
+    {
+      "path": "docs/live-evidence/release/df241-df242-candidate-20260622.json",
+      "sha256": "0f0f5325204b5ab8bf6cf26f12b21fa8c81c0e200aa434393d095f1ca5dfc560",
+      "kind": "blocked current-candidate Golden Path bundle assembled from existing live artifacts"
+    },
+    {
+      "path": "docs/live-evidence/release/df241-df242-packaged-run-candidate-20260622.json",
+      "sha256": "559f2bb5068f7480ba0eed4dbd90c9776745f11fa96d537b011638f308f043e6",
+      "kind": "blocked packaged-run handoff generated from the current candidate bundle"
+    },
+    {
+      "path": "scripts/collect-df241-df242-candidate-evidence.ts",
+      "kind": "reproducible candidate evidence collector"
+    },
+    {
+      "path": "scripts/produce-df241-df242-packaged-run-candidate.ts",
+      "kind": "reproducible packaged-run candidate generator"
+    },
+    {
+      "path": "scripts/produce-df241-df242-packaged-evidence.ts",
+      "kind": "packaged-run evidence producer CLI"
+    },
+    {
+      "path": "scripts/df241-df242-candidate-evidence-support.ts",
+      "kind": "candidate bundle builder for current live artifacts"
+    },
+    {
+      "path": "scripts/df241-df242-candidate-evidence-support.test.ts",
+      "kind": "candidate collector regression coverage"
+    },
+    {
+      "path": "src/lib/df241-df242-candidate-evidence-artifact.test.ts",
+      "kind": "DF-241/DF-242 blocked candidate artifact regression coverage"
+    }
+  ],
+  "missingEvidence": [
+    "packaged production Golden Path run from login through export",
+    "signed live_e2e_report.md",
+    "per-step screenshots and recording",
+    "final validation bundle",
+    "packaged restart/reopen evidence",
+    "single run tying live text stages, live research, five images, regeneration, title edit, export, and restart evidence together",
+    "packaged login and title edit steps, which the candidate validator still reports as missing"
+  ]
+}

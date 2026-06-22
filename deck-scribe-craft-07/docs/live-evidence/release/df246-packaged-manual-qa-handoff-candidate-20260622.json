@@ -1,0 +1,27 @@
+{
+  "capturedAt": "2026-06-22T11:02:15.000Z",
+  "evidenceKind": "df246-packaged-manual-qa-evidence",
+  "status": "blocked",
+  "packageArchiveSha256": "33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc",
+  "checklistPath": "docs/live-manual-qa-checklist.md",
+  "packageRecheckPath": "docs/live-evidence/release/df245-package-recheck-20260622.json",
+  "sessionEvidencePath": null,
+  "testerRole": null,
+  "manualQaValidation": {
+    "kind": "blocked",
+    "issues": [
+      {
+        "code": "missing_manual_qa_session_evidence",
+        "message": "Manual QA must cite a persisted non-synthetic session evidence bundle.",
+        "refs": [
+          "missing"
+        ]
+      }
+    ]
+  },
+  "summary": "# DF-246 Live Manual QA\ntester role: missing\nsetup target: 10 minutes · actual: missing\nchecklist: docs/live-manual-qa-checklist.md\npackage recheck: docs/live-evidence/release/df245-package-recheck-20260622.json\nstatus: blocked pending non-developer manual QA session evidence JSON",
+  "releaseBlockers": [
+    "DF-246 manual QA session evidence JSON is missing",
+    "DF-246 manual QA validation is blocked"
+  ]
+}

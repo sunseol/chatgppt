@@ -1,0 +1,72 @@
+{
+  "ticketId": "DF-242",
+  "issueNumber": 152,
+  "status": "blocked",
+  "validationKind": "blocked",
+  "generatedAt": "2026-06-22T02:42:39Z",
+  "packageArchiveSha256": "33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc",
+  "summary": "The live benchmark validator is implemented and now rejects benchmark output bundle paths borrowed from another DF-242 scenario. The current DF-241/DF-242 candidate collector proves existing live artifacts can be assembled into a blocked Golden Path candidate with direct artifact regression coverage, and the same bundle now flows through the packaged-run producer as a blocked handoff artifact. There are still zero packaged benchmark output bundles and zero passed live benchmarks.",
+  "currentEvidence": [
+    {
+      "path": "docs/live-benchmark-report.md",
+      "kind": "contract"
+    },
+    {
+      "path": "src/lib/live-benchmark-evidence.ts",
+      "kind": "validator requiring exact committed benchmark report path"
+    },
+    {
+      "path": "src/lib/live-benchmark-scenario-path-evidence.ts",
+      "kind": "validator rejecting output bundle, report, Golden Path, or screenshot paths borrowed from another DF-242 scenario"
+    },
+    {
+      "path": "src/lib/live-benchmark-report-path-evidence.test.ts",
+      "kind": "regression coverage for same-named non-docs benchmark reports"
+    },
+    {
+      "path": "src/lib/live-benchmark-scenario-path-evidence.test.ts",
+      "kind": "regression coverage for cross-scenario borrowed output bundle paths"
+    },
+    {
+      "path": "docs/live-release-decision.md",
+      "kind": "release decision recording 0 of 5 live benchmark passes"
+    },
+    {
+      "path": "docs/live-evidence/release/df241-df242-candidate-20260622.json",
+      "sha256": "0f0f5325204b5ab8bf6cf26f12b21fa8c81c0e200aa434393d095f1ca5dfc560",
+      "kind": "blocked current-candidate benchmark basis with 0 of 5 passed live benchmarks"
+    },
+    {
+      "path": "docs/live-evidence/release/df241-df242-packaged-run-candidate-20260622.json",
+      "sha256": "559f2bb5068f7480ba0eed4dbd90c9776745f11fa96d537b011638f308f043e6",
+      "kind": "blocked packaged-run handoff generated from the current candidate bundle"
+    },
+    {
+      "path": "scripts/collect-df241-df242-candidate-evidence.ts",
+      "kind": "reproducible candidate benchmark evidence collector"
+    },
+    {
+      "path": "scripts/produce-df241-df242-packaged-run-candidate.ts",
+      "kind": "reproducible packaged-run candidate generator"
+    },
+    {
+      "path": "scripts/produce-df241-df242-packaged-evidence.ts",
+      "kind": "packaged-run evidence producer CLI"
+    },
+    {
+      "path": "scripts/df241-df242-candidate-evidence-support.test.ts",
+      "kind": "candidate collector regression coverage"
+    },
+    {
+      "path": "src/lib/df241-df242-candidate-evidence-artifact.test.ts",
+      "kind": "DF-241/DF-242 blocked candidate artifact regression coverage"
+    }
+  ],
+  "missingEvidence": [
+    "five distinct packaged benchmark output bundles",
+    "at least four named live benchmark passes with failureDomain none",
+    "scenario reports and live_e2e_report.md paths for each passed benchmark",
+    "per-benchmark source, image, regeneration, screenshot, export, and provider turn evidence tied to the current package hash",
+    "all five benchmark outputBundlePath values, which the candidate validator still reports as missing"
+  ]
+}

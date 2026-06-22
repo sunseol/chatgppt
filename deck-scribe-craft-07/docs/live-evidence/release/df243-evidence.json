@@ -1,0 +1,112 @@
+{
+  "ticketId": "DF-243",
+  "issueNumber": 153,
+  "status": "ready",
+  "validationKind": "ready",
+  "generatedAt": "2026-06-22T04:15:00Z",
+  "packageArchiveSha256": "33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc",
+  "summary": "DF-243 now has a ready packaged interruption closure bundle. The closure combines the previously observed live text-turn and source-fetch interruption snapshots with product-writer image partial-resume, cancel recovery, cancel signal, and interrupted approval/export gate artifacts copied into a committed docs/live-evidence bundle. The generated closure evaluates ready and keeps every required artifact path inside the canonical evidence bundle while preserving the original product writer JSON digests.",
+  "currentEvidence": [
+    {
+      "path": "docs/live-evidence/release/df243-packaged-interruption-closure-20260622.json",
+      "sha256": "c3f82d8d6bf694c6f52c365c7685cbe50874fea301e4987ceb8dc05dd84b70ad",
+      "kind": "ready packaged interruption closure manifest"
+    },
+    {
+      "path": "docs/live-evidence/release/df243-packaged-interruption-matrix-20260622.json",
+      "sha256": "3b97d8fa2777e7239cab392535ef4e67ab806ed88dc58b7ab0aaecb108b41b42",
+      "kind": "ready packaged interruption matrix"
+    },
+    {
+      "path": "docs/live-evidence/lane-h-20260621/text-turn-shutdown-recovery-snapshot.json",
+      "sha256": "bdb10baf053ec024eaf2a1fbeaa69f0afa14607db7725bd3b264007a268e9f1d",
+      "kind": "observed live text-turn interruption recovery snapshot"
+    },
+    {
+      "path": "docs/live-evidence/lane-h-20260621/fetch-shutdown-recovery-snapshot.json",
+      "sha256": "2d1ac1fcb37c14e5137252d5703eb6f5ab597f839f75873a7248502278215563",
+      "kind": "observed source-fetch abort recovery snapshot"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df243-packaged-interruption-closure-20260622/artifacts/projects/df243_resume_gate_smoke_20260622/live-evidence/df243-image-partial-resume-recovery-snapshot-resume_gate_product_run_20260622.json",
+      "sha256": "8cdbd1b990a864e8ec86fb113da14a9a37937b9fe384a7dbde21878f2e4ddf0f",
+      "kind": "canonical packaged DF-243 artifact copied from resume/gate writer"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df243-packaged-interruption-closure-20260622/artifacts/projects/df243_cancel_product_smoke_20260622/live-evidence/df243-cancel-job-recovery-snapshot-cancel_product_run_20260622.json",
+      "sha256": "8adae7e97de4ae38d74e1ad62d2e4790a8542ca38aee0a03b520e96afd3ed942",
+      "kind": "canonical packaged DF-243 artifact copied from cancel writer"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df243-packaged-interruption-closure-20260622/artifacts/projects/df243_cancel_product_smoke_20260622/live-evidence/df243-cancel-job-cancel-signal-cancel_product_run_20260622.json",
+      "sha256": "2f31e94df1923921bf143c529652ce9a1209160cf01a02436acc4f6bc8bc77e7",
+      "kind": "canonical packaged DF-243 artifact copied from cancel writer"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df243-packaged-interruption-closure-20260622/artifacts/projects/df243_resume_gate_smoke_20260622/live-evidence/df243-interrupted-artifact-gate-recovery-snapshot-resume_gate_product_run_20260622.json",
+      "sha256": "d6ba4154ce0cfb01b9827200f3697494d5db60c86c240302e58c96d4d45aa86c",
+      "kind": "canonical packaged DF-243 artifact copied from resume/gate writer"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df243-packaged-interruption-closure-20260622/artifacts/projects/df243_resume_gate_smoke_20260622/live-evidence/df243-interrupted-artifact-gate-approval-resume_gate_product_run_20260622.json",
+      "sha256": "1ecb6bdc436fd8f89fc1cef8a5dc57e863361b9efd7a8dc7f90abb0c61b19cdd",
+      "kind": "canonical packaged DF-243 artifact copied from resume/gate writer"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df243-packaged-interruption-closure-20260622/artifacts/projects/df243_resume_gate_smoke_20260622/live-evidence/df243-interrupted-artifact-gate-export-resume_gate_product_run_20260622.json",
+      "sha256": "8ddf9c1fa329de29e6f3500264c3f30db8bbdcced315458cb03d818dba26b7f4",
+      "kind": "canonical packaged DF-243 artifact copied from resume/gate writer"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df243-cancel-product-smoke-20260622/summary.json",
+      "sha256": "9a017753267d1864549bb6ffa17cb274a26a2b7edc427a81479a5207a5c453f3",
+      "kind": "product cancel writer project-folder export smoke summary"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df243-resume-gate-product-smoke-20260622/summary.json",
+      "sha256": "e7272e0c8c0b2c1da7bc709c75c41f69cf3b50d4c8e12b212b27d0d239ddf9fe",
+      "kind": "product image partial-resume and interrupted gate writer export smoke summary"
+    },
+    {
+      "path": "scripts/df243-packaged-interruption-bundle.ts",
+      "kind": "observed/product writer matrix merge and bundle path rebasing helper"
+    },
+    {
+      "path": "scripts/produce-df243-packaged-interruption-closure-evidence.ts",
+      "kind": "reproducible ready closure evidence generator"
+    },
+    {
+      "path": "scripts/df243-packaged-interruption-bundle.test.ts",
+      "kind": "ready closure bundle regression coverage"
+    },
+    {
+      "path": "docs/live-interruption-matrix.md",
+      "kind": "DF-243 interruption evidence contract"
+    },
+    {
+      "path": "docs/live-evidence/codex-image/df243-live-codex-cancel-smoke-20260622/summary.json",
+      "kind": "real Codex OAuth cancellation smoke summary retained for no-storage semantics",
+      "sha256": "520a4fe9120aefd470299e26bab224de0b00d9e491553f54ba95108311a7101d"
+    },
+    {
+      "path": "projects/df243_live_codex_cancel_smoke_20260622/live-evidence/df233-image-queue-live_codex_cancel_product_run_20260622.json",
+      "kind": "real Codex OAuth cancelled queue evidence retained for cancellation lineage",
+      "sha256": "65ebd4608aa3df5a55144f5f8fe747ea49b3461e03982746a8d413e4ec4d8641"
+    },
+    {
+      "path": "projects/df243_live_codex_cancel_smoke_20260622/live-evidence/df243-cancel-job-recovery-snapshot-live_codex_cancel_product_run_20260622.json",
+      "kind": "real Codex OAuth app-storage cancel recovery snapshot retained for cancellation lineage",
+      "sha256": "53b0a4db896b80ba856eb2a9e145afdafbe84467863685784188e40facd9d317"
+    },
+    {
+      "path": "projects/df243_live_codex_cancel_smoke_20260622/live-evidence/df243-cancel-job-cancel-signal-live_codex_cancel_product_run_20260622.json",
+      "kind": "real Codex OAuth cancel signal evidence retained for cancellation lineage",
+      "sha256": "2f27310202cc9a45baad260948bcc04ffbb5421f15ffedc4ba8b35515a98c6ef"
+    },
+    {
+      "path": "src/lib/df233-df243-live-codex-cancel-artifact.test.ts",
+      "kind": "real Codex cancellation artifact no-storage regression coverage"
+    }
+  ],
+  "missingEvidence": []
+}

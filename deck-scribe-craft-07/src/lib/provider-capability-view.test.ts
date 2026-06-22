@@ -1,10 +1,65 @@
 import { describe, expect, test } from "bun:test";
 import { createProviderCapabilityMatrixView } from "./provider-capability-view";
+import { ProviderCapabilities } from "./provider-types";
 
 describe("provider capability matrix view", () => {
+  test("summarizes selected provider, auth mode, and live readiness states", () => {
+    const needsLogin = createProviderCapabilityMatrixView({
+      providerName: "Codex",
+      authMode: "codex_session",
+      status: {
+        kind: "requiresAuth",
+        providerId: "codex",
+        message: "Sign in with ChatGPT or complete the Codex device-code flow.",
+      },
+      capabilities: [],
+    });
+    const needsApiKey = createProviderCapabilityMatrixView({
+      providerName: "OpenAI Image",
+      authMode: "api_key",
+      status: {
+        kind: "needsApiKey",
+        providerId: "openaiImage",
+        message: "OpenAI image fallback requires a session API key.",
+      },
+      capabilities: ["imageGeneration"],
+    });
+    const liveTestFailed = createProviderCapabilityMatrixView({
+      providerName: "Codex",
+      authMode: "codex_session",
+      status: {
+        kind: "liveTestFailed",
+        providerId: "codex",
+        message: "Authenticated health turn failed.",
+      },
+      capabilities: ProviderCapabilities,
+    });
+    const unavailable = createProviderCapabilityMatrixView({
+      providerName: "Codex",
+      authMode: "codex_session",
+      status: {
+        kind: "unavailable",
+        providerId: "codex",
+        message: "Codex App Server is not reachable.",
+      },
+      capabilities: ProviderCapabilities,
+    });
+
+    expect(needsLogin.selectedProviderId).toBe("codex");
+    expect(needsLogin.authModeLabel).toBe("Codex session");
+    expect(needsLogin.statusLabel).toBe("Needs Login");
+    expect(needsApiKey.statusLabel).toBe("Needs API Key");
+    expect(needsApiKey.authModeLabel).toBe("API key");
+    expect(liveTestFailed.statusLabel).toBe("Live Test Failed");
+    expect(liveTestFailed.rows.every((row) => row.status === "locked")).toBe(true);
+    expect(unavailable.statusLabel).toBe("Unavailable");
+    expect(unavailable.rows.every((row) => row.status === "locked")).toBe(true);
+  });
+
   test("marks core planning and research available while image features are locked", () => {
     const view = createProviderCapabilityMatrixView({
       providerName: "Codex",
+      authMode: "codex_session",
       status: {
         kind: "connected",
         providerId: "codex",
@@ -36,7 +91,7 @@ describe("provider capability matrix view", () => {
         status: "locked",
         stateLabel: "잠김",
         reason: "Connected provider does not expose image generation.",
-        actionLabel: "OpenAI 이미지 fallback 설정",
+        actionLabel: "Codex 이미지 생성 확인",
       },
       {
         key: "revision_generation",
@@ -49,9 +104,10 @@ describe("provider capability matrix view", () => {
     ]);
   });
 
-  test("shows API key remediation for OpenAI image fallback without credentials", () => {
+  test("does not show API key remediation when Codex image generation is pending", () => {
     const view = createProviderCapabilityMatrixView({
       providerName: "Codex",
+      authMode: "codex_session",
       status: {
         kind: "connected",
         providerId: "codex",
@@ -59,15 +115,15 @@ describe("provider capability matrix view", () => {
       },
       capabilities: ["deckPlan", "research", "editableLayers"],
       imageFallback: {
-        providerId: "openaiImage",
-        authMode: "openaiApiKey",
+        providerId: "codex",
+        authMode: "codexOAuth",
         targetModel: "gpt-image-2",
-        setup: "requiresApiCredential",
-        fallbackMode: true,
+        setup: "requiresCodexImageCapability",
+        fallbackMode: false,
         credentialState: "missing",
-        connectionCopy: "Image generation uses a separate OpenAI API credential.",
-        billingCopy: "Image usage may be billed to the API organization.",
-        permissionCopy: "Some image models may require organization verification.",
+        connectionCopy: "Image generation uses the connected Codex OAuth session.",
+        billingCopy: "Image usage follows the signed-in Codex account.",
+        permissionCopy: "Codex image generation must be enabled for this runtime.",
       },
     });
 
@@ -93,8 +149,8 @@ describe("provider capability matrix view", () => {
         label: "이미지 생성",
         status: "locked",
         stateLabel: "잠김",
-        reason: "OpenAI image fallback requires a session API key.",
-        actionLabel: "세션 API Key 입력",
+        reason: "Codex image generation must be confirmed for this runtime.",
+        actionLabel: "Codex 이미지 생성 확인",
       },
       {
         key: "revision_generation",
@@ -105,5 +161,43 @@ describe("provider capability matrix view", () => {
         actionLabel: "이미지 생성 잠금 해제",
       },
     ]);
+  });
+
+  test("keeps legacy OpenAI image fallback states off the product capability path", () => {
+    const view = createProviderCapabilityMatrixView({
+      providerName: "Codex",
+      authMode: "codex_session",
+      status: {
+        kind: "connected",
+        providerId: "codex",
+        message: "Codex connected",
+      },
+      capabilities: ["deckPlan", "research", "editableLayers"],
+      imageFallback: {
+        providerId: "openaiImage",
+        authMode: "openaiApiKey",
+        targetModel: "gpt-image-2",
+        setup: "requiresApiCredential",
+        fallbackMode: true,
+        credentialState: "missing",
+        connectionCopy: "OpenAI image fallback requires a session API key.",
+        billingCopy: "OpenAI image fallback uses API-key billing.",
+        permissionCopy: "OpenAI organization verification is required.",
+      },
+    });
+
+    const imageGenerationRow = view.rows.find((row) => row.key === "image_generation");
+
+    expect(imageGenerationRow).toEqual({
+      key: "image_generation",
+      label: "이미지 생성",
+      status: "locked",
+      stateLabel: "잠김",
+      reason: "Codex image generation must be confirmed for this runtime.",
+      actionLabel: "Codex 이미지 생성 확인",
+    });
+    expect(JSON.stringify(view).includes("API Key")).toBe(false);
+    expect(JSON.stringify(view).includes("API key")).toBe(false);
+    expect(JSON.stringify(view).includes("api key")).toBe(false);
   });
 });
