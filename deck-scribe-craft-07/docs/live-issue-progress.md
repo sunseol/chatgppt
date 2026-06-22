@@ -188,8 +188,8 @@ without a SHA-256 digest to avoid a circular DF-247/index hash dependency.
 
 Current package basis for this index: `bun run package:dry-run` produced
 `dist/deckforge-macos-dry-run.tgz` with SHA-256
-`bdb64f343b721a435889377d6449d18d537fe27a11ac41be343c481c483688ee`,
-336,282 bytes, 32 archive members, and 22 app files.
+`33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc`,
+340,252 bytes, 32 archive members, and 22 app files.
 The dry-run package path now writes a deterministic sorted tar/gzip archive and
 normalizes prerendered TanStack route-match `u:` timestamps; the current
 launcher runs a package wrapper that serves emitted JS/CSS assets from
@@ -1869,10 +1869,10 @@ DF-245 current package recheck update:
 `scripts/generate-df245-package-recheck.mjs` records the active dry-run package,
 unsigned DMG, content-scan result, and signing/Gatekeeper blockers at
 `docs/live-evidence/release/df245-package-recheck-20260622.json`
-(`sha256:fce3bdca58dc5b42ffb0bd036b34c63b36e4a639e9eb27da0acc2cc033a15264`).
+(`sha256:09a4abc43a469c77fdd4b5d345a824dd354582ce432f7b60b6759838f12f9f96`).
 The active dry-run archive is
-`bdb64f343b721a435889377d6449d18d537fe27a11ac41be343c481c483688ee`
-with 291,462 bytes, 32 archive members, and 22 app files; the unsigned DMG is
+`33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc`
+with 340,252 bytes, 32 archive members, and 22 app files; the unsigned DMG is
 `d6849d24c5af4548b7b35e65a68a05c8d139be4b1b5504d7c3da3a3dc9e2d467`
 with checksum verification `OK`. Fixed-string and credential regex scans pass
 for the configured mock/secret/local-path markers, while `security
@@ -1883,7 +1883,7 @@ and clean macOS account evidence.
 DF-205 current package secret-scan update: the same current-package recheck now
 backs `docs/live-evidence/release/df205-evidence.json` as DF-205 auth/secret
 lifecycle evidence. It proves the active dry-run archive
-`sha256:bdb64f343b721a435889377d6449d18d537fe27a11ac41be343c481c483688ee`
+`sha256:33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc`
 and native app scan clean for configured Codex/OpenAI secret markers, bundled
 `auth.json`, local workspace paths, assigned session/API-key patterns, and long
 Bearer tokens. This removes the stale-current-package scan gap in DF-205
@@ -1899,7 +1899,7 @@ now binds the manual QA checklist
 `sha256:b12fb4fa1575ee52763c1e588caf832b0a1bf7ba8a782cb5f734414bcabacbca`)
 to the current package recheck
 (`docs/live-evidence/release/df245-package-recheck-20260622.json`,
-`sha256:fce3bdca58dc5b42ffb0bd036b34c63b36e4a639e9eb27da0acc2cc033a15264`).
+`sha256:09a4abc43a469c77fdd4b5d345a824dd354582ce432f7b60b6759838f12f9f96`).
 This gives the next QA lane a reviewable candidate package basis without
 pretending that DF-246 has passed. DF-246 remains open until a non-developer
 tester records a persisted `manual-qa` session bundle against the packaged app.

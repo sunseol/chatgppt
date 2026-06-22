@@ -5,7 +5,7 @@
   "scope": "developer-worktree unsigned dry-run launch smoke; not clean-machine, signed, notarized, or Gatekeeper evidence",
   "packageArchive": {
     "path": "dist/deckforge-macos-dry-run.tgz",
-    "sha256": "bdb64f343b721a435889377d6449d18d537fe27a11ac41be343c481c483688ee"
+    "sha256": "33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc"
   },
   "dryRunApp": {
     "launcherPath": "dist/deckforge-macos-dry-run/DeckForge.app/Contents/MacOS/deckforge",
@@ -28,25 +28,25 @@
   },
   "assetProbes": [
     {
-      "path": "/assets/index-DPQFLYLb.js",
+      "path": "/assets/index-CcWfZ1Ww.js",
       "status": 200,
       "contentType": "text/javascript; charset=utf-8",
-      "bodyBytes": 63474,
-      "sha256": "dd389f8f9d0de07f3dd85f971bd749de7bc3138b4f1d3d30be874747bf0d3193"
+      "bodyBytes": 27669,
+      "sha256": "216eded595381bc1f4801e09417ab6891306c8f1eb78bfd803361e54c185a896"
     },
     {
-      "path": "/assets/index-DbfY2dUk.js",
+      "path": "/assets/index-vsO34ssg.js",
       "status": 200,
       "contentType": "text/javascript; charset=utf-8",
       "bodyBytes": 351134,
-      "sha256": "526b9889ed1e4c15d992792cd8a6839189fc4c2a46e04fc0e9ee5a198fe11ba5"
+      "sha256": "1f17c8c6b7bb4516ef8869f06ce333753a579ca0f721d1263cdce1817d84df07"
     },
     {
-      "path": "/assets/provider-capability-view-CJa06X1g.js",
+      "path": "/assets/provider-capability-view-n9rlh7C7.js",
       "status": 200,
       "contentType": "text/javascript; charset=utf-8",
-      "bodyBytes": 110121,
-      "sha256": "7b8e98e4e9a395fba1194dc50ff7c509451017221c57db60f94b1d21dd1f1730"
+      "bodyBytes": 146928,
+      "sha256": "11d3797aee9df3af3a5d6226e4cd4bde4fada199cc1041c81df6ae989654d747"
     },
     {
       "path": "/assets/styles-DrCKIb93.css",

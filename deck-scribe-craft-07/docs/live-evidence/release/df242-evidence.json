@@ -4,7 +4,7 @@
   "status": "blocked",
   "validationKind": "blocked",
   "generatedAt": "2026-06-22T02:42:39Z",
-  "packageArchiveSha256": "bdb64f343b721a435889377d6449d18d537fe27a11ac41be343c481c483688ee",
+  "packageArchiveSha256": "33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc",
   "summary": "The live benchmark validator is implemented and now rejects benchmark output bundle paths borrowed from another DF-242 scenario. The current DF-241/DF-242 candidate collector proves existing live artifacts can be assembled into a blocked Golden Path candidate with direct artifact regression coverage, and the same bundle now flows through the packaged-run producer as a blocked handoff artifact. There are still zero packaged benchmark output bundles and zero passed live benchmarks.",
   "currentEvidence": [
     {
@@ -33,12 +33,12 @@
     },
     {
       "path": "docs/live-evidence/release/df241-df242-candidate-20260622.json",
-      "sha256": "4b0ef11f8f625f7e7f6f80f23a9034a853550936373f18d562504a66f7aa405a",
+      "sha256": "0f0f5325204b5ab8bf6cf26f12b21fa8c81c0e200aa434393d095f1ca5dfc560",
       "kind": "blocked current-candidate benchmark basis with 0 of 5 passed live benchmarks"
     },
     {
       "path": "docs/live-evidence/release/df241-df242-packaged-run-candidate-20260622.json",
-      "sha256": "ec84137131de35d40326042f009ba02f95ce1864d4d8e9744de5d4de59ee910a",
+      "sha256": "559f2bb5068f7480ba0eed4dbd90c9776745f11fa96d537b011638f308f043e6",
       "kind": "blocked packaged-run handoff generated from the current candidate bundle"
     },
     {

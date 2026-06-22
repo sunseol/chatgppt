@@ -44,10 +44,10 @@ Signing state remains release-blocking: `codesign -dv --verbose=4` reports `Sign
 
 Current worktree recheck on 2026-06-22 KST is recorded in
 `docs/live-evidence/release/df245-package-recheck-20260622.json`
-(`sha256:fce3bdca58dc5b42ffb0bd036b34c63b36e4a639e9eb27da0acc2cc033a15264`).
+(`sha256:09a4abc43a469c77fdd4b5d345a824dd354582ce432f7b60b6759838f12f9f96`).
 It verifies the active dry-run archive SHA-256
-`bdb64f343b721a435889377d6449d18d537fe27a11ac41be343c481c483688ee`,
-291,462 bytes, 32 archive members, and 22 app files. It also verifies the
+`33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc`,
+340,252 bytes, 32 archive members, and 22 app files. It also verifies the
 current unsigned DMG SHA-256
 `d6849d24c5af4548b7b35e65a68a05c8d139be4b1b5504d7c3da3a3dc9e2d467`,
 1,833,575 bytes, with `shasum -a 256 -c` returning `OK`. Fixed-string scans of

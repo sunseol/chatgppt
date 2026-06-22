@@ -4,12 +4,12 @@
   "status": "ready",
   "validationKind": "ready",
   "generatedAt": "2026-06-22T04:15:00Z",
-  "packageArchiveSha256": "bdb64f343b721a435889377d6449d18d537fe27a11ac41be343c481c483688ee",
+  "packageArchiveSha256": "33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc",
   "summary": "DF-243 now has a ready packaged interruption closure bundle. The closure combines the previously observed live text-turn and source-fetch interruption snapshots with product-writer image partial-resume, cancel recovery, cancel signal, and interrupted approval/export gate artifacts copied into a committed docs/live-evidence bundle. The generated closure evaluates ready and keeps every required artifact path inside the canonical evidence bundle while preserving the original product writer JSON digests.",
   "currentEvidence": [
     {
       "path": "docs/live-evidence/release/df243-packaged-interruption-closure-20260622.json",
-      "sha256": "e351d8051de4d2ab55039ec33a2776776152578bcb1c395a13ae65b52b86f27d",
+      "sha256": "c3f82d8d6bf694c6f52c365c7685cbe50874fea301e4987ceb8dc05dd84b70ad",
       "kind": "ready packaged interruption closure manifest"
     },
     {

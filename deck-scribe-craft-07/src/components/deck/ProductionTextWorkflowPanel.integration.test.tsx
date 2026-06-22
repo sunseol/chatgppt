@@ -41,6 +41,23 @@ describe("production text workflow panel", () => {
     expect(buttonMarkup.includes("disabled")).toBe(false);
   });
 
+  test("shows production interview answer inputs before a live brief exists", () => {
+    // Given
+    const project = projectFixture();
+
+    // When
+    const markup = renderToStaticMarkup(
+      <ProductionWorkflowStage project={project} step="interview" appServerBridge="available" />,
+    );
+
+    // Then
+    expect(markup.includes("인터뷰 질문")).toBe(true);
+    expect(markup.includes("이 덱의 목적은 무엇인가요?")).toBe(true);
+    expect(markup.includes("주요 청중은 누구인가요?")).toBe(true);
+    expect(markup.includes("덱 전체를 관통하는 핵심 메시지는 무엇인가요?")).toBe(true);
+    expect(markup.includes("원하는 슬라이드 수는 몇 장인가요?")).toBe(true);
+  });
+
   test("shows upstream blockers before the production text pipeline can run", () => {
     // Given
     const project = projectFixture();

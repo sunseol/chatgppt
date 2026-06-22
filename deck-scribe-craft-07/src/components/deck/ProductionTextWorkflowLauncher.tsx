@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { QuestionAnswerPanel } from "./InterviewPanels";
 import {
   ProductionTextWorkflowPanel,
   type ProductionTextWorkflowRunStatus,
 } from "./ProductionTextWorkflowPanel";
+import { createQuestionPlan, type InterviewAnswerMap } from "./interview-stage-model";
 import { updateProject } from "@/lib/deck-store";
 import type { DeckProject, StepKey } from "@/lib/deck-types";
 import {
@@ -14,6 +16,11 @@ import {
   createLiveTextPipelineReadyArtifactPatch,
   runDesktopLiveTextPipelineProductionWorkflow,
 } from "@/lib/desktop-live-text-pipeline-workflow";
+import {
+  createInterviewQuestion,
+  type InterviewQuestionField,
+  type InterviewQuestionPlan,
+} from "@/lib/interview-questions";
 import { createLiveInterviewAnswerMap } from "@/lib/live-interview-answer-map";
 import { createProviderJobManager } from "@/lib/provider-job-manager";
 import type { ProductionTextWorkflowBridgeStatus } from "@/lib/production-text-workflow-gate";
@@ -24,19 +31,37 @@ export type ProductionTextWorkflowLauncherProps = {
   readonly appServerBridge: ProductionTextWorkflowBridgeStatus;
 };
 
+const PRODUCTION_INTERVIEW_FIELDS = [
+  "goal",
+  "audience",
+  "desiredOutcome",
+  "coreMessage",
+  "slideCount",
+  "aspectRatio",
+  "language",
+  "tone",
+  "mustInclude",
+  "mustAvoid",
+  "successCriteria",
+] as const satisfies readonly InterviewQuestionField[];
+
 export function ProductionTextWorkflowLauncher({
   project,
   step,
   appServerBridge,
 }: ProductionTextWorkflowLauncherProps) {
   const [runStatus, setRunStatus] = useState<ProductionTextWorkflowRunStatus>({ kind: "idle" });
+  const [answers, setAnswers] = useState<InterviewAnswerMap>(() =>
+    createProductionInitialAnswers(project),
+  );
+  const questionPlan = useMemo(() => createProductionQuestionPlan(project), [project]);
   const [manager] = useState(() =>
     createProviderJobManager({ createId: () => `${project.id}_text_${Date.now().toString(36)}` }),
   );
   const onRun =
     step === "interview"
       ? () => {
-          void runInterviewQuestions(project, manager, setRunStatus);
+          void runInterviewQuestions(project, answers, manager, setRunStatus);
         }
       : canRunTextPipeline(step)
         ? () => {
@@ -45,18 +70,26 @@ export function ProductionTextWorkflowLauncher({
         : undefined;
 
   return (
-    <ProductionTextWorkflowPanel
-      project={project}
-      step={step}
-      appServerBridge={appServerBridge}
-      runStatus={runStatus}
-      onRun={onRun}
-    />
+    <>
+      {step === "interview" && project.brief === undefined ? (
+        <div className="mt-6">
+          <QuestionAnswerPanel plan={questionPlan} answers={answers} onAnswers={setAnswers} />
+        </div>
+      ) : null}
+      <ProductionTextWorkflowPanel
+        project={project}
+        step={step}
+        appServerBridge={appServerBridge}
+        runStatus={runStatus}
+        onRun={onRun}
+      />
+    </>
   );
 }
 
 async function runInterviewQuestions(
   project: DeckProject,
+  answers: InterviewAnswerMap,
   jobManager: ReturnType<typeof createProviderJobManager>,
   setRunStatus: (status: ProductionTextWorkflowRunStatus) => void,
 ): Promise<void> {
@@ -65,7 +98,7 @@ async function runInterviewQuestions(
     const result = await runDesktopLiveInterviewProductionWorkflow({
       project,
       jobManager,
-      answers: createLiveInterviewAnswerMap(project),
+      answers,
       createdAt: Date.now(),
     });
     switch (result.kind) {
@@ -167,6 +200,33 @@ async function runTextPipeline(
 
 function canRunTextPipeline(step: StepKey): boolean {
   return step === "plan" || step === "design" || step === "layout";
+}
+
+function createProductionQuestionPlan(project: DeckProject): InterviewQuestionPlan {
+  const plan = createQuestionPlan(project);
+  return {
+    ...plan,
+    questions: PRODUCTION_INTERVIEW_FIELDS.map((field) => findInterviewQuestion(plan, field)),
+  };
+}
+
+function findInterviewQuestion(plan: InterviewQuestionPlan, field: InterviewQuestionField) {
+  return (
+    plan.questions.find((question) => question.field === field) ?? createInterviewQuestion(field)
+  );
+}
+
+function createProductionInitialAnswers(project: DeckProject): InterviewAnswerMap {
+  const existing = createLiveInterviewAnswerMap(project);
+  if (project.brief !== undefined) return existing;
+
+  return {
+    ...existing,
+    coreMessage: project.initialPrompt,
+    slideCount: project.slideCount.toString(),
+    aspectRatio: project.aspectRatio,
+    language: project.language,
+  };
 }
 
 function assertNever(value: never): never {

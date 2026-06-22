@@ -4,8 +4,8 @@
   "status": "ready",
   "validationKind": "ready",
   "generatedAt": "2026-06-22T06:18:16Z",
-  "packageArchiveSha256": "bdb64f343b721a435889377d6449d18d537fe27a11ac41be343c481c483688ee",
-  "summary": "DF-244 is ready: the current dry-run package captured a packaged app-surface Codex Generate export run through the localhost bridge, generated one real Codex OAuth image, persisted the same-job pre-generation image billing confirmation into the project folder export, copied the image, queue, confirmation, usage summary, and export artifacts into docs/live-evidence, and reproduced a ready packaged usage candidate with latency, retry count, image count, and confirmation display evidence tied to package archive bdb64f343b721a435889377d6449d18d537fe27a11ac41be343c481c483688ee.",
+  "packageArchiveSha256": "33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc",
+  "summary": "DF-244 is ready: the current dry-run package captured a packaged app-surface Codex Generate export run through the localhost bridge, generated one real Codex OAuth image, persisted the same-job pre-generation image billing confirmation into the project folder export, copied the image, queue, confirmation, usage summary, and export artifacts into docs/live-evidence, and reproduced a ready packaged usage candidate with latency, retry count, image count, and confirmation display evidence tied to package archive 33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc.",
   "currentEvidence": [
     {
       "path": "docs/live-usage-summary.md",
@@ -206,7 +206,7 @@
     },
     {
       "path": "docs/live-evidence/release/df244-packaged-generate-export-usage-candidate-20260622.json",
-      "sha256": "f1940c8d866ad07a07095601dd5ba801d42c02a8f408dd534baaf54280049c9d",
+      "sha256": "a65ed5d12aef76a9a6655e64550c809b6f52a88f83e1e367c648b778883b9680",
       "kind": "ready packaged usage candidate generated from packaged app-surface smoke"
     }
   ],

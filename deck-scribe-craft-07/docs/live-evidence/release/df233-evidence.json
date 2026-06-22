@@ -4,7 +4,7 @@
   "status": "blocked",
   "validationKind": "blocked",
   "generatedAt": "2026-06-22T07:51:00Z",
-  "packageArchiveSha256": "bdb64f343b721a435889377d6449d18d537fe27a11ac41be343c481c483688ee",
+  "packageArchiveSha256": "33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc",
   "summary": "Queue throttling, retry, cancellation, resume, and product evidence writers are implemented. The DF-244 packaged Generate/export smoke now contributes direct packaged app-surface DF-233 queue evidence: the packaged run copied a ready queue JSON, project-folder export, and stored PNG artifact into docs/live-evidence while preserving Codex App Server turn provenance. A latest real Codex OAuth cancellation smoke also ran through the product slide generation queue and rejected a late provider output before storage. DF-233 remains blocked only on packaged queue-control scenarios: genuine 429 or 5xx retry provenance, real-provider user cancellation, and restart-resume evidence proving completed slides are not regenerated.",
   "currentEvidence": [
     {
@@ -76,7 +76,7 @@
     },
     {
       "path": "docs/live-evidence/release/df233-product-smoke-packaged-candidate-20260622.json",
-      "sha256": "31404b98644d9be52277d2498bc5769839532756c3ec1bc5f93f3ac84ab4d4ba",
+      "sha256": "28a3a7b0b4cb2ba182595cefc5e0a28cdc543a52fed3cd9f997d24b144d96294",
       "kind": "blocked packaged candidate generated from product queue-control smoke"
     },
     {

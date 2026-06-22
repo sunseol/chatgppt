@@ -4,7 +4,7 @@
   "status": "ready",
   "validationKind": "ready",
   "generatedAt": "2026-06-22T07:00:10Z",
-  "packageArchiveSha256": "bdb64f343b721a435889377d6449d18d537fe27a11ac41be343c481c483688ee",
+  "packageArchiveSha256": "33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc",
   "summary": "DF-235 is ready: the packaged dry-run Review-stage UI restored a pending lineage-valid v2 selected-slide regeneration candidate, displayed before/after and preservation checks, approved the v2 candidate through the product ReviewStage writer, and separately proved the live-only failure path preserves the approved original and writes preserved_after_failure evidence when Codex OAuth image provenance is unavailable.",
   "currentEvidence": [
     {
@@ -52,7 +52,7 @@
     },
     {
       "path": "docs/live-evidence/release/df235-product-smoke-packaged-review-candidate-20260622.json",
-      "sha256": "cd8da8a5a2d57bf915a9bb599be4410970913f06391e3860c06cff40878ce5ce",
+      "sha256": "07df442358dee2efd53723c500db046e6840006fb2b7a391686954df495a7e79",
       "kind": "blocked packaged review candidate generated from product review smokes"
     },
     {
@@ -127,12 +127,12 @@
     },
     {
       "path": "docs/live-evidence/codex-image/df235-packaged-review-stage-20260622/packaged-review-input.json",
-      "sha256": "099c7e0f46bee554c273f8cbc9e31bd667436cddab203f1abb84f0ef2e352cca",
+      "sha256": "d0959313d94b51c9f9c2e6d5c3a7bdb5b3aa105409636a50b301f900f0c0a847",
       "kind": "packaged Review-stage producer input"
     },
     {
       "path": "docs/live-evidence/release/df235-packaged-review-stage-candidate-20260622.json",
-      "sha256": "aa33e6d972a430feec83c0acf130bb5b4ce96c4f04e98552d3312dbc224d9e50",
+      "sha256": "f10cc52753395ccd2467ed88c02b0315ed7d809240bb77b12717e967808f17c9",
       "kind": "ready packaged Review-stage evidence candidate"
     },
     {

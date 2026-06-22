@@ -5,14 +5,14 @@
   "reason": "Current local package and DMG hashes are rechecked, but Developer ID signing, notarization, stapling, Gatekeeper acceptance, and clean-machine execution remain missing.",
   "packageArchive": {
     "path": "dist/deckforge-macos-dry-run.tgz",
-    "sha256": "bdb64f343b721a435889377d6449d18d537fe27a11ac41be343c481c483688ee",
-    "bytes": 291462,
+    "sha256": "33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc",
+    "bytes": 340252,
     "archiveMembers": 32
   },
   "dryRunApp": {
     "path": "dist/deckforge-macos-dry-run/DeckForge.app",
-    "fileCount": 22,
-    "sizeKiB": 1056
+    "fileCount": 29,
+    "sizeKiB": 1254
   },
   "nativeMacos": {
     "dmgPath": "release-artifacts/DeckForge_0.1.0_aarch64.dmg",
@@ -42,7 +42,7 @@
       "src-tauri/target/release/bundle/macos/DeckForge.app"
     ],
     "localAbsolutePathMarker": "/Users/jake/chatgppt-live-product-completion/deck-scribe-craft-07",
-    "fileCount": 40,
+    "fileCount": 47,
     "fixedStringHits": {
       "mock-provider": [],
       "MOCK MODE": [],

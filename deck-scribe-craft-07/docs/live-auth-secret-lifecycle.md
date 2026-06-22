@@ -156,9 +156,9 @@ leak scan.
 
 2026-06-22 KST current-package secret scan evidence is recorded at
 `docs/live-evidence/release/df245-package-recheck-20260622.json`
-(`sha256:fce3bdca58dc5b42ffb0bd036b34c63b36e4a639e9eb27da0acc2cc033a15264`).
+(`sha256:09a4abc43a469c77fdd4b5d345a824dd354582ce432f7b60b6759838f12f9f96`).
 The active dry-run archive SHA-256 is
-`bdb64f343b721a435889377d6449d18d537fe27a11ac41be343c481c483688ee`;
+`33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc`;
 the scan covers `dist/client`, `dist/server`, the dry-run app bundle, and the
 native `.app`, and records 0 fixed-string hits for `CODEX_SESSION=`,
 `OPENAI_API_KEY=`, bundled `auth.json`, `sk-proj-`, or `sk-svcacct-`, plus 0

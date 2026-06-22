@@ -2,7 +2,7 @@
   "capturedAt": "2026-06-22T07:00:10.409Z",
   "evidenceKind": "df235-packaged-review-evidence",
   "status": "ready",
-  "packageArchiveSha256": "bdb64f343b721a435889377d6449d18d537fe27a11ac41be343c481c483688ee",
+  "packageArchiveSha256": "33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc",
   "reviewSessionId": "df235_packaged_review_stage_20260622",
   "approval": {
     "evidencePath": "docs/live-evidence/codex-image/df235-packaged-review-stage-20260622/approval-review.json",

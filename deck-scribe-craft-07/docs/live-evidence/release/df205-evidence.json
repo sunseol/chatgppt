@@ -4,7 +4,7 @@
   "status": "blocked",
   "validationKind": "blocked",
   "generatedAt": "2026-06-22T04:55:00Z",
-  "packageArchiveSha256": "bdb64f343b721a435889377d6449d18d537fe27a11ac41be343c481c483688ee",
+  "packageArchiveSha256": "33706e7521ea381bb37e992d3a9ca7190bf02d38228ad33334226e57f4a779cc",
   "summary": "Authenticated Codex runtime, local secret-lifecycle guards, a current-package configured secret/auth marker scan, and a packaged dry-run Codex OAuth image capability confirmation now exist. The active dry-run archive and native app scan clean for configured Codex/OpenAI secrets, auth.json, local workspace, and long bearer token markers, and DF-244 packaged generate/export evidence proves the packaged app surface can drive Codex OAuth image generation without an API key. Release evidence still lacks clean-account login/logout-relogin, packaged keychain lifecycle, and clean-machine signed-package secret scanning.",
   "currentEvidence": [
     {
@@ -38,7 +38,7 @@
     },
     {
       "path": "docs/live-evidence/release/df245-package-recheck-20260622.json",
-      "sha256": "c84406b1285e75cd1226b5411e367a2d3d8b526a2a6684b57801a1000b0543fb",
+      "sha256": "09a4abc43a469c77fdd4b5d345a824dd354582ce432f7b60b6759838f12f9f96",
       "kind": "current-package secret and auth marker scan"
     },
     {
@@ -48,7 +48,7 @@
     },
     {
       "path": "docs/live-evidence/release/df205-packaged-auth-secret-candidate-20260622.json",
-      "sha256": "eea3833345fa8235590e9e44880d541e78007bfaa59507d88da3cd7088303e5f",
+      "sha256": "d571b95a0f1930bd483a22d0ecef376b543f210cdb95ad84d9491bcfa2ce8997",
       "kind": "blocked packaged auth and secret candidate generated from current auth smoke"
     },
     {
