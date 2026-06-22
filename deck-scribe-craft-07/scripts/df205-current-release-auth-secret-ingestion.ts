@@ -8,6 +8,8 @@ export const DF205_AUTH_BOOTSTRAP_SMOKE_PATH =
   "docs/live-evidence/lane-e-20260621/auth-bootstrap-smoke.json";
 export const DF245_PACKAGE_RECHECK_PATH =
   "docs/live-evidence/release/df245-package-recheck-20260622.json";
+export const DF205_CODEX_IMAGE_CAPABILITY_PATH =
+  "docs/live-evidence/codex-image/df244-packaged-generate-export-smoke-20260622/summary.json";
 
 const Df205AuthBootstrapSmokeSchema = z
   .object({
@@ -46,14 +48,39 @@ const Df245CurrentPackageRecheckSchema = z
   })
   .passthrough();
 
+const Df205PackagedCodexImageCapabilitySchema = z
+  .object({
+    evidenceKind: z.literal("packaged-live-codex-generate-export-smoke"),
+    runtime: z.string().min(1),
+    completedJobStatus: z.literal("succeeded"),
+    slides: z.array(z.object({ artifactPath: z.string().min(1) }).passthrough()).min(1),
+    appServerTurns: z
+      .array(
+        z
+          .object({
+            threadId: z.string().min(1),
+            turnId: z.string().min(1),
+            errors: z.array(z.unknown()).length(0),
+          })
+          .passthrough(),
+      )
+      .min(1),
+  })
+  .passthrough();
+
 export type Df205AuthBootstrapSmoke = z.infer<typeof Df205AuthBootstrapSmokeSchema>;
 export type Df245CurrentPackageRecheck = z.infer<typeof Df245CurrentPackageRecheckSchema>;
+export type Df205PackagedCodexImageCapability = z.infer<
+  typeof Df205PackagedCodexImageCapabilitySchema
+>;
 
 export type Df205CurrentReleaseAuthSecretInputs = {
   readonly authBootstrapSmoke: Df205AuthBootstrapSmoke;
   readonly packageRecheck: Df245CurrentPackageRecheck;
+  readonly codexImageCapability?: Df205PackagedCodexImageCapability;
   readonly authBootstrapSmokePath?: string;
   readonly packageRecheckPath?: string;
+  readonly codexImageCapabilityPath?: string;
 };
 
 export function parseDf205AuthBootstrapSmoke(value: unknown): Df205AuthBootstrapSmoke {
@@ -72,11 +99,25 @@ export function parseDf245CurrentPackageRecheckJson(raw: string): Df245CurrentPa
   return parseDf245CurrentPackageRecheck(JSON.parse(raw));
 }
 
+export function parseDf205PackagedCodexImageCapability(
+  value: unknown,
+): Df205PackagedCodexImageCapability {
+  return Df205PackagedCodexImageCapabilitySchema.parse(value);
+}
+
+export function parseDf205PackagedCodexImageCapabilityJson(
+  raw: string,
+): Df205PackagedCodexImageCapability {
+  return parseDf205PackagedCodexImageCapability(JSON.parse(raw));
+}
+
 export function buildDf205PackagedAuthSecretInputFromCurrentEvidence(
   inputs: Df205CurrentReleaseAuthSecretInputs,
 ): Df205PackagedAuthSecretInput {
   const authBootstrapSmokePath = inputs.authBootstrapSmokePath ?? DF205_AUTH_BOOTSTRAP_SMOKE_PATH;
   const packageRecheckPath = inputs.packageRecheckPath ?? DF245_PACKAGE_RECHECK_PATH;
+  const codexImageCapabilityPath =
+    inputs.codexImageCapabilityPath ?? DF205_CODEX_IMAGE_CAPABILITY_PATH;
   const localPathHits =
     inputs.packageRecheck.contentScan.fixedStringHits[
       inputs.packageRecheck.contentScan.localAbsolutePathMarker
@@ -108,12 +149,14 @@ export function buildDf205PackagedAuthSecretInputFromCurrentEvidence(
       postReloginProviderReady: false,
     },
     codexImageCapability: {
-      evidencePath: packageRecheckPath,
-      captureKind: "not_recorded",
+      evidencePath:
+        inputs.codexImageCapability === undefined ? packageRecheckPath : codexImageCapabilityPath,
+      captureKind:
+        inputs.codexImageCapability === undefined ? "not_recorded" : "packaged_app_surface",
       providerKind: "codex",
       authMode: "codex_oauth",
       apiKeyRequired: false,
-      imageGenerationAvailable: false,
+      imageGenerationAvailable: inputs.codexImageCapability !== undefined,
     },
     keychainLifecycle: {
       captureKind: "not_recorded",

@@ -24,6 +24,12 @@ now reports 3 of 10 ready entries: DF-235, DF-243, and DF-244. DF-247 remains
 blocked by DF-205, DF-233, DF-241, DF-242, DF-245, DF-246, and DF-247 plus the
 benchmark, Golden Path, and release-decision gates.
 
+DF-205 blocker reduction: `docs/live-evidence/release/df205-evidence.json` now
+cites the DF-244 packaged generate/export smoke as packaged Codex OAuth image
+capability confirmation, so its missing evidence list is down to four items:
+clean-account login, logout/relogin lock/cancel proof, optional keychain
+lifecycle proof, and clean-machine signed-package secret scanning.
+
 ## 2026-06-22 KST Packaged Evidence Index Covers All Open P0s
 
 DF-205 local update: packaged auth and secret lifecycle evidence now has a

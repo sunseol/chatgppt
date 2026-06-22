@@ -100,11 +100,10 @@ function logoutReloginBlockers(input: Df205PackagedAuthSecretInput): readonly st
 
 function codexImageCapabilityBlockers(input: Df205PackagedAuthSecretInput): readonly string[] {
   return [
-    ...(input.codexImageCapability.captureKind === "packaged_clean_account"
+    ...(input.codexImageCapability.captureKind === "packaged_clean_account" ||
+    input.codexImageCapability.captureKind === "packaged_app_surface"
       ? []
-      : [
-          "DF-205 packaged Codex OAuth image capability was not captured from a packaged clean-account run",
-        ]),
+      : ["DF-205 packaged Codex OAuth image capability was not captured from a packaged app run"]),
     ...(input.codexImageCapability.imageGenerationAvailable
       ? []
       : ["DF-205 packaged Codex OAuth image capability is not available"]),

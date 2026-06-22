@@ -3,7 +3,7 @@
   "issueNumber": 157,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-22T04:45:30Z",
+  "generatedAt": "2026-06-22T05:08:30Z",
   "packageArchiveSha256": "bdb64f343b721a435889377d6449d18d537fe27a11ac41be343c481c483688ee",
   "packagedLiveEvidenceIndexPath": "docs/live-evidence/release/packaged-live-evidence-index.json",
   "releaseGateResult": {
@@ -64,12 +64,12 @@
     {
       "path": "docs/live-release-decision.md",
       "kind": "canonical release decision",
-      "sha256": "58453673f68eb03ea586e25f35ed87b169804170dcc9a00d64657994827eb5b8"
+      "sha256": "0bc5f0cf9e5cac59bad8622a78f3dbbb0eaa9c3be008a67d85a61bd212042f4c"
     },
     {
       "path": "docs/live-evidence/release/df205-evidence.json",
       "kind": "DF-205 packaged auth and secret evidence",
-      "sha256": "0b96d698de96240e1efa7d89e0c8e6401ea892028c2f79a944110d99fdf6d8bd"
+      "sha256": "4d146fdff766f4dceb13b7e3d72e6623e96f03a5b5b8112a0ef5c76b0d0bfe7e"
     },
     {
       "path": "docs/live-evidence/release/df233-evidence.json",

@@ -22,7 +22,7 @@ The current worktree has stronger Live-readiness contracts than the previous moc
 
 ## Latest local verification
 
-- `bun test` passes: 1230 tests, 0 failures, 4726 expectations.
+- `bun test` passes: 1230 tests, 0 failures, 4730 expectations.
 - `bun run typecheck` passes.
 - `bun run lint` exits 0 with six pre-existing React Fast Refresh warnings in
   shared UI files.
@@ -86,7 +86,7 @@ Release remains `Blocked`. No ticket in the Lane F set can honestly close from t
   `evaluateProductionPackagingEvidence` before returning ready or blocked.
   Unsigned dry-run packages, missing release-trust payloads, and missing
   clean-machine evidence remain blocked.
-- DF-205 now cites that same current-package recheck as active auth/secret lifecycle scan evidence for the dry-run archive and native app. `docs/live-evidence/release/df205-packaged-auth-secret-candidate-20260622.json` routes the current authenticated runtime smoke and package recheck through the packaged auth/secret producer as a blocked candidate, preserving blockers for non-packaged auth provenance, missing logout/relogin, missing packaged Codex OAuth image capability, unrecorded keychain lifecycle, and current-package-only secret scanning. It narrows DF-205 to clean-account login/logout/relogin, packaged Codex OAuth capability, packaged keychain lifecycle, and clean-machine secret leak evidence.
+- DF-205 now cites that same current-package recheck as active auth/secret lifecycle scan evidence for the dry-run archive and native app, and also cites the DF-244 packaged generate/export smoke as packaged Codex OAuth image capability confirmation. `docs/live-evidence/release/df205-packaged-auth-secret-candidate-20260622.json` routes the current authenticated runtime smoke, package recheck, and packaged image capability proof through the packaged auth/secret producer as a blocked candidate, preserving blockers for non-packaged auth provenance, missing logout/relogin, unrecorded keychain lifecycle, and current-package-only secret scanning. It narrows DF-205 to clean-account login/logout/relogin, packaged keychain lifecycle, and clean-machine signed-package secret leak evidence.
 - `scripts/produce-df205-packaged-auth-secret-evidence.ts` now provides the
   handoff surface for a real clean-account packaged auth session. It parses
   fresh-login, logout/relogin, Codex OAuth image-capability, optional keychain

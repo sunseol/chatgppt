@@ -25,7 +25,7 @@ const LogoutReloginSchema = z
 const CodexImageCapabilitySchema = z
   .object({
     evidencePath: z.string().min(1),
-    captureKind: z.enum(["packaged_clean_account", "not_recorded"]),
+    captureKind: z.enum(["packaged_clean_account", "packaged_app_surface", "not_recorded"]),
     providerKind: z.literal("codex"),
     authMode: z.literal("codex_oauth"),
     apiKeyRequired: z.literal(false),

@@ -9,6 +9,8 @@ const DF205_EVIDENCE_PATH = "docs/live-evidence/release/df205-evidence.json";
 const DF205_CANDIDATE_PATH =
   "docs/live-evidence/release/df205-packaged-auth-secret-candidate-20260622.json";
 const PACKAGE_RECHECK_PATH = "docs/live-evidence/release/df245-package-recheck-20260622.json";
+const CODEX_IMAGE_CAPABILITY_PATH =
+  "docs/live-evidence/codex-image/df244-packaged-generate-export-smoke-20260622/summary.json";
 const SHA256_HEX = /^[a-f0-9]{64}$/;
 
 const ReleaseEvidenceSchema = z
@@ -71,6 +73,7 @@ describe("DF-205 release evidence artifact", () => {
     const candidate = readJson(DF205_CANDIDATE_PATH, AuthSecretCandidateSchema);
     const packageRecheckRef = releaseRef(evidence, PACKAGE_RECHECK_PATH);
     const candidateRef = releaseRef(evidence, DF205_CANDIDATE_PATH);
+    const codexImageCapabilityRef = releaseRef(evidence, CODEX_IMAGE_CAPABILITY_PATH);
 
     // When
     const scanHits = [
@@ -85,6 +88,7 @@ describe("DF-205 release evidence artifact", () => {
     expect(evidence.currentEvidence.some((reference) => reference.path === TEST_PATH)).toBe(true);
     expect(packageRecheckRef.sha256).toBe(sha256File(PACKAGE_RECHECK_PATH));
     expect(candidateRef.sha256).toBe(sha256File(DF205_CANDIDATE_PATH));
+    expect(codexImageCapabilityRef.sha256).toBe(sha256File(CODEX_IMAGE_CAPABILITY_PATH));
     expect(scanHits).toEqual([]);
     expect(candidate.releaseBlockers).toEqual([
       "DF-205 auth session was not captured from a packaged clean-account login run",
@@ -94,15 +98,12 @@ describe("DF-205 release evidence artifact", () => {
       "DF-205 logout/relogin proof does not cancel active live jobs",
       "DF-205 logout/relogin proof does not lock providers while logged out",
       "DF-205 logout/relogin proof does not restore provider readiness",
-      "DF-205 packaged Codex OAuth image capability was not captured from a packaged clean-account run",
-      "DF-205 packaged Codex OAuth image capability is not available",
       "DF-205 keychain fallback lifecycle was not recorded for the packaged run",
       "DF-205 packaged secret leak scan was not captured from a clean-machine signed package run",
     ]);
     expect(evidence.missingEvidence).toEqual([
       "fresh login manual QA from an unauthenticated or clean macOS account",
       "logout/relogin QA proving active live jobs cancel and provider actions stay locked until login is restored",
-      "packaged app Codex OAuth image capability confirmation",
       "packaged OS keychain write/read/delete lifecycle proof for any installed API-key fallback",
       "clean-machine persisted secret leak scan from the signed packaged run",
     ]);
