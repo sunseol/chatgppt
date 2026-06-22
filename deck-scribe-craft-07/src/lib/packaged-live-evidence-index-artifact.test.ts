@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, test } from "bun:test";
 import { z } from "zod";
 import {
@@ -43,13 +43,37 @@ const PackagedLiveEvidenceIndexArtifactSchema = z
   .strict();
 
 const ChildEvidencePackageSchema = z.object({
+  ticketId: z.string(),
   packageArchiveSha256: z.string(),
+  currentEvidence: z
+    .array(
+      z
+        .object({
+          path: z.string(),
+          sha256: z.string().optional(),
+        })
+        .passthrough(),
+    )
+    .optional(),
+  handoffEvidence: z
+    .object({
+      manualQaCandidatePackageSha256: z.string().optional(),
+      packageRecheckPath: z.string().optional(),
+      packageRecheckSha256: z.string().optional(),
+    })
+    .passthrough()
+    .optional(),
 });
+
+type ChildEvidenceArtifact = z.infer<typeof ChildEvidencePackageSchema>;
 
 describe("packaged live evidence index artifact", () => {
   test("validates the committed release evidence index and entry digests", () => {
     // Given
     const index = readIndexArtifact(INDEX_PATH);
+    const childEvidenceArtifacts = index.entries.map((entry) =>
+      readChildEvidenceArtifact(entry.artifactPath),
+    );
 
     // When
     const result = evaluatePackagedLiveEvidenceIndex(index);
@@ -59,6 +83,8 @@ describe("packaged live evidence index artifact", () => {
     const mismatchedPackageHashes = index.entries
       .filter((entry) => readChildPackageHash(entry.artifactPath) !== entry.packageArchiveSha256)
       .map((entry) => entry.ticketId);
+    const mismatchedEvidenceRefs = childEvidenceArtifacts.flatMap(evidenceReferenceDigestIssues);
+    const mismatchedHandoffRefs = childEvidenceArtifacts.flatMap(handoffEvidenceDigestIssues);
     const summary = formatPackagedLiveEvidenceIndexSummary(index);
 
     // Then
@@ -80,6 +106,8 @@ describe("packaged live evidence index artifact", () => {
     ]);
     expect(mismatchedDigests).toEqual([]);
     expect(mismatchedPackageHashes).toEqual([]);
+    expect(mismatchedEvidenceRefs).toEqual([]);
+    expect(mismatchedHandoffRefs).toEqual([]);
     expect(summary.includes("Ready tickets: 0 of 10")).toBe(true);
   });
 });
@@ -94,6 +122,51 @@ function sha256File(path: string): string {
 }
 
 function readChildPackageHash(path: string): string {
+  return readChildEvidenceArtifact(path).packageArchiveSha256;
+}
+
+function readChildEvidenceArtifact(path: string): ChildEvidenceArtifact {
   const parsed: unknown = JSON.parse(readFileSync(path, "utf8"));
-  return ChildEvidencePackageSchema.parse(parsed).packageArchiveSha256;
+  return ChildEvidencePackageSchema.parse(parsed);
+}
+
+function evidenceReferenceDigestIssues(artifact: ChildEvidenceArtifact): readonly string[] {
+  return (artifact.currentEvidence ?? [])
+    .filter((reference) => reference.sha256 !== undefined)
+    .flatMap((reference) => {
+      if (!existsSync(reference.path)) return [`${artifact.ticketId}:${reference.path}:missing`];
+      return sha256File(reference.path) === reference.sha256
+        ? []
+        : [`${artifact.ticketId}:${reference.path}:sha-mismatch`];
+    });
+}
+
+function handoffEvidenceDigestIssues(artifact: ChildEvidenceArtifact): readonly string[] {
+  const handoff = artifact.handoffEvidence;
+  if (!handoff) return [];
+
+  return [
+    ...(handoff.manualQaCandidatePackageSha256 === undefined ||
+    handoff.manualQaCandidatePackageSha256 === artifact.packageArchiveSha256
+      ? []
+      : [`${artifact.ticketId}:handoff-package-sha-mismatch`]),
+    ...(handoff.packageRecheckPath === undefined || handoff.packageRecheckSha256 === undefined
+      ? []
+      : handoffRecheckDigestIssue(
+          artifact,
+          handoff.packageRecheckPath,
+          handoff.packageRecheckSha256,
+        )),
+  ];
+}
+
+function handoffRecheckDigestIssue(
+  artifact: ChildEvidenceArtifact,
+  path: string,
+  expectedSha256: string,
+): readonly string[] {
+  if (!existsSync(path)) return [`${artifact.ticketId}:${path}:missing`];
+  return sha256File(path) === expectedSha256
+    ? []
+    : [`${artifact.ticketId}:${path}:handoff-sha-mismatch`];
 }
