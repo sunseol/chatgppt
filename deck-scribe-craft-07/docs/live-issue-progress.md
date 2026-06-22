@@ -1685,6 +1685,14 @@ keeps the packaged Golden Path/benchmark missing evidence explicit. This prevent
 the assembled local candidate from being mistaken for a packaged Golden Path or
 benchmark pass.
 
+DF-205 release artifact update: `src/lib/df205-release-evidence-artifact.test.ts`
+now reads `docs/live-evidence/release/df205-evidence.json` and the active
+DF-245 package recheck together. It verifies the DF-205 release artifact and
+package recheck share the current package SHA, the configured secret/auth marker
+scan has no hits, and clean-account login/logout, packaged Codex image capability,
+packaged keychain lifecycle, and signed clean-machine leak-scan blockers remain
+explicit.
+
 DF-245 current package recheck update:
 `scripts/generate-df245-package-recheck.mjs` records the active dry-run package,
 unsigned DMG, content-scan result, and signing/Gatekeeper blockers at
