@@ -3,7 +3,7 @@
   "issueNumber": 153,
   "status": "blocked",
   "validationKind": "blocked",
-  "generatedAt": "2026-06-22T02:33:04Z",
+  "generatedAt": "2026-06-22T03:07:35Z",
   "packageArchiveSha256": "e6ed0e25791dd51a1c206247bd0faf5a1010aaee6c7b16e7256dfd25f74f47f6",
   "summary": "The interruption closure manifest materializes the observed text-turn and fetch-shutdown recovery snapshots. Product smokes now prove deterministic cancel, image partial-resume, interrupted approval/export gate writers, and a latest real Codex OAuth in-flight image cancellation path that rejects late App Server image output before storage while writing separate app-storage recovery and cancel-signal JSON, with direct artifact regression coverage for that no-storage cancellation bundle. The release remains blocked until packaged image partial-resume, packaged cancel, and interrupted approval/export artifacts are captured from the app surface and copied into the canonical evidence bundle.",
   "currentEvidence": [
@@ -29,7 +29,7 @@
     },
     {
       "path": "docs/live-evidence/codex-image/df243-cancel-product-smoke-20260622/summary.json",
-      "sha256": "200bee274a2c6a7759c6482f5edd664994c016b01f8c81ea565d7e715fddfe7e",
+      "sha256": "9a017753267d1864549bb6ffa17cb274a26a2b7edc427a81479a5207a5c453f3",
       "kind": "product queue cancel writer smoke summary"
     },
     {
@@ -49,12 +49,12 @@
     },
     {
       "path": "projects/df243_cancel_product_smoke_20260622/live-evidence/df243-cancel-job-recovery-snapshot-cancel_product_run_20260622.json",
-      "sha256": "4b5623f751bc6851161a3061feebf86d406b9350e0550695d40e0cf72aa958b5",
+      "sha256": "8adae7e97de4ae38d74e1ad62d2e4790a8542ca38aee0a03b520e96afd3ed942",
       "kind": "product-written cancel-job app-storage recovery snapshot"
     },
     {
       "path": "projects/df243_cancel_product_smoke_20260622/live-evidence/df243-cancel-job-cancel-signal-cancel_product_run_20260622.json",
-      "sha256": "10652201109b4cafb883befea5c3befdeedf6de3bdc7ed7d49796565c55733cb",
+      "sha256": "2f31e94df1923921bf143c529652ce9a1209160cf01a02436acc4f6bc8bc77e7",
       "kind": "product-written cancel signal evidence"
     },
     {

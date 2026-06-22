@@ -1812,3 +1812,19 @@ shared packaged evidence index now records the updated DF-247 digest
 `38f504a8daa3d672a489bf63d7ec198f376a5321220652f2546411ae1a9cb8e5`. This does
 not unblock DF-247; it makes the final gate point at the current DF-245 blocker
 record instead of only the older package recheck.
+
+DF-243 product cancel evidence refresh:
+`scripts/run-df243-cancel-product-evidence-smoke.ts` was rerun on 2026-06-22
+and again produced a `ready` cancel scenario matrix with late provider output
+rejected, zero accepted slides, and exported app-storage cancel snapshot plus
+cancel-signal JSON. The refreshed summary at
+`docs/live-evidence/codex-image/df243-cancel-product-smoke-20260622/summary.json`
+has digest `9a017753267d1864549bb6ffa17cb274a26a2b7edc427a81479a5207a5c453f3`;
+the refreshed recovery snapshot digest is
+`8adae7e97de4ae38d74e1ad62d2e4790a8542ca38aee0a03b520e96afd3ed942`, and the
+cancel-signal digest is
+`2f31e94df1923921bf143c529652ce9a1209160cf01a02436acc4f6bc8bc77e7`. The
+release evidence and packaged index now point at those current files. DF-243
+remains open until the same cancel, image partial-resume, approval-gate, and
+export-gate artifacts are captured from a packaged app run and copied into the
+canonical evidence bundle.
