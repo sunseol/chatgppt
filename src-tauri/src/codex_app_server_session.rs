@@ -1,12 +1,17 @@
+use crate::codex_app_server_stderr::{append_stderr_tail, capture_stderr_tail};
 use crate::{
     codex_app_server_protocol::build_json_rpc_request,
     codex_app_server_smoke::{CodexAppServerSmokeError, SmokeResult},
+    codex_cli::codex_command,
 };
 use serde_json::Value;
 use std::{
     io::{BufRead, BufReader, Write},
-    process::{Child, ChildStdin, Command, Stdio},
-    sync::mpsc::{self, Receiver, RecvTimeoutError},
+    process::{Child, ChildStdin, Stdio},
+    sync::{
+        mpsc::{self, Receiver, RecvTimeoutError},
+        Arc, Mutex,
+    },
     thread,
     time::{Duration, Instant},
 };
@@ -17,6 +22,7 @@ pub(super) struct AppServerSession {
     receiver: Receiver<String>,
     next_id: u64,
     notifications: Vec<Value>,
+    stderr_tail: Arc<Mutex<String>>,
 }
 
 impl Drop for AppServerSession {
@@ -28,12 +34,14 @@ impl Drop for AppServerSession {
 
 impl AppServerSession {
     pub(super) fn spawn() -> SmokeResult<Self> {
-        let mut child = Command::new("codex")
+        let mut command = codex_command().map_err(|error| {
+            CodexAppServerSmokeError::new("codex_cli_unavailable", error.to_string())
+        })?;
+        let mut child = command
             .arg("app-server")
-            .arg("--stdio")
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
-            .stderr(Stdio::null())
+            .stderr(Stdio::piped())
             .spawn()
             .map_err(|error| {
                 CodexAppServerSmokeError::new(
@@ -53,6 +61,12 @@ impl AppServerSession {
                 "app-server stdout is unavailable".to_owned(),
             )
         })?;
+        let stderr = child.stderr.take().ok_or_else(|| {
+            CodexAppServerSmokeError::new(
+                "stderr_missing",
+                "app-server stderr is unavailable".to_owned(),
+            )
+        })?;
         let (sender, receiver) = mpsc::channel();
         thread::spawn(move || {
             let reader = BufReader::new(stdout);
@@ -67,12 +81,16 @@ impl AppServerSession {
                 }
             }
         });
+        let stderr_tail = Arc::new(Mutex::new(String::new()));
+        let stderr_tail_writer = Arc::clone(&stderr_tail);
+        thread::spawn(move || capture_stderr_tail(stderr, stderr_tail_writer));
         Ok(Self {
             child,
             stdin,
             receiver,
             next_id: 1,
             notifications: Vec::new(),
+            stderr_tail,
         })
     }
 
@@ -169,11 +187,17 @@ impl AppServerSession {
             .map_err(|error| match error {
                 RecvTimeoutError::Timeout => CodexAppServerSmokeError::new(
                     "timeout",
-                    format!("timed out waiting for {wait_target}"),
+                    append_stderr_tail(
+                        format!("timed out waiting for {wait_target}"),
+                        &self.stderr_tail(),
+                    ),
                 ),
                 RecvTimeoutError::Disconnected => CodexAppServerSmokeError::new(
                     "stdout_closed",
-                    format!("app-server stdout closed while waiting for {wait_target}"),
+                    append_stderr_tail(
+                        format!("app-server stdout closed while waiting for {wait_target}"),
+                        &self.stderr_tail(),
+                    ),
                 ),
             })?;
         serde_json::from_str(&line).map_err(|error| {
@@ -188,5 +212,12 @@ impl AppServerSession {
         if message.get("method").and_then(Value::as_str).is_some() {
             self.notifications.push(message.clone());
         }
+    }
+
+    fn stderr_tail(&self) -> String {
+        self.stderr_tail
+            .lock()
+            .map(|tail| tail.clone())
+            .unwrap_or_else(|_| "stderr capture lock was poisoned".to_owned())
     }
 }

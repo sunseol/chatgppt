@@ -8,7 +8,7 @@ const PRODUCTION_CODEX_PROVIDER_MATRIX: ProviderCapabilityMatrixInput = {
   status: {
     kind: "requiresAuth",
     providerId: "codex",
-    message: "Sign in with ChatGPT or complete the Codex device-code flow.",
+    message: "ChatGPT 로그인 또는 Codex device-code 로그인을 완료하세요.",
   },
   capabilities: [],
 };
@@ -19,7 +19,7 @@ const DEVELOPMENT_MOCK_PROVIDER_MATRIX: ProviderCapabilityMatrixInput = {
   status: {
     kind: "connected",
     providerId: "mock",
-    message: "Local workflow prototype provider is connected.",
+    message: "로컬 샘플 provider입니다. 실제 Codex 실행 결과가 아닙니다.",
   },
   capabilities: ProviderCapabilities,
 };

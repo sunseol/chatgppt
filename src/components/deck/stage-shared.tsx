@@ -67,11 +67,13 @@ export function StageErrorBanner({
 
 export function EmptyAction({
   label,
+  actionLabel = "초안 생성",
   onClick,
   busy,
   disabled = false,
 }: {
   readonly label: string;
+  readonly actionLabel?: string;
   readonly onClick: () => void;
   readonly busy: boolean;
   readonly disabled?: boolean;
@@ -85,7 +87,7 @@ export function EmptyAction({
         disabled={busy || disabled}
         className="bg-foreground text-background hover:bg-foreground/90"
       >
-        {busy ? "생성 중..." : "초안 생성"}
+        {busy ? "생성 중..." : actionLabel}
       </Button>
     </div>
   );

@@ -22,17 +22,18 @@ describe("production research web search launcher", () => {
     );
 
     // Then
-    expect(blockedMarkup.includes("Live web search Research workflow")).toBe(true);
+    expect(blockedMarkup.includes("실제 조사 실행")).toBe(true);
     expect(blockedMarkup.includes("missing_live_brief")).toBe(true);
     expect(blockedMarkup.includes("app_server_bridge_missing")).toBe(true);
-    expect(readyMarkup.includes("Run live web search")).toBe(true);
+    expect(readyMarkup.includes("조사팩 생성 시작")).toBe(true);
+    expect(readyMarkup.includes("Live Research Pack workflow")).toBe(false);
     expect(readyMarkup.includes("missing_live_brief")).toBe(false);
-    expect(webSearchButtonMarkup(readyMarkup).includes(' disabled=""')).toBe(false);
+    expect(researchPackButtonMarkup(readyMarkup).includes(' disabled=""')).toBe(false);
   });
 });
 
-function webSearchButtonMarkup(markup: string): string {
-  const labelIndex = markup.indexOf("Run live web search");
+function researchPackButtonMarkup(markup: string): string {
+  const labelIndex = markup.indexOf("조사팩 생성 시작");
   const buttonStart = markup.lastIndexOf("<button", labelIndex);
   const buttonEnd = markup.indexOf("</button>", labelIndex);
   return markup.slice(buttonStart, buttonEnd);

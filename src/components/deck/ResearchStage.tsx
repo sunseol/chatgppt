@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { AlertTriangle } from "lucide-react";
 import { GateBar } from "@/components/deck/GateBar";
 import {
   ClaimReviewList,
@@ -87,10 +88,12 @@ export function ResearchStage({ project }: { readonly project: DeckProject }) {
     <StageShell>
       <StageScroll className="mx-auto max-w-6xl px-8">
         <StageHeader num="02" sub="Research" title="조사 자료 검증" />
+        <SampleResearchModeNotice />
         <InvalidatedBanner on={invalidated && !!pack} />
         {!pack ? (
           <EmptyAction
-            label="브리프를 바탕으로 조사팩 생성 (출처·주장·데이터셋)"
+            label="샘플 조사팩 생성 (실제 웹 출처나 Codex 실행 결과가 아닙니다)"
+            actionLabel="샘플 생성"
             busy={busy}
             onClick={generate}
           />
@@ -120,14 +123,14 @@ export function ResearchStage({ project }: { readonly project: DeckProject }) {
       <GateBar
         hint={
           pack
-            ? "출처, 주장, 데이터셋, 불확실 항목을 검토한 뒤 승인하면 슬라이드 기획이 시작됩니다."
+            ? "이 결과는 샘플 데이터입니다. 실제 승인이 아니라 다음 화면 구조를 확인하는 용도입니다."
             : ""
         }
-        regenerate={pack ? { label: "보강 조사", onClick: generate } : undefined}
+        regenerate={pack ? { label: "샘플 보강", onClick: generate } : undefined}
         approve={
           pack
             ? {
-                label: "조사 결과를 승인하고 슬라이드 기획 시작",
+                label: "샘플 결과로 슬라이드 기획 화면 보기",
                 onClick: approve,
                 disabled: (validation?.fatalIssues.length ?? 0) > 0,
               }
@@ -135,5 +138,20 @@ export function ResearchStage({ project }: { readonly project: DeckProject }) {
         }
       />
     </StageShell>
+  );
+}
+
+export function SampleResearchModeNotice() {
+  return (
+    <div className="mb-6 flex items-start gap-3 border border-warning/40 bg-warning/10 p-4 text-sm">
+      <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-warning" />
+      <div>
+        <div className="font-medium">샘플 조사 모드</div>
+        <div className="mt-1 text-xs text-muted-foreground">
+          현재 화면은 실제 웹 조사나 Codex 실행 결과가 아닙니다. 라이브 조사 검증은 DMG/Tauri 앱에서
+          Codex를 연결한 뒤 실행하세요.
+        </div>
+      </div>
+    </div>
   );
 }

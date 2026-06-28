@@ -85,7 +85,7 @@ describe("desktop app server bridge", () => {
             },
           });
           return {
-            runtime: "codex app-server --stdio",
+            runtime: "codex app-server",
             threadId: "thread_live",
             turnId: "turn_live",
             turnCompleted: true,
@@ -119,7 +119,7 @@ describe("desktop app server bridge", () => {
 
     // Then
     if (result.kind !== "completed") throw new Error("Expected completed structured turn.");
-    expect(result.evidence.runtime).toBe("codex app-server --stdio");
+    expect(result.evidence.runtime).toBe("codex app-server");
     expect(result.evidence.notifications.map((notification) => notification.method)).toEqual([
       "turn/started",
       "turn/completed",

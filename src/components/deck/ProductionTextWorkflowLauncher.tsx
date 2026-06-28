@@ -1,15 +1,17 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   ProductionTextWorkflowPanel,
   type ProductionTextWorkflowRunStatus,
 } from "./ProductionTextWorkflowPanel";
-import { updateProject } from "@/lib/deck-store";
-import type { DeckProject, StepKey } from "@/lib/deck-types";
+import { ProductionLiveInterviewAnswers } from "./ProductionLiveInterviewAnswers";
 import {
-  createLiveInterviewQuestionArtifactPatch,
-  runDesktopLiveInterviewProductionWorkflow,
-} from "@/lib/desktop-live-interview-workflow";
-import { runDesktopLiveTextPipelineProductionWorkflow } from "@/lib/desktop-live-text-pipeline-workflow";
+  canRunTextPipeline,
+  runInterviewQuestionsAction,
+  runTextPipelineAction,
+  type InterviewFollowUp,
+} from "./production-text-workflow-actions";
+import type { DeckProject, StepKey } from "@/lib/deck-types";
+import type { LiveInterviewAnswerMap } from "@/lib/live-interview-cutover";
 import { createProviderJobManager } from "@/lib/provider-job-manager";
 import type { ProductionTextWorkflowBridgeStatus } from "@/lib/production-text-workflow-gate";
 
@@ -17,139 +19,104 @@ export type ProductionTextWorkflowLauncherProps = {
   readonly project: DeckProject;
   readonly step: StepKey;
   readonly appServerBridge: ProductionTextWorkflowBridgeStatus;
+  readonly runStatusOverride?: ProductionTextWorkflowRunStatus;
+  readonly onRunStatusChange?: (status: ProductionTextWorkflowRunStatus) => void;
+  readonly onOpenConnectionSettings?: () => void;
+  readonly actionLabelOverride?: string;
+  readonly disabledReason?: string;
 };
 
 export function ProductionTextWorkflowLauncher({
   project,
   step,
   appServerBridge,
+  runStatusOverride,
+  onRunStatusChange,
+  onOpenConnectionSettings,
+  actionLabelOverride,
+  disabledReason,
 }: ProductionTextWorkflowLauncherProps) {
   const [runStatus, setRunStatus] = useState<ProductionTextWorkflowRunStatus>({ kind: "idle" });
+  const [interviewAnswers, setInterviewAnswers] = useState<LiveInterviewAnswerMap>({});
+  const [interviewFollowUp, setInterviewFollowUp] = useState<InterviewFollowUp | null>(null);
+  const cancelRequestedRef = useRef(false);
   const [manager] = useState(() =>
     createProviderJobManager({ createId: () => `${project.id}_text_${Date.now().toString(36)}` }),
   );
+  const visibleRunStatus = runStatusOverride ?? runStatus;
+  const missingAnswerCount =
+    interviewFollowUp?.requiredFields.filter((field) => !interviewAnswers[field]?.trim()).length ??
+    0;
+  const isAnsweringInterview = step === "interview" && interviewFollowUp !== null;
+  const answerPanelLabel = isAnsweringInterview ? "아래 답변 입력 영역 사용" : undefined;
+  const answerDisabledReason =
+    isAnsweringInterview && missingAnswerCount > 0
+      ? `필수 답변 ${missingAnswerCount}개를 입력하면 브리프 생성 버튼이 활성화됩니다.`
+      : undefined;
+  const answerPanelDisabledReason = isAnsweringInterview
+    ? "아래 Live interview answers 영역에서 답변을 제출하세요."
+    : undefined;
+  const publishRunStatus = (status: ProductionTextWorkflowRunStatus) => {
+    setRunStatus(status);
+    onRunStatusChange?.(status);
+  };
   const onRun =
     step === "interview"
       ? () => {
-          void runInterviewQuestions(project, manager, setRunStatus);
+          cancelRequestedRef.current = false;
+          void runInterviewQuestionsAction({
+            project,
+            jobManager: manager,
+            answers: interviewAnswers,
+            setRunStatus: publishRunStatus,
+            setInterviewFollowUp,
+            isCancelled: () => cancelRequestedRef.current,
+          });
         }
       : canRunTextPipeline(step)
         ? () => {
-            void runTextPipeline(project, manager, setRunStatus);
+            cancelRequestedRef.current = false;
+            void runTextPipelineAction({
+              project,
+              jobManager: manager,
+              setRunStatus: publishRunStatus,
+              isCancelled: () => cancelRequestedRef.current,
+            });
           }
         : undefined;
+  const onCancel = () => {
+    cancelRequestedRef.current = true;
+    setRunStatus((status) => {
+      if (status.kind !== "running") return status;
+      const next = { ...status, cancelRequested: true };
+      onRunStatusChange?.(next);
+      return next;
+    });
+  };
 
   return (
-    <ProductionTextWorkflowPanel
-      project={project}
-      step={step}
-      appServerBridge={appServerBridge}
-      runStatus={runStatus}
-      onRun={onRun}
-    />
+    <>
+      <ProductionTextWorkflowPanel
+        project={project}
+        step={step}
+        appServerBridge={appServerBridge}
+        runStatus={visibleRunStatus}
+        onRun={onRun}
+        onCancel={onCancel}
+        onRetry={onRun}
+        onOpenConnectionSettings={onOpenConnectionSettings}
+        actionLabelOverride={actionLabelOverride ?? answerPanelLabel}
+        disabledReason={disabledReason ?? answerDisabledReason ?? answerPanelDisabledReason}
+      />
+      {step === "interview" && interviewFollowUp ? (
+        <ProductionLiveInterviewAnswers
+          questions={interviewFollowUp.questions}
+          requiredFields={interviewFollowUp.requiredFields}
+          answers={interviewAnswers}
+          onAnswers={setInterviewAnswers}
+          onSubmitAnswers={onRun}
+        />
+      ) : null}
+    </>
   );
-}
-
-async function runInterviewQuestions(
-  project: DeckProject,
-  jobManager: ReturnType<typeof createProviderJobManager>,
-  setRunStatus: (status: ProductionTextWorkflowRunStatus) => void,
-): Promise<void> {
-  setRunStatus({ kind: "running", message: "Running live interview question turn." });
-  try {
-    const result = await runDesktopLiveInterviewProductionWorkflow({
-      project,
-      jobManager,
-      answers: {},
-      createdAt: Date.now(),
-    });
-    switch (result.kind) {
-      case "follow_up_required":
-        updateProject(
-          project.id,
-          createLiveInterviewQuestionArtifactPatch(project, result.questionArtifact.record),
-        );
-        setRunStatus({
-          kind: "succeeded",
-          message: `Live interview questions are ready: ${result.questions.join(" ")}`,
-        });
-        return;
-      case "ready":
-        updateProject(project.id, result.patch);
-        setRunStatus({ kind: "succeeded", message: "Live interview brief is ready." });
-        return;
-      case "blocked":
-        setRunStatus({
-          kind: "failed",
-          message: result.issues.map((issue) => issue.message).join(" "),
-        });
-        return;
-      case "job_failed":
-        setRunStatus({ kind: "failed", message: result.message });
-        return;
-      default:
-        return assertNever(result);
-    }
-  } catch (error) {
-    if (error instanceof Error) {
-      setRunStatus({ kind: "failed", message: error.message });
-      return;
-    }
-    throw error;
-  }
-}
-
-async function runTextPipeline(
-  project: DeckProject,
-  jobManager: ReturnType<typeof createProviderJobManager>,
-  setRunStatus: (status: ProductionTextWorkflowRunStatus) => void,
-): Promise<void> {
-  setRunStatus({ kind: "running", message: "Running live App Server text turns." });
-  try {
-    const result = await runDesktopLiveTextPipelineProductionWorkflow({
-      project,
-      jobManager,
-      createdAt: Date.now(),
-    });
-    switch (result.kind) {
-      case "ready":
-        updateProject(project.id, result.patch);
-        setRunStatus({ kind: "succeeded", message: "Live text pipeline artifacts are ready." });
-        return;
-      case "repair_required":
-        setRunStatus({ kind: "failed", message: `Schema repair required for ${result.stage}.` });
-        return;
-      case "blocked":
-        setRunStatus({
-          kind: "failed",
-          message: result.issues.map((issue) => issue.message).join(" "),
-        });
-        return;
-      case "launch_blocked":
-        setRunStatus({
-          kind: "failed",
-          message: result.issues.map((issue) => issue.message).join(" "),
-        });
-        return;
-      case "job_failed":
-        setRunStatus({ kind: "failed", message: result.message });
-        return;
-      default:
-        return assertNever(result);
-    }
-  } catch (error) {
-    if (error instanceof Error) {
-      setRunStatus({ kind: "failed", message: error.message });
-      return;
-    }
-    throw error;
-  }
-}
-
-function canRunTextPipeline(step: StepKey): boolean {
-  return step === "plan" || step === "design" || step === "layout";
-}
-
-function assertNever(value: never): never {
-  throw new Error(`Unhandled production text workflow result: ${JSON.stringify(value)}`);
 }

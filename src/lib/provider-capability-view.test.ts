@@ -44,15 +44,30 @@ describe("provider capability matrix view", () => {
       },
       capabilities: ProviderCapabilities,
     });
+    const bridgeDetected = createProviderCapabilityMatrixView({
+      providerName: "Codex",
+      authMode: "codex_session",
+      status: {
+        kind: "bridgeDetected",
+        providerId: "codex",
+        message: "데스크톱 bridge는 감지됐습니다.",
+      },
+      capabilities: ["deckPlan", "research"],
+    });
 
     expect(needsLogin.selectedProviderId).toBe("codex");
-    expect(needsLogin.authModeLabel).toBe("Codex session");
-    expect(needsLogin.statusLabel).toBe("Needs Login");
-    expect(needsApiKey.statusLabel).toBe("Needs API Key");
-    expect(needsApiKey.authModeLabel).toBe("API key");
-    expect(liveTestFailed.statusLabel).toBe("Live Test Failed");
+    expect(needsLogin.authModeLabel).toBe("Codex 세션");
+    expect(needsLogin.statusLabel).toBe("로그인 필요");
+    expect(needsLogin.isLiveReady).toBe(false);
+    expect(bridgeDetected.statusLabel).toBe("Bridge 감지");
+    expect(bridgeDetected.isLiveReady).toBe(false);
+    expect(bridgeDetected.rows.every((row) => row.status === "locked")).toBe(true);
+    expect(bridgeDetected.rows[0]?.reason.includes("앱 실행 통로만 확인됨")).toBe(true);
+    expect(needsApiKey.statusLabel).toBe("API Key 필요");
+    expect(needsApiKey.authModeLabel).toBe("API Key");
+    expect(liveTestFailed.statusLabel).toBe("라이브 테스트 실패");
     expect(liveTestFailed.rows.every((row) => row.status === "locked")).toBe(true);
-    expect(unavailable.statusLabel).toBe("Unavailable");
+    expect(unavailable.statusLabel).toBe("사용 불가");
     expect(unavailable.rows.every((row) => row.status === "locked")).toBe(true);
   });
 
@@ -74,7 +89,7 @@ describe("provider capability matrix view", () => {
         label: "텍스트 기획",
         status: "available",
         stateLabel: "사용 가능",
-        reason: "Codex can create deck plans in the current auth state.",
+        reason: "Codex에서 텍스트 기획을 생성할 수 있습니다.",
         actionLabel: "현재 설정으로 사용 가능",
       },
       {
@@ -82,7 +97,7 @@ describe("provider capability matrix view", () => {
         label: "조사 보조",
         status: "available",
         stateLabel: "사용 가능",
-        reason: "Codex can create research packs in the current auth state.",
+        reason: "Codex에서 조사팩을 생성할 수 있습니다.",
         actionLabel: "현재 설정으로 사용 가능",
       },
       {
@@ -90,7 +105,7 @@ describe("provider capability matrix view", () => {
         label: "이미지 생성",
         status: "locked",
         stateLabel: "잠김",
-        reason: "Connected provider does not expose image generation.",
+        reason: "현재 연결된 provider에는 이미지 생성 기능이 없습니다.",
         actionLabel: "OpenAI 이미지 fallback 설정",
       },
       {
@@ -98,7 +113,7 @@ describe("provider capability matrix view", () => {
         label: "수정 생성",
         status: "locked",
         stateLabel: "잠김",
-        reason: "Image generation must be available before revision generation.",
+        reason: "수정 생성을 사용하려면 이미지 생성 기능이 먼저 필요합니다.",
         actionLabel: "이미지 생성 잠금 해제",
       },
     ]);
@@ -133,7 +148,7 @@ describe("provider capability matrix view", () => {
         label: "텍스트 기획",
         status: "available",
         stateLabel: "사용 가능",
-        reason: "Codex can create deck plans in the current auth state.",
+        reason: "Codex에서 텍스트 기획을 생성할 수 있습니다.",
         actionLabel: "현재 설정으로 사용 가능",
       },
       {
@@ -141,7 +156,7 @@ describe("provider capability matrix view", () => {
         label: "조사 보조",
         status: "available",
         stateLabel: "사용 가능",
-        reason: "Codex can create research packs in the current auth state.",
+        reason: "Codex에서 조사팩을 생성할 수 있습니다.",
         actionLabel: "현재 설정으로 사용 가능",
       },
       {
@@ -149,7 +164,7 @@ describe("provider capability matrix view", () => {
         label: "이미지 생성",
         status: "locked",
         stateLabel: "잠김",
-        reason: "OpenAI image fallback requires a session API key.",
+        reason: "OpenAI 이미지 fallback을 사용하려면 세션 API Key가 필요합니다.",
         actionLabel: "세션 API Key 입력",
       },
       {
@@ -157,7 +172,7 @@ describe("provider capability matrix view", () => {
         label: "수정 생성",
         status: "locked",
         stateLabel: "잠김",
-        reason: "Image generation must be available before revision generation.",
+        reason: "수정 생성을 사용하려면 이미지 생성 기능이 먼저 필요합니다.",
         actionLabel: "이미지 생성 잠금 해제",
       },
     ]);

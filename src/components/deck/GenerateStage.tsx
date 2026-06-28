@@ -11,6 +11,7 @@ import {
   StageShell,
 } from "@/components/deck/stage-shared";
 import { fakeAsync } from "@/components/deck/stage-timing";
+import { resolveGenerateProgress } from "@/components/deck/generate-progress";
 import { invalidateDownstream, updateProject } from "@/lib/deck-store";
 import type { DeckProject, GeneratedSlide } from "@/lib/deck-types";
 import { mockSlides } from "@/lib/mock-ai";
@@ -60,7 +61,9 @@ export function GenerateStage({
   );
   const [slides, setSlides] = useState<GeneratedSlide[] | undefined>(project.slides);
   const [busy, setBusy] = useState(false);
-  const [progress, setProgress] = useState(initialRecovery?.job.progress?.percent ?? 0);
+  const [progress, setProgress] = useState(
+    initialRecovery?.job.progress?.percent ?? resolveGenerateProgress(project.slides),
+  );
   const [job, setJob] = useState<ProviderJob | undefined>(initialRecovery?.job);
   const [recovered, setRecovered] = useState(initialRecovery !== undefined);
 

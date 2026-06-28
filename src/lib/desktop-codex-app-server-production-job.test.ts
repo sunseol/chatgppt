@@ -43,7 +43,7 @@ describe("desktop production Codex App Server job", () => {
     const runtime: DeckforgeTauriRuntime = {
       core: {
         invoke: async () => ({
-          runtime: "codex app-server --stdio",
+          runtime: "codex app-server",
           threadId: "thread_live_production",
           turnId: "turn_live_brief",
           turnCompleted: true,
@@ -100,7 +100,7 @@ describe("desktop production Codex App Server job", () => {
 
     expect(completed.status).toBe("succeeded");
     expect(completed.output?.value.title).toBe("Live brief");
-    expect(completed.output?.provenance.modelOrRuntime).toBe("codex app-server --stdio");
+    expect(completed.output?.provenance.modelOrRuntime).toBe("codex app-server");
     expect(completed.output?.provenance.durationMs).toBe(3_200);
     expect(completed.output?.provenance.threadId).toBe("thread_live_production");
   });

@@ -12,7 +12,7 @@ Smoke result: partial
 codex --version
 codex login status
 codex doctor
-codex app-server --stdio
+codex app-server
 codex app-server generate-json-schema --out /tmp/codex-app-server-schema --experimental
 CODEX_NON_INTERACTIVE=1 sh /tmp/codex-install.sh
 PATH="/Users/jake/.local/bin:$PATH" codex app-server daemon bootstrap
@@ -20,7 +20,7 @@ PATH="/Users/jake/.local/bin:$PATH" codex doctor --json
 codex app-server daemon start
 codex app-server daemon version
 kill -9 <app-server-daemon-pid>
-codex app-server --stdio  # schema-constrained structured probe
+codex app-server  # schema-constrained structured probe
 ```
 
 ## Runtime Evidence
@@ -30,7 +30,7 @@ codex app-server --stdio  # schema-constrained structured probe
 - `codex doctor` reported auth configured with ChatGPT tokens and websocket connectivity available.
 - Before standalone installation, `codex doctor` reported the background App Server as `not running (ephemeral mode)`.
 - `codex app-server generate-json-schema --experimental` succeeded and generated v1/v2 protocol schemas, including `v1/InitializeParams.json` and `v1/InitializeResponse.json`.
-- `codex app-server --stdio` accepted a JSON-RPC `initialize` request and returned a protocol response:
+- `codex app-server` accepted a JSON-RPC `initialize` request and returned a protocol response:
 
 ```json
 {"id":1,"result":{"userAgent":"Codex Desktop/0.139.0 (Mac OS 26.5.1; arm64) dumb (deckforge-smoke; 0.1.0)","codexHome":"/Users/jake/.codex","platformFamily":"unix","platformOs":"macos"}}
@@ -62,7 +62,7 @@ Codex CLI 0.141.0 installed successfully.
 
 ## Authenticated Health Turn Evidence
 
-Using `codex app-server --stdio` with the standalone 0.141.0 binary:
+Using `codex app-server` with the standalone 0.141.0 binary:
 
 - `initialize` returned `Codex Desktop/0.141.0` and platform `macos`.
 - `account/read` returned `requiresOpenaiAuth: true` with account type `chatgpt`. Account email and plan details are intentionally not recorded here.
@@ -74,7 +74,7 @@ The health and resume turns emitted optional MCP/plugin warnings for local confi
 
 ## Structured Turn Probe Evidence
 
-Using `codex app-server --stdio` with the standalone 0.141.0 binary on 2026-06-18T14:01:33Z:
+Using `codex app-server` with the standalone 0.141.0 binary on 2026-06-18T14:01:33Z:
 
 - `initialize` returned `Codex Desktop/0.141.0` and platform `macos`.
 - `account/read` returned `requiresOpenaiAuth: true` with account type `chatgpt`. Account email and plan details are intentionally not recorded here.
@@ -93,7 +93,7 @@ This proves a live App Server structured turn can complete with schema-constrain
 
 ## Current Structured Turn Recheck
 
-Using the current `codex app-server --stdio` binary and protocol schema on 2026-06-18:
+Using the current `codex app-server` binary and protocol schema on 2026-06-18:
 
 - `initialize` succeeded with a Codex Desktop protocol response.
 - `account/read` returned account type `chatgpt`. Account email and plan details are intentionally not recorded here.
@@ -115,7 +115,7 @@ This recheck confirms the App Server still supports live schema-constrained stru
 The App Server smoke path and reusable structured-turn path are now represented at the desktop app boundary:
 
 - `src-tauri/src/codex_app_server_smoke.rs` registers the `deckforge_codex_app_server_smoke` Tauri command through `src-tauri/src/lib.rs`.
-- The command starts `codex app-server --stdio`, sends `initialize`, `account/read`, `thread/start`, and schema-constrained `turn/start` JSON-RPC requests, drains protocol stdout separately from stderr, and returns account type, thread id, turn id, completion flag, event methods, and final text.
+- The command starts `codex app-server`, sends `initialize`, `account/read`, `thread/start`, and schema-constrained `turn/start` JSON-RPC requests, drains protocol stdout separately from stderr, and returns account type, thread id, turn id, completion flag, event methods, and final text.
 - `src-tauri/src/codex_app_server_protocol.rs` owns JSON-RPC request construction, the smoke output schema, protocol field extraction, and notification accumulation.
 - `src-tauri/src/codex_app_server_session.rs` owns the child process, stdin/stdout request-response loop, timeouts, cleanup, and raw JSON-RPC notification capture.
 - `src-tauri/src/codex_app_server_structured_turn.rs` registers `deckforge_codex_app_server_structured_turn`, accepts a production prompt plus `outputSchema`, starts a read-only App Server thread/turn, waits for `turn/completed`, and returns runtime, duration, thread id, turn id, event methods, and raw notifications.
@@ -165,7 +165,7 @@ Caused by:
 {"status":"started","backend":"pid","pid":5889,"managedCodexPath":"/Users/jake/.codex/packages/standalone/current/codex","managedCodexVersion":"0.141.0","socketPath":"/Users/jake/.codex/app-server-control/app-server-control.sock","cliVersion":"0.141.0","appServerVersion":"0.141.0"}
 ```
 
-After restart, `codex app-server --stdio` completed another authenticated health turn:
+After restart, `codex app-server` completed another authenticated health turn:
 
 - `account/read` returned `requiresOpenaiAuth: true` with account type `chatgpt`.
 - `thread/start` created thread `019eda6a-81a9-7db0-91d7-ec73d6c78880`.
@@ -176,7 +176,7 @@ After restart, `codex app-server --stdio` completed another authenticated health
 | Requirement | Status | Evidence |
 | --- | --- | --- |
 | supported runtime/protocol 범위 기록 | pass | CLI `0.141.0`; generated protocol schemas include v1 `initialize` and v2 `thread/start`, `thread/resume`, `turn/start`, and notification schemas. |
-| JSON-RPC initialize 성공 | pass | `codex app-server --stdio` returned `codexHome`, `platformFamily`, `platformOs`, and `userAgent` for request id `1`. |
+| JSON-RPC initialize 성공 | pass | `codex app-server` returned `codexHome`, `platformFamily`, `platformOs`, and `userAgent` for request id `1`. |
 | stdout/stderr protocol/log 채널 분리 | pass | protocol responses were emitted as JSON on stdout while local MCP/plugin warnings were emitted separately as log events. |
 | durable daemon bootstrap | pass | standalone 0.141.0 install exists, daemon bootstrap returned `bootstrapped`, and doctor reports persistent App Server running. |
 | 비정상 종료 후 재시작 경로 | pass | `kill -9` made the control socket refuse connections; `daemon start` launched new pid `5889`; post-restart health turn completed. |

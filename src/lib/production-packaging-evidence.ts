@@ -21,10 +21,12 @@ export type ProductionPackagingEvidence = {
   readonly packageSha256: string;
   readonly nativeMacosBundlePath: string;
   readonly nativeMacosBundleSha256: string;
+  readonly nativeMacosBundleVerified: boolean;
   readonly productionMode: boolean;
   readonly contentScan: PackageContentScan;
   readonly cleanMachineSteps: readonly CleanMachineStep[];
   readonly runtimeAbsenceRemediationShown: boolean;
+  readonly runtimeAbsenceRemediationEvidencePath?: string;
   readonly runbookPath: string;
 };
 
@@ -32,6 +34,7 @@ export type ProductionPackagingIssueCode =
   | "missing_production_package"
   | "missing_package_hash"
   | "missing_native_macos_bundle"
+  | "native_macos_bundle_unverified"
   | "package_not_production_mode"
   | "package_content_contaminated"
   | "missing_clean_machine_step"
@@ -69,6 +72,7 @@ export function formatProductionPackagingEvidenceSummary(
     `Package: ${evidence.packagePath || "missing"}`,
     `Package hash: ${evidence.packageSha256 || "missing"}`,
     `Native macOS bundle: ${evidence.nativeMacosBundlePath || "missing"}`,
+    `Native bundle QA: ${evidence.nativeMacosBundleVerified ? "passed" : "missing"}`,
     `Mode: ${evidence.productionMode ? "production" : "non-production"}`,
     `content scan: ${contentScanPassed(evidence.contentScan) ? "passed" : "blocked"}`,
     `clean-machine steps: ${evidence.cleanMachineSteps.length}/${CLEAN_MACHINE_STEPS.length}`,
@@ -99,6 +103,15 @@ function packageIssues(evidence: ProductionPackagingEvidence): readonly Producti
           issue(
             "missing_native_macos_bundle",
             "Native macOS bundle path and SHA-256 digest are required.",
+            [evidence.nativeMacosBundlePath || "missing"],
+          ),
+        ]),
+    ...(evidence.nativeMacosBundleVerified
+      ? []
+      : [
+          issue(
+            "native_macos_bundle_unverified",
+            "Native macOS bundle must pass checksum, mount, codesign, content scan, and launch smoke QA.",
             [evidence.nativeMacosBundlePath || "missing"],
           ),
         ]),

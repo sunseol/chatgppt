@@ -93,7 +93,7 @@ function turnEvidence(artifactId: string, payload: unknown) {
   const threadId = "thread_desktop_text_pipeline";
   const turnId = `turn_${artifactId}`;
   return {
-    runtime: "codex app-server --stdio",
+    runtime: "codex app-server",
     threadId,
     turnId,
     turnCompleted: true,

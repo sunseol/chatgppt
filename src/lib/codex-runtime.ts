@@ -83,6 +83,12 @@ export type CodexAppServerBootstrapStatus =
       readonly retryable: true;
     };
 
+export function formatSupportedCodexRuntimeRange(
+  range: typeof SUPPORTED_CODEX_RUNTIME = SUPPORTED_CODEX_RUNTIME,
+): string {
+  return `${range.minInclusive} 이상 ${range.maxExclusive} 미만`;
+}
+
 export function evaluateCodexRuntime(evidence: CodexRuntimeEvidence): CodexRuntimeStatus {
   if (evidence.kind === "missing") {
     return {

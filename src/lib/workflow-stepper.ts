@@ -30,6 +30,20 @@ const CURRENT_ACTIONS: Record<StepKey, string> = {
   export: "다음 액션: 보고서와 내보내기 파일을 검증하세요.",
 };
 
+const LOCK_REASONS: Record<StepKey, string> = {
+  project: "잠김: 프로젝트 정보를 먼저 준비해야 합니다.",
+  interview: "잠김: 프로젝트 생성 후 인터뷰를 시작할 수 있습니다.",
+  research: "잠김: 승인된 인터뷰 브리프가 필요합니다.",
+  plan: "잠김: 승인된 조사 근거가 필요합니다.",
+  design: "잠김: 승인된 슬라이드 기획이 필요합니다.",
+  layout: "잠김: 승인된 디자인 시스템이 필요합니다.",
+  generate: "잠김: 승인된 레이아웃이 필요합니다.",
+  review: "잠김: 생성 완료된 슬라이드 이미지가 필요합니다.",
+  vectorize: "잠김: 승인된 검토 결과가 필요합니다.",
+  editor: "잠김: 승인된 검토 결과가 필요합니다.",
+  export: "잠김: 최종 편집 완료가 필요합니다.",
+};
+
 export function getWorkflowStepItems(project: DeckProject): readonly WorkflowStepItem[] {
   const currentStep = stageToStep(project.stage);
   const currentIndex = stepIndex(currentStep);
@@ -113,11 +127,7 @@ function getStatusDetail(
 }
 
 function getLockReason(stepKey: StepKey): string {
-  const visibleSteps = STEPS.filter((step) => step.key !== "vectorize");
-  const index = visibleSteps.findIndex((step) => step.key === stepKey);
-  const previous = visibleSteps[index - 1];
-  if (!previous) return "잠김: 이전 승인 완료 후 접근할 수 있습니다.";
-  return `잠김: ${previous.label} 승인 후 접근할 수 있습니다.`;
+  return LOCK_REASONS[stepKey];
 }
 
 function assertNever(value: never): never {

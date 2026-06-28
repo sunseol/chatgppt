@@ -2,11 +2,36 @@ import { createFileRoute, Link, useParams, Navigate } from "@tanstack/react-rout
 import { useEffect, useState, type ComponentType } from "react";
 import { isStepReachable, stageToStep, useProject } from "@/lib/deck-store";
 import { Stepper } from "@/components/deck/Stepper";
+import { ProjectCockpit } from "@/components/deck/ProjectCockpit";
+import {
+  SettingsDialogBody,
+  type SettingsCodexLoginStatus,
+  type SettingsSmokeStatus,
+} from "@/components/deck/HomeSettingsDialog";
 import {
   ProductionWorkflowStage,
   type WorkflowStageProps,
 } from "@/components/deck/ProductionWorkflowStage";
+import type { ProductionTextWorkflowRunStatus } from "@/components/deck/ProductionTextWorkflowPanel";
+import {
+  openCodexLoginTerminal,
+  refreshCodexLoginStatus,
+  runSettingsSmoke,
+} from "@/components/deck/codex-settings-actions";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { getDesktopAppServerBridgeStatus } from "@/lib/desktop-app-server-bridge";
+import {
+  selectClientWorkflowStageRuntime,
+  type ClientWorkflowStageRuntime,
+} from "@/lib/client-workflow-stage-selection";
 import type { StepKey } from "@/lib/deck-types";
+import type { ProductionTextWorkflowBridgeStatus } from "@/lib/production-text-workflow-gate";
 import { ChevronLeft } from "lucide-react";
 
 const VALID_STEPS: StepKey[] = [
@@ -41,10 +66,25 @@ function ProjectStagePage() {
   const { projectId, step } = useParams({ from: "/project/$projectId/$step" });
   const project = useProject(projectId);
   const [hydrated, setHydrated] = useState(false);
+  const [connectionSettingsOpen, setConnectionSettingsOpen] = useState(false);
+  const [appServerBridge, setAppServerBridge] =
+    useState<ProductionTextWorkflowBridgeStatus>("missing");
+  const [loginStatus, setLoginStatus] = useState<SettingsCodexLoginStatus>({ kind: "idle" });
+  const [smokeStatus, setSmokeStatus] = useState<SettingsSmokeStatus>({ kind: "idle" });
+  const [productionRunStatus, setProductionRunStatus] = useState<ProductionTextWorkflowRunStatus>({
+    kind: "idle",
+  });
 
   useEffect(() => {
     setHydrated(true);
+    const bridge = getDesktopAppServerBridgeStatus();
+    setAppServerBridge(bridge);
+    if (bridge === "available") void refreshCodexLoginStatus(setLoginStatus);
   }, []);
+
+  useEffect(() => {
+    setProductionRunStatus({ kind: "idle" });
+  }, [projectId, step]);
 
   if (!hydrated) {
     return (
@@ -84,10 +124,35 @@ function ProjectStagePage() {
     );
   }
 
+  const runtime = selectClientWorkflowStageRuntime({
+    isProductionBuild: import.meta.env.PROD,
+    appServerBridge,
+  });
+  const openConnectionSettings = () => {
+    const bridge = getDesktopAppServerBridgeStatus();
+    setAppServerBridge(bridge);
+    setConnectionSettingsOpen(true);
+    if (bridge === "available" && loginStatus.kind === "idle") {
+      void refreshCodexLoginStatus(setLoginStatus);
+    }
+  };
+  const refreshLogin = () => {
+    setAppServerBridge(getDesktopAppServerBridgeStatus());
+    void refreshCodexLoginStatus(setLoginStatus);
+  };
+  const openLogin = () => {
+    setAppServerBridge(getDesktopAppServerBridgeStatus());
+    void openCodexLoginTerminal(setLoginStatus);
+  };
+  const runSmoke = () => {
+    setAppServerBridge(getDesktopAppServerBridgeStatus());
+    void runSettingsSmoke(setSmokeStatus);
+  };
+
   return (
-    <div className="grid h-screen overflow-hidden bg-background lg:grid-cols-[280px_1fr]">
-      <aside className="flex min-h-0 flex-col border-b border-border bg-paper lg:h-screen lg:border-b-0 lg:border-r">
-        <div className="border-b border-border px-4 py-4">
+    <div className="flex h-screen flex-col overflow-hidden bg-background lg:grid lg:grid-cols-[280px_1fr]">
+      <aside className="flex min-h-0 shrink-0 flex-col border-b border-border bg-paper lg:h-screen lg:border-b-0 lg:border-r">
+        <div className="border-b border-border px-4 py-3 lg:py-4">
           <Link
             to="/"
             className="mb-3 inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
@@ -99,23 +164,66 @@ function ProjectStagePage() {
             {project.aspectRatio} · {project.slideCount}장
           </div>
         </div>
-        <div className="desktop-scroll flex-1 py-3">
+        <div className="min-h-0 max-h-40 overflow-y-auto overscroll-none py-2 lg:max-h-none lg:flex-1 lg:py-3">
           <Stepper project={project} />
         </div>
-        <div className="border-t border-border px-4 py-3 text-[11px] text-muted-foreground">
+        <div className="hidden border-t border-border px-4 py-3 text-[11px] text-muted-foreground lg:block">
           <div>승인 {project.approvalLog.length}건</div>
           <div className="mt-1 font-mono">{project.stage}</div>
         </div>
       </aside>
-      <main className="min-h-0 min-w-0 overflow-hidden">
-        <WorkflowStage project={project} step={step} />
+      <main className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+        <ProjectCockpit
+          project={project}
+          step={step}
+          runtime={runtime}
+          appServerBridge={appServerBridge}
+          codexRunStatus={runtime === "production" ? productionRunStatus : undefined}
+          onOpenConnectionSettings={openConnectionSettings}
+        />
+        <div className="min-h-0 flex-1 overflow-hidden">
+          <WorkflowStage
+            project={project}
+            step={step}
+            runtime={runtime}
+            appServerBridge={appServerBridge}
+            runStatus={productionRunStatus}
+            onRunStatusChange={setProductionRunStatus}
+            onOpenConnectionSettings={openConnectionSettings}
+          />
+        </div>
       </main>
+      <Dialog open={connectionSettingsOpen} onOpenChange={setConnectionSettingsOpen}>
+        <DialogContent className="max-h-[calc(100vh-2rem)] w-[calc(100vw-2rem)] max-w-[42rem] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>연결 및 실행 환경</DialogTitle>
+            <DialogDescription>
+              Codex 로그인, 라이브 실행 테스트, provider 준비 상태를 확인합니다.
+            </DialogDescription>
+          </DialogHeader>
+          <SettingsDialogBody
+            appServerBridge={appServerBridge}
+            loginStatus={loginStatus}
+            smokeStatus={smokeStatus}
+            onRefreshLogin={refreshLogin}
+            onOpenLogin={openLogin}
+            onRunSmoke={runSmoke}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
 
-function WorkflowStage(props: WorkflowStageProps) {
-  if (import.meta.env.PROD) return <ProductionWorkflowStage {...props} />;
+type ResolvedWorkflowStageProps = WorkflowStageProps & {
+  readonly runtime: ClientWorkflowStageRuntime;
+  readonly appServerBridge: ProductionTextWorkflowBridgeStatus;
+};
+
+function WorkflowStage({ runtime, appServerBridge, ...props }: ResolvedWorkflowStageProps) {
+  if (runtime === "production") {
+    return <ProductionWorkflowStage {...props} appServerBridge={appServerBridge} />;
+  }
   return <DevelopmentWorkflowStageLoader {...props} />;
 }
 

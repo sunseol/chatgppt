@@ -127,7 +127,7 @@ function readyResearchPack(): ResearchPack {
         executionMode: "production",
         providerKind: "codex",
         authMode: "codex_session",
-        modelOrRuntime: "codex app-server --stdio",
+        modelOrRuntime: "codex app-server",
         promptVersion: "live_research_pack@v1",
         durationMs: 2_200,
         inputArtifactIds: ["source_capture_bundle_001"],

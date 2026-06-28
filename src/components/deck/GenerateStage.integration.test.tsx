@@ -19,6 +19,30 @@ describe("generate stage production gate", () => {
       markup.includes("Production image generation requires a locked image path decision"),
     ).toBe(true);
   });
+
+  test("shows completed progress when generated slides already exist", () => {
+    // Given
+    const project = {
+      ...generateProjectFixture(),
+      slides: [
+        {
+          number: 1,
+          version: 1,
+          status: "ready",
+          imageDescriptor: "cover|title|message",
+        },
+      ],
+    } satisfies DeckProject;
+
+    // When
+    const markup = renderToStaticMarkup(
+      <GenerateStage project={project} executionMode="development" />,
+    );
+
+    // Then
+    expect(markup.includes("100%")).toBe(true);
+    expect(markup.includes(">0%</div>")).toBe(false);
+  });
 });
 
 function generateProjectFixture(): DeckProject {

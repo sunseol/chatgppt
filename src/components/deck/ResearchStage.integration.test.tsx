@@ -8,6 +8,7 @@ import {
   ReinforcementRequest,
 } from "@/components/deck/ResearchPanels";
 import { SourceReviewList } from "@/components/deck/ResearchSourcePreview";
+import { SampleResearchModeNotice } from "@/components/deck/ResearchStage";
 import { mockBrief, mockResearch } from "@/lib/mock-ai";
 
 function fixtureMarkup() {
@@ -52,6 +53,13 @@ describe("research review UI", () => {
     const markup = renderToStaticMarkup(<GateBar hint="" />);
 
     expect(markup.includes("조사 결과를 승인하고 슬라이드 기획 시작")).toBe(false);
+  });
+
+  test("labels development research output as sample data", () => {
+    const markup = renderToStaticMarkup(<SampleResearchModeNotice />);
+
+    expect(markup.includes("샘플 조사 모드")).toBe(true);
+    expect(markup.includes("실제 웹 조사나 Codex 실행 결과가 아닙니다.")).toBe(true);
   });
 
   test("shows source map references", () => {

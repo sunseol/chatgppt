@@ -97,6 +97,7 @@ export function createCodexExecutionAdapter(options: CodexExecutionAdapterOption
 function assertCodexConnected(status: ProviderStatus): void {
   switch (status.kind) {
     case "connected":
+    case "bridgeDetected":
       return;
     case "requiresAuth":
     case "needsApiKey":

@@ -29,8 +29,9 @@ describe("production packaging evidence", () => {
     expect(summary.includes("DF-245 Production Packaging")).toBe(true);
     expect(summary.includes("dist/deckforge-macos-dry-run.tgz")).toBe(true);
     expect(
-      summary.includes("Native macOS bundle: release-artifacts/DeckForge_0.1.0_aarch64.dmg"),
+      summary.includes("Native macOS bundle: release-artifacts/DeckForge_0.0.0.06_aarch64.dmg"),
     ).toBe(true);
+    expect(summary.includes("Native bundle QA: passed")).toBe(true);
     expect(summary.includes("content scan: passed")).toBe(true);
     expect(summary.includes("runtime absence remediation: present")).toBe(true);
   });
@@ -42,6 +43,7 @@ describe("production packaging evidence", () => {
       packageSha256: "",
       nativeMacosBundlePath: "",
       nativeMacosBundleSha256: "",
+      nativeMacosBundleVerified: false,
       productionMode: false,
       contentScan: {
         mockResourceHits: ["mock-provider"],
@@ -65,6 +67,7 @@ describe("production packaging evidence", () => {
       "missing_production_package",
       "missing_package_hash",
       "missing_native_macos_bundle",
+      "native_macos_bundle_unverified",
       "package_not_production_mode",
       "package_content_contaminated",
       "missing_clean_machine_step",
@@ -105,8 +108,9 @@ function completeEvidence(
   return {
     packagePath: "dist/deckforge-macos-dry-run.tgz",
     packageSha256: "3c15121b7fd11559b98c4ba751ccdac89a9990a669b7612e95b3cdfd94d0edf3",
-    nativeMacosBundlePath: "release-artifacts/DeckForge_0.1.0_aarch64.dmg",
-    nativeMacosBundleSha256: "dce2ba0c8a3b26a21fed1f4692e635e7d0feb39624eb96ba6b7bf87f41879a1f",
+    nativeMacosBundlePath: "release-artifacts/DeckForge_0.0.0.06_aarch64.dmg",
+    nativeMacosBundleSha256: "91f16a367a7d96209f73beb99120967e39306eabaa0629f9f035531cda861a31",
+    nativeMacosBundleVerified: true,
     productionMode: true,
     contentScan: {
       mockResourceHits: [],

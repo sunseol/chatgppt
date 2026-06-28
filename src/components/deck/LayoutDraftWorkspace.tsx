@@ -54,7 +54,7 @@ export function LayoutDraftWorkspace({
   return (
     <>
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
-        <div className="grid grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           {layout.slides.map((slide) => {
             const spec = project.plan?.slides.find(
               (planSlide) => planSlide.number === slide.number,
@@ -71,7 +71,7 @@ export function LayoutDraftWorkspace({
                   onSelectLayer={onSelectedLayer}
                   onMoveLayer={onMoveLayer}
                 />
-                <div className="flex items-center justify-between gap-2 border-t border-border px-3 py-2 text-xs">
+                <div className="flex flex-col gap-2 border-t border-border px-3 py-2 text-xs sm:flex-row sm:items-center sm:justify-between">
                   <button
                     type="button"
                     className="font-mono text-muted-foreground"
@@ -79,7 +79,7 @@ export function LayoutDraftWorkspace({
                   >
                     #{String(slide.number).padStart(2, "0")} · {slide.componentType}
                   </button>
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <Button
                       type="button"
                       variant="ghost"

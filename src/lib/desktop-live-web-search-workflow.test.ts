@@ -74,7 +74,7 @@ function structuredTurnRuntime(
         const threadId = "thread_live_web_search";
         const turnId = "turn_live_web_search";
         return {
-          runtime: "codex app-server --stdio",
+          runtime: "codex app-server",
           threadId,
           turnId,
           turnCompleted: true,

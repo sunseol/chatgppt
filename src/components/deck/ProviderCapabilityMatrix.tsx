@@ -18,8 +18,8 @@ export function ProviderCapabilityMatrix({
           </div>
           <div className="mt-1 text-sm font-medium">{view.providerName}</div>
           <div className="mt-1 flex flex-wrap gap-2 text-xs text-muted-foreground">
-            <span>Provider {view.selectedProviderId}</span>
-            <span>Auth {view.authModeLabel}</span>
+            <span>실행 {view.selectedProviderId}</span>
+            <span>인증 {view.authModeLabel}</span>
             <span>{view.statusLabel}</span>
           </div>
         </div>

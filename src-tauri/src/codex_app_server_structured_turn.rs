@@ -47,7 +47,7 @@ pub fn run_codex_app_server_structured_turn(
     let event_methods = collect_event_methods(&notifications);
 
     Ok(CodexAppServerStructuredTurnEvidence {
-        runtime: "codex app-server --stdio".to_owned(),
+        runtime: "codex app-server".to_owned(),
         thread_id,
         turn_id,
         turn_completed: true,

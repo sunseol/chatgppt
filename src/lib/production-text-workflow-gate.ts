@@ -78,8 +78,8 @@ function interviewGate(
 ): ProductionTextWorkflowGate {
   const base = {
     workflow: "interview" as const,
-    title: "Live interview App Server workflow",
-    actionLabel: "Run live interview turns",
+    title: "라이브 인터뷰 실행",
+    actionLabel: "라이브 인터뷰 실행",
     requiredStages: INTERVIEW_STAGES,
   };
   const issues = bridgeIssues(appServerBridge);
@@ -93,8 +93,8 @@ function textPipelineGate(
 ): ProductionTextWorkflowGate {
   const base = {
     workflow: "text_pipeline" as const,
-    title: "Live Plan/Design/Layout App Server workflow",
-    actionLabel: "Run live text pipeline",
+    title: "라이브 기획/디자인/레이아웃 실행",
+    actionLabel: "라이브 텍스트 파이프라인 실행",
     requiredStages: TEXT_PIPELINE_STAGES,
   };
   const issues = [...bridgeIssues(appServerBridge), ...textPipelinePrerequisiteIssues(project)];
@@ -109,7 +109,7 @@ function bridgeIssues(
   return [
     {
       code: "app_server_bridge_missing",
-      message: "Production text jobs require the desktop App Server bridge before launch.",
+      message: "라이브 실행을 시작하려면 데스크톱 Codex 연결이 필요합니다.",
     },
   ];
 }
@@ -123,7 +123,7 @@ function textPipelinePrerequisiteIssues(
       : [
           {
             code: "missing_live_brief" as const,
-            message: "Live text pipeline requires an approved interview brief.",
+            message: "기획/디자인/레이아웃 실행 전에 승인된 인터뷰 브리프가 필요합니다.",
           },
         ]),
     ...(project.research?.approvedHash
@@ -131,7 +131,7 @@ function textPipelinePrerequisiteIssues(
       : [
           {
             code: "missing_approved_research" as const,
-            message: "Live text pipeline requires approved research evidence.",
+            message: "기획/디자인/레이아웃 실행 전에 승인된 조사 근거가 필요합니다.",
           },
         ]),
   ];

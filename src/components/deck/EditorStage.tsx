@@ -151,7 +151,7 @@ export function EditorStage({ project }: { readonly project: DeckProject }) {
         {layers.length === 0 ? (
           <EditorConversionPanel />
         ) : (
-          <div className="grid min-h-[calc(100vh-190px)] grid-cols-[120px_minmax(0,1fr)_300px] gap-5">
+          <div className="grid min-h-[calc(100vh-190px)] min-w-0 gap-5 xl:grid-cols-[140px_minmax(0,1fr)_300px]">
             <SlideList
               layers={layers}
               selected={selected}
@@ -160,7 +160,7 @@ export function EditorStage({ project }: { readonly project: DeckProject }) {
                 setSelectedLayerId(null);
               }}
             />
-            <div className="min-h-0 border border-border bg-paper">
+            <div className="min-h-0 min-w-0 border border-border bg-paper">
               <div className="flex items-center justify-between border-b border-border px-3 py-2">
                 <div className="text-xs text-muted-foreground">
                   {String(selected).padStart(2, "0")}번 슬라이드 편집
@@ -181,7 +181,7 @@ export function EditorStage({ project }: { readonly project: DeckProject }) {
                 </div>
               )}
             </div>
-            <aside>
+            <aside className="min-w-0">
               <EditorStats
                 layerCount={exportPayload.layerCount}
                 textLayerCount={exportPayload.textLayerCount}

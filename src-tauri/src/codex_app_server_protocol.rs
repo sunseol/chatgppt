@@ -37,6 +37,7 @@ impl SmokeAccumulator {
 
 pub(super) fn build_json_rpc_request(id: u64, method: &str, params: Value) -> Value {
     json!({
+        "jsonrpc": "2.0",
         "id": id,
         "method": method,
         "params": params
@@ -92,6 +93,7 @@ mod tests {
         );
 
         assert_eq!(request["id"], 1);
+        assert_eq!(request["jsonrpc"], "2.0");
         assert_eq!(request["method"], "initialize");
         assert_eq!(
             request["params"]["clientInfo"]["name"],

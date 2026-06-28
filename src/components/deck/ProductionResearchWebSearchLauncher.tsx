@@ -2,10 +2,10 @@ import { useState } from "react";
 import { updateProject } from "@/lib/deck-store";
 import type { DeckProject } from "@/lib/deck-types";
 import {
-  createDesktopLiveWebSearchLaunchIssues,
-  runDesktopLiveWebSearchResearchWorkflow,
-  type DesktopLiveWebSearchLaunchIssue,
-} from "@/lib/desktop-live-web-search-workflow";
+  createDesktopLiveResearchPackLaunchIssues,
+  runDesktopLiveResearchPackWorkflow,
+  type DesktopLiveResearchPackLaunchIssue,
+} from "@/lib/desktop-live-research-pack-workflow";
 import { createProviderJobManager } from "@/lib/provider-job-manager";
 import type { ProductionTextWorkflowBridgeStatus } from "@/lib/production-text-workflow-gate";
 
@@ -30,20 +30,22 @@ export function ProductionResearchWebSearchLauncher({
       createId: () => `${project.id}_research_${Date.now().toString(36)}`,
     }),
   );
-  const launchIssues = createDesktopLiveWebSearchLaunchIssues({ project, appServerBridge });
+  const launchIssues = createDesktopLiveResearchPackLaunchIssues({ project, appServerBridge });
   const canRun = launchIssues.length === 0 && runStatus.kind !== "running";
 
   const runSearch = () => {
     if (!canRun) return;
-    void runLiveWebSearch(project, manager, setRunStatus);
+    void runLiveResearchPack(project, manager, setRunStatus);
   };
 
   return (
     <section className="mt-6 border border-border bg-paper p-5 text-sm">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <div className="font-medium">Live web search Research workflow</div>
-          <div className="mt-1 text-muted-foreground">required turn: web_search</div>
+          <div className="font-medium">실제 조사 실행</div>
+          <div className="mt-1 text-muted-foreground">
+            승인된 브리프를 바탕으로 출처, 주장, 데이터셋을 생성합니다.
+          </div>
         </div>
         <button
           type="button"
@@ -51,7 +53,7 @@ export function ProductionResearchWebSearchLauncher({
           disabled={!canRun}
           className="border border-foreground px-4 py-2 text-xs font-medium uppercase disabled:cursor-not-allowed disabled:opacity-40"
         >
-          Run live web search
+          {runStatus.kind === "running" ? "조사팩 생성 중" : "조사팩 생성 시작"}
         </button>
       </div>
       {launchIssues.length > 0 ? <ResearchWebSearchIssueList issues={launchIssues} /> : null}
@@ -65,14 +67,14 @@ export function ProductionResearchWebSearchLauncher({
   );
 }
 
-async function runLiveWebSearch(
+async function runLiveResearchPack(
   project: DeckProject,
   jobManager: ReturnType<typeof createProviderJobManager>,
   setRunStatus: (status: ResearchWebSearchRunStatus) => void,
 ): Promise<void> {
-  setRunStatus({ kind: "running", message: "Running live Research web_search turn." });
+  setRunStatus({ kind: "running", message: "라이브 조사팩을 생성하는 중입니다." });
   try {
-    const result = await runDesktopLiveWebSearchResearchWorkflow({
+    const result = await runDesktopLiveResearchPackWorkflow({
       project,
       jobManager,
       createdAt: Date.now(),
@@ -80,18 +82,16 @@ async function runLiveWebSearch(
     switch (result.kind) {
       case "ready":
         updateProject(project.id, result.patch);
-        setRunStatus({
-          kind: "succeeded",
-          message: `Stored ${result.summary.candidateCount} live candidates across ${result.summary.domainCount} domains.`,
-        });
+        setRunStatus({ kind: "succeeded", message: result.summary });
         return;
       case "launch_blocked":
         setRunStatus({ kind: "failed", message: issueMessage(result.issues) });
         return;
       case "blocked":
+        updateProject(project.id, result.patch);
         setRunStatus({
           kind: "failed",
-          message: result.issues.map((issue) => issue.message).join(" "),
+          message: `${result.summary} ${result.issues.map((issue) => issue.message).join(" ")}`,
         });
         return;
       case "job_failed":
@@ -112,7 +112,7 @@ async function runLiveWebSearch(
 function ResearchWebSearchIssueList({
   issues,
 }: {
-  readonly issues: readonly DesktopLiveWebSearchLaunchIssue[];
+  readonly issues: readonly DesktopLiveResearchPackLaunchIssue[];
 }) {
   return (
     <ul className="mt-4 space-y-2">
@@ -126,10 +126,10 @@ function ResearchWebSearchIssueList({
   );
 }
 
-function issueMessage(issues: readonly DesktopLiveWebSearchLaunchIssue[]): string {
+function issueMessage(issues: readonly DesktopLiveResearchPackLaunchIssue[]): string {
   return issues.map((issue) => issue.message).join(" ");
 }
 
 function assertNever(value: never): never {
-  throw new Error(`Unhandled live web search result: ${JSON.stringify(value)}`);
+  throw new Error(`Unhandled live Research Pack result: ${JSON.stringify(value)}`);
 }

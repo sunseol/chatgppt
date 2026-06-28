@@ -164,7 +164,7 @@ function parseStructuredTurnEvidence(value: unknown): CodexAppServerStructuredTu
   };
 }
 
-function getTauriRuntime(): DeckforgeTauriRuntime | undefined {
+export function getTauriRuntime(): DeckforgeTauriRuntime | undefined {
   if (typeof window === "undefined") return undefined;
   return window.__TAURI__;
 }

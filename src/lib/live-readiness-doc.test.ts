@@ -105,7 +105,7 @@ describe("live readiness documentation", () => {
     expect(textSmoke.includes("DF-215")).toBe(true);
     expect(textSmoke.includes("codex login status")).toBe(true);
     expect(textSmoke.includes("JSON-RPC `initialize`")).toBe(true);
-    expect(textSmoke.includes("codex app-server --stdio")).toBe(true);
+    expect(textSmoke.includes("codex app-server")).toBe(true);
     expect(textSmoke.includes("daemon bootstrap returned `bootstrapped`")).toBe(true);
     expect(textSmoke.includes("authenticated health turn")).toBe(true);
     expect(textSmoke.includes("thread/resume")).toBe(true);

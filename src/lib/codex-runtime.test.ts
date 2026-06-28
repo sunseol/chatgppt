@@ -8,9 +8,14 @@ import {
   SUPPORTED_CODEX_RUNTIME,
   evaluateCodexAppServerBootstrap,
   evaluateCodexRuntime,
+  formatSupportedCodexRuntimeRange,
 } from "./codex-runtime";
 
 describe("Codex runtime discovery", () => {
+  test("formats the supported runtime range for user-facing remediation", () => {
+    expect(formatSupportedCodexRuntimeRange()).toBe("1.0.0 이상 2.0.0 미만");
+  });
+
   test("returns install guidance when the runtime is missing", () => {
     const result = evaluateCodexRuntime({ kind: "missing" });
 
