@@ -1,0 +1,25 @@
+import { describe, expect, test } from "bun:test";
+import { readFileSync } from "node:fs";
+
+const GENERATION_REPORT_LINEAGE_DOC = new URL(
+  "../../docs/live-generation-report-lineage.md",
+  import.meta.url,
+);
+
+describe("live generation report lineage documentation", () => {
+  test("records the live generation report lineage and export provenance contract", () => {
+    const generationReportLineage = readFileSync(GENERATION_REPORT_LINEAGE_DOC, "utf8");
+
+    expect(generationReportLineage.includes("DF-240")).toBe(true);
+    expect(generationReportLineage.includes("text turn")).toBe(true);
+    expect(generationReportLineage.includes("image request")).toBe(true);
+    expect(generationReportLineage.includes("missing_live_report_lineage")).toBe(true);
+    expect(generationReportLineage.includes("missing_text_artifact")).toBe(true);
+    expect(generationReportLineage.includes("missing_image_artifact")).toBe(true);
+    expect(generationReportLineage.includes("invalid_compositor_hash")).toBe(true);
+    expect(generationReportLineage.includes("invalid_export_hash")).toBe(true);
+    expect(generationReportLineage.includes("export_compositor_mismatch")).toBe(true);
+    expect(generationReportLineage.includes("mock_lineage_contamination")).toBe(true);
+    expect(generationReportLineage.includes("secret_leak")).toBe(true);
+  });
+});

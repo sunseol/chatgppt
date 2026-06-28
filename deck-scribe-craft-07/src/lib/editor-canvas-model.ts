@@ -128,12 +128,27 @@ function boundsToPercentStyle(
   bounds: EditorCanvasBounds,
   canvas: EditorCanvasSize,
 ): EditorCanvasLayerStyle {
+  const clamped = clampBounds(bounds, canvas);
   return {
-    left: percent(bounds.x, canvas.width),
-    top: percent(bounds.y, canvas.height),
-    width: percent(bounds.w, canvas.width),
-    height: percent(bounds.h, canvas.height),
+    left: percent(clamped.x, canvas.width),
+    top: percent(clamped.y, canvas.height),
+    width: percent(clamped.w, canvas.width),
+    height: percent(clamped.h, canvas.height),
   };
+}
+
+function clampBounds(bounds: EditorCanvasBounds, canvas: EditorCanvasSize): EditorCanvasBounds {
+  const canvasWidth = Math.max(0, canvas.width);
+  const canvasHeight = Math.max(0, canvas.height);
+  const x = clamp(bounds.x, 0, canvasWidth);
+  const y = clamp(bounds.y, 0, canvasHeight);
+  const right = clamp(bounds.x + bounds.w, x, canvasWidth);
+  const bottom = clamp(bounds.y + bounds.h, y, canvasHeight);
+  return { x, y, w: right - x, h: bottom - y };
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), max);
 }
 
 function percent(value: number, total: number): string {

@@ -1,9 +1,14 @@
 import { Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { ArrowRight, Plus, Trash2 } from "lucide-react";
-import { LocalProjectDataControls } from "@/components/deck/LocalProjectDataControls";
+import {
+  LocalProjectDataControls,
+  type ProjectFolderOpenStatus,
+} from "@/components/deck/LocalProjectDataControls";
 import { ProjectDeckThumbnail } from "@/components/deck/ProjectVisualPreview";
 import { Button } from "@/components/ui/button";
 import { deleteProject } from "@/lib/deck-store";
+import { openDesktopProjectFolder } from "@/lib/desktop-project-folder";
 import { buildLocalProjectFolderExport } from "@/lib/local-data-control";
 import { stageToStep, STEPS, type DeckProject } from "@/lib/deck-types";
 
@@ -30,7 +35,7 @@ export function HomeProjectList({
     );
   }
   return (
-    <ul className="divide-y divide-border border border-border bg-paper">
+    <ul className="min-w-0 divide-y divide-border border border-border bg-paper">
       {projects.map((project) => (
         <ProjectRow key={project.id} project={project} onOpen={() => onOpenProject(project)} />
       ))}
@@ -54,7 +59,7 @@ function EmptyProjectState({
             className="mt-5 bg-foreground text-background hover:bg-foreground/90"
             onClick={onCreate}
           >
-            <Plus className="h-4 w-4" /> 새 프로젝트
+            <Plus className="h-4 w-4" /> 첫 프로젝트 만들기
           </Button>
         ) : null}
       </div>
@@ -72,9 +77,21 @@ function ProjectRow({
   const step = stageToStep(project.stage);
   const label = STEPS.find((item) => item.key === step)?.label ?? step;
   const needsReview = Object.keys(project.invalidated).length;
+  const [deleteArmed, setDeleteArmed] = useState(false);
+  const [folderStatus, setFolderStatus] = useState<ProjectFolderOpenStatus>({ kind: "idle" });
+  const confirmDelete = () => {
+    deleteProject(project.id);
+  };
+  const openFolder = () => {
+    void openProjectFolder(project, setFolderStatus);
+  };
   return (
-    <li className="grid grid-cols-[138px_minmax(0,1fr)_120px_120px_52px] items-center gap-4 px-5 py-4">
-      <Link to="/project/$projectId/$step" params={{ projectId: project.id, step }}>
+    <li className="grid min-w-0 gap-4 px-4 py-4 sm:grid-cols-[138px_minmax(0,1fr)] lg:grid-cols-[138px_minmax(0,1fr)_120px_120px_52px] lg:items-center lg:px-5">
+      <Link
+        className="w-fit"
+        to="/project/$projectId/$step"
+        params={{ projectId: project.id, step }}
+      >
         <ProjectDeckThumbnail project={project} compact />
       </Link>
       <div className="min-w-0">
@@ -88,31 +105,38 @@ function ProjectRow({
         </Link>
         <LocalProjectDataControls
           project={project}
-          onOpen={onOpen}
+          deleteArmed={deleteArmed}
+          folderStatus={folderStatus}
+          onArmDelete={() => setDeleteArmed(true)}
+          onConfirmDelete={confirmDelete}
           onExport={() => downloadLocalProjectFolder(project)}
-          onDelete={() => {
-            if (confirm("이 로컬 프로젝트를 삭제할까요?")) deleteProject(project.id);
-          }}
+          onOpenFolder={openFolder}
         />
       </div>
-      <div className="text-xs">
+      <div className="min-w-0 text-xs">
         <span className="rounded bg-secondary px-2 py-1">{label}</span>
       </div>
-      <div className="text-xs text-muted-foreground">
+      <div className="min-w-0 text-xs text-muted-foreground">
         {needsReview > 0 ? (
           <span className="text-warning">재확인 {needsReview}개</span>
         ) : (
           `${project.slideCount}장`
         )}
       </div>
-      <div className="flex justify-end gap-1">
+      <div className="flex justify-start gap-1 lg:justify-end">
         <Button
           variant="ghost"
           size="icon"
           onClick={(event) => {
             event.preventDefault();
-            if (confirm("이 프로젝트를 삭제할까요?")) deleteProject(project.id);
+            if (deleteArmed) {
+              confirmDelete();
+              return;
+            }
+            setDeleteArmed(true);
           }}
+          aria-label={deleteArmed ? "프로젝트 카드 삭제 확인" : "프로젝트 카드 로컬 삭제"}
+          title={deleteArmed ? "프로젝트 카드 삭제 확인" : "프로젝트 카드 로컬 삭제"}
         >
           <Trash2 className="h-4 w-4 text-muted-foreground" />
         </Button>
@@ -126,8 +150,33 @@ function ProjectRow({
   );
 }
 
+async function openProjectFolder(
+  project: DeckProject,
+  setFolderStatus: (status: ProjectFolderOpenStatus) => void,
+): Promise<void> {
+  setFolderStatus({ kind: "running" });
+  const result = await openDesktopProjectFolder(project);
+  switch (result.kind) {
+    case "opened":
+      setFolderStatus({ kind: "opened", path: result.directoryPath });
+      return;
+    case "download_required":
+      downloadLocalProjectFolderFile(result.file);
+      setFolderStatus({ kind: "downloaded", filename: result.file.filename });
+      return;
+    case "failed":
+      setFolderStatus({ kind: "failed", message: result.error.message });
+      return;
+    default:
+      return assertNever(result);
+  }
+}
+
 function downloadLocalProjectFolder(project: Parameters<typeof buildLocalProjectFolderExport>[0]) {
-  const file = buildLocalProjectFolderExport(project);
+  downloadLocalProjectFolderFile(buildLocalProjectFolderExport(project));
+}
+
+function downloadLocalProjectFolderFile(file: ReturnType<typeof buildLocalProjectFolderExport>) {
   const blob = new Blob([file.content], { type: file.mime });
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
@@ -135,4 +184,8 @@ function downloadLocalProjectFolder(project: Parameters<typeof buildLocalProject
   anchor.download = file.filename;
   anchor.click();
   URL.revokeObjectURL(url);
+}
+
+function assertNever(value: never): never {
+  throw new Error(`Unhandled project folder result: ${JSON.stringify(value)}`);
 }

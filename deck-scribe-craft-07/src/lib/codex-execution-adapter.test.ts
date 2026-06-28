@@ -71,6 +71,36 @@ describe("Codex execution adapter", () => {
     expect(job.errorMessage).toBe("Codex is not connected: Sign in with ChatGPT.");
   });
 
+  test("allows bridge-detected Codex execution so the runner can report real failures", async () => {
+    let callCount = 0;
+    const adapter = createCodexExecutionAdapter({
+      executablePath: "/usr/local/bin/codex",
+      status: {
+        kind: "bridgeDetected",
+        providerId: "codex",
+        message: "Codex bridge detected.",
+      },
+      jobManager: createProviderJobManager({ createId: () => "job_codex_bridge" }),
+      runner: {
+        run: async () => {
+          callCount += 1;
+          return { exitCode: 0, stdout: "bridge runner invoked", stderr: "" };
+        },
+      },
+    });
+
+    const job = await adapter.run({
+      capability: "interview",
+      description: "Create interview",
+      prompt: "Interview the user",
+      args: ["exec"],
+    });
+
+    expect(callCount).toBe(1);
+    expect(job.status).toBe("succeeded");
+    expect(job.output?.stdout).toBe("bridge runner invoked");
+  });
+
   test("redacts failure output before storing the job error", async () => {
     const adapter = createCodexExecutionAdapter({
       executablePath: "/usr/local/bin/codex",

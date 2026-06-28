@@ -4,6 +4,7 @@ import { spawnSync } from "node:child_process";
 import { cpSync, existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { sanitizePackageBuildDirectory } from "./package-path-sanitizer.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const distDir = join(root, "dist");
@@ -19,6 +20,8 @@ const archivePath = join(distDir, "deckforge-macos-dry-run.tgz");
 run("bun", ["run", "build"]);
 requirePath(clientDir, "client build output");
 requirePath(serverDir, "server build output");
+sanitizePackageBuildDirectory(clientDir, root);
+sanitizePackageBuildDirectory(serverDir, root);
 
 rmSync(outputDir, { recursive: true, force: true });
 rmSync(archivePath, { force: true });

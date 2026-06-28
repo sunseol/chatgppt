@@ -1,5 +1,5 @@
 import type { ProviderStatus } from "./provider-types";
-import type { CodexRuntimeStatus } from "./codex-runtime";
+import type { CodexAppServerBootstrapStatus, CodexRuntimeStatus } from "./codex-runtime";
 
 export type CodexAuthEvidence =
   | { readonly kind: "unknown" }
@@ -8,6 +8,7 @@ export type CodexAuthEvidence =
 
 export interface CodexProviderStatusInput {
   readonly runtime: CodexRuntimeStatus;
+  readonly appServer?: CodexAppServerBootstrapStatus;
   readonly auth: CodexAuthEvidence;
 }
 
@@ -17,6 +18,14 @@ export function createCodexProviderStatus(input: CodexProviderStatusInput): Prov
       kind: "unavailable",
       providerId: "codex",
       message: `${input.runtime.message} ${input.runtime.remediation}`,
+    };
+  }
+
+  if (input.appServer !== undefined && input.appServer.kind !== "ready") {
+    return {
+      kind: "unavailable",
+      providerId: "codex",
+      message: `${input.appServer.message} ${input.appServer.remediation}`,
     };
   }
 

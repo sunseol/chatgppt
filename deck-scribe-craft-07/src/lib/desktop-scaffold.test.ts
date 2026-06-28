@@ -8,6 +8,13 @@ type PackageJson = {
 type TauriConfig = {
   readonly productName?: string;
   readonly identifier?: string;
+  readonly app?: {
+    readonly withGlobalTauri?: boolean;
+    readonly windows?: readonly {
+      readonly url?: string;
+      readonly backgroundColor?: string;
+    }[];
+  };
   readonly build?: {
     readonly beforeDevCommand?: string;
     readonly beforeBuildCommand?: string;
@@ -18,6 +25,9 @@ type TauriConfig = {
     readonly active?: boolean;
     readonly targets?: readonly string[];
     readonly icon?: readonly string[];
+    readonly macOS?: {
+      readonly signingIdentity?: string;
+    };
   };
 };
 
@@ -26,7 +36,8 @@ describe("desktop scaffold", () => {
     const pkg = readJson<PackageJson>("../../package.json");
 
     expect(pkg.scripts?.["tauri:dev"]).toBe("tauri dev");
-    expect(pkg.scripts?.["tauri:build"]).toBe("tauri build");
+    expect(pkg.scripts?.["tauri:build"]?.includes("tauri build")).toBe(true);
+    expect(pkg.scripts?.["tauri:build"]?.includes("--remap-path-prefix")).toBe(true);
     expect(pkg.scripts?.["rust:fmt"]?.includes("src-tauri/Cargo.toml")).toBe(true);
     expect(pkg.scripts?.["rust:clippy"]?.includes("-D warnings")).toBe(true);
     expect(pkg.scripts?.quality).toBe("bun run quality:ts && bun run quality:rust");
@@ -39,11 +50,15 @@ describe("desktop scaffold", () => {
     expect(config.identifier).toBe("app.deckforge.desktop");
     expect(config.build?.beforeDevCommand).toBe("bun run dev");
     expect(config.build?.beforeBuildCommand).toBe("bun run build");
-    expect(config.build?.devUrl).toBe("http://localhost:5173");
+    expect(config.build?.devUrl).toBe("http://localhost:8080");
     expect(config.build?.frontendDist).toBe("../dist/client");
+    expect(config.app?.withGlobalTauri).toBe(true);
+    expect(config.app?.windows?.[0]?.url).toBe("/");
+    expect(config.app?.windows?.[0]?.backgroundColor).toBe("#f6f1e7");
     expect(config.bundle?.active).toBe(true);
     expect(config.bundle?.targets?.includes("dmg")).toBe(true);
     expect(config.bundle?.icon).toEqual(["icons/icon.png"]);
+    expect(config.bundle?.macOS?.signingIdentity).toBe("-");
   });
 
   test("prerenders the root HTML shell required by the Tauri bundle", () => {
