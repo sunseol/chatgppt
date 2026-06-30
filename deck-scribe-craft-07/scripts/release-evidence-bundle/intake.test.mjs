@@ -143,12 +143,25 @@ describe("release evidence intake", () => {
       path.join(verificationDir, "production-ui-verification.json"),
       { ok: true, status: "pass", interactionCount: 10, checkedFileCount: 73, findings: [] },
     );
+    const visualCouncilVerificationPath = await writeVerification(
+      path.join(verificationDir, "visual-council-verification.json"),
+      {
+        ok: true,
+        status: "pass",
+        hardGateStatus: "passed",
+        councilAdvisoryStatus: "target_met",
+        reviewerCount: 7,
+        minimumScore: 99,
+        findings: [],
+      },
+    );
 
     const result = await runReleaseEvidenceIntake({
       templateDir,
       uiContractVerificationPath: uiVerificationPath,
       automationVerificationPath: productionVerificationPath,
       section45VerificationPath: productionVerificationPath,
+      visualCouncilVerificationPath,
     });
 
     expect(result.ticketStatuses["DF-UI-001"].state).toBe("close-candidate");
@@ -177,9 +190,13 @@ describe("release evidence intake", () => {
     expect(result.ticketStatuses["DF-QA-002"].verification.rerunCommand).toContain(
       `--section45-verification ${productionVerificationPath}`,
     );
+    expect(result.ticketStatuses["DF-QA-002"].verification.rerunCommand).toContain(
+      `--visual-council-verification ${visualCouncilVerificationPath}`,
+    );
     await expectFile(result.paths.uiContractVerification);
     await expectFile(result.paths.automationVerification);
     await expectFile(result.paths.section45Verification);
+    await expectFile(result.paths.visualCouncilVerification);
 
     const manifest = await readReleaseEvidenceManifest(result.paths.releaseEvidenceManifest);
     expect(manifest.evidence.uiContract.status).toBe("pass");
@@ -188,6 +205,8 @@ describe("release evidence intake", () => {
     expect(manifest.evidence.automation.path).toBe("production-ui-e2e/verification.json");
     expect(manifest.evidence.section45Interactions.status).toBe("pass");
     expect(manifest.evidence.section45Interactions.path).toBe("section45/verification.json");
+    expect(manifest.evidence.visualCouncil.status).toBe("pass");
+    expect(manifest.evidence.visualCouncil.path).toBe("visual-council/verification.json");
   });
 });
 

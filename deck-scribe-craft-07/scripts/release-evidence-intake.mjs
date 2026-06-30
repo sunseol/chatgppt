@@ -25,6 +25,9 @@ const result = await runReleaseEvidenceIntake({
   section45VerificationPath:
     readOption("--section45-verification") ??
     process.env.DECKFORGE_RELEASE_EVIDENCE_SECTION45_VERIFICATION,
+  visualCouncilVerificationPath:
+    readOption("--visual-council-verification") ??
+    process.env.DECKFORGE_RELEASE_EVIDENCE_VISUAL_COUNCIL_VERIFICATION,
 });
 
 console.log(JSON.stringify(result, null, 2));

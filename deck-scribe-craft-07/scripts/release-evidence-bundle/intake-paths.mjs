@@ -11,6 +11,7 @@ export function releaseTemplatePaths(templateDir) {
     uiContractVerification: path.join(templateDir, "gppt-ui-contract", "verification.json"),
     automationVerification: path.join(templateDir, "production-ui-e2e", "verification.json"),
     section45Verification: path.join(templateDir, "section45", "verification.json"),
+    visualCouncilVerification: path.join(templateDir, "visual-council", "verification.json"),
     packagedGoldenPathVerification: path.join(
       templateDir,
       "packaged-golden-path",

@@ -53,6 +53,11 @@ export async function runReleaseEvidenceIntake(options) {
     outPath: templatePaths.section45Verification,
     writeJson,
   });
+  const visualCouncil = await attachOptionalVerification({
+    sourcePath: options.visualCouncilVerificationPath,
+    outPath: templatePaths.visualCouncilVerification,
+    writeJson,
+  });
 
   const secretScan = await scanEvidenceSecrets([templateDir]);
   await writeJson(templatePaths.secretScanVerification, {
@@ -72,6 +77,7 @@ export async function runReleaseEvidenceIntake(options) {
     cleanMachine,
     powerPointRoundTrip,
     nonDeveloperUat,
+    visualCouncil,
     secretScan,
   });
   intakeManifest.bundleChecksum = hashManifestForBundle(intakeManifest);
@@ -99,6 +105,7 @@ export async function runReleaseEvidenceIntake(options) {
       uiContractVerificationPath: options.uiContractVerificationPath,
       automationVerificationPath: options.automationVerificationPath,
       section45VerificationPath: options.section45VerificationPath,
+      visualCouncilVerificationPath: options.visualCouncilVerificationPath,
     },
   );
   const ticketStatusDocument = {
@@ -153,6 +160,7 @@ function releaseEvidenceIntakeCommand(options) {
   appendOption(args, "--ui-contract-verification", options.uiContractVerificationPath);
   appendOption(args, "--automation-verification", options.automationVerificationPath);
   appendOption(args, "--section45-verification", options.section45VerificationPath);
+  appendOption(args, "--visual-council-verification", options.visualCouncilVerificationPath);
   return args.map(shellArg).join(" ");
 }
 
@@ -190,6 +198,12 @@ function withEvidenceIntake(manifest, verifications) {
     relativePath: "section45/verification.json",
     dmgSha256: manifest.artifactIdentity?.dmgSha256 ?? "",
     fallback: evidence.section45Interactions,
+  });
+  evidence.visualCouncil = optionalEvidenceItem({
+    verification: verifications.visualCouncil,
+    relativePath: "visual-council/verification.json",
+    dmgSha256: manifest.artifactIdentity?.dmgSha256 ?? "",
+    fallback: evidence.visualCouncil,
   });
   evidence.packagedGoldenPath = evidenceItem(verifications.packagedGoldenPath);
   evidence.cleanMachine = evidenceItem(verifications.cleanMachine);
