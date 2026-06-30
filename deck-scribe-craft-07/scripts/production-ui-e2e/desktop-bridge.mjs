@@ -1,4 +1,10 @@
 import { redactSensitiveText } from "./evidence-model.mjs";
+import {
+  deckPlanPayload,
+  designSystemPayload,
+  layoutIrPayload,
+  researchPackPayload,
+} from "./desktop-bridge-fixtures.mjs";
 
 export async function installProductionE2eBridge(page, onIpcEvent) {
   await page.exposeFunction("__deckforgeProductionE2eInvoke", async (command, args) => {
@@ -36,7 +42,7 @@ export async function installProductionE2eBridge(page, onIpcEvent) {
   });
 }
 
-function responseFor(command, args) {
+export function responseFor(command, args) {
   if (command === "deckforge_app_info") {
     return { name: "DeckForge", version: "0.0.0-local-e2e", desktopRuntime: "tauri-v2" };
   }
@@ -88,9 +94,7 @@ function smokeEvidence() {
 function structuredTurnEvidence(prompt) {
   const threadId = "thread_production_ui_e2e";
   const turnId = `turn_production_ui_e2e_${Date.now().toString(36)}`;
-  const payload = prompt.includes("# Interview Question Plan")
-    ? interviewQuestionPayload()
-    : interviewBriefPayload();
+  const payload = payloadForPrompt(prompt);
   return {
     runtime: "production-ui-e2e-bridge",
     threadId,
@@ -107,6 +111,15 @@ function structuredTurnEvidence(prompt) {
       { method: "turn/completed", params: { threadId, turn: { id: turnId } } },
     ],
   };
+}
+
+function payloadForPrompt(prompt) {
+  if (prompt.includes("# Live Research Pack")) return researchPackPayload();
+  if (prompt.includes("# Deck Plan Generation Package")) return deckPlanPayload();
+  if (prompt.includes("# Design System Generation Package")) return designSystemPayload();
+  if (prompt.includes("# Layout IR Generation Package")) return layoutIrPayload();
+  if (prompt.includes("# Interview Question Plan")) return interviewQuestionPayload();
+  return interviewBriefPayload();
 }
 
 function interviewQuestionPayload() {

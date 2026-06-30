@@ -13,6 +13,7 @@ import { collectGitEvidence } from "./production-ui-e2e/git-evidence.mjs";
 import { writeProductionE2eVerification } from "./production-ui-e2e/evidence-validator.mjs";
 import { installProductionE2eBridge } from "./production-ui-e2e/desktop-bridge.mjs";
 import { InteractionRecorder, target } from "./production-ui-e2e/interaction-recorder.mjs";
+import { runLiveTextEvidenceFlow } from "./production-ui-e2e/live-text-flow.mjs";
 import { startServer, stopServer, waitForServer } from "./full-flow-visual-qa/server.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -236,6 +237,7 @@ async function runFlow({ page, recorder, baseUrl }) {
       await page.waitForURL(/\/project\/[^/]+\/research/, { timeout: 10_000 });
     },
   );
+  await runLiveTextEvidenceFlow({ page, recorder });
 }
 
 async function expectEmptyHome(page) {
