@@ -40,6 +40,9 @@ describe("slide review gallery", () => {
     expect(markup.includes("추가 요청")).toBe(true);
     expect(markup.includes("부분 수정 (실험)")).toBe(true);
     expect(markup.includes("disabled")).toBe(true);
+    expect(markup.includes("grid-cols-1")).toBe(true);
+    expect(markup.includes("lg:grid-cols-[260px_1fr]")).toBe(true);
+    expect(markup.includes("sm:grid-cols-2")).toBe(true);
   });
 
   test("blocks vectorization until every slide is approved and QA-passed", () => {

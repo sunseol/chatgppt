@@ -101,6 +101,38 @@ describe("generation report", () => {
     expect(report.includes("request img_req_001")).toBe(true);
     expect(report.includes("fixture no")).toBe(true);
   });
+
+  test("includes live slide lineage when production export evidence is supplied", () => {
+    const report = buildGenerationReport(
+      reportProjectFixture(),
+      undefined,
+      [],
+      [],
+      [
+        {
+          slideNumber: 1,
+          sourceIds: ["src_001"],
+          textArtifactId: "plan_live_001",
+          textProviderKind: "codex",
+          textTurnId: "turn_plan_001",
+          textThreadId: "thread_project_001",
+          imageArtifactId: "project_001_image_slide_001_v1",
+          imageProviderKind: "openaiImage",
+          imageRequestId: "img_req_001",
+          promptVersion: "slide_generation@v1",
+          fixture: false,
+          compositorHash: fullHash("b"),
+          exportedPngHash: fullHash("b"),
+          projectFileContent: '{"project":"project_001"}',
+        },
+      ],
+    );
+
+    expect(report.includes("## Live Slide Lineage")).toBe(true);
+    expect(report.includes("sources src_001")).toBe(true);
+    expect(report.includes("text turn turn_plan_001")).toBe(true);
+    expect(report.includes("image request img_req_001")).toBe(true);
+  });
 });
 
 function reportProjectFixture(): DeckProject {
@@ -272,4 +304,8 @@ function reportProjectFixture(): DeckProject {
       },
     ],
   };
+}
+
+function fullHash(seed: string): string {
+  return `sha256:${seed.repeat(64)}`;
 }

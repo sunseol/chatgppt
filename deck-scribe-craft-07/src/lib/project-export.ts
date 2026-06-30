@@ -42,7 +42,7 @@ export type ProjectExportPngFile = {
   readonly path: string;
   readonly dataUrl: string;
   readonly hash: string;
-  readonly source: "approved_layout_png";
+  readonly source: "approved_layout_png" | "live_generation_background";
 };
 
 export type ProjectExportSecretScan = {
@@ -77,7 +77,7 @@ export function buildProjectExportPackage(
 
   const createdAt = options.now?.() ?? Date.now();
   const version = options.version ?? nextExportVersion(project);
-  const pngFiles = buildPngFiles({ projectId: project.id, layout: project.layout, layers });
+  const pngFiles = buildPngFiles({ project, layout: project.layout, layers });
   const svgFiles = buildNativeSvgFiles({ project, layers });
   const hybridSvgFiles = buildHybridSvgFiles({ project, layers });
   const pptxExport = buildPptxCompatibilityExport({ project, layers });
@@ -178,27 +178,52 @@ function collectExportIssues(
 }
 
 function buildPngFiles(input: {
-  readonly projectId: string;
+  readonly project: DeckProject;
   readonly layout: LayoutPrototype;
   readonly layers: readonly EditableLayerModel[];
 }): readonly ProjectExportPngFile[] {
+  const liveBackgrounds = liveBackgroundsBySlide(input.project);
   return input.layers.flatMap((model) => {
+    const liveBackground = liveBackgrounds.get(model.slideNumber);
     const dataUrl = input.layout.slides.find(
       (slide) => slide.number === model.slideNumber,
     )?.layoutPngDataUrl;
-    if (!dataUrl) return [];
+    const pngDataUrl = liveBackground?.dataUrl ?? dataUrl;
+    if (!pngDataUrl) return [];
     const padded = String(model.slideNumber).padStart(2, "0");
     return [
       {
         slideNumber: model.slideNumber,
         filename: `slide_${padded}.png`,
-        path: `projects/${input.projectId}/exports/png/slide_${padded}.png`,
-        dataUrl,
-        hash: hashContent(dataUrl),
-        source: "approved_layout_png",
+        path: `projects/${input.project.id}/exports/png/slide_${padded}.png`,
+        dataUrl: pngDataUrl,
+        hash: liveBackground?.hash ?? hashContent(pngDataUrl),
+        source: liveBackground ? "live_generation_background" : "approved_layout_png",
       },
     ];
   });
+}
+
+function liveBackgroundsBySlide(
+  project: DeckProject,
+): ReadonlyMap<number, { readonly dataUrl: string; readonly hash: string }> {
+  const artifacts = new Map(
+    (project.liveSlideGeneration?.artifacts ?? []).map((artifact) => [
+      artifact.slideNumber,
+      artifact,
+    ]),
+  );
+  const backgrounds = new Map<number, { readonly dataUrl: string; readonly hash: string }>();
+  for (const stored of project.liveSlideGeneration?.storedArtifacts ?? []) {
+    const artifact = artifacts.get(stored.metadata.slideNumber);
+    if (artifact) {
+      backgrounds.set(stored.metadata.slideNumber, {
+        dataUrl: artifact.imageDataUrl,
+        hash: stored.binary.hash,
+      });
+    }
+  }
+  return backgrounds;
 }
 
 function buildProjectFile(project: DeckProject): ProjectExportFile {

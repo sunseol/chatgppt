@@ -10,6 +10,7 @@ import type { DeckProject } from "@/lib/deck-types";
 import { updateProject } from "@/lib/deck-store";
 import { evaluateFinalExportGate, type FinalExportGateIssue } from "@/lib/final-export-gate";
 import { buildGenerationReport } from "@/lib/generation-report";
+import { buildLiveGenerationReportLineage } from "@/lib/live-generation-report-lineage-builder";
 import { buildProjectExportPackage, createProjectExportPatch } from "@/lib/project-export";
 import type { ExecutionMode } from "@/lib/provider-provenance";
 
@@ -35,7 +36,21 @@ export function ExportStage({
     () => (exportPackage ? { ...project, exportPackage: exportPackage.summary } : project),
     [exportPackage, project],
   );
-  const reportMd = useMemo(() => buildGenerationReport(reportProject), [reportProject]);
+  const liveReportLineage = useMemo(
+    () => buildLiveGenerationReportLineage({ project, exportPackage }),
+    [exportPackage, project],
+  );
+  const reportMd = useMemo(
+    () =>
+      buildGenerationReport(
+        reportProject,
+        undefined,
+        [],
+        project.liveSlideGeneration?.providerLineage ?? [],
+        liveReportLineage,
+      ),
+    [liveReportLineage, project.liveSlideGeneration?.providerLineage, reportProject],
+  );
   const finalGate = useMemo(
     () =>
       evaluateFinalExportGate({
@@ -44,8 +59,9 @@ export function ExportStage({
         reportMarkdown: reportMd,
         executionMode,
         lineage: project.liveSlideGeneration?.providerLineage,
+        liveReportLineage,
       }),
-    [executionMode, exportPackage, project, reportMd],
+    [executionMode, exportPackage, liveReportLineage, project, reportMd],
   );
   const exportStatusLabel = exportPackage
     ? finalGate.kind === "ready"

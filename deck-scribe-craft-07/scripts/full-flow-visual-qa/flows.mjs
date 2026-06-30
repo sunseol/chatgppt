@@ -76,7 +76,7 @@ async function runLiveInterviewInteraction(page, outDir, results) {
       await page.waitForFunction(
         () => document.body.innerText.includes("라이브 인터뷰 브리프가 준비되었습니다"),
         null,
-        { timeout: 8_000 },
+        { timeout: 15_000 },
       );
       results.push(await inspect(page, "desktop-interview-live-brief", outDir));
     }

@@ -6,6 +6,10 @@ import { formatAuditLogForReport } from "./audit-log";
 import { formatReportCitation } from "./citation-renderer";
 import { createCorePromptUsageRecords, formatPromptVersionsForReport } from "./prompt-assets";
 import {
+  formatLiveGenerationReportLineage,
+  type LiveSlideReportLineage,
+} from "./live-generation-report-lineage";
+import {
   buildMinimalSlideSourceMap,
   formatMinimalSourceMapForReport,
   type MinimalSlideSourceMap,
@@ -18,6 +22,7 @@ export function buildGenerationReport(
   }),
   auditEvents: readonly AuditLogEvent[] = [],
   providerLineage: readonly ProviderArtifactProvenance[] = [],
+  liveReportLineage: readonly LiveSlideReportLineage[] = [],
 ): string {
   const out: string[] = [];
   const sourceMap =
@@ -43,6 +48,10 @@ export function buildGenerationReport(
   appendPromptVersions(promptUsages, out);
   appendExport(project, out);
   appendAuditLog(auditEvents, out);
+  if (liveReportLineage.length > 0) {
+    out.push("");
+    out.push(formatLiveGenerationReportLineage(liveReportLineage));
+  }
   appendProviderProvenance(providerLineage, out);
   return out.join("\n");
 }

@@ -4,6 +4,7 @@ import { ExportStage } from "./ExportStage";
 import { ReadyExportPanel } from "./ExportStagePanels";
 import type { DeckProject } from "@/lib/deck-types";
 import type { FinalExportGateWarning } from "@/lib/final-export-gate";
+import { mockBrief, mockPlan, mockResearch } from "@/lib/mock-ai";
 import { encodeSolidPngDataUrl } from "@/lib/png-encoder";
 import { buildProjectExportPackage } from "@/lib/project-export";
 
@@ -39,6 +40,18 @@ describe("export stage", () => {
     expect(markup.includes("검증 필요")).toBe(true);
     expect(markup.includes(">준비 완료</div>")).toBe(false);
     expect(markup.includes("내보내기 전에 확인이 필요합니다.")).toBe(true);
+  });
+
+  test("presents production export as ready only when live slide lineage is complete", () => {
+    const markup = renderToStaticMarkup(
+      <ExportStage project={productionExportProjectFixture()} executionMode="production" />,
+    );
+
+    expect(markup.includes("준비 완료")).toBe(true);
+    expect(markup.includes("검증 필요")).toBe(false);
+    expect(markup.includes("내보내기 파일이 준비되었습니다.")).toBe(true);
+    expect(markup.includes("## Live Slide Lineage")).toBe(true);
+    expect(markup.includes("image request img_req_001")).toBe(true);
   });
 
   test("keeps export metrics readable on mobile widths", () => {
@@ -166,4 +179,141 @@ function exportProjectFixture(): DeckProject {
     invalidated: {},
     approvalLog: [],
   };
+}
+
+function productionExportProjectFixture(): DeckProject {
+  const base = exportProjectFixture();
+  const livePng = encodeSolidPngDataUrl({
+    width: 160,
+    height: 90,
+    color: { r: 12, g: 120, b: 180, a: 255 },
+  });
+  const liveHash = fullHash("c");
+  const brief = { ...mockBrief("검증 가능한 시장 진입 전략 보고서", 1, "16:9"), id: "brief_live" };
+  const researchBase = mockResearch(brief);
+  const firstClaim = requireFirst(researchBase.claims, "research claim");
+  const research = {
+    ...researchBase,
+    id: "research_live",
+    approvedHash: "sha256:research_live",
+  };
+  const planBase = mockPlan(brief, research);
+  const firstSlide = requireFirst(planBase.slides, "plan slide");
+  const plan = {
+    ...planBase,
+    id: "plan_live",
+    approvedHash: "sha256:plan_live",
+    slides: [{ ...firstSlide, number: 1, evidence: [firstClaim.id] }],
+  };
+  const artifact = {
+    providerId: "openaiImage" as const,
+    slideNumber: 1,
+    aspectRatio: "16:9" as const,
+    canvas: { width: 1600, height: 900 },
+    layoutReference: {
+      screenshot: "projects/project_001/layouts/slide_001.png",
+      mode: "composition-reference" as const,
+    },
+    imageDataUrl: livePng,
+    prompt: {
+      id: "slide_generation" as const,
+      version: "v1",
+      hash: "sha256:prompt",
+    },
+    request: {
+      model: "gpt-image-2" as const,
+      requestId: "img_req_001",
+    },
+    generatedAt: 456,
+  };
+  const imageProvenance = {
+    artifactId: "project_001_image_slide_001_v1",
+    executionMode: "production" as const,
+    providerKind: "openaiImage" as const,
+    authMode: "api_key" as const,
+    modelOrRuntime: "gpt-image-2",
+    promptVersion: "slide_generation@v1",
+    durationMs: 1_000,
+    inputArtifactIds: ["sha256:prompt", "projects/project_001/layouts/slide_001.png"],
+    fixture: false,
+    requestId: "img_req_001",
+  };
+  return {
+    ...base,
+    brief,
+    research,
+    plan,
+    liveTextArtifacts: [
+      {
+        artifactId: "plan_live_001",
+        projectId: "project_001",
+        artifactType: "deck_plan",
+        version: 1,
+        hash: "sha256:plan_live",
+        path: "projects/project_001/plans/plan_live_001.json",
+        createdAt: 456,
+        turnId: "turn_plan_001",
+        threadId: "thread_project_001",
+      },
+    ],
+    liveSlideGeneration: {
+      version: 1,
+      generatedAt: 456,
+      artifacts: [artifact],
+      storedArtifacts: [
+        {
+          binary: {
+            artifactId: "project_001_image_slide_001_v1",
+            path: "projects/project_001/slides/images/slide_001.v1.png",
+            hash: liveHash,
+            bytes: 72,
+            createdAt: 456,
+          },
+          metadata: {
+            path: "projects/project_001/slides/images/slide_001.v1.metadata.json",
+            providerId: "openaiImage",
+            slideNumber: 1,
+            aspectRatio: "16:9",
+            canvas: artifact.canvas,
+            layoutReference: artifact.layoutReference,
+            prompt: artifact.prompt,
+            request: {
+              model: "gpt-image-2",
+              requestId: "img_req_001",
+            },
+            generatedAt: 456,
+          },
+          provenance: imageProvenance,
+        },
+      ],
+      compositions: [
+        {
+          slideNumber: 1,
+          exportBasis: "compositor",
+          canvas: artifact.canvas,
+          backgroundProviderId: "openaiImage",
+          backgroundArtifact: {
+            artifactId: "project_001_image_slide_001_v1",
+            path: "projects/project_001/slides/images/slide_001.v1.png",
+            hash: liveHash,
+          },
+          overlayRoles: ["title"],
+          overlayBounds: [],
+          svg: "<svg />",
+          previewPngDataUrl: livePng,
+        },
+      ],
+      providerLineage: [imageProvenance],
+    },
+  };
+}
+
+function requireFirst<T>(values: readonly T[], label: string): T {
+  const value = values[0];
+  if (value === undefined) throw new Error(`Missing ${label}.`);
+  return value;
+}
+
+function fullHash(seed: string): string {
+  return `sha256:${seed.repeat(64)}`;
 }

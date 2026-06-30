@@ -15,8 +15,8 @@ export function ReviewGalleryPanel(props: {
 }) {
   const selected = props.items.find((item) => item.slide.number === props.selectedSlideNumber);
   return (
-    <div className="grid grid-cols-[260px_1fr] gap-6">
-      <ul className="max-h-[70vh] space-y-1 overflow-y-auto">
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-[260px_1fr] lg:gap-6">
+      <ul className="max-h-[45vh] space-y-1 overflow-y-auto lg:max-h-[70vh]">
         {props.items.map((item) => (
           <li key={item.slide.number}>
             <button
@@ -71,7 +71,7 @@ export function ReviewGalleryPanel(props: {
             />
           </div>
         )}
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           <Button variant="outline" onClick={props.onApproveSelected} disabled={!selected}>
             <Check className="h-4 w-4" />
             선택 슬라이드 승인
@@ -92,7 +92,7 @@ export function ReviewGalleryPanel(props: {
             <Plus className="h-4 w-4" />
             추가 요청
           </Button>
-          <Button variant="outline" disabled className="col-span-2">
+          <Button variant="outline" disabled className="sm:col-span-2">
             <FlaskConical className="h-4 w-4" />
             {PARTIAL_EDIT_EXPERIMENT_LABEL}
           </Button>

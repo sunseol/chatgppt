@@ -90,6 +90,24 @@ describe("PNG and project export package", () => {
     expect(result.package.manifest.pptxFile?.backgroundImageCount).toBe(1);
   });
 
+  test("uses stored live generation backgrounds for PNG export evidence", () => {
+    const livePng = encodeSolidPngDataUrl({
+      width: 160,
+      height: 90,
+      color: { r: 12, g: 120, b: 180, a: 255 },
+    });
+    const liveHash = fullHash("a");
+    const project = projectWithStoredLiveArtifact(exportProjectFixture(), livePng, liveHash);
+
+    const result = buildProjectExportPackage(project, { now: () => 456, version: 2 });
+
+    expect(result.kind).toBe("ready");
+    if (result.kind !== "ready") return;
+    expect(result.package.pngFiles[0]?.dataUrl).toBe(livePng);
+    expect(result.package.pngFiles[0]?.hash).toBe(liveHash);
+    expect(result.package.pngFiles[0]?.source).toBe("live_generation_background");
+  });
+
   test("stores the export artifact summary in a project patch", () => {
     const project = exportProjectFixture();
     const result = buildProjectExportPackage(project, { now: () => 456, version: 1 });
@@ -259,4 +277,112 @@ function exportProjectFixture(): DeckProject {
     invalidated: {},
     approvalLog: [],
   };
+}
+
+function projectWithStoredLiveArtifact(
+  project: DeckProject,
+  livePng: string,
+  liveHash: string,
+): DeckProject {
+  const artifact = {
+    providerId: "openaiImage" as const,
+    slideNumber: 1,
+    aspectRatio: "16:9" as const,
+    canvas: { width: 1600, height: 900 },
+    layoutReference: {
+      screenshot: "projects/project_001/layouts/slide_001.png",
+      mode: "composition-reference" as const,
+    },
+    imageDataUrl: livePng,
+    prompt: {
+      id: "slide_generation" as const,
+      version: "v1",
+      hash: "sha256:prompt",
+    },
+    request: {
+      model: "gpt-image-2" as const,
+      requestId: "img_req_001",
+    },
+    generatedAt: 456,
+  };
+  return {
+    ...project,
+    liveSlideGeneration: {
+      version: 1,
+      generatedAt: 456,
+      artifacts: [artifact],
+      storedArtifacts: [
+        {
+          binary: {
+            artifactId: "project_001_image_slide_001_v1",
+            path: "projects/project_001/slides/images/slide_001.v1.png",
+            hash: liveHash,
+            bytes: 72,
+            createdAt: 456,
+          },
+          metadata: {
+            path: "projects/project_001/slides/images/slide_001.v1.metadata.json",
+            providerId: "openaiImage",
+            slideNumber: 1,
+            aspectRatio: "16:9",
+            canvas: artifact.canvas,
+            layoutReference: artifact.layoutReference,
+            prompt: artifact.prompt,
+            request: {
+              model: "gpt-image-2",
+              requestId: "img_req_001",
+            },
+            generatedAt: 456,
+          },
+          provenance: {
+            artifactId: "project_001_image_slide_001_v1",
+            executionMode: "production",
+            providerKind: "openaiImage",
+            authMode: "api_key",
+            modelOrRuntime: "gpt-image-2",
+            promptVersion: "slide_generation@v1",
+            durationMs: 1_000,
+            inputArtifactIds: ["sha256:prompt", "projects/project_001/layouts/slide_001.png"],
+            fixture: false,
+            requestId: "img_req_001",
+          },
+        },
+      ],
+      compositions: [
+        {
+          slideNumber: 1,
+          exportBasis: "compositor",
+          canvas: artifact.canvas,
+          backgroundProviderId: "openaiImage",
+          backgroundArtifact: {
+            artifactId: "project_001_image_slide_001_v1",
+            path: "projects/project_001/slides/images/slide_001.v1.png",
+            hash: liveHash,
+          },
+          overlayRoles: ["title"],
+          overlayBounds: [],
+          svg: "<svg />",
+          previewPngDataUrl: livePng,
+        },
+      ],
+      providerLineage: [
+        {
+          artifactId: "project_001_image_slide_001_v1",
+          executionMode: "production",
+          providerKind: "openaiImage",
+          authMode: "api_key",
+          modelOrRuntime: "gpt-image-2",
+          promptVersion: "slide_generation@v1",
+          durationMs: 1_000,
+          inputArtifactIds: ["sha256:prompt", "projects/project_001/layouts/slide_001.png"],
+          fixture: false,
+          requestId: "img_req_001",
+        },
+      ],
+    },
+  };
+}
+
+function fullHash(seed: string): string {
+  return `sha256:${seed.repeat(64)}`;
 }
