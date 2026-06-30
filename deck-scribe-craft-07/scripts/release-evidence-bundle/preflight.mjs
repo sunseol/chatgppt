@@ -11,6 +11,7 @@ const REQUIRED_EVIDENCE = [
   "cleanMachine",
   "powerPointRoundTrip",
   "nonDeveloperUat",
+  "visualCouncil",
   "secretScan",
 ];
 const FINAL_STATUSES = new Set(["release-ready", "accepted"]);

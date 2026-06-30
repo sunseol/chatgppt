@@ -6,6 +6,7 @@ import { verifyCleanMachineEvidence } from "../clean-machine-evidence/verify.mjs
 import { verifyNonDeveloperUatEvidence } from "../non-developer-uat-evidence/verify.mjs";
 import { verifyPackagedGoldenPathEvidence } from "../packaged-golden-path-evidence/verify.mjs";
 import { verifyPowerPointRoundTripManifest } from "../powerpoint-round-trip-evidence/verify.mjs";
+import { verifyVisualReleaseCouncilEvidence } from "../visual-release-council-evidence/verify.mjs";
 import { evaluateReleaseEvidenceBundle, readReleaseEvidenceManifest } from "./preflight.mjs";
 import { writeReleaseEvidenceTemplates } from "./templates.mjs";
 
@@ -31,14 +32,16 @@ describe("release evidence manifest templates", () => {
       "packaged-golden-path",
       "powerpoint-round-trip",
       "release-evidence",
+      "visual-council",
     ]);
 
     const packaged = await verifyPackagedGoldenPathEvidence(result.paths.packagedGoldenPath);
     const cleanMachine = await verifyCleanMachineEvidence(result.paths.cleanMachine);
     const powerPoint = await verifyPowerPointRoundTripManifest(result.paths.powerPointRoundTrip);
     const uat = await verifyNonDeveloperUatEvidence(result.paths.nonDeveloperUat);
+    const visualCouncil = await verifyVisualReleaseCouncilEvidence(result.paths.visualCouncil);
 
-    for (const verification of [packaged, cleanMachine, powerPoint, uat]) {
+    for (const verification of [packaged, cleanMachine, powerPoint, uat, visualCouncil]) {
       expect(verification.status).toBe("blocked");
       expect(verification.sourceDmgSha256).toBe(sourceDmgSha256);
       expect(verification.findings.map((finding) => finding.code)).not.toContain(
@@ -59,6 +62,7 @@ describe("release evidence manifest templates", () => {
       "secretScan",
       "section45Interactions",
       "uiContract",
+      "visualCouncil",
     ]);
     expect(preflight.status).toBe("blocked");
     expect(preflight.findings.map((finding) => finding.code)).not.toContain(

@@ -1,49 +1,9 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { issueMapTemplate, OPEN_RELEASE_BLOCKERS } from "./issue-map-template.mjs";
 import { hashManifestForBundle } from "./preflight.mjs";
 
-export const SPLIT_RELEASE_ISSUES = {
-  "DF-REL-001": 169,
-  "DF-UI-001": 176,
-  "DF-QA-002": 177,
-  "DF-QA-003": 178,
-  "DF-E2E-112": 170,
-  "DF-UI-040": 179,
-  "DF-REL-002": 171,
-  "DF-PPT-001": 172,
-  "DF-UAT-001": 173,
-  "DF-SEC-001": 174,
-  "DF-REL-003": 175,
-};
-
-const PARENT_ISSUE = 168;
-const ISSUE_DEPENDENCIES = {
-  "DF-REL-001": [],
-  "DF-UI-001": [],
-  "DF-QA-002": ["DF-UI-001", "DF-REL-001"],
-  "DF-QA-003": ["DF-QA-002"],
-  "DF-E2E-112": ["DF-REL-001", "DF-UI-001", "DF-QA-002", "DF-QA-003"],
-  "DF-UI-040": ["DF-UI-001", "DF-QA-002"],
-  "DF-REL-002": ["DF-REL-001"],
-  "DF-PPT-001": ["DF-E2E-112"],
-  "DF-UAT-001": ["DF-E2E-112", "DF-UI-040"],
-  "DF-SEC-001": ["DF-QA-003", "DF-E2E-112", "DF-REL-002", "DF-PPT-001", "DF-UAT-001"],
-  "DF-REL-003": [
-    "DF-REL-001",
-    "DF-UI-001",
-    "DF-QA-002",
-    "DF-QA-003",
-    "DF-E2E-112",
-    "DF-UI-040",
-    "DF-REL-002",
-    "DF-PPT-001",
-    "DF-UAT-001",
-    "DF-SEC-001",
-  ],
-};
-const OPEN_RELEASE_BLOCKERS = Object.fromEntries(
-  Object.keys(SPLIT_RELEASE_ISSUES).map((ticket) => [ticket, "open"]),
-);
+export { SPLIT_RELEASE_ISSUES } from "./issue-map-template.mjs";
 
 export async function writeReleaseEvidenceTemplates(options) {
   const outDir = path.resolve(options.outDir);
@@ -68,6 +28,7 @@ export async function writeReleaseEvidenceTemplates(options) {
     }),
     powerPointRoundTrip: powerPointRoundTripTemplate(sourceDmgSha256),
     nonDeveloperUat: nonDeveloperUatTemplate(sourceDmgSha256),
+    visualCouncil: visualCouncilTemplate(sourceDmgSha256),
     releaseEvidence: releaseEvidenceTemplate({ ...options, sourceDmgSha256 }),
     issueMap: issueMapTemplate(checkedAt),
   };
@@ -78,6 +39,7 @@ export async function writeReleaseEvidenceTemplates(options) {
     cleanMachine: path.join(outDir, "clean-machine-manifest.json"),
     powerPointRoundTrip: path.join(outDir, "powerpoint-round-trip-manifest.json"),
     nonDeveloperUat: path.join(outDir, "non-developer-uat-manifest.json"),
+    visualCouncil: path.join(outDir, "visual-council-manifest.json"),
     releaseEvidence: path.join(outDir, "release-evidence-manifest.json"),
     issueMap: path.join(outDir, "split-issue-map.json"),
   };
@@ -92,6 +54,7 @@ export async function writeReleaseEvidenceTemplates(options) {
       { kind: "clean-machine", path: paths.cleanMachine },
       { kind: "powerpoint-round-trip", path: paths.powerPointRoundTrip },
       { kind: "non-developer-uat", path: paths.nonDeveloperUat },
+      { kind: "visual-council", path: paths.visualCouncil },
       { kind: "release-evidence", path: paths.releaseEvidence },
       { kind: "issue-map", path: paths.issueMap },
     ],
@@ -198,6 +161,24 @@ function nonDeveloperUatTemplate(sourceDmgSha256) {
   };
 }
 
+function visualCouncilTemplate(sourceDmgSha256) {
+  return {
+    schemaVersion: 1,
+    sourceDmgSha256,
+    targetScore: 98,
+    hardGates: [
+      { id: "layout_ir_validator", passed: false, evidencePath: "visual-council/layout-ir.json" },
+      { id: "web_render_diff", passed: false, evidencePath: "visual-council/web-render-diff.json" },
+      {
+        id: "pptx_real_render",
+        passed: false,
+        evidencePath: "visual-council/pptx-real-render.json",
+      },
+    ],
+    reviews: [],
+  };
+}
+
 function releaseEvidenceTemplate(options) {
   const sourceDmgSha256 = options.sourceDmgSha256;
   return {
@@ -234,22 +215,13 @@ function evidenceItems(sourceDmgSha256) {
       sourceDmgSha256,
     ),
     nonDeveloperUat: blockedEvidence("non-developer-uat/verification.json", sourceDmgSha256),
+    visualCouncil: blockedEvidence("visual-council/verification.json", sourceDmgSha256),
     secretScan: blockedEvidence("evidence-secret-scan/verification.json", sourceDmgSha256),
   };
 }
 
 function blockedEvidence(filePath, dmgSha256) {
   return { status: "blocked", path: filePath, dmgSha256 };
-}
-
-function issueMapTemplate(checkedAt) {
-  return {
-    schemaVersion: 1,
-    parentIssue: PARENT_ISSUE,
-    splitIssues: SPLIT_RELEASE_ISSUES,
-    dependencies: ISSUE_DEPENDENCIES,
-    checkedAt,
-  };
 }
 
 async function writeJson(filePath, value) {

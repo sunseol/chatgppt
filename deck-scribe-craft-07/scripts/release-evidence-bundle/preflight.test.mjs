@@ -55,6 +55,7 @@ describe("final release evidence bundle preflight", () => {
       "evidence.powerPointRoundTrip",
     );
     expect(result.findings.map((finding) => finding.path)).toContain("evidence.nonDeveloperUat");
+    expect(result.findings.map((finding) => finding.path)).toContain("evidence.visualCouncil");
     expect(result.findings.map((finding) => finding.code)).toContain("release_blocker_not_closed");
     expect(result.findings.map((finding) => finding.code)).toContain("missing_signoff_name");
   });
@@ -207,6 +208,7 @@ function completeEvidence() {
     cleanMachine: evidence("pass"),
     powerPointRoundTrip: evidence("pass"),
     nonDeveloperUat: evidence("pass"),
+    visualCouncil: evidence("pass"),
     secretScan: evidence("pass"),
   };
 }

@@ -23,6 +23,7 @@ const uiContractPath = await latestVerification("gppt-ui-contract");
 const section45Path = await latestVerification("production-ui-e2e");
 const powerPointRoundTripPath = await latestVerification("powerpoint-round-trip");
 const nonDeveloperUatPath = await latestVerification("non-developer-uat");
+const visualCouncilPath = await latestVerification("visual-release-council");
 const secretScanPath = await latestVerification("evidence-secret-scan");
 const releaseArtifact = await readJson(releaseArtifactPath);
 const gatekeeperAssessment = await readJson(gatekeeperAssessmentPath);
@@ -30,6 +31,7 @@ const packagedGoldenPath = await readJson(packagedGoldenPathPath);
 const cleanMachine = await readJson(cleanMachinePath);
 const powerPointRoundTrip = await readJson(powerPointRoundTripPath);
 const nonDeveloperUat = await readJson(nonDeveloperUatPath);
+const visualCouncil = await readJson(visualCouncilPath);
 const dmgSha256 = releaseArtifact?.actualHash ?? "";
 const manifest = {
   schemaVersion: 1,
@@ -62,6 +64,9 @@ const manifest = {
     }),
     nonDeveloperUat: evidence(nonDeveloperUatPath, dmgSha256, {
       status: nonDeveloperUat?.ok === true ? "pass" : "blocked",
+    }),
+    visualCouncil: evidence(visualCouncilPath, dmgSha256, {
+      status: visualCouncil?.ok === true ? "pass" : "blocked",
     }),
     secretScan: evidence(secretScanPath, dmgSha256),
   },
