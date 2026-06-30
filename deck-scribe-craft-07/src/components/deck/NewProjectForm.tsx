@@ -19,8 +19,8 @@ const SAMPLES = [
   {
     name: "AI 슬라이드 제작 시스템 피치덱",
     prompt:
-      "초기 VC 대상으로 우리 제품(검증 기반 AI PPT 도구)을 소개하는 8장 분량 피치덱을 만들어줘. 문제 정의, 시장, 솔루션, 차별점, 비즈니스 모델을 포함.",
-    count: 8,
+      "초기 VC 대상으로 우리 제품(검증 기반 AI PPT 도구)을 소개하는 5장 분량 피치덱을 만들어줘. 문제 정의, 시장, 솔루션, 차별점, 비즈니스 모델을 포함.",
+    count: 5,
   },
   {
     name: "2026 상반기 마케팅 성과 보고",
@@ -46,7 +46,7 @@ export function NewProjectForm({
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [prompt, setPrompt] = useState("");
-  const [count, setCount] = useState(8);
+  const [count, setCount] = useState(5);
   const [ratio, setRatio] = useState<"16:9" | "4:3">("16:9");
   const [lang, setLang] = useState<"ko" | "en" | "mixed">("ko");
   const [appServerBridge, setAppServerBridge] =

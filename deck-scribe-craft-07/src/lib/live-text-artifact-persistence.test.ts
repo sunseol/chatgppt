@@ -112,6 +112,12 @@ describe("live text artifact persistence", () => {
     expect(result.patch.design.id).toBe(fixtures.design.id);
     expect(result.patch.layout.slides.length).toBe(5);
     expect(result.patch.layout.slides.every((slide) => slide.domLayers.length > 0)).toBe(true);
+    expect(result.patch.layout.validationReport?.status).toBe("passed");
+    expect(
+      result.patch.layout.slides.every((slide) =>
+        slide.layoutPngDataUrl?.startsWith("data:image/png;base64,"),
+      ),
+    ).toBe(true);
     expect(result.artifacts.map((artifact) => artifact.record.artifactType)).toEqual([
       "deck_plan",
       "design_system",

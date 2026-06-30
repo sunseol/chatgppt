@@ -42,7 +42,7 @@ export function researchPackPayload() {
         numericEvidence: [
           {
             id: "num_required_slide_count",
-            value: "8",
+            value: "5",
             unit: "slides",
             baseYear: 2026,
             geography: "Global",
@@ -62,7 +62,7 @@ export function researchPackPayload() {
         period: "2026",
         geography: "Global",
         definition: "Slides required for MVP Golden Path local production evidence",
-        rows: [{ label: "MVP", value: 8, year: 2026 }],
+        rows: [{ label: "MVP", value: 5, year: 2026 }],
         uncertain: false,
       },
     ],
@@ -125,7 +125,7 @@ function productionBrief() {
     goal: "제품 피치덱 작성",
     audience: "초기 VC",
     desiredOutcome: "후속 미팅",
-    slideCount: 8,
+    slideCount: 5,
     aspectRatio: "16:9",
     language: "ko",
     tone: ["명료한", "제품 중심"],
@@ -178,6 +178,7 @@ function productionSlides() {
     ),
     slide(2, "문제", "Problem", "AI PPT 결과물은 이미지 품질과 편집 가능성이 동시에 깨지기 쉽다.", [
       "claim_openai_image_generation",
+      "dataset_image_workflow",
     ]),
     slide(
       3,
@@ -197,29 +198,8 @@ function productionSlides() {
       5,
       "이미지 생성 범위",
       "Capability",
-      "MVP는 8장 배경 생성과 1장 재생성 검증을 릴리즈 판단 단위로 삼는다.",
+      "MVP는 5장 배경 생성과 PPT export 검증을 릴리즈 판단 단위로 삼는다.",
       ["claim_openai_image_generation", "dataset_image_workflow"],
-    ),
-    slide(
-      6,
-      "PPT 산출물",
-      "Export",
-      "최종 결과는 PNG 묶음이 아니라 PPT에서 다시 편집 가능한 객체 구조를 목표로 한다.",
-      ["claim_openai_image_generation"],
-    ),
-    slide(
-      7,
-      "검증 게이트",
-      "Proof",
-      "시각 QA, 구조 검증, export round-trip이 같은 후보 빌드를 기준으로 묶인다.",
-      ["dataset_image_workflow"],
-    ),
-    slide(
-      8,
-      "릴리즈 판단",
-      "Closing",
-      "98점 이상 시각 협의체와 기능 게이트를 모두 만족해야 배포한다.",
-      [],
     ),
   ];
 }

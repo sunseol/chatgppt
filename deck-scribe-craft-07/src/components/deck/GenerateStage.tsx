@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { GateBar } from "@/components/deck/GateBar";
+import { GenerateEmptyAction } from "@/components/deck/GenerateEmptyAction";
 import { GeneratedSlideGrid } from "@/components/deck/GeneratedSlideGrid";
 import { ProviderJobProgressPanel } from "@/components/deck/ProviderJobProgressPanel";
 import {
-  EmptyAction,
   StageErrorBanner,
   StageHeader,
   StageScroll,
@@ -268,17 +268,11 @@ export function GenerateStage({
           />
         ) : null}
         {!slides ? (
-          <EmptyAction
-            label={
-              !generationReady
-                ? "실제 이미지 경로 결정 레코드가 필요합니다."
-                : missingLiveRunner
-                  ? "네이티브 OpenAI image transport 연결 필요"
-                  : "승인한 레이아웃으로 슬라이드 이미지 생성"
-            }
+          <GenerateEmptyAction
+            generationReady={generationReady}
+            missingLiveRunner={missingLiveRunner}
             busy={busy}
-            disabled={!generationReady || missingLiveRunner}
-            onClick={generate}
+            onGenerate={generate}
           />
         ) : (
           <>

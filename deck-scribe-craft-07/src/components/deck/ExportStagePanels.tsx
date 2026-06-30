@@ -1,4 +1,4 @@
-import { CheckCircle2, Download } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PptxReadinessPreview } from "@/components/deck/PptxReadinessPreview";
 import type { DeckProject } from "@/lib/deck-types";
@@ -18,8 +18,6 @@ export function ReadyExportPanel({
   readonly warnings?: readonly FinalExportGateWarning[];
   readonly developmentWatermark?: "MOCK MODE";
 }) {
-  const pptxFile =
-    exportPackage.pptxExport.kind === "ready" ? exportPackage.pptxExport.file : undefined;
   return (
     <>
       <div className="mb-4 border border-border bg-paper px-4 py-3 text-sm">
@@ -31,15 +29,6 @@ export function ReadyExportPanel({
       <DevelopmentExportWarning warnings={warnings} watermark={developmentWatermark} />
       <PptxReadinessPreview exportPackage={exportPackage} project={project} />
       <div className="grid grid-cols-2 gap-3">
-        {pptxFile ? (
-          <Button
-            onClick={() => downloadDataUrl(pptxFile)}
-            className="col-span-2 bg-foreground text-background hover:bg-foreground/90"
-          >
-            <Download className="h-4 w-4" />
-            PPTX 파일 다운로드
-          </Button>
-        ) : null}
         <Button
           variant="outline"
           onClick={() => downloadText(`${project.name}_report.md`, reportMd, "text/markdown")}

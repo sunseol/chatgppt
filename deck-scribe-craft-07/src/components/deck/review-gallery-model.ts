@@ -9,6 +9,7 @@ export interface ReviewGalleryItem {
   readonly qaStatus: SlideQaStatus;
   readonly selected: boolean;
   readonly composition?: FinalSlideComposition;
+  readonly requiredOverlayRoles?: readonly string[];
 }
 
 export interface BuildReviewGalleryItemsInput {
@@ -17,6 +18,7 @@ export interface BuildReviewGalleryItemsInput {
   readonly selectedSlideNumber: number | null;
   readonly qaBySlide?: Readonly<Record<number, SlideQaStatus>>;
   readonly compositions?: readonly FinalSlideComposition[];
+  readonly requiredOverlayRolesBySlide?: Readonly<Record<number, readonly string[]>>;
 }
 
 export const PARTIAL_EDIT_EXPERIMENT_LABEL = "부분 수정 (실험)";
@@ -58,6 +60,7 @@ export function buildReviewGalleryItems(
 ): readonly ReviewGalleryItem[] {
   return input.slides.map((slide) => {
     const composition = input.compositions?.find((item) => item.slideNumber === slide.number);
+    const requiredOverlayRoles = input.requiredOverlayRolesBySlide?.[slide.number];
     return {
       slide,
       title:
@@ -65,6 +68,7 @@ export function buildReviewGalleryItems(
       qaStatus: input.qaBySlide?.[slide.number] ?? "not_run",
       selected: input.selectedSlideNumber === slide.number,
       ...(composition === undefined ? {} : { composition }),
+      ...(requiredOverlayRoles === undefined ? {} : { requiredOverlayRoles }),
     };
   });
 }
@@ -136,7 +140,7 @@ function liveCompositionIssues(
     ...compositionIdentityIssues(item, composition),
     ...backgroundIssues(composition),
     ...previewIssues(composition),
-    ...overlayIssues(composition),
+    ...overlayIssues(composition, item.requiredOverlayRoles ?? REQUIRED_OVERLAY_ROLES),
     ...collisionIssues(composition, detections),
   ];
 }
@@ -210,14 +214,15 @@ function previewIssues(
 
 function overlayIssues(
   composition: FinalSlideComposition,
+  requiredOverlayRoles: readonly string[],
 ): readonly ReviewGalleryLiveCompositionIssue[] {
-  return REQUIRED_OVERLAY_ROLES.filter((role) => !composition.overlayRoles.includes(role)).map(
-    (role) => ({
+  return requiredOverlayRoles
+    .filter((role) => !composition.overlayRoles.includes(role))
+    .map((role) => ({
       code: "missing_editable_overlay",
       slideNumber: composition.slideNumber,
       message: `Missing editable ${role} overlay.`,
-    }),
-  );
+    }));
 }
 
 function collisionIssues(

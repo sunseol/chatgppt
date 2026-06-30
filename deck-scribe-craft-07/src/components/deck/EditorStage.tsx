@@ -20,6 +20,7 @@ import {
   buildEditorCanvasModel,
   estimateDeckOpenPerformance,
 } from "@/lib/editor-canvas-model";
+import { createEditorFinalizePatch } from "@/lib/editor-finalize";
 import { applyUpdatedTransform } from "@/lib/editor-stage-model";
 import {
   moveDeckLayer,
@@ -158,7 +159,14 @@ export function EditorStage({
   };
 
   const finalize = () => {
-    updateProject(project.id, { stage: "FINAL_REPORTING" });
+    updateProject(
+      project.id,
+      createEditorFinalizePatch({
+        project,
+        layerHash: exportPayload.hash,
+        finalizedAt: Date.now(),
+      }),
+    );
     navigate({
       to: "/project/$projectId/$step",
       params: { projectId: project.id, step: "export" },

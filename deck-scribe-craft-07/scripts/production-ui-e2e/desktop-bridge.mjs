@@ -69,6 +69,12 @@ export function responseFor(command, args) {
       filesWritten: [],
     };
   }
+  if (command === "deckforge_openai_image_generate") {
+    return imageGenerateEvidence(args?.request);
+  }
+  if (command === "deckforge_write_project_artifact") {
+    return projectArtifactWriteEvidence(args?.request);
+  }
   if (command === "deckforge_reveal_project_folder") return null;
   throw new Error(`Unexpected production UI E2E invoke: ${command}`);
 }
@@ -129,7 +135,7 @@ function interviewQuestionPayload() {
       audience: "초기 VC",
       desiredOutcome: "",
       coreMessage: "검증 기반 AI PPT 도구",
-      slideCount: 8,
+      slideCount: 5,
       aspectRatio: "16:9",
       language: "ko",
       tone: [],
@@ -148,7 +154,7 @@ function interviewBriefPayload() {
     goal: "제품 피치덱 작성",
     audience: "초기 VC",
     desiredOutcome: "후속 미팅",
-    slideCount: 8,
+    slideCount: 5,
     aspectRatio: "16:9",
     language: "ko",
     tone: ["명료한"],
@@ -157,6 +163,39 @@ function interviewBriefPayload() {
     successCriteria: ["후속 미팅 요청"],
     openQuestions: [],
   };
+}
+
+function imageGenerateEvidence(request) {
+  return {
+    imageDataUrl: "data:image/png;base64,iVBORw0KGgo=",
+    requestId: `img_req_production_ui_e2e_${hashRequest(request?.prompt ?? "slide")}`,
+    size: request?.aspectRatio === "4:3" ? "1536x1024" : "1792x1024",
+    quality: "high",
+    latencyMs: 1,
+  };
+}
+
+function projectArtifactWriteEvidence(request) {
+  return {
+    filePath: `/tmp/deckforge-production-ui-e2e/${request?.projectId ?? "project-ui-created"}/${request?.relativePath ?? "artifact.bin"}`,
+    bytes: contentBytes(request?.content),
+  };
+}
+
+function hashRequest(value) {
+  return Math.abs([...value].reduce((sum, char) => (sum * 31 + char.charCodeAt(0)) | 0, 17))
+    .toString(16)
+    .padStart(8, "0");
+}
+
+function contentBytes(content) {
+  if (content?.kind === "base64" && typeof content.value === "string") {
+    return Math.max(1, Math.floor((content.value.length * 3) / 4));
+  }
+  if (content?.kind === "text" && typeof content.value === "string") {
+    return content.value.length;
+  }
+  return 0;
 }
 
 function redactValue(value) {

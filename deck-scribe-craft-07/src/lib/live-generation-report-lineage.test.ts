@@ -37,6 +37,21 @@ describe("live generation report lineage", () => {
     expect(validation).toEqual({ kind: "ready" });
   });
 
+  test("allows non-source-backed slides to omit source ids", () => {
+    // Given
+    const [base] = completeLineage();
+    if (!base) throw new Error("Expected lineage fixture.");
+
+    // When
+    const validation = validateLiveGenerationReportLineage({
+      executionMode: "production",
+      slides: [{ ...base, sourceIds: [], requiresSourceTrace: false }],
+    });
+
+    // Then
+    expect(validation).toEqual({ kind: "ready" });
+  });
+
   test("blocks contaminated lineage, mismatched export, and leaked secrets", () => {
     // Given
     const [base] = completeLineage();

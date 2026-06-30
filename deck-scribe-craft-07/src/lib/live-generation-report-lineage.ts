@@ -28,6 +28,7 @@ export type LiveGenerationReportLineageValidation =
 export interface LiveSlideReportLineage {
   readonly slideNumber: number;
   readonly sourceIds: readonly string[];
+  readonly requiresSourceTrace?: boolean;
   readonly textArtifactId: string;
   readonly textProviderKind: ProviderArtifactProvenance["providerKind"];
   readonly textTurnId?: string;
@@ -75,7 +76,7 @@ function slideIssues(
   slide: LiveSlideReportLineage,
 ): readonly LiveGenerationReportLineageIssue[] {
   return [
-    ...(slide.sourceIds.length > 0
+    ...(slide.requiresSourceTrace === false || slide.sourceIds.length > 0
       ? []
       : [
           {

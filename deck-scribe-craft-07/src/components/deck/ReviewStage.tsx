@@ -24,6 +24,7 @@ import {
   buildReviewGalleryItems,
   validateReviewGalleryLiveCompositions,
 } from "@/components/deck/review-gallery-model";
+import { buildRequiredOverlayRolesBySlide } from "@/components/deck/review-gallery-required-roles";
 
 export function ReviewStage({ project }: { readonly project: DeckProject }) {
   const navigate = useNavigate();
@@ -101,6 +102,7 @@ export function ReviewStage({ project }: { readonly project: DeckProject }) {
           specs: project.plan.slides,
           selectedSlideNumber: selected,
           compositions: project.liveSlideGeneration.compositions,
+          requiredOverlayRolesBySlide: buildRequiredOverlayRolesBySlide(project.layout),
         })
       : undefined;
   const liveValidation = liveItems

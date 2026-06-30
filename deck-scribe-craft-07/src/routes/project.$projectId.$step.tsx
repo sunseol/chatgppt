@@ -205,7 +205,13 @@ function WorkflowStage({ runtime, appServerBridge, ...props }: ResolvedWorkflowS
 }
 
 function isProductionLateStage(step: StepKey): boolean {
-  return step === "generate" || step === "review" || step === "editor" || step === "export";
+  return (
+    step === "layout" ||
+    step === "generate" ||
+    step === "review" ||
+    step === "editor" ||
+    step === "export"
+  );
 }
 
 type DevelopmentWorkflowStageLoaderProps = WorkflowStageProps & {

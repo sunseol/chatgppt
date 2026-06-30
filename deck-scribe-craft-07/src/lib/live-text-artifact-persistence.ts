@@ -6,7 +6,7 @@ import type {
   LayoutPrototype,
 } from "./deck-types";
 import type { InterviewQuestionPlan } from "./interview-questions";
-import { renderLayoutIrToPrototype, type LayoutIR } from "./layout-ir";
+import type { LayoutIR } from "./layout-ir";
 import {
   createPersistedLiveTextArtifact,
   type LiveTextPersistedArtifact,
@@ -34,6 +34,7 @@ import {
 } from "./live-text-pipeline-cutover";
 import type { ProviderArtifactProvenance } from "./provider-provenance";
 import type { StructuredCodexAccepted } from "./codex-structured-task-runner";
+import { createValidatedLayoutPrototype } from "./live-text-layout-persistence";
 
 export type LiveInterviewPersistenceInput = {
   readonly projectId: string;
@@ -183,7 +184,7 @@ export function createLiveTextPipelinePersistence(
         patch: {
           plan: input.deckPlan.value,
           design: input.designSystem.value,
-          layout: renderLayoutIrToPrototype(input.layoutIr.value),
+          layout: createValidatedLayoutPrototype(input.layoutIr.value),
           stage: "LAYOUT_APPROVAL_PENDING",
         },
         artifacts: [
