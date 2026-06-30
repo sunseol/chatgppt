@@ -40,5 +40,7 @@ describe("full-flow visual QA project", () => {
 
     expect(liveReportLineage.map((slide) => slide.slideNumber)).toEqual([1, 2]);
     expect(gate.kind).toBe("ready");
+    expect(visualQaProject.slides.every((slide) => slide.status === "approved")).toBe(true);
+    expect(visualQaProject.approvalLog.some((entry) => entry.stage === "review")).toBe(true);
   });
 });

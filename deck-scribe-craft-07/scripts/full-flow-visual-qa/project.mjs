@@ -1,13 +1,14 @@
-import { createHash } from "node:crypto";
-import { encodeRgbaPngDataUrl, encodeSolidPngDataUrl } from "../../src/lib/png-encoder.ts";
 import { frontendQaProject } from "../frontend-screen-qa-project.mjs";
-
-const LAYOUT_PNG_DATA_URL = encodeSolidPngDataUrl({
-  width: 320,
-  height: 180,
-  color: { r: 246, g: 241, b: 232, a: 255 },
-});
-const SLIDE_IMAGES = new Map();
+import { visualQaResearch } from "./visual-research-fixture.mjs";
+import {
+  APPROVED_DECK_HASH,
+  LAYOUT_PNG_DATA_URL,
+  imageProvenance,
+  liveComposition,
+  liveImageArtifact,
+  storedImageArtifact,
+  visualLayers,
+} from "./visual-slide-fixtures.mjs";
 
 export const PROJECT_STORAGE_KEY = "deckforge.projects.v1";
 
@@ -30,387 +31,6 @@ export const STEPS = [
   "export",
 ];
 
-function paddedSlide(slideNumber) {
-  return String(slideNumber).padStart(3, "0");
-}
-
-function liveHash(slideNumber) {
-  return liveSlideImage(slideNumber).hash;
-}
-
-function liveSlideImage(slideNumber) {
-  const cached = SLIDE_IMAGES.get(slideNumber);
-  if (cached) return cached;
-  const dataUrl = createGeneratedSlidePngDataUrl(slideNumber);
-  const image = {
-    dataUrl,
-    hash: `sha256:${createHash("sha256").update(dataUrl).digest("hex")}`,
-  };
-  SLIDE_IMAGES.set(slideNumber, image);
-  return image;
-}
-
-function liveImageArtifact(slideNumber) {
-  const image = liveSlideImage(slideNumber);
-  return {
-    providerId: "openaiImage",
-    slideNumber,
-    aspectRatio: "16:9",
-    canvas: { width: 1280, height: 720 },
-    layoutReference: {
-      screenshot: `projects/p_visual_flow/layouts/slide_${paddedSlide(slideNumber)}.png`,
-      mode: "composition-reference",
-    },
-    imageDataUrl: image.dataUrl,
-    prompt: {
-      id: "slide_generation",
-      version: "v1",
-      hash: `sha256:prompt_${slideNumber}`,
-    },
-    request: {
-      model: "gpt-image-2",
-      requestId: `img_req_visual_${paddedSlide(slideNumber)}`,
-    },
-    generatedAt: 1_789_700_100,
-  };
-}
-
-function imageProvenance(slideNumber) {
-  return {
-    artifactId: `p_visual_flow_image_slide_${paddedSlide(slideNumber)}_v1`,
-    executionMode: "production",
-    providerKind: "openaiImage",
-    authMode: "api_key",
-    modelOrRuntime: "gpt-image-2",
-    promptVersion: "slide_generation@v1",
-    durationMs: 1_000,
-    inputArtifactIds: [`sha256:prompt_${slideNumber}`, "plan_frontend_qa"],
-    fixture: false,
-    requestId: `img_req_visual_${paddedSlide(slideNumber)}`,
-  };
-}
-
-function storedImageArtifact(slideNumber) {
-  const artifact = liveImageArtifact(slideNumber);
-  return {
-    binary: {
-      artifactId: `p_visual_flow_image_slide_${paddedSlide(slideNumber)}_v1`,
-      path: `projects/p_visual_flow/slides/images/slide_${paddedSlide(slideNumber)}.v1.png`,
-      hash: liveHash(slideNumber),
-      bytes: 68,
-      createdAt: 1_789_700_100,
-    },
-    metadata: {
-      path: `projects/p_visual_flow/slides/images/slide_${paddedSlide(slideNumber)}.v1.metadata.json`,
-      providerId: "openaiImage",
-      slideNumber,
-      aspectRatio: "16:9",
-      canvas: artifact.canvas,
-      layoutReference: artifact.layoutReference,
-      prompt: artifact.prompt,
-      request: artifact.request,
-      generatedAt: artifact.generatedAt,
-    },
-    provenance: imageProvenance(slideNumber),
-  };
-}
-
-function liveComposition(slideNumber) {
-  const image = liveSlideImage(slideNumber);
-  const title = slideNumber === 1 ? "Workflow bottleneck" : "Verified creation path";
-  const body =
-    slideNumber === 1
-      ? "Checks slow approval. Visible gates restore flow."
-      : "Sources keep PPT editable. Final deck stays reviewable.";
-  const source =
-    slideNumber === 1 ? "Source: approval workflow sample" : "Source: editable deck sample";
-  return {
-    slideNumber,
-    exportBasis: "compositor",
-    canvas: { width: 1280, height: 720 },
-    backgroundProviderId: "openaiImage",
-    backgroundArtifact: {
-      artifactId: `p_visual_flow_image_slide_${paddedSlide(slideNumber)}_v1`,
-      path: `projects/p_visual_flow/slides/images/slide_${paddedSlide(slideNumber)}.v1.png`,
-      hash: liveHash(slideNumber),
-    },
-    overlayRoles: ["title", "body", "chart", "source"],
-    overlayBounds: liveOverlayBounds(slideNumber),
-    svg: liveCompositionSvg({ slideNumber, imageDataUrl: image.dataUrl, title, body, source }),
-    previewPngDataUrl: image.dataUrl,
-  };
-}
-
-function createGeneratedSlidePngDataUrl(slideNumber) {
-  const width = 320;
-  const height = 180;
-  const rgba = new Uint8Array((1 + width * 4) * height);
-  const palette =
-    slideNumber === 1
-      ? {
-          base: { r: 244, g: 238, b: 227, a: 255 },
-          panel: { r: 255, g: 250, b: 241, a: 255 },
-          accent: { r: 196, g: 111, b: 38, a: 255 },
-          ink: { r: 31, g: 39, b: 53, a: 255 },
-          soft: { r: 99, g: 113, b: 130, a: 255 },
-        }
-      : {
-          base: { r: 237, g: 244, b: 241, a: 255 },
-          panel: { r: 250, g: 253, b: 249, a: 255 },
-          accent: { r: 44, g: 139, b: 103, a: 255 },
-          ink: { r: 31, g: 39, b: 53, a: 255 },
-          soft: { r: 96, g: 116, b: 128, a: 255 },
-        };
-
-  for (let y = 0; y < height; y += 1) {
-    const rowStart = y * (1 + width * 4);
-    rgba[rowStart] = 0;
-    for (let x = 0; x < width; x += 1) {
-      const drift = Math.round((x / width) * 10 + (y / height) * 8);
-      setPixel(rgba, width, x, y, {
-        r: Math.min(255, palette.base.r + drift),
-        g: Math.min(255, palette.base.g + Math.round(drift / 2)),
-        b: Math.min(255, palette.base.b + drift),
-        a: 255,
-      });
-    }
-  }
-
-  drawRect(rgba, width, height, 18, 20, 126, 122, palette.panel);
-  drawRect(rgba, width, height, 166, 26, 132, 104, { ...palette.panel, a: 235 });
-  drawRect(rgba, width, height, 34, 38, 76, 8, { ...palette.accent, a: 230 });
-  drawRect(rgba, width, height, 34, 58, 92, 6, { ...palette.ink, a: 185 });
-  drawRect(rgba, width, height, 34, 74, 62, 6, { ...palette.soft, a: 170 });
-  drawRect(rgba, width, height, 34, 96, 92, 26, { ...palette.accent, a: 45 });
-
-  const bars = slideNumber === 1 ? [36, 58, 42, 78] : [42, 60, 82, 96];
-  bars.forEach((barHeight, index) => {
-    drawRect(
-      rgba,
-      width,
-      height,
-      184 + index * 24,
-      128 - barHeight,
-      14,
-      barHeight,
-      index === bars.length - 1 ? palette.accent : { ...palette.soft, a: 190 },
-    );
-  });
-  drawRect(rgba, width, height, 176, 132, 108, 3, { ...palette.ink, a: 150 });
-  drawRect(rgba, width, height, 24, 154, 272, 2, { ...palette.ink, a: 45 });
-  return encodeRgbaPngDataUrl({ width, height, rgba });
-}
-
-function liveOverlayBounds(slideNumber) {
-  return [
-    {
-      id: `title_${slideNumber}`,
-      role: "title",
-      bounds: { x: 86, y: 76, w: 760, h: 96 },
-    },
-    {
-      id: `body_${slideNumber}`,
-      role: "body",
-      bounds: { x: 88, y: 184, w: 620, h: 112 },
-    },
-    {
-      id: `chart_${slideNumber}`,
-      role: "chart",
-      bounds: { x: 760, y: 180, w: 380, h: 282 },
-    },
-    {
-      id: `source_${slideNumber}`,
-      role: "source",
-      bounds: { x: 86, y: 632, w: 620, h: 34 },
-    },
-  ];
-}
-
-function liveCompositionSvg({ slideNumber, imageDataUrl, title, body, source }) {
-  const chartBars = slideNumber === 1 ? [120, 180, 138, 232] : [126, 168, 222, 252];
-  const bodyLines = body
-    .split(". ")
-    .map((line, index, lines) =>
-      index === lines.length - 1 || line.endsWith(".") ? line : `${line}.`,
-    );
-  return [
-    `<svg data-final-slide="${slideNumber}" data-export-basis="compositor" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg">`,
-    `<rect x="0" y="0" width="1280" height="720" fill="#f6f1e7" />`,
-    `<image data-role="generated-background" data-locked="true" href="${imageDataUrl}" data-background-artifact-id="p_visual_flow_image_slide_${paddedSlide(slideNumber)}_v1" data-background-artifact-path="projects/p_visual_flow/slides/images/slide_${paddedSlide(slideNumber)}.v1.png" data-background-artifact-hash="${liveHash(slideNumber)}" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice" opacity="0.18" />`,
-    `<rect x="56" y="52" width="1168" height="616" rx="14" fill="#fffaf1" stroke="#d8cfc2" stroke-width="2" />`,
-    `<rect x="730" y="146" width="450" height="360" rx="10" fill="#ffffff" stroke="#ddd5ca" stroke-width="2" />`,
-    `<text x="86" y="96" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="700" letter-spacing="4" fill="#c87324">FINAL DECK SLIDE</text>`,
-    `<g data-role="editable-overlays">`,
-    `<text data-editable-layer="title_${slideNumber}" data-layer-type="text" data-role="title" x="86" y="158" font-family="Georgia, serif" font-size="86" font-weight="700" fill="#202735">${escapeXml(title)}</text>`,
-    `<text data-editable-layer="body_${slideNumber}" data-layer-type="text" data-role="body" x="88" y="238" font-family="Inter, Arial, sans-serif" font-size="52" font-weight="800" fill="#303a4a">${escapeXml(bodyLines[0] ?? body)}</text>`,
-    bodyLines[1]
-      ? `<text data-editable-layer="body_${slideNumber}_line_2" data-layer-type="text" data-role="body" x="88" y="296" font-family="Inter, Arial, sans-serif" font-size="52" font-weight="800" fill="#303a4a">${escapeXml(bodyLines[1])}</text>`
-      : "",
-    `<rect x="88" y="332" width="550" height="10" rx="5" fill="#c87324" opacity="0.92" />`,
-    `<rect x="88" y="368" width="610" height="8" rx="4" fill="#637182" opacity="0.7" />`,
-    `<rect x="88" y="402" width="450" height="8" rx="4" fill="#637182" opacity="0.45" />`,
-    `<g data-editable-layer="chart_${slideNumber}" data-layer-type="shape" data-role="chart">`,
-    `<text x="782" y="206" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="800" fill="#303a4a">Approval confidence</text>`,
-    `<line x1="782" y1="438" x2="1110" y2="438" stroke="#202735" stroke-width="4" opacity="0.72" />`,
-    ...chartBars.map(
-      (height, index) =>
-        `<rect x="${812 + index * 72}" y="${438 - height}" width="42" height="${height}" rx="6" fill="${index === chartBars.length - 1 ? "#c87324" : "#637182"}" opacity="${index === chartBars.length - 1 ? "1" : "0.85"}" />`,
-    ),
-    `</g>`,
-    `<text data-editable-layer="source_${slideNumber}" data-layer-type="text" data-role="source" x="86" y="650" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="650" fill="#4f5968">${escapeXml(source)}</text>`,
-    `</g>`,
-    `</svg>`,
-  ].join("");
-}
-
-function drawRect(rgba, width, height, x, y, w, h, color) {
-  for (let yy = Math.max(0, y); yy < Math.min(height, y + h); yy += 1) {
-    for (let xx = Math.max(0, x); xx < Math.min(width, x + w); xx += 1) {
-      blendPixel(rgba, width, xx, yy, color);
-    }
-  }
-}
-
-function setPixel(rgba, width, x, y, color) {
-  const offset = y * (1 + width * 4) + 1 + x * 4;
-  rgba[offset] = color.r;
-  rgba[offset + 1] = color.g;
-  rgba[offset + 2] = color.b;
-  rgba[offset + 3] = color.a;
-}
-
-function blendPixel(rgba, width, x, y, color) {
-  const offset = y * (1 + width * 4) + 1 + x * 4;
-  const alpha = color.a / 255;
-  rgba[offset] = Math.round(color.r * alpha + rgba[offset] * (1 - alpha));
-  rgba[offset + 1] = Math.round(color.g * alpha + rgba[offset + 1] * (1 - alpha));
-  rgba[offset + 2] = Math.round(color.b * alpha + rgba[offset + 2] * (1 - alpha));
-  rgba[offset + 3] = 255;
-}
-
-function escapeXml(value) {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;");
-}
-
-function visualLayers(slideNumber) {
-  const title = slideNumber === 1 ? "Workflow bottleneck" : "Verified creation path";
-  const body =
-    slideNumber === 1
-      ? "Checks slow approval. Visible gates restore flow."
-      : "Sources keep PPT editable. Final deck stays reviewable.";
-  const source =
-    slideNumber === 1 ? "Source: approval workflow sample" : "Source: editable deck sample";
-  return {
-    slideNumber,
-    layers: [
-      {
-        id: `bg_${slideNumber}`,
-        type: "shape",
-        role: "background",
-        bounds: { x: 0, y: 0, w: 1280, h: 720 },
-        editable: false,
-      },
-      {
-        id: `title_${slideNumber}`,
-        type: "text",
-        role: "title",
-        text: title,
-        bounds: { x: 86, y: 76, w: 760, h: 96 },
-        editable: true,
-      },
-      {
-        id: `body_${slideNumber}`,
-        type: "text",
-        role: "body",
-        text: body,
-        bounds: { x: 88, y: 184, w: 620, h: 112 },
-        editable: true,
-      },
-      {
-        id: `chart_${slideNumber}`,
-        type: "shape",
-        role: "chart",
-        bounds: { x: 760, y: 180, w: 380, h: 282 },
-        editable: true,
-      },
-      {
-        id: `source_${slideNumber}`,
-        type: "text",
-        role: "source",
-        text: source,
-        bounds: { x: 86, y: 632, w: 620, h: 34 },
-        editable: true,
-      },
-    ],
-  };
-}
-
-const visualQaResearch = {
-  id: "research_frontend_qa",
-  approvedHash: "research_hash",
-  sources: [
-    {
-      id: "src_flow_1",
-      title: "Workflow state visibility benchmark",
-      publisher: "DeckForge QA",
-      year: 2026,
-      url: "https://example.test/deckforge/workflow",
-      sourceType: "original_data",
-      grade: "A",
-      usePolicy: "priority",
-    },
-    {
-      id: "src_flow_2",
-      title: "Editable export acceptance benchmark",
-      publisher: "DeckForge QA",
-      year: 2026,
-      url: "https://example.test/deckforge/export",
-      sourceType: "original_data",
-      grade: "A",
-      usePolicy: "priority",
-    },
-  ],
-  datasets: [],
-  charts: [],
-  claims: [
-    {
-      id: "claim_flow_1",
-      statement: "Workflow state must remain visible through each approval gate.",
-      sourceIds: ["src_flow_1"],
-      datasetIds: [],
-      confidence: "high",
-      hasNumber: false,
-      needsUserReview: false,
-      status: "supported",
-      slideCandidates: [1],
-      numericEvidence: [],
-    },
-    {
-      id: "claim_flow_2",
-      statement: "Final exports must preserve editable user-facing output.",
-      sourceIds: ["src_flow_2"],
-      datasetIds: [],
-      confidence: "high",
-      hasNumber: false,
-      needsUserReview: false,
-      status: "supported",
-      slideCandidates: [2],
-      numericEvidence: [],
-    },
-  ],
-  factCheckReport: {
-    summary: "Visual QA fixture claims are source-backed.",
-    generatedAt: 1_789_700_100,
-    fatalIssueCount: 0,
-    issues: [],
-    uncertainItems: [],
-  },
-};
-
 export const visualQaProject = {
   ...structuredClone(frontendQaProject),
   id: "p_visual_flow",
@@ -432,7 +52,25 @@ export const visualQaProject = {
       layoutPngDataUrl: LAYOUT_PNG_DATA_URL,
     })),
   },
-  approvalLog: [...frontendQaProject.approvalLog, { stage: "editor", at: 7, hash: "h_editor" }],
+  slides: frontendQaProject.slides.map((slide) => ({ ...slide, status: "approved" })),
+  approvalLog: [
+    ...frontendQaProject.approvalLog.map((entry) =>
+      entry.stage === "review"
+        ? {
+            ...entry,
+            hash: APPROVED_DECK_HASH,
+            artifactId: "p_visual_flow_review_approved_deck",
+            artifactVersion: 1,
+            artifactType: "slides",
+          }
+        : entry,
+    ),
+    {
+      stage: "editor",
+      at: 7,
+      hash: "sha256:34b3c2ed66df97a32ce52766af60d7842ff26e5dc337c9b5fbab2f045b1ef0a1",
+    },
+  ],
   liveTextArtifacts: [
     {
       artifactId: "p_visual_flow_plan_live",

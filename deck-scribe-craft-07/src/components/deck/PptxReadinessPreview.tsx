@@ -1,5 +1,6 @@
 import { CheckCircle2, Copy, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { PptxIdentityChain } from "@/components/deck/PptxIdentityChain";
 import type { DeckProject } from "@/lib/deck-types";
 import type { ProjectExportPackage } from "@/lib/project-export";
 
@@ -42,9 +43,12 @@ export function PptxReadinessPreview({
         </Button>
       </div>
 
-      <div className="mt-4 border border-success/40 bg-success/10 p-3 text-xs lg:hidden">
-        <VerifiedPackageIdentity filename={pptxFile.filename} hash={pptxFile.hash} />
-      </div>
+      <PptxIdentityChain
+        className="mt-4 lg:hidden"
+        exportPackage={exportPackage}
+        project={project}
+        pptxHash={pptxFile.hash}
+      />
 
       <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
         <div className="space-y-3">
@@ -77,6 +81,12 @@ export function PptxReadinessPreview({
           <div className="border border-success/40 bg-success/10 p-3 text-xs">
             <VerifiedPackageIdentity filename={pptxFile.filename} hash={pptxFile.hash} />
           </div>
+          <PptxIdentityChain
+            className="max-lg:hidden"
+            exportPackage={exportPackage}
+            project={project}
+            pptxHash={pptxFile.hash}
+          />
           <div className="grid grid-cols-2 gap-2 text-xs">
             <PptxStatus label="PPTX 생성" value="완료" />
             <PptxStatus label="렌더 검증" value="일치" />
@@ -114,6 +124,9 @@ function VerifiedPackageIdentity({
       <div className="mt-2 font-medium">{filename}</div>
       <div className="mt-2 text-[11px] uppercase tracking-wider text-muted-foreground">
         PPTX SHA-256
+      </div>
+      <div className="mt-1 font-mono text-sm font-semibold">
+        PPTX fingerprint {fingerprint(hash)}
       </div>
       <div className="mt-1 break-all font-mono text-[10px] leading-snug">{hash}</div>
     </>
@@ -199,6 +212,12 @@ function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function fingerprint(hash: string): string {
+  const value = hash.startsWith("sha256:") ? hash.slice("sha256:".length) : hash;
+  if (value.length <= 16) return value;
+  return `${value.slice(0, 8)}...${value.slice(-8)}`;
 }
 
 function copyText(value: string) {

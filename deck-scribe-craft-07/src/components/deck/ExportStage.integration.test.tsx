@@ -55,7 +55,12 @@ describe("export stage", () => {
     expect(markup.includes("PPTX 최종 확인")).toBe(true);
     expect(markup.includes("PPTX 파일 다운로드")).toBe(true);
     expect(markup.includes("검증된 최종 PPTX 패키지")).toBe(true);
+    expect(markup.includes("승인 덱 identity")).toBe(true);
+    expect(markup.includes("1/1 승인")).toBe(true);
+    expect(markup.includes("Review hash")).toBe(true);
     expect(markup.includes("PPTX SHA-256")).toBe(true);
+    expect(markup.includes("PPTX fingerprint")).toBe(true);
+    expect(markup.includes("img_req_001")).toBe(true);
     expect(/sha256:[a-f0-9]{64}/.test(markup)).toBe(true);
     expect(markup.includes("배경 이미지")).toBe(true);
     expect(markup.includes("1개")).toBe(true);
@@ -187,8 +192,18 @@ function exportProjectFixture(): DeckProject {
         ],
       },
     ],
+    slides: [{ number: 1, version: 1, status: "approved", imageDescriptor: "live ppt slide" }],
     invalidated: {},
-    approvalLog: [],
+    approvalLog: [
+      {
+        stage: "review",
+        at: 400,
+        hash: fullHash("a"),
+        artifactId: "project_001_review_approved_deck",
+        artifactVersion: 1,
+        artifactType: "slides",
+      },
+    ],
   };
 }
 

@@ -82,6 +82,35 @@ describe("slide review gallery", () => {
     expect(regenerated.find((slide) => slide.number === 2)?.notes).toBe("차트를 더 크게");
   });
 
+  test("renders approved slide identity evidence for release review", () => {
+    const items = buildReviewGalleryItems({
+      slides: slidesFixture(2).map((slide) => ({ ...slide, status: "approved" })),
+      specs: specsFixture(2),
+      selectedSlideNumber: 1,
+      compositions: compositionsFixture(2),
+    });
+    const markup = renderToStaticMarkup(
+      <ReviewGalleryPanel
+        items={items}
+        selectedSlideNumber={1}
+        canRegenerate={false}
+        onSelect={() => undefined}
+        onApproveSelected={() => undefined}
+        onApproveAll={() => undefined}
+        onRegenerateSelected={() => undefined}
+        onDeleteRequest={() => undefined}
+        onAddRequest={() => undefined}
+        showRequestActions={false}
+      />,
+    );
+
+    expect(markup.includes("검토 대상 2/2")).toBe(true);
+    expect(markup.includes("승인 완료")).toBe(true);
+    expect(markup.includes("생성 이미지 identity")).toBe(true);
+    expect(markup.includes("sha256:11111111")).toBe(true);
+    expect(markup.includes("승인됨")).toBe(true);
+  });
+
   test("renders five compositor thumbnails and the selected presentation preview", () => {
     const items = buildReviewGalleryItems({
       slides: slidesFixture(5),

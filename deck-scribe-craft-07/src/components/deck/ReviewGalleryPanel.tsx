@@ -8,6 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { ReviewSlideIdentity } from "@/components/deck/ReviewSlideIdentity";
 import type { ReviewGalleryItem } from "@/components/deck/review-gallery-model";
 import { PARTIAL_EDIT_EXPERIMENT_LABEL } from "@/components/deck/review-gallery-model";
 
@@ -38,6 +39,7 @@ export function ReviewGalleryPanel(props: {
               검토 대상 {approvedCount}/{props.items.length}
             </div>
             <div className="mt-1 text-sm font-medium">{selected?.title ?? "선택 없음"}</div>
+            <ReviewSlideIdentity item={selected} />
           </div>
           {selected?.qaStatus === "failed" && (
             <span className="text-xs font-medium text-destructive">검증 실패</span>
@@ -49,9 +51,9 @@ export function ReviewGalleryPanel(props: {
             data-presentation-preview={selected.slide.number}
             data-export-basis={selected.composition.exportBasis}
             data-background-artifact-path={selected.composition.backgroundArtifact?.path}
-            className="border border-border bg-muted/30 p-1.5 max-sm:-mx-2 sm:p-2"
+            className="border border-border bg-muted/30 p-0 max-sm:-mx-3 sm:p-2"
           >
-            <div className="mb-2 flex items-center justify-between gap-3 px-1 text-xs">
+            <div className="mb-2 flex items-center justify-between gap-3 px-2 pt-2 text-xs sm:px-1 sm:pt-0">
               <span className="font-medium">선택 슬라이드 실제 크기 검토</span>
               <Button type="button" variant="outline" size="sm" onClick={() => setLargeOpen(true)}>
                 <Maximize2 className="h-4 w-4" />
