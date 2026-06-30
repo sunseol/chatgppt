@@ -1,6 +1,13 @@
 import type { ResearchPack } from "./research-types";
 import type { LayoutValidationReport } from "./layout-validation";
 import type { WorkflowErrorRecord } from "./workflow-error-types";
+import type { LiveTextArtifactRecord } from "./live-text-artifact-record";
+import type { ProjectExportSummary } from "./project-export-summary";
+import type { ImagePathDecisionRecord } from "./image-path-decision";
+import type { FinalSlideComposition } from "./final-slide-compositor";
+import type { StoredSlideImageArtifact } from "./image-artifact-store";
+import type { ProviderArtifactProvenance } from "./provider-provenance";
+import type { SlideImageArtifact } from "./slide-image-provider";
 
 export type {
   ChartType,
@@ -14,7 +21,11 @@ export type {
   ResearchDataset,
   ResearchDatasetRow,
   ResearchPack,
+  ResearchReinforcementRequest,
+  ResearchReinforcementStatus,
   ResearchSourceType,
+  ResearchReviewSourceDecision,
+  ResearchReviewState,
   Source,
   SourceGrade,
   SourceUsePolicy,
@@ -25,6 +36,7 @@ export type {
   WorkflowErrorKind,
   WorkflowErrorRecord,
 } from "./workflow-error-types";
+export type { ProjectExportSummary } from "./project-export-summary";
 
 export type Stage =
   | "PROJECT_CREATED"
@@ -183,6 +195,15 @@ export interface EditableLayerModel {
   }[];
 }
 
+export interface LiveSlideGenerationRecord {
+  readonly version: number;
+  readonly generatedAt: number;
+  readonly artifacts: readonly SlideImageArtifact[];
+  readonly storedArtifacts: readonly StoredSlideImageArtifact[];
+  readonly compositions: readonly FinalSlideComposition[];
+  readonly providerLineage: readonly ProviderArtifactProvenance[];
+}
+
 export interface ApprovalLogEntry {
   stage: string;
   at: number;
@@ -190,17 +211,6 @@ export interface ApprovalLogEntry {
   artifactId?: string;
   artifactVersion?: number;
   artifactType?: string;
-}
-
-export interface ProjectExportSummary {
-  readonly artifactId: string;
-  readonly artifactHash: string;
-  readonly artifactPath: string;
-  readonly createdAt: number;
-  readonly pngCount: number;
-  readonly svgCount: number;
-  readonly hybridSvgCount: number;
-  readonly projectFilePath: string;
 }
 
 export interface DeckProject {
@@ -222,6 +232,9 @@ export interface DeckProject {
   slides?: GeneratedSlide[];
   layers?: EditableLayerModel[];
   exportPackage?: ProjectExportSummary;
+  liveTextArtifacts?: readonly LiveTextArtifactRecord[];
+  liveSlideGeneration?: LiveSlideGenerationRecord;
+  imagePathDecision?: ImagePathDecisionRecord;
 
   invalidated: Partial<Record<StepKey, boolean>>;
   workflowErrors?: readonly WorkflowErrorRecord[];

@@ -15,10 +15,24 @@ export function encodeSolidPngDataUrl(input: {
   readonly color: RgbaColor;
 }): string {
   const raw = createRgbaScanlines(input.width, input.height, input.color);
+  return encodeRgbaPngDataUrl({ width: input.width, height: input.height, rgba: raw });
+}
+
+export function encodeRgbaPngDataUrl(input: {
+  readonly width: number;
+  readonly height: number;
+  readonly rgba: Uint8Array;
+}): string {
+  const expectedLength = (1 + input.width * 4) * input.height;
+  if (input.rgba.length !== expectedLength) {
+    throw new Error(
+      `RGBA scanline length mismatch: expected ${expectedLength}, got ${input.rgba.length}.`,
+    );
+  }
   const png = concatBytes([
     PNG_SIGNATURE,
     pngChunk("IHDR", ihdr(input.width, input.height)),
-    pngChunk("IDAT", zlibStore(raw)),
+    pngChunk("IDAT", zlibStore(input.rgba)),
     pngChunk("IEND", new Uint8Array()),
   ]);
   return `data:image/png;base64,${bytesToBase64(png)}`;

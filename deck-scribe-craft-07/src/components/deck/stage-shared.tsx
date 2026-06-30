@@ -14,7 +14,9 @@ export function StageScroll({
   readonly className?: string;
 }) {
   return (
-    <div className={`desktop-scroll w-full flex-1 pb-28 pt-8 ${className ?? ""}`}>{children}</div>
+    <div className={`desktop-scroll w-full flex-1 pb-20 pt-6 sm:pb-28 sm:pt-8 ${className ?? ""}`}>
+      {children}
+    </div>
   );
 }
 
@@ -67,12 +69,16 @@ export function StageErrorBanner({
 
 export function EmptyAction({
   label,
+  actionLabel = "초안 생성",
   onClick,
   busy,
+  disabled = false,
 }: {
   readonly label: string;
+  readonly actionLabel?: string;
   readonly onClick: () => void;
   readonly busy: boolean;
+  readonly disabled?: boolean;
 }) {
   return (
     <div className="flex flex-col items-center gap-4 border border-dashed border-border bg-paper py-16">
@@ -80,10 +86,10 @@ export function EmptyAction({
       <div className="text-sm text-muted-foreground">{label}</div>
       <Button
         onClick={onClick}
-        disabled={busy}
+        disabled={busy || disabled}
         className="bg-foreground text-background hover:bg-foreground/90"
       >
-        {busy ? "생성 중..." : "초안 생성"}
+        {busy ? "생성 중..." : actionLabel}
       </Button>
     </div>
   );

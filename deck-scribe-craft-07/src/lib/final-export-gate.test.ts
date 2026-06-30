@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { DeckProject, ProjectExportSummary } from "./deck-types";
 import { evaluateFinalExportGate } from "./final-export-gate";
+import { createProviderArtifactProvenance } from "./provider-provenance";
 
 describe("final export gate", () => {
   test("blocks final export when outputs are invalidated", () => {
@@ -24,6 +25,7 @@ describe("final export gate", () => {
         pngCount: 0,
         svgCount: 0,
         hybridSvgCount: 0,
+        pptxFilePath: "",
         projectFilePath: "",
       },
       reportMarkdown: "# Draft",
@@ -35,9 +37,57 @@ describe("final export gate", () => {
       "missing_png_export",
       "missing_svg_export",
       "missing_hybrid_svg_export",
+      "missing_pptx_export",
       "missing_project_file",
       "missing_generation_report",
     ]);
+  });
+
+  test("blocks final export when generated images are missing from PPTX backgrounds", () => {
+    const result = evaluateFinalExportGate({
+      project: {
+        ...projectFixture(),
+        liveSlideGeneration: {
+          version: 1,
+          generatedAt: 2_000,
+          artifacts: [
+            {
+              providerId: "openaiImage",
+              slideNumber: 1,
+              aspectRatio: "16:9",
+              canvas: { width: 1600, height: 900 },
+              layoutReference: {
+                screenshot: "projects/project_001/layouts/slide_001.png",
+                mode: "composition-reference",
+              },
+              imageDataUrl: "data:image/png;base64,iVBORw0KGgo=",
+              prompt: {
+                id: "slide_generation",
+                version: "slide_generation@v1",
+                hash: "sha256:prompt",
+              },
+              request: {
+                model: "gpt-image-2",
+                requestId: "img_req_001",
+              },
+              generatedAt: 2_000,
+            },
+          ],
+          storedArtifacts: [],
+          compositions: [],
+          providerLineage: [],
+        },
+      },
+      exportPackage: {
+        ...exportSummaryFixture(),
+        pptxBackgroundImageCount: 0,
+      },
+      reportMarkdown: reportFixture(),
+    });
+
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code)).toEqual(["missing_pptx_background_images"]);
   });
 
   test("blocks final export when fatal workflow errors remain", () => {
@@ -63,6 +113,68 @@ describe("final export gate", () => {
     if (result.kind === "blocked") {
       expect(result.issues[0]?.code).toBe("fatal_workflow_error");
     }
+  });
+
+  test("blocks production export when lineage contains mock artifacts", () => {
+    const result = evaluateFinalExportGate({
+      project: projectFixture(),
+      exportPackage: exportSummaryFixture(),
+      reportMarkdown: reportFixture(),
+      executionMode: "production",
+      lineage: [
+        createProviderArtifactProvenance({
+          artifactId: "mock_slide_1",
+          executionMode: "production",
+          providerKind: "mock",
+          authMode: "none",
+          modelOrRuntime: "mock-provider",
+          promptVersion: "slide_generation@v1",
+          durationMs: 1,
+          inputArtifactIds: ["layout_001"],
+          fixture: true,
+        }),
+      ],
+    });
+
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code).includes("mock_lineage_contamination")).toBe(
+      true,
+    );
+    expect(result.issues[0]?.artifactId).toBe("mock_slide_1");
+    expect(result.issues[0]?.upstreamArtifactIds).toEqual(["layout_001"]);
+  });
+
+  test("allows development export only with contamination warnings and a mock watermark", () => {
+    const result = evaluateFinalExportGate({
+      project: projectFixture(),
+      exportPackage: exportSummaryFixture(),
+      reportMarkdown: reportFixture(),
+      executionMode: "development",
+      lineage: [
+        createProviderArtifactProvenance({
+          artifactId: "mock_slide_1",
+          executionMode: "development",
+          providerKind: "mock",
+          authMode: "none",
+          modelOrRuntime: "mock-provider",
+          promptVersion: "slide_generation@v1",
+          durationMs: 1,
+          inputArtifactIds: ["layout_001"],
+          fixture: true,
+        }),
+      ],
+    });
+
+    expect(result.kind).toBe("ready");
+    if (result.kind !== "ready") return;
+    expect(result.developmentWatermark).toBe("MOCK MODE");
+    expect(result.warnings.map((warning) => warning.code)).toEqual([
+      "development_mock_lineage",
+      "development_fixture_lineage",
+    ]);
+    expect(result.warnings[0]?.artifactId).toBe("mock_slide_1");
+    expect(result.warnings[0]?.upstreamArtifactIds).toEqual(["layout_001"]);
   });
 
   test("allows final export when report references a complete export package", () => {
@@ -111,6 +223,8 @@ function exportSummaryFixture(): ProjectExportSummary {
     pngCount: 1,
     svgCount: 1,
     hybridSvgCount: 1,
+    pptxFilePath: "projects/project_001/exports/pptx/project_001.pptx",
+    pptxBackgroundImageCount: 0,
     projectFilePath: "projects/project_001/exports/project_001.deckforge.json",
   };
 }

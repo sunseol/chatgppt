@@ -3,6 +3,7 @@ import type { DeckProject } from "./deck-types";
 import { createAuditLogEvent } from "./audit-log";
 import { buildGenerationReport } from "./generation-report";
 import { mockBrief, mockDesign, mockPlan, mockResearch } from "./mock-ai";
+import { createProviderArtifactProvenance } from "./provider-provenance";
 
 describe("generation report", () => {
   test("includes slide lineage across plan, sources, design, layout, layers, and export", () => {
@@ -18,6 +19,7 @@ describe("generation report", () => {
     expect(report.includes("Generated slide: v3 approved · note: 제목 수정 반영")).toBe(true);
     expect(report.includes("Export: project_001_export_v1 · sha256:export")).toBe(true);
     expect(report.includes("projects/project_001/exports/export.v1.json")).toBe(true);
+    expect(report.includes("projects/project_001/exports/pptx/project_001.pptx")).toBe(true);
   });
 
   test("surfaces validation failures, fact-check issues, and uncertain claims", () => {
@@ -56,6 +58,80 @@ describe("generation report", () => {
     expect(report.includes("layout_001, slide_1_v3")).toBe(true);
     expect(report.includes("token=[redacted]")).toBe(true);
     expect(report.includes("abc123def456")).toBe(false);
+  });
+
+  test("lists provider provenance including turn id, request id, prompt version, and fixture flag", () => {
+    const report = buildGenerationReport(
+      reportProjectFixture(),
+      undefined,
+      [],
+      [
+        createProviderArtifactProvenance({
+          artifactId: "plan_live_001",
+          executionMode: "production",
+          providerKind: "codex",
+          authMode: "codex_session",
+          modelOrRuntime: "codex-app-server 1.0.0",
+          promptVersion: "deck_plan@v1",
+          durationMs: 1_200,
+          inputArtifactIds: ["research_001"],
+          turnId: "turn_001",
+          threadId: "thread_001",
+          fixture: false,
+        }),
+        createProviderArtifactProvenance({
+          artifactId: "slide_image_001",
+          executionMode: "production",
+          providerKind: "openaiImage",
+          authMode: "api_key",
+          modelOrRuntime: "gpt-image-2",
+          promptVersion: "slide_generation@v1",
+          durationMs: 2_400,
+          inputArtifactIds: ["layout_001"],
+          requestId: "img_req_001",
+          fixture: false,
+        }),
+      ],
+    );
+
+    expect(report.includes("## 12. Provider Provenance")).toBe(true);
+    expect(report.includes("plan_live_001 · codex · production · codex_session")).toBe(true);
+    expect(report.includes("turn turn_001 · thread thread_001")).toBe(true);
+    expect(report.includes("slide_image_001 · openaiImage · production · api_key")).toBe(true);
+    expect(report.includes("request img_req_001")).toBe(true);
+    expect(report.includes("fixture no")).toBe(true);
+  });
+
+  test("includes live slide lineage when production export evidence is supplied", () => {
+    const report = buildGenerationReport(
+      reportProjectFixture(),
+      undefined,
+      [],
+      [],
+      [
+        {
+          slideNumber: 1,
+          sourceIds: ["src_001"],
+          textArtifactId: "plan_live_001",
+          textProviderKind: "codex",
+          textTurnId: "turn_plan_001",
+          textThreadId: "thread_project_001",
+          imageArtifactId: "project_001_image_slide_001_v1",
+          imageProviderKind: "openaiImage",
+          imageRequestId: "img_req_001",
+          promptVersion: "slide_generation@v1",
+          fixture: false,
+          compositorHash: fullHash("b"),
+          exportedPngHash: fullHash("b"),
+          projectFileContent: '{"project":"project_001"}',
+        },
+      ],
+    );
+
+    expect(report.includes("## Live Slide Lineage")).toBe(true);
+    expect(report.includes("sources src_001")).toBe(true);
+    expect(report.includes("text turn turn_plan_001")).toBe(true);
+    expect(report.includes("image request img_req_001")).toBe(true);
   });
 });
 
@@ -212,6 +288,8 @@ function reportProjectFixture(): DeckProject {
       pngCount: 1,
       svgCount: 1,
       hybridSvgCount: 1,
+      pptxFilePath: "projects/project_001/exports/pptx/project_001.pptx",
+      pptxBackgroundImageCount: 0,
       projectFilePath: "projects/project_001/exports/project_001.deckforge.json",
     },
     invalidated: {},
@@ -226,4 +304,8 @@ function reportProjectFixture(): DeckProject {
       },
     ],
   };
+}
+
+function fullHash(seed: string): string {
+  return `sha256:${seed.repeat(64)}`;
 }

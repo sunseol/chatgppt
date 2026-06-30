@@ -1,0 +1,236 @@
+import { scenarioEvidenceDetailIssues } from "./live-interruption-evidence-details";
+
+export const LIVE_INTERRUPTION_SCENARIOS = [
+  "text_turn_shutdown",
+  "fetch_shutdown",
+  "image_partial_resume",
+  "cancel_job",
+  "interrupted_artifact_gate",
+] as const;
+
+export type LiveInterruptionScenarioId = (typeof LIVE_INTERRUPTION_SCENARIOS)[number];
+export type LiveRecoveredJobState =
+  | "queued"
+  | "running"
+  | "succeeded"
+  | "failed"
+  | "cancelled"
+  | "interrupted";
+
+export type LiveInterruptionScenarioEvidence = {
+  readonly id: LiveInterruptionScenarioId;
+  readonly jobStatusAfterRestart: LiveRecoveredJobState;
+  readonly completedArtifactIdsBefore: readonly string[];
+  readonly completedArtifactIdsAfter: readonly string[];
+  readonly liveJobId: string;
+  readonly recoverySnapshotPath: string;
+  readonly cancellationRecorded: boolean;
+  readonly pendingImageArtifactIds: readonly string[];
+  readonly resumedArtifactIds: readonly string[];
+  readonly cancelledJobStillRunning: boolean;
+  readonly interruptedArtifactIds: readonly string[];
+  readonly approvableArtifactIds: readonly string[];
+  readonly exportableArtifactIds: readonly string[];
+};
+
+export type LiveInterruptionMatrixEvidence = {
+  readonly reportPath: string;
+  readonly scenarios: readonly LiveInterruptionScenarioEvidence[];
+};
+
+export type LiveInterruptionIssueCode =
+  | "missing_interruption_scenario"
+  | "missing_live_job_evidence"
+  | "missing_recovery_snapshot"
+  | "missing_cancel_signal_evidence"
+  | "unsafe_recovered_job_state"
+  | "completed_artifact_lost"
+  | "unsafe_partial_image_resume"
+  | "cancelled_job_still_running"
+  | "cancelled_job_completed_after_cancel"
+  | "interrupted_artifact_approvable"
+  | "missing_interruption_report";
+
+export type LiveInterruptionIssue = {
+  readonly code: LiveInterruptionIssueCode;
+  readonly message: string;
+  readonly refs: readonly string[];
+};
+
+export type LiveInterruptionMatrixResult =
+  | { readonly kind: "ready" }
+  | { readonly kind: "blocked"; readonly issues: readonly LiveInterruptionIssue[] };
+
+export function evaluateLiveInterruptionMatrix(
+  matrix: LiveInterruptionMatrixEvidence,
+): LiveInterruptionMatrixResult {
+  const issues = [
+    ...missingScenarioIssues(matrix.scenarios),
+    ...scenarioEvidenceDetailIssues(matrix.scenarios),
+    ...unsafeRecoveredStateIssues(matrix.scenarios),
+    ...completedArtifactLossIssues(matrix.scenarios),
+    ...partialImageResumeIssues(matrix.scenarios),
+    ...cancelledJobIssues(matrix.scenarios),
+    ...interruptedArtifactGateIssues(matrix.scenarios),
+    ...reportIssues(matrix.reportPath),
+  ];
+
+  return issues.length === 0 ? { kind: "ready" } : { kind: "blocked", issues };
+}
+
+export function formatLiveInterruptionMatrixSummary(
+  matrix: LiveInterruptionMatrixEvidence,
+): string {
+  return [
+    "# DF-243 Live Interruption Matrix",
+    `Report: ${matrix.reportPath || "missing"}`,
+    ...matrix.scenarios.map((scenario) => `${scenario.id}: ${scenario.jobStatusAfterRestart}`),
+  ].join("\n");
+}
+
+function missingScenarioIssues(
+  scenarios: readonly LiveInterruptionScenarioEvidence[],
+): readonly LiveInterruptionIssue[] {
+  const present = new Set(scenarios.map((scenario) => scenario.id));
+  const missing = LIVE_INTERRUPTION_SCENARIOS.filter((id) => !present.has(id));
+  return missing.length === 0
+    ? []
+    : [issue("missing_interruption_scenario", "Live interruption matrix is incomplete.", missing)];
+}
+
+function unsafeRecoveredStateIssues(
+  scenarios: readonly LiveInterruptionScenarioEvidence[],
+): readonly LiveInterruptionIssue[] {
+  const unsafe = scenarios
+    .filter(
+      (scenario) =>
+        (scenario.id === "text_turn_shutdown" || scenario.id === "fetch_shutdown") &&
+        !isSafeInterruptedState(scenario.jobStatusAfterRestart),
+    )
+    .map((scenario) => scenario.id);
+  return unsafe.length === 0
+    ? []
+    : [
+        issue(
+          "unsafe_recovered_job_state",
+          "Interrupted text or fetch jobs must recover as interrupted, failed, or cancelled.",
+          unsafe,
+        ),
+      ];
+}
+
+function completedArtifactLossIssues(
+  scenarios: readonly LiveInterruptionScenarioEvidence[],
+): readonly LiveInterruptionIssue[] {
+  const lost = scenarios.flatMap((scenario) =>
+    scenario.completedArtifactIdsBefore.filter(
+      (artifactId) => !scenario.completedArtifactIdsAfter.includes(artifactId),
+    ),
+  );
+  return lost.length === 0
+    ? []
+    : [
+        issue(
+          "completed_artifact_lost",
+          "Completed artifacts must survive restart recovery.",
+          lost,
+        ),
+      ];
+}
+
+function partialImageResumeIssues(
+  scenarios: readonly LiveInterruptionScenarioEvidence[],
+): readonly LiveInterruptionIssue[] {
+  const imageScenario = scenarios.find((scenario) => scenario.id === "image_partial_resume");
+  if (!imageScenario) return [];
+  const resumedCompleted = imageScenario.resumedArtifactIds.filter((artifactId) =>
+    imageScenario.completedArtifactIdsBefore.includes(artifactId),
+  );
+  const missedPending = imageScenario.pendingImageArtifactIds.filter(
+    (artifactId) => !imageScenario.resumedArtifactIds.includes(artifactId),
+  );
+  const refs = [...resumedCompleted, ...missedPending];
+  return refs.length === 0
+    ? []
+    : [
+        issue(
+          "unsafe_partial_image_resume",
+          "Partial image resume must retry only unfinished image artifacts.",
+          refs,
+        ),
+      ];
+}
+
+function cancelledJobIssues(
+  scenarios: readonly LiveInterruptionScenarioEvidence[],
+): readonly LiveInterruptionIssue[] {
+  const cancelScenario = scenarios.find((scenario) => scenario.id === "cancel_job");
+  if (!cancelScenario) return [];
+  return [
+    ...(cancelScenario.cancelledJobStillRunning ||
+    cancelScenario.jobStatusAfterRestart === "running"
+      ? [
+          issue("cancelled_job_still_running", "Cancelled jobs must not keep running.", [
+            cancelScenario.id,
+          ]),
+        ]
+      : []),
+    ...(cancelScenario.jobStatusAfterRestart === "succeeded" ||
+    cancelScenario.completedArtifactIdsAfter.some(
+      (artifactId) => !cancelScenario.completedArtifactIdsBefore.includes(artifactId),
+    )
+      ? [
+          issue(
+            "cancelled_job_completed_after_cancel",
+            "Cancelled jobs must not complete new artifacts after cancellation.",
+            cancelScenario.completedArtifactIdsAfter.filter(
+              (artifactId) => !cancelScenario.completedArtifactIdsBefore.includes(artifactId),
+            ),
+          ),
+        ]
+      : []),
+  ];
+}
+
+function interruptedArtifactGateIssues(
+  scenarios: readonly LiveInterruptionScenarioEvidence[],
+): readonly LiveInterruptionIssue[] {
+  const refs = scenarios.flatMap((scenario) =>
+    scenario.interruptedArtifactIds.filter(
+      (artifactId) =>
+        scenario.approvableArtifactIds.includes(artifactId) ||
+        scenario.exportableArtifactIds.includes(artifactId),
+    ),
+  );
+  return refs.length === 0
+    ? []
+    : [
+        issue(
+          "interrupted_artifact_approvable",
+          "Interrupted artifacts cannot be approved or exported.",
+          refs,
+        ),
+      ];
+}
+
+function reportIssues(reportPath: string): readonly LiveInterruptionIssue[] {
+  return reportPath.endsWith("live-interruption-matrix.md")
+    ? []
+    : [
+        issue("missing_interruption_report", "Live interruption matrix report is required.", [
+          reportPath || "missing",
+        ]),
+      ];
+}
+
+function isSafeInterruptedState(state: LiveRecoveredJobState): boolean {
+  return state === "interrupted" || state === "failed" || state === "cancelled";
+}
+
+function issue(
+  code: LiveInterruptionIssueCode,
+  message: string,
+  refs: readonly string[],
+): LiveInterruptionIssue {
+  return { code, message, refs };
+}

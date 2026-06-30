@@ -1,19 +1,23 @@
 import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { PptxReadinessPreview } from "@/components/deck/PptxReadinessPreview";
 import type { DeckProject } from "@/lib/deck-types";
+import type { FinalExportGateWarning } from "@/lib/final-export-gate";
 import type { ProjectExportPackage } from "@/lib/project-export";
 
 export function ReadyExportPanel({
   exportPackage,
   reportMd,
   project,
+  warnings = [],
+  developmentWatermark,
 }: {
   readonly exportPackage: ProjectExportPackage;
   readonly reportMd: string;
   readonly project: DeckProject;
+  readonly warnings?: readonly FinalExportGateWarning[];
+  readonly developmentWatermark?: "MOCK MODE";
 }) {
-  const pptxFile =
-    exportPackage.pptxExport.kind === "ready" ? exportPackage.pptxExport.file : undefined;
   return (
     <>
       <div className="mb-4 border border-border bg-paper px-4 py-3 text-sm">
@@ -22,6 +26,8 @@ export function ReadyExportPanel({
           슬라이드 이미지, 편집 데이터, 보고서를 필요한 형식으로 저장할 수 있습니다.
         </div>
       </div>
+      <DevelopmentExportWarning warnings={warnings} watermark={developmentWatermark} />
+      <PptxReadinessPreview exportPackage={exportPackage} project={project} />
       <div className="grid grid-cols-2 gap-3">
         <Button
           variant="outline"
@@ -64,13 +70,36 @@ export function ReadyExportPanel({
             편집용 SVG {String(file.slideNumber).padStart(2, "0")}
           </Button>
         ))}
-        {pptxFile ? (
-          <Button variant="outline" onClick={() => downloadDataUrl(pptxFile)}>
-            PPTX 파일
-          </Button>
-        ) : null}
       </div>
     </>
+  );
+}
+
+function DevelopmentExportWarning({
+  warnings,
+  watermark,
+}: {
+  readonly warnings: readonly FinalExportGateWarning[];
+  readonly watermark?: "MOCK MODE";
+}) {
+  if (warnings.length === 0 && watermark === undefined) return null;
+  return (
+    <div className="mb-4 border border-accent/30 bg-paper px-4 py-3 text-sm">
+      <div className="font-medium">개발 검증 참고</div>
+      {watermark === undefined ? null : (
+        <div className="mt-2 font-mono text-xs font-semibold text-accent">{watermark}</div>
+      )}
+      <ul className="mt-2 list-disc pl-5 text-muted-foreground">
+        {warnings.map((warning) => (
+          <li key={`${warning.code}:${warning.artifactId}`}>
+            {warning.message}
+            {warning.upstreamArtifactIds.length > 0
+              ? ` (${warning.upstreamArtifactIds.join(" -> ")} -> ${warning.artifactId})`
+              : ""}
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
@@ -120,9 +149,17 @@ export function Metric({
   readonly accent?: boolean;
 }) {
   return (
-    <div className="border border-border bg-paper p-4">
-      <div className="text-[11px] uppercase tracking-wider text-muted-foreground">{label}</div>
-      <div className={`mt-2 font-serif text-3xl ${accent ? "text-accent" : ""}`}>{value}</div>
+    <div className="min-w-0 border border-border bg-paper p-4">
+      <div className="break-keep text-[11px] uppercase tracking-wider text-muted-foreground">
+        {label}
+      </div>
+      <div
+        className={`mt-2 break-keep font-serif text-2xl leading-tight sm:text-3xl ${
+          accent ? "text-accent" : ""
+        }`}
+      >
+        {value}
+      </div>
     </div>
   );
 }

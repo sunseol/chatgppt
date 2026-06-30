@@ -17,6 +17,11 @@ export function ProviderCapabilityMatrix({
             Provider 기능 매트릭스
           </div>
           <div className="mt-1 text-sm font-medium">{view.providerName}</div>
+          <div className="mt-1 flex flex-wrap gap-2 text-xs text-muted-foreground">
+            <span>실행 {view.selectedProviderId}</span>
+            <span>인증 {view.authModeLabel}</span>
+            <span>{view.statusLabel}</span>
+          </div>
         </div>
         <div className="max-w-sm text-right text-xs text-muted-foreground">
           {view.providerStatusMessage}

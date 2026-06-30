@@ -1,5 +1,9 @@
 import { describe, expect, test } from "bun:test";
-import { createAuditLogEvent, createProviderJobSummaryAuditEvent } from "./audit-log";
+import {
+  createAuditLogEvent,
+  createProviderJobSummaryAuditEvent,
+  formatAuditLogForReport,
+} from "./audit-log";
 import { createProviderJobManager } from "./provider-job-manager";
 
 describe("full audit log", () => {
@@ -63,5 +67,29 @@ describe("full audit log", () => {
       estimatedCostUsd: 0.04,
     });
     expect(JSON.stringify(event).includes("sk-live-output")).toBe(false);
+  });
+
+  test("labels estimated provider costs as estimates in reports", () => {
+    // Given
+    const event = createAuditLogEvent({
+      eventId: "evt_provider_cost",
+      eventType: "provider.job.summary",
+      traceId: "trace_provider_cost",
+      timestamp: 2_500,
+      stage: "generate",
+      usageSummary: {
+        inputTokens: 120,
+        outputTokens: 30,
+        imageCount: 1,
+        estimatedCostUsd: 0.04,
+      },
+    });
+
+    // When
+    const report = formatAuditLogForReport([event]);
+
+    // Then
+    expect(report.includes("cost estimate $0.0400")).toBe(true);
+    expect(report.includes("cost $0.0400")).toBe(false);
   });
 });

@@ -13,10 +13,27 @@ describe("workflow stepper model", () => {
     expect(items.find((item) => item.key === "generate")?.status).toBe("locked");
     expect(items.find((item) => item.key === "layout")?.status).toBe("invalidated");
     expect(items.find((item) => item.key === "design")?.detail.includes("다음 액션")).toBe(true);
-    expect(
-      items.find((item) => item.key === "generate")?.detail.includes("레이아웃 승인 후 접근"),
-    ).toBe(true);
+    expect(items.find((item) => item.key === "generate")?.detail.includes("승인된 레이아웃")).toBe(
+      true,
+    );
     expect(items.find((item) => item.key === "layout")?.detail.includes("다시 확인")).toBe(true);
+  });
+
+  test("names concrete prerequisites for locked workflow steps", () => {
+    const items = getWorkflowStepItems(projectAt("RESEARCHING"));
+
+    expect(items.find((item) => item.key === "plan")?.detail.includes("승인된 조사 근거")).toBe(
+      true,
+    );
+    expect(
+      items.find((item) => item.key === "design")?.detail.includes("승인된 슬라이드 기획"),
+    ).toBe(true);
+    expect(items.find((item) => item.key === "generate")?.detail.includes("승인된 레이아웃")).toBe(
+      true,
+    );
+    expect(items.find((item) => item.key === "export")?.detail.includes("최종 편집 완료")).toBe(
+      true,
+    );
   });
 });
 

@@ -62,7 +62,7 @@ export function EditorCanvasPanel({
     <div
       ref={rootRef}
       data-editor-canvas={model.slideNumber}
-      className="relative w-full overflow-hidden bg-background"
+      className="relative w-full max-w-[calc(100vw-3rem)] overflow-hidden bg-background xl:max-w-none"
       style={{ aspectRatio: `${model.canvas.width} / ${model.canvas.height}` }}
     >
       {model.layers.map((layer) => (

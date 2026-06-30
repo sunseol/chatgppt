@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { DeckProject, EditableLayerModel } from "./deck-types";
 import { buildPptxCompatibilityExport } from "./pptx-project-export";
+import { encodeSolidPngDataUrl } from "./png-encoder";
 
 describe("PPTX compatibility export", () => {
   test("reports editability quality and emits slide content type metadata", () => {
@@ -43,6 +44,69 @@ describe("PPTX compatibility export", () => {
     expect(presentation.includes('<p:sldSz cx="12192000" cy="6858000" type="wide"/>')).toBe(true);
     expect(slide.includes('<a:off x="731520" y="914400"/>')).toBe(true);
     expect(slide.includes('<a:ext cx="3048000" cy="914400"/>')).toBe(true);
+  });
+
+  test("embeds GPT image generation output as locked slide backgrounds", () => {
+    // Given
+    const project = {
+      ...pptxProjectFixture(),
+      liveSlideGeneration: {
+        version: 1,
+        generatedAt: 1_789_900_000,
+        artifacts: [
+          {
+            providerId: "openaiImage",
+            slideNumber: 1,
+            aspectRatio: "16:9",
+            canvas: { width: 1600, height: 900 },
+            layoutReference: {
+              screenshot: "projects/pptx_project/layouts/slide_001.png",
+              mode: "composition-reference",
+            },
+            imageDataUrl: encodeSolidPngDataUrl({
+              width: 2,
+              height: 2,
+              color: { r: 32, g: 64, b: 96, a: 255 },
+            }),
+            prompt: {
+              id: "slide_generation",
+              version: "slide_generation@v1",
+              hash: "sha256:prompt",
+            },
+            request: {
+              model: "gpt-image-2",
+              requestId: "img_req_001",
+            },
+            generatedAt: 1_789_900_000,
+          },
+        ],
+        storedArtifacts: [],
+        compositions: [],
+        providerLineage: [],
+      },
+    } satisfies DeckProject;
+
+    // When
+    const result = buildPptxCompatibilityExport({
+      project,
+      layers: pptxLayerFixture(),
+    });
+
+    // Then
+    expect(result.kind).toBe("ready");
+    if (result.kind !== "ready") return;
+    expect(result.file.backgroundImageCount).toBe(1);
+    const entries = readStoredZipEntries(result.file.dataUrl);
+    expect(entries.has("ppt/media/slide_001_background.png")).toBe(true);
+    expect(entries.get("[Content_Types].xml")?.includes('Extension="png"')).toBe(true);
+    expect(
+      entries
+        .get("ppt/slides/_rels/slide1.xml.rels")
+        ?.includes(
+          'Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="../media/slide_001_background.png"',
+        ),
+    ).toBe(true);
+    expect(entries.get("ppt/slides/slide1.xml")?.includes('<a:blip r:embed="rId2"/>')).toBe(true);
   });
 });
 

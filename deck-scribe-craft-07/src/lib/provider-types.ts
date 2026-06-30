@@ -28,7 +28,22 @@ export type ProviderStatus =
       readonly message: string;
     }
   | {
+      readonly kind: "bridgeDetected";
+      readonly providerId: string;
+      readonly message: string;
+    }
+  | {
       readonly kind: "requiresAuth";
+      readonly providerId: string;
+      readonly message: string;
+    }
+  | {
+      readonly kind: "needsApiKey";
+      readonly providerId: string;
+      readonly message: string;
+    }
+  | {
+      readonly kind: "liveTestFailed";
       readonly providerId: string;
       readonly message: string;
     }

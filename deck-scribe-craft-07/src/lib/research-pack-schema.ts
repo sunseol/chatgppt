@@ -1,5 +1,23 @@
 import { z } from "zod";
+import {
+  LiveResearchEvidenceReferenceSchema,
+  LiveWebSearchEvidenceSchema,
+  ProviderArtifactProvenanceSchema,
+} from "./research-pack-live-schema";
 import type { Claim, ResearchChart, ResearchDataset, ResearchPack } from "./research-types";
+
+export const ResearchSourceCaptureMetadataSchema = z.object({
+  originalUrl: z.string().url(),
+  finalUrl: z.string().url(),
+  fetchedAt: z.number().int().nonnegative(),
+  mimeType: z.string().min(1),
+  statusCode: z.number().int().min(100).max(599),
+  contentHash: z.string().min(1),
+  rawArchivePath: z.string().min(1),
+  textArchivePath: z.string().min(1),
+  extractedTextHash: z.string().min(1),
+  version: z.number().int().positive(),
+});
 
 export const SourceSchema = z.object({
   id: z.string().min(1),
@@ -20,6 +38,8 @@ export const SourceSchema = z.object({
   ]),
   usePolicy: z.enum(["priority", "allowed", "supporting", "restricted"]),
   url: z.string().url().optional(),
+  capture: ResearchSourceCaptureMetadataSchema.optional(),
+  captureHistory: z.array(ResearchSourceCaptureMetadataSchema).optional(),
 });
 
 export const NumericEvidenceSchema = z.object({
@@ -106,6 +126,26 @@ export const FactCheckReportSchema = z.object({
   uncertainItems: z.array(z.string().min(1)),
 });
 
+export const ResearchReviewStateSchema = z.object({
+  sourceDecisions: z.array(
+    z.object({
+      sourceId: z.string().min(1),
+      decision: z.literal("excluded"),
+      reason: z.string().min(1),
+      decidedAt: z.number().int().nonnegative(),
+    }),
+  ),
+  reinforcementRequests: z.array(
+    z.object({
+      id: z.string().min(1),
+      prompt: z.string().min(1),
+      status: z.enum(["pending", "resolved"]),
+      requestedAt: z.number().int().nonnegative(),
+      resolvedAt: z.number().int().nonnegative().optional(),
+    }),
+  ),
+});
+
 export const ResearchPackSchema = z
   .object({
     id: z.string().min(1),
@@ -114,6 +154,10 @@ export const ResearchPackSchema = z
     datasets: z.array(ResearchDatasetSchema),
     charts: z.array(ResearchChartSchema),
     factCheckReport: FactCheckReportSchema,
+    webSearchEvidence: LiveWebSearchEvidenceSchema.optional(),
+    liveEvidenceRefs: z.array(LiveResearchEvidenceReferenceSchema).optional(),
+    provenanceLineage: z.array(ProviderArtifactProvenanceSchema).optional(),
+    review: ResearchReviewStateSchema.optional(),
     approvedHash: z.string().optional(),
   })
   .superRefine((pack, context) => {

@@ -172,6 +172,8 @@ export function completeProject(): DeckProject {
       pngCount: 1,
       svgCount: 1,
       hybridSvgCount: 1,
+      pptxFilePath: "projects/project_001/exports/pptx/project_001.pptx",
+      pptxBackgroundImageCount: 0,
       projectFilePath: "projects/project_001/exports/project_001.deckforge.json",
     },
     invalidated: {},

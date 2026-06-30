@@ -10,9 +10,17 @@ import type { DeckProject } from "@/lib/deck-types";
 import { updateProject } from "@/lib/deck-store";
 import { evaluateFinalExportGate, type FinalExportGateIssue } from "@/lib/final-export-gate";
 import { buildGenerationReport } from "@/lib/generation-report";
+import { buildLiveGenerationReportLineage } from "@/lib/live-generation-report-lineage-builder";
 import { buildProjectExportPackage, createProjectExportPatch } from "@/lib/project-export";
+import type { ExecutionMode } from "@/lib/provider-provenance";
 
-export function ExportStage({ project }: { readonly project: DeckProject }) {
+export function ExportStage({
+  project,
+  executionMode,
+}: {
+  readonly project: DeckProject;
+  readonly executionMode?: ExecutionMode;
+}) {
   const layers = project.layers ?? [];
   const approvals = project.approvalLog;
   const exportResult = useMemo(
@@ -28,16 +36,38 @@ export function ExportStage({ project }: { readonly project: DeckProject }) {
     () => (exportPackage ? { ...project, exportPackage: exportPackage.summary } : project),
     [exportPackage, project],
   );
-  const reportMd = useMemo(() => buildGenerationReport(reportProject), [reportProject]);
+  const liveReportLineage = useMemo(
+    () => buildLiveGenerationReportLineage({ project, exportPackage }),
+    [exportPackage, project],
+  );
+  const reportMd = useMemo(
+    () =>
+      buildGenerationReport(
+        reportProject,
+        undefined,
+        [],
+        project.liveSlideGeneration?.providerLineage ?? [],
+        liveReportLineage,
+      ),
+    [liveReportLineage, project.liveSlideGeneration?.providerLineage, reportProject],
+  );
   const finalGate = useMemo(
     () =>
       evaluateFinalExportGate({
         project,
         exportPackage: exportPackage?.summary,
         reportMarkdown: reportMd,
+        executionMode,
+        lineage: project.liveSlideGeneration?.providerLineage,
+        liveReportLineage,
       }),
-    [exportPackage, project, reportMd],
+    [executionMode, exportPackage, liveReportLineage, project, reportMd],
   );
+  const exportStatusLabel = exportPackage
+    ? finalGate.kind === "ready"
+      ? "준비 완료"
+      : "검증 필요"
+    : "최종화 중";
   const finalize = useCallback(() => {
     if (!exportPackage || finalGate.kind !== "ready") return;
     updateProject(project.id, createProjectExportPatch({ project, exportPackage }));
@@ -53,19 +83,26 @@ export function ExportStage({ project }: { readonly project: DeckProject }) {
 
   return (
     <StageShell>
-      <StageScroll className="mx-auto max-w-5xl px-8">
+      <StageScroll className="mx-auto max-w-5xl px-4 sm:px-8">
         <StageHeader num="10" sub="Final Report" title="최종 보고 · 내보내기" />
-        <div className="mb-8 grid grid-cols-4 gap-3">
+        <div className="mb-8 hidden grid-cols-2 gap-3 sm:grid sm:grid-cols-4">
           <Metric label="슬라이드" value={String(layers.length)} />
           <Metric label="PNG" value={String(exportPackage?.pngFiles.length ?? 0)} />
           <Metric label="승인 이벤트" value={String(approvals.length)} accent />
           <Metric
             label="현재 상태"
-            value={project.stage === "EXPORT_READY" ? "준비 완료" : "최종화 중"}
+            value={exportStatusLabel}
+            accent={exportStatusLabel === "검증 필요"}
           />
         </div>
         {exportPackage && finalGate.kind === "ready" ? (
-          <ReadyExportPanel exportPackage={exportPackage} reportMd={reportMd} project={project} />
+          <ReadyExportPanel
+            exportPackage={exportPackage}
+            reportMd={reportMd}
+            project={project}
+            warnings={finalGate.warnings}
+            developmentWatermark={finalGate.developmentWatermark}
+          />
         ) : (
           <BlockedExportPanel
             issues={exportResult.kind === "blocked" ? exportResult.issues : gateIssues(finalGate)}

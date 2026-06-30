@@ -2,10 +2,16 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { Maximize2 } from "lucide-react";
 import { GateBar } from "@/components/deck/GateBar";
+import { ReviewGalleryPanel } from "@/components/deck/ReviewGalleryPanel";
 import { RevisionComparePanel } from "@/components/deck/RevisionComparePanel";
 import { SlidePreview } from "@/components/deck/SlidePreview";
 import { SlidePreviewDialog } from "@/components/deck/SlidePreviewDialog";
-import { StageHeader, StageScroll, StageShell } from "@/components/deck/stage-shared";
+import {
+  StageErrorBanner,
+  StageHeader,
+  StageScroll,
+  StageShell,
+} from "@/components/deck/stage-shared";
 import { fakeAsync } from "@/components/deck/stage-timing";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,6 +19,12 @@ import { approveStage, updateProject } from "@/lib/deck-store";
 import { hash } from "@/lib/mock-ai";
 import type { DeckProject, GeneratedSlide } from "@/lib/deck-types";
 import type { SlideRevisionComparison } from "@/lib/slide-revision-generation";
+import {
+  approveReviewSlide,
+  buildReviewGalleryItems,
+  validateReviewGalleryLiveCompositions,
+} from "@/components/deck/review-gallery-model";
+import { buildRequiredOverlayRolesBySlide } from "@/components/deck/review-gallery-required-roles";
 
 export function ReviewStage({ project }: { readonly project: DeckProject }) {
   const navigate = useNavigate();
@@ -83,12 +95,65 @@ export function ReviewStage({ project }: { readonly project: DeckProject }) {
 
   const spec = project.plan?.slides.find((slide) => slide.number === selected);
   const slide = slides.find((item) => item.number === selected);
+  const liveItems =
+    project.liveSlideGeneration && project.plan
+      ? buildReviewGalleryItems({
+          slides,
+          specs: project.plan.slides,
+          selectedSlideNumber: selected,
+          compositions: project.liveSlideGeneration.compositions,
+          requiredOverlayRolesBySlide: buildRequiredOverlayRolesBySlide(project.layout),
+        })
+      : undefined;
+  const liveValidation = liveItems
+    ? validateReviewGalleryLiveCompositions({
+        items: liveItems,
+        expectedSlideCount: project.slideCount,
+      })
+    : undefined;
+
+  const approveSelectedLiveSlide = () => {
+    if (selected === null) return;
+    const approved = [...approveReviewSlide(slides, selected)];
+    setSlides(approved);
+    updateProject(project.id, { slides: approved });
+  };
+
+  if (liveItems) {
+    return (
+      <StageShell>
+        <StageScroll className="mx-auto max-w-7xl px-3 sm:px-8">
+          <StageHeader num="07" sub="Review" title="슬라이드 검토" />
+          {liveValidation?.kind === "blocked" ? (
+            <StageErrorBanner
+              title="Live compositor 검증 필요"
+              message={liveValidation.issues.map((issue) => issue.message).join(" ")}
+            />
+          ) : null}
+          <ReviewGalleryPanel
+            items={liveItems}
+            selectedSlideNumber={selected}
+            canRegenerate={false}
+            onSelect={setSelected}
+            onApproveSelected={approveSelectedLiveSlide}
+            onApproveAll={approveAll}
+            approveAllDisabled={liveValidation?.kind === "blocked"}
+            approveAllLabel="전체 검토 완료하고 편집 시작"
+            onRegenerateSelected={() => undefined}
+            onDeleteRequest={() => undefined}
+            onAddRequest={() => undefined}
+            showRequestActions={false}
+          />
+        </StageScroll>
+      </StageShell>
+    );
+  }
 
   return (
     <StageShell>
-      <StageScroll className="mx-auto max-w-7xl px-8">
+      <StageScroll className="mx-auto max-w-7xl px-3 sm:px-8">
         <StageHeader num="07" sub="Review" title="슬라이드 검토" />
-        <div className="grid min-h-[520px] grid-cols-[220px_minmax(0,1fr)_300px] gap-5">
+        <div className="grid min-h-[520px] grid-cols-1 items-start gap-5 lg:grid-cols-[220px_minmax(0,1fr)_300px]">
           <SlideList slides={slides} selected={selected} project={project} onSelect={setSelected} />
           <section className="border border-border bg-paper">
             <div className="flex items-center justify-between border-b border-border px-3 py-2">
@@ -125,6 +190,7 @@ export function ReviewStage({ project }: { readonly project: DeckProject }) {
       </StageScroll>
       <GateBar
         hint="검토를 마치면 편집기에서 바로 레이어 변환을 진행합니다."
+        mobileHidden
         approve={{ label: "전체 슬라이드 승인하고 편집 시작", onClick: approveAll }}
       />
       <SlidePreviewDialog

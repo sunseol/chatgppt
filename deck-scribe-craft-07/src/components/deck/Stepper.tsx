@@ -16,7 +16,7 @@ export function WorkflowStepRows({
   projectId?: string;
 }) {
   return (
-    <nav className="flex flex-col gap-px">
+    <nav className="grid grid-cols-2 gap-px lg:flex lg:flex-col">
       {items.map((item) => (
         <StepRow key={item.key} item={item} projectId={projectId} />
       ))}
@@ -32,7 +32,7 @@ function StepRow(props: { item: WorkflowStepItem; projectId?: string }) {
     <div
       aria-current={item.isCurrent ? "step" : undefined}
       className={[
-        "group flex items-start gap-3 px-4 py-3 border-l-2 transition-colors",
+        "group flex min-w-0 items-start gap-3 border-l-2 px-3 py-2 transition-colors lg:px-4 lg:py-3",
         item.isCurrent
           ? "border-accent bg-paper"
           : item.status === "completed"
@@ -60,7 +60,9 @@ function StepRow(props: { item: WorkflowStepItem; projectId?: string }) {
           <span className={statusClassName(item.status)}>{item.statusLabel}</span>
           <span>{item.sub}</span>
         </div>
-        <div className="mt-1 text-[11px] leading-snug text-muted-foreground">{item.detail}</div>
+        <div className="mt-1 hidden text-[11px] leading-snug text-muted-foreground lg:block">
+          {item.detail}
+        </div>
       </div>
     </div>
   );

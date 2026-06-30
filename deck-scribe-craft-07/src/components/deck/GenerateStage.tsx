@@ -1,13 +1,30 @@
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { GateBar } from "@/components/deck/GateBar";
+import { GenerateEmptyAction } from "@/components/deck/GenerateEmptyAction";
 import { GeneratedSlideGrid } from "@/components/deck/GeneratedSlideGrid";
 import { ProviderJobProgressPanel } from "@/components/deck/ProviderJobProgressPanel";
-import { EmptyAction, StageHeader, StageScroll, StageShell } from "@/components/deck/stage-shared";
+import {
+  StageErrorBanner,
+  StageHeader,
+  StageScroll,
+  StageShell,
+} from "@/components/deck/stage-shared";
 import { fakeAsync } from "@/components/deck/stage-timing";
+import { resolveGenerateProgress } from "@/components/deck/generate-progress";
 import { invalidateDownstream, updateProject } from "@/lib/deck-store";
 import type { DeckProject, GeneratedSlide } from "@/lib/deck-types";
+import {
+  TARGET_IMAGE_MODEL,
+  decideImageProviderFeasibility,
+} from "@/lib/image-provider-feasibility";
+import { createImagePathDecisionRecord } from "@/lib/image-path-decision";
+import type { LiveSlideGenerationWorkflowResult } from "@/lib/live-slide-generation-workflow";
 import { mockSlides } from "@/lib/mock-ai";
+import {
+  createProductionImageGenerationGate,
+  type ImageGenerationExecutionMode,
+} from "@/lib/production-image-generation-gate";
 import {
   createProviderJobManager,
   ProviderJobCancelledError,
@@ -24,13 +41,32 @@ import {
 
 const GENERATE_STEP = "generate";
 
+export type GenerateStageLiveRunner = (input: {
+  readonly project: DeckProject;
+  readonly manager: ProviderJobManager;
+  readonly onProgress: (percent: number, message: string) => void;
+  readonly isCancellationRequested: () => boolean;
+}) => Promise<LiveSlideGenerationWorkflowResult>;
+
 type GenerateRecovery = {
   readonly snapshot: ProviderJobRecoverySnapshot;
   readonly job: ProviderJob;
 };
 
-export function GenerateStage({ project }: { readonly project: DeckProject }) {
+export function GenerateStage({
+  project,
+  executionMode = defaultExecutionMode(),
+  runLiveGeneration,
+}: {
+  readonly project: DeckProject;
+  readonly executionMode?: ImageGenerationExecutionMode;
+  readonly runLiveGeneration?: GenerateStageLiveRunner;
+}) {
   const navigate = useNavigate();
+  const imageGenerationGate = createProductionImageGenerationGate({
+    executionMode,
+    imagePathDecision: project.imagePathDecision,
+  });
   const initialRecovery = readGenerateRecovery(project.id);
   const [manager] = useState<ProviderJobManager>(() =>
     createProviderJobManager({
@@ -40,14 +76,31 @@ export function GenerateStage({ project }: { readonly project: DeckProject }) {
   );
   const [slides, setSlides] = useState<GeneratedSlide[] | undefined>(project.slides);
   const [busy, setBusy] = useState(false);
-  const [progress, setProgress] = useState(initialRecovery?.job.progress?.percent ?? 0);
+  const [progress, setProgress] = useState(
+    initialRecovery?.job.progress?.percent ?? resolveGenerateProgress(project.slides),
+  );
   const [job, setJob] = useState<ProviderJob | undefined>(initialRecovery?.job);
   const [recovered, setRecovered] = useState(initialRecovery !== undefined);
+  const productionLiveRunnerAvailable =
+    imageGenerationGate.executionMode === "production" && runLiveGeneration !== undefined;
+  const productionRunnerCanCreateInitialDecision =
+    productionLiveRunnerAvailable &&
+    imageGenerationGate.kind === "blocked" &&
+    imageGenerationGate.issues.every((issue) => issue.code === "missing_image_path_decision");
+  const generationReady =
+    imageGenerationGate.kind === "ready" || productionRunnerCanCreateInitialDecision;
+  const missingLiveRunner =
+    imageGenerationGate.kind === "ready" &&
+    imageGenerationGate.executionMode === "production" &&
+    runLiveGeneration === undefined;
 
   const generate = async () => {
-    if (!project.plan || !project.design) return;
+    if (!project.plan || !project.design || !generationReady || missingLiveRunner) {
+      return;
+    }
     const queued = manager.enqueue({
-      providerId: "mock",
+      providerId:
+        imageGenerationGate.kind === "ready" ? imageGenerationGate.providerId : "openaiImage",
       capability: "imageGeneration",
       description: "슬라이드 이미지 생성",
     });
@@ -69,7 +122,11 @@ export function GenerateStage({ project }: { readonly project: DeckProject }) {
   };
 
   const runGeneration = async (jobId: string) => {
-    if (!project.plan || !project.design) return;
+    if (!project.plan || !project.design || !generationReady) return;
+    if (productionLiveRunnerAvailable) {
+      await runProductionGeneration(jobId);
+      return;
+    }
     setBusy(true);
     setProgress(0);
     const target = mockSlides(project.plan);
@@ -114,6 +171,66 @@ export function GenerateStage({ project }: { readonly project: DeckProject }) {
     invalidateDownstream(project.id, "generate");
   };
 
+  const runProductionGeneration = async (jobId: string) => {
+    if (!runLiveGeneration) return;
+    setBusy(true);
+    setProgress(0);
+    const draft: GeneratedSlide[] =
+      project.plan?.slides.map((slide) => ({
+        number: slide.number,
+        version: 1,
+        status: "generating",
+        imageDescriptor: `live-generation|${slide.role}|${slide.title}`,
+      })) ?? [];
+    setSlides(draft);
+
+    const completed = await manager.run(jobId, async (context) => {
+      context.reportProgress({ percent: 5, message: "라이브 이미지 생성 경로 준비" });
+      const result = await runLiveGeneration({
+        project,
+        manager,
+        onProgress: (percent, message) => {
+          setProgress(percent);
+          syncJob(
+            project.id,
+            manager,
+            context.reportProgress({ percent, message }),
+            setJob,
+            setRecovered,
+          );
+        },
+        isCancellationRequested: context.isCancellationRequested,
+      });
+      if (result.kind !== "ready") {
+        throw new Error(liveGenerationFailureMessage(result));
+      }
+      return result;
+    });
+
+    syncJob(project.id, manager, completed, setJob, setRecovered);
+    setBusy(false);
+    if (completed.status !== "succeeded" || completed.output === undefined) return;
+    const result = completed.output;
+    const liveVersion = (project.liveSlideGeneration?.version ?? 0) + 1;
+    setSlides([...result.slides]);
+    setProgress(result.progress.percent);
+    updateProject(project.id, {
+      slides: [...result.slides],
+      layers: [...result.layers],
+      liveSlideGeneration: {
+        version: liveVersion,
+        generatedAt: Date.now(),
+        artifacts: [...result.artifacts],
+        storedArtifacts: [...result.storedArtifacts],
+        compositions: [...result.compositions],
+        providerLineage: [...result.providerLineage],
+      },
+      imagePathDecision: createImagePathDecisionFromLiveResult(project, result, liveVersion),
+      stage: "SLIDE_REVIEW_PENDING",
+    });
+    invalidateDownstream(project.id, "generate");
+  };
+
   const openReview = () => {
     navigate({
       to: "/project/$projectId/$step",
@@ -127,6 +244,18 @@ export function GenerateStage({ project }: { readonly project: DeckProject }) {
     <StageShell>
       <StageScroll className="mx-auto max-w-6xl px-8">
         <StageHeader num="06" sub="Generate" title="슬라이드 이미지 생성" />
+        {imageGenerationGate.kind === "blocked" && !productionRunnerCanCreateInitialDecision ? (
+          <StageErrorBanner
+            title="실제 이미지 경로 Lock 필요"
+            message={imageGenerationGate.issues.map((issue) => issue.message).join(" ")}
+          />
+        ) : null}
+        {missingLiveRunner ? (
+          <StageErrorBanner
+            title="OpenAI 이미지 transport 필요"
+            message="Production 이미지 생성은 네이티브 secret-store 기반 OpenAI image transport가 연결된 뒤에만 실행할 수 있습니다. mock 경로로 대체하지 않습니다."
+          />
+        ) : null}
         {job ? (
           <ProviderJobProgressPanel
             stageLabel="슬라이드 이미지 생성"
@@ -139,10 +268,11 @@ export function GenerateStage({ project }: { readonly project: DeckProject }) {
           />
         ) : null}
         {!slides ? (
-          <EmptyAction
-            label="승인한 레이아웃으로 슬라이드 이미지 생성"
+          <GenerateEmptyAction
+            generationReady={generationReady}
+            missingLiveRunner={missingLiveRunner}
             busy={busy}
-            onClick={generate}
+            onGenerate={generate}
           />
         ) : (
           <>
@@ -175,6 +305,30 @@ export function GenerateStage({ project }: { readonly project: DeckProject }) {
   );
 }
 
+function createImagePathDecisionFromLiveResult(
+  project: DeckProject,
+  result: Extract<LiveSlideGenerationWorkflowResult, { readonly kind: "ready" }>,
+  liveVersion: number,
+) {
+  const artifact = result.artifacts[0];
+  const stored = result.storedArtifacts[0];
+  if (artifact === undefined || stored === undefined) return project.imagePathDecision;
+  return createImagePathDecisionRecord({
+    decisionId: `${project.id}_openai_image_v${liveVersion}`,
+    decidedAt: Date.now(),
+    feasibility: decideImageProviderFeasibility({
+      codexImageCapability: "notSupported",
+      apiCredential: "available",
+      organizationVerification: "unknown",
+    }),
+    billingOwner: "openai_api_keychain_account",
+    requiredPermissions: ["images.generate", `model:${TARGET_IMAGE_MODEL}`],
+    organizationVerification: "unknown",
+    successfulArtifact: artifact,
+    binaryArtifactPath: stored.binary.path,
+  });
+}
+
 function syncJob(
   projectId: string,
   manager: ProviderJobManager,
@@ -185,6 +339,19 @@ function syncJob(
   setJob(nextJob);
   setRecovered(false);
   writeGenerateRecovery(projectId, nextJob.id, manager.snapshot());
+}
+
+function liveGenerationFailureMessage(
+  result: Exclude<LiveSlideGenerationWorkflowResult, { readonly kind: "ready" }>,
+): string {
+  switch (result.kind) {
+    case "blocked":
+      return result.issues.map((issue) => issue.message).join(" ");
+    case "incomplete":
+      return result.failures.map((failure) => failure.userMessage).join(" ");
+    default:
+      return assertNever(result);
+  }
 }
 
 function readGenerateRecovery(projectId: string): GenerateRecovery | undefined {
@@ -216,4 +383,12 @@ function writeGenerateRecovery(
 
 function isBrowser(): boolean {
   return typeof window !== "undefined";
+}
+
+function defaultExecutionMode(): ImageGenerationExecutionMode {
+  return import.meta.env.PROD ? "production" : "development";
+}
+
+function assertNever(value: never): never {
+  throw new Error(`Unhandled generate stage value: ${JSON.stringify(value)}`);
 }

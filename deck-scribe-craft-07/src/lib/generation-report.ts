@@ -1,9 +1,14 @@
 import type { DeckProject } from "./deck-types";
+import type { ProviderArtifactProvenance } from "./provider-provenance";
 import type { PromptUsageRecord } from "./prompt-assets";
 import type { AuditLogEvent } from "./audit-log";
 import { formatAuditLogForReport } from "./audit-log";
 import { formatReportCitation } from "./citation-renderer";
 import { createCorePromptUsageRecords, formatPromptVersionsForReport } from "./prompt-assets";
+import {
+  formatLiveGenerationReportLineage,
+  type LiveSlideReportLineage,
+} from "./live-generation-report-lineage";
 import {
   buildMinimalSlideSourceMap,
   formatMinimalSourceMapForReport,
@@ -16,6 +21,8 @@ export function buildGenerationReport(
     recordedAt: project.createdAt,
   }),
   auditEvents: readonly AuditLogEvent[] = [],
+  providerLineage: readonly ProviderArtifactProvenance[] = [],
+  liveReportLineage: readonly LiveSlideReportLineage[] = [],
 ): string {
   const out: string[] = [];
   const sourceMap =
@@ -41,6 +48,11 @@ export function buildGenerationReport(
   appendPromptVersions(promptUsages, out);
   appendExport(project, out);
   appendAuditLog(auditEvents, out);
+  if (liveReportLineage.length > 0) {
+    out.push("");
+    out.push(formatLiveGenerationReportLineage(liveReportLineage));
+  }
+  appendProviderProvenance(providerLineage, out);
   return out.join("\n");
 }
 
@@ -201,11 +213,50 @@ function appendExport(project: DeckProject, out: string[]) {
   out.push(
     `- PNG: ${project.exportPackage.pngCount} · SVG: ${project.exportPackage.svgCount} · Hybrid SVG: ${project.exportPackage.hybridSvgCount} · Project file: ${project.exportPackage.projectFilePath}`,
   );
+  if (project.exportPackage.pptxFilePath) {
+    out.push(
+      `- PPTX: ${project.exportPackage.pptxFilePath} · Background images: ${project.exportPackage.pptxBackgroundImageCount ?? 0}`,
+    );
+  }
 }
 
 function appendAuditLog(auditEvents: readonly AuditLogEvent[], out: string[]) {
   out.push("");
   out.push(formatAuditLogForReport(auditEvents));
+}
+
+function appendProviderProvenance(lineage: readonly ProviderArtifactProvenance[], out: string[]) {
+  out.push("");
+  out.push("## 12. Provider Provenance");
+  if (lineage.length === 0) {
+    out.push("- 없음");
+    return;
+  }
+  lineage.forEach((item) => {
+    out.push(
+      [
+        `- ${item.artifactId}`,
+        item.providerKind,
+        item.executionMode,
+        item.authMode,
+        item.modelOrRuntime,
+        `prompt ${item.promptVersion}`,
+        `fixture ${item.fixture ? "yes" : "no"}`,
+        `${item.durationMs}ms`,
+      ].join(" · "),
+    );
+    const identity = providerIdentity(item);
+    if (identity.length > 0) out.push(`  - ${identity.join(" · ")}`);
+    out.push(`  - inputs ${joinOrNone(item.inputArtifactIds)}`);
+  });
+}
+
+function providerIdentity(item: ProviderArtifactProvenance): readonly string[] {
+  return [
+    ...(item.requestId === undefined ? [] : [`request ${item.requestId}`]),
+    ...(item.turnId === undefined ? [] : [`turn ${item.turnId}`]),
+    ...(item.threadId === undefined ? [] : [`thread ${item.threadId}`]),
+  ];
 }
 
 function joinOrNone(values: readonly string[]): string {
