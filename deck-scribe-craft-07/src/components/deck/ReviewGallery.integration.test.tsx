@@ -103,6 +103,7 @@ describe("slide review gallery", () => {
     expect(markup.includes('data-selected-composition="3"')).toBe(true);
     expect(markup.includes('data-presentation-preview="3"')).toBe(true);
     expect(markup.includes('data-export-basis="compositor"')).toBe(true);
+    expect(markup.includes("data:image/svg+xml")).toBe(true);
     expect(
       markup.includes(
         'data-background-artifact-path="projects/project/slides/images/slide_003.v1.png"',

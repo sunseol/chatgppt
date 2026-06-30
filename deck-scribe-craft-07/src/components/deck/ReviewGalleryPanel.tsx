@@ -31,7 +31,7 @@ export function ReviewGalleryPanel(props: {
                   data-compositor-thumbnail={item.slide.number}
                   data-export-basis={item.composition.exportBasis}
                   data-background-artifact-path={item.composition.backgroundArtifact?.path}
-                  src={item.composition.previewPngDataUrl}
+                  src={compositionPreviewSrc(item.composition)}
                   className="h-10 aspect-video shrink-0 border border-border object-cover"
                 />
               )}
@@ -66,7 +66,7 @@ export function ReviewGalleryPanel(props: {
           >
             <img
               alt=""
-              src={selected.composition.previewPngDataUrl}
+              src={compositionPreviewSrc(selected.composition)}
               className="aspect-video w-full object-cover"
             />
           </div>
@@ -100,6 +100,12 @@ export function ReviewGalleryPanel(props: {
       </div>
     </div>
   );
+}
+
+function compositionPreviewSrc(composition: ReviewGalleryItem["composition"]): string | undefined {
+  if (composition === undefined) return undefined;
+  if (composition.svg.trim().length === 0) return composition.previewPngDataUrl;
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(composition.svg)}`;
 }
 
 function ReviewBadge({ item }: { readonly item: ReviewGalleryItem }) {
