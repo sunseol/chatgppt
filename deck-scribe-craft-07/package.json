@@ -26,6 +26,7 @@
     "qa:clean-machine": "bun scripts/clean-machine-evidence.mjs",
     "qa:non-developer-uat": "bun scripts/non-developer-uat-evidence.mjs",
     "qa:visual-release-council": "bun scripts/visual-release-council-evidence.mjs",
+    "qa:packaged-golden-path:manifest": "bun scripts/packaged-golden-path-manifest.mjs",
     "qa:packaged-golden-path": "bun scripts/packaged-golden-path-evidence.mjs",
     "qa:powerpoint-round-trip": "bun scripts/powerpoint-round-trip-evidence.mjs",
     "qa:package": "bun scripts/package-native-qa.mjs",
