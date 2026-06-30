@@ -155,7 +155,7 @@ export function ReviewStage({ project }: { readonly project: DeckProject }) {
     <StageShell>
       <StageScroll className="mx-auto max-w-7xl px-8">
         <StageHeader num="07" sub="Review" title="슬라이드 검토" />
-        <div className="grid min-h-[520px] grid-cols-1 gap-5 lg:grid-cols-[220px_minmax(0,1fr)_300px]">
+        <div className="grid min-h-[520px] grid-cols-1 items-start gap-5 lg:grid-cols-[220px_minmax(0,1fr)_300px]">
           <SlideList slides={slides} selected={selected} project={project} onSelect={setSelected} />
           <section className="border border-border bg-paper">
             <div className="flex items-center justify-between border-b border-border px-3 py-2">

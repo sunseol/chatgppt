@@ -14,7 +14,9 @@ export function StageScroll({
   readonly className?: string;
 }) {
   return (
-    <div className={`desktop-scroll w-full flex-1 pb-28 pt-8 ${className ?? ""}`}>{children}</div>
+    <div className={`desktop-scroll w-full flex-1 pb-20 pt-6 sm:pb-28 sm:pt-8 ${className ?? ""}`}>
+      {children}
+    </div>
   );
 }
 

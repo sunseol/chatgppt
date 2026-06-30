@@ -31,6 +31,28 @@ describe("export stage", () => {
     expect(markup.includes("layout 단계 결과를 다시 확인해야 합니다.")).toBe(true);
   });
 
+  test("does not present blocked production export as visually ready", () => {
+    const markup = renderToStaticMarkup(
+      <ExportStage project={exportProjectFixture()} executionMode="production" />,
+    );
+
+    expect(markup.includes("검증 필요")).toBe(true);
+    expect(markup.includes(">준비 완료</div>")).toBe(false);
+    expect(markup.includes("내보내기 전에 확인이 필요합니다.")).toBe(true);
+  });
+
+  test("keeps export metrics readable on mobile widths", () => {
+    const markup = renderToStaticMarkup(
+      <ExportStage project={exportProjectFixture()} executionMode="production" />,
+    );
+
+    expect(markup.includes("grid-cols-2")).toBe(true);
+    expect(markup.includes("sm:grid-cols-4")).toBe(true);
+    expect(markup.includes("break-keep")).toBe(true);
+    expect(markup.includes("px-4")).toBe(true);
+    expect(markup.includes("sm:px-8")).toBe(true);
+  });
+
   test("renders development mock export warning and watermark", () => {
     const project = exportProjectFixture();
     const exportResult = buildProjectExportPackage(project, { now: () => 456, version: 1 });
@@ -56,6 +78,7 @@ describe("export stage", () => {
     );
 
     expect(markup.includes("MOCK MODE")).toBe(true);
+    expect(markup.includes("개발 검증 참고")).toBe(true);
     expect(markup.includes("mock_slide_1")).toBe(true);
     expect(markup.includes("layout_001")).toBe(true);
   });

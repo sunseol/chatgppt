@@ -89,9 +89,10 @@ function DevelopmentExportWarning({
 }) {
   if (warnings.length === 0 && watermark === undefined) return null;
   return (
-    <div className="mb-4 border border-warning/40 bg-warning/10 px-4 py-3 text-sm">
+    <div className="mb-4 border border-accent/30 bg-paper px-4 py-3 text-sm">
+      <div className="font-medium">개발 검증 참고</div>
       {watermark === undefined ? null : (
-        <div className="font-mono text-xs font-semibold text-warning">{watermark}</div>
+        <div className="mt-2 font-mono text-xs font-semibold text-accent">{watermark}</div>
       )}
       <ul className="mt-2 list-disc pl-5 text-muted-foreground">
         {warnings.map((warning) => (
@@ -153,9 +154,17 @@ export function Metric({
   readonly accent?: boolean;
 }) {
   return (
-    <div className="border border-border bg-paper p-4">
-      <div className="text-[11px] uppercase tracking-wider text-muted-foreground">{label}</div>
-      <div className={`mt-2 font-serif text-3xl ${accent ? "text-accent" : ""}`}>{value}</div>
+    <div className="min-w-0 border border-border bg-paper p-4">
+      <div className="break-keep text-[11px] uppercase tracking-wider text-muted-foreground">
+        {label}
+      </div>
+      <div
+        className={`mt-2 break-keep font-serif text-2xl leading-tight sm:text-3xl ${
+          accent ? "text-accent" : ""
+        }`}
+      >
+        {value}
+      </div>
     </div>
   );
 }

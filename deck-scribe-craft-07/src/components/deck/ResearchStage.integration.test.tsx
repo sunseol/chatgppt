@@ -55,6 +55,19 @@ describe("research review UI", () => {
     expect(markup.includes("조사 결과를 승인하고 슬라이드 기획 시작")).toBe(false);
   });
 
+  test("uses a compact mobile action bar so content remains scroll-safe", () => {
+    const markup = renderToStaticMarkup(
+      <GateBar
+        hint="생성이 끝났습니다. 결과를 확인한 뒤 검토로 이동하세요."
+        approve={{ label: "검토로 이동", onClick: () => undefined }}
+      />,
+    );
+
+    expect(markup.includes("py-2")).toBe(true);
+    expect(markup.includes("sm:py-4")).toBe(true);
+    expect(markup.includes("max-sm:hidden")).toBe(true);
+  });
+
   test("labels development research output as sample data", () => {
     const markup = renderToStaticMarkup(<SampleResearchModeNotice />);
 
