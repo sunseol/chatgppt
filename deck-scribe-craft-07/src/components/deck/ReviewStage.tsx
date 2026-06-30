@@ -120,7 +120,7 @@ export function ReviewStage({ project }: { readonly project: DeckProject }) {
   if (liveItems) {
     return (
       <StageShell>
-        <StageScroll className="mx-auto max-w-7xl px-8">
+        <StageScroll className="mx-auto max-w-7xl px-3 sm:px-8">
           <StageHeader num="07" sub="Review" title="슬라이드 검토" />
           {liveValidation?.kind === "blocked" ? (
             <StageErrorBanner
@@ -134,26 +134,22 @@ export function ReviewStage({ project }: { readonly project: DeckProject }) {
             canRegenerate={false}
             onSelect={setSelected}
             onApproveSelected={approveSelectedLiveSlide}
+            onApproveAll={approveAll}
+            approveAllDisabled={liveValidation?.kind === "blocked"}
+            approveAllLabel="전체 검토 완료하고 편집 시작"
             onRegenerateSelected={() => undefined}
             onDeleteRequest={() => undefined}
             onAddRequest={() => undefined}
+            showRequestActions={false}
           />
         </StageScroll>
-        <GateBar
-          hint="Live compositor 검증을 통과한 뒤 편집기에서 레이어를 조정합니다."
-          approve={{
-            label: "전체 슬라이드 승인하고 편집 시작",
-            onClick: approveAll,
-            disabled: liveValidation?.kind === "blocked",
-          }}
-        />
       </StageShell>
     );
   }
 
   return (
     <StageShell>
-      <StageScroll className="mx-auto max-w-7xl px-8">
+      <StageScroll className="mx-auto max-w-7xl px-3 sm:px-8">
         <StageHeader num="07" sub="Review" title="슬라이드 검토" />
         <div className="grid min-h-[520px] grid-cols-1 items-start gap-5 lg:grid-cols-[220px_minmax(0,1fr)_300px]">
           <SlideList slides={slides} selected={selected} project={project} onSelect={setSelected} />
@@ -192,6 +188,7 @@ export function ReviewStage({ project }: { readonly project: DeckProject }) {
       </StageScroll>
       <GateBar
         hint="검토를 마치면 편집기에서 바로 레이어 변환을 진행합니다."
+        mobileHidden
         approve={{ label: "전체 슬라이드 승인하고 편집 시작", onClick: approveAll }}
       />
       <SlidePreviewDialog

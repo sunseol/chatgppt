@@ -1,5 +1,6 @@
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { PptxReadinessPreview } from "@/components/deck/PptxReadinessPreview";
 import type { DeckProject } from "@/lib/deck-types";
 import type { FinalExportGateWarning } from "@/lib/final-export-gate";
 import type { ProjectExportPackage } from "@/lib/project-export";
@@ -28,7 +29,17 @@ export function ReadyExportPanel({
         </div>
       </div>
       <DevelopmentExportWarning warnings={warnings} watermark={developmentWatermark} />
+      <PptxReadinessPreview exportPackage={exportPackage} project={project} />
       <div className="grid grid-cols-2 gap-3">
+        {pptxFile ? (
+          <Button
+            onClick={() => downloadDataUrl(pptxFile)}
+            className="col-span-2 bg-foreground text-background hover:bg-foreground/90"
+          >
+            <Download className="h-4 w-4" />
+            PPTX 파일 다운로드
+          </Button>
+        ) : null}
         <Button
           variant="outline"
           onClick={() => downloadText(`${project.name}_report.md`, reportMd, "text/markdown")}
@@ -70,11 +81,6 @@ export function ReadyExportPanel({
             편집용 SVG {String(file.slideNumber).padStart(2, "0")}
           </Button>
         ))}
-        {pptxFile ? (
-          <Button variant="outline" onClick={() => downloadDataUrl(pptxFile)}>
-            PPTX 파일
-          </Button>
-        ) : null}
       </div>
     </>
   );

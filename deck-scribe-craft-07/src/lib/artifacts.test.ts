@@ -1,5 +1,10 @@
 import { describe, expect, test } from "bun:test";
-import { createArtifactRecord, getProjectFolderSchema, hashContent } from "./artifacts";
+import {
+  createArtifactRecord,
+  getProjectFolderSchema,
+  hashContent,
+  sha256Bytes,
+} from "./artifacts";
 
 describe("artifact metadata", () => {
   test("creates stable hash-prefixed metadata for approved artifacts", () => {
@@ -35,5 +40,11 @@ describe("artifact metadata", () => {
       "projects/p_test/exports",
       "projects/p_test/audit",
     ]);
+  });
+
+  test("computes full SHA-256 digests for release artifact identity", () => {
+    expect(sha256Bytes(new TextEncoder().encode("abc"))).toBe(
+      "sha256:ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+    );
   });
 });

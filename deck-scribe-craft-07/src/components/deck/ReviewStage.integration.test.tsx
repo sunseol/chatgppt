@@ -9,6 +9,7 @@ describe("review stage", () => {
 
     expect(markup.includes("items-start")).toBe(true);
     expect(markup.includes("aspect-video")).toBe(true);
+    expect(markup.includes("max-sm:hidden")).toBe(true);
   });
 });
 

@@ -34,7 +34,8 @@ describe("slide review gallery", () => {
     );
 
     expect(markup.includes("검증 실패")).toBe(true);
-    expect(markup.includes("선택 슬라이드 승인")).toBe(true);
+    expect(markup.includes("이 슬라이드 검토 완료")).toBe(true);
+    expect(markup.includes("전체 슬라이드 검토 현황")).toBe(true);
     expect(markup.includes("선택 슬라이드 재생성")).toBe(true);
     expect(markup.includes("삭제 요청")).toBe(true);
     expect(markup.includes("추가 요청")).toBe(true);
@@ -43,6 +44,8 @@ describe("slide review gallery", () => {
     expect(markup.includes("grid-cols-1")).toBe(true);
     expect(markup.includes("lg:grid-cols-[260px_1fr]")).toBe(true);
     expect(markup.includes("sm:grid-cols-2")).toBe(true);
+    expect(markup.includes("order-1")).toBe(true);
+    expect(markup.includes("order-2")).toBe(true);
   });
 
   test("blocks vectorization until every slide is approved and QA-passed", () => {
@@ -104,6 +107,8 @@ describe("slide review gallery", () => {
     expect(markup.includes('data-presentation-preview="3"')).toBe(true);
     expect(markup.includes('data-export-basis="compositor"')).toBe(true);
     expect(markup.includes("data:image/svg+xml")).toBe(true);
+    expect(markup.includes("object-contain")).toBe(true);
+    expect(markup.includes("크게 보기")).toBe(true);
     expect(
       markup.includes(
         'data-background-artifact-path="projects/project/slides/images/slide_003.v1.png"',

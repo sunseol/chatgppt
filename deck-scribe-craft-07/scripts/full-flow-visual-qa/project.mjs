@@ -120,9 +120,10 @@ function liveComposition(slideNumber) {
   const title = slideNumber === 1 ? "Workflow bottleneck" : "Verified creation path";
   const body =
     slideNumber === 1
-      ? "Hidden state creates repeated checks, layout risk, and approval drift."
-      : "Source-backed stages keep the final PPT editable and reviewable.";
-  const source = slideNumber === 1 ? "Sources: src_flow_1" : "Sources: src_flow_2";
+      ? "Checks slow approval. Visible gates restore flow."
+      : "Sources keep PPT editable. Final deck stays reviewable.";
+  const source =
+    slideNumber === 1 ? "Source: approval workflow sample" : "Source: editable deck sample";
   return {
     slideNumber,
     exportBasis: "compositor",
@@ -227,22 +228,36 @@ function liveOverlayBounds(slideNumber) {
 
 function liveCompositionSvg({ slideNumber, imageDataUrl, title, body, source }) {
   const chartBars = slideNumber === 1 ? [120, 180, 138, 232] : [126, 168, 222, 252];
+  const bodyLines = body
+    .split(". ")
+    .map((line, index, lines) =>
+      index === lines.length - 1 || line.endsWith(".") ? line : `${line}.`,
+    );
   return [
     `<svg data-final-slide="${slideNumber}" data-export-basis="compositor" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg">`,
-    `<image data-role="generated-background" data-locked="true" href="${imageDataUrl}" data-background-artifact-id="p_visual_flow_image_slide_${paddedSlide(slideNumber)}_v1" data-background-artifact-path="projects/p_visual_flow/slides/images/slide_${paddedSlide(slideNumber)}.v1.png" data-background-artifact-hash="${liveHash(slideNumber)}" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice" />`,
-    `<rect x="56" y="52" width="1168" height="616" rx="10" fill="#fffaf1" opacity="0.78" />`,
-    `<rect x="730" y="146" width="450" height="360" rx="8" fill="#f6f1e7" opacity="0.9" />`,
+    `<rect x="0" y="0" width="1280" height="720" fill="#f6f1e7" />`,
+    `<image data-role="generated-background" data-locked="true" href="${imageDataUrl}" data-background-artifact-id="p_visual_flow_image_slide_${paddedSlide(slideNumber)}_v1" data-background-artifact-path="projects/p_visual_flow/slides/images/slide_${paddedSlide(slideNumber)}.v1.png" data-background-artifact-hash="${liveHash(slideNumber)}" x="0" y="0" width="1280" height="720" preserveAspectRatio="xMidYMid slice" opacity="0.18" />`,
+    `<rect x="56" y="52" width="1168" height="616" rx="14" fill="#fffaf1" stroke="#d8cfc2" stroke-width="2" />`,
+    `<rect x="730" y="146" width="450" height="360" rx="10" fill="#ffffff" stroke="#ddd5ca" stroke-width="2" />`,
+    `<text x="86" y="96" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="700" letter-spacing="4" fill="#c87324">FINAL DECK SLIDE</text>`,
     `<g data-role="editable-overlays">`,
-    `<text data-editable-layer="title_${slideNumber}" data-layer-type="text" data-role="title" x="86" y="134" font-family="Georgia, serif" font-size="54" fill="#202735">${escapeXml(title)}</text>`,
-    `<text data-editable-layer="body_${slideNumber}" data-layer-type="text" data-role="body" x="88" y="214" font-family="Inter, Arial, sans-serif" font-size="28" fill="#4f5968">${escapeXml(body)}</text>`,
+    `<text data-editable-layer="title_${slideNumber}" data-layer-type="text" data-role="title" x="86" y="158" font-family="Georgia, serif" font-size="86" font-weight="700" fill="#202735">${escapeXml(title)}</text>`,
+    `<text data-editable-layer="body_${slideNumber}" data-layer-type="text" data-role="body" x="88" y="238" font-family="Inter, Arial, sans-serif" font-size="52" font-weight="800" fill="#303a4a">${escapeXml(bodyLines[0] ?? body)}</text>`,
+    bodyLines[1]
+      ? `<text data-editable-layer="body_${slideNumber}_line_2" data-layer-type="text" data-role="body" x="88" y="296" font-family="Inter, Arial, sans-serif" font-size="52" font-weight="800" fill="#303a4a">${escapeXml(bodyLines[1])}</text>`
+      : "",
+    `<rect x="88" y="332" width="550" height="10" rx="5" fill="#c87324" opacity="0.92" />`,
+    `<rect x="88" y="368" width="610" height="8" rx="4" fill="#637182" opacity="0.7" />`,
+    `<rect x="88" y="402" width="450" height="8" rx="4" fill="#637182" opacity="0.45" />`,
     `<g data-editable-layer="chart_${slideNumber}" data-layer-type="shape" data-role="chart">`,
-    `<line x1="782" y1="438" x2="1110" y2="438" stroke="#202735" stroke-width="3" opacity="0.55" />`,
+    `<text x="782" y="206" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="800" fill="#303a4a">Approval confidence</text>`,
+    `<line x1="782" y1="438" x2="1110" y2="438" stroke="#202735" stroke-width="4" opacity="0.72" />`,
     ...chartBars.map(
       (height, index) =>
-        `<rect x="${812 + index * 72}" y="${438 - height}" width="34" height="${height}" rx="5" fill="${index === chartBars.length - 1 ? "#c87324" : "#637182"}" opacity="${index === chartBars.length - 1 ? "0.95" : "0.72"}" />`,
+        `<rect x="${812 + index * 72}" y="${438 - height}" width="42" height="${height}" rx="6" fill="${index === chartBars.length - 1 ? "#c87324" : "#637182"}" opacity="${index === chartBars.length - 1 ? "1" : "0.85"}" />`,
     ),
     `</g>`,
-    `<text data-editable-layer="source_${slideNumber}" data-layer-type="text" data-role="source" x="86" y="650" font-family="Inter, Arial, sans-serif" font-size="18" fill="#687181">${escapeXml(source)}</text>`,
+    `<text data-editable-layer="source_${slideNumber}" data-layer-type="text" data-role="source" x="86" y="650" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="650" fill="#4f5968">${escapeXml(source)}</text>`,
     `</g>`,
     `</svg>`,
   ].join("");
@@ -285,9 +300,10 @@ function visualLayers(slideNumber) {
   const title = slideNumber === 1 ? "Workflow bottleneck" : "Verified creation path";
   const body =
     slideNumber === 1
-      ? "Hidden state creates repeated checks, layout risk, and approval drift."
-      : "Source-backed stages keep the final PPT editable and reviewable.";
-  const source = slideNumber === 1 ? "Sources: src_flow_1" : "Sources: src_flow_2";
+      ? "Checks slow approval. Visible gates restore flow."
+      : "Sources keep PPT editable. Final deck stays reviewable.";
+  const source =
+    slideNumber === 1 ? "Source: approval workflow sample" : "Source: editable deck sample";
   return {
     slideNumber,
     layers: [

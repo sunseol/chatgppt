@@ -1,4 +1,4 @@
-import { hashContent } from "./artifacts";
+import { sha256Bytes } from "./artifacts";
 import type { DeckProject, EditableLayerModel } from "./deck-types";
 import {
   contentTypesPart,
@@ -96,7 +96,7 @@ export function buildPptxCompatibilityExport(input: {
       path: `projects/${input.project.id}/exports/pptx/${input.project.id}.pptx`,
       mime: PPTX_MIME,
       dataUrl,
-      hash: hashContent(dataUrl),
+      hash: sha256Bytes(bytes),
       source: "ooxml_pptx_compatibility",
       slideWidthEmu: metrics.widthEmu,
       slideHeightEmu: metrics.heightEmu,

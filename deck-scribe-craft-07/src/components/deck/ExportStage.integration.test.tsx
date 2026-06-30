@@ -17,6 +17,8 @@ describe("export stage", () => {
     expect(markup.includes("편집용 SVG 01")).toBe(true);
     expect(markup.includes("SVG export · 데모에서 비활성화")).toBe(false);
     expect(markup.includes("PPTX 파일")).toBe(true);
+    expect(markup.includes("PPTX 최종 확인")).toBe(true);
+    expect(markup.includes("PPTX final check")).toBe(true);
     expect(markup.includes("PPTX export · 데모에서 비활성화")).toBe(false);
     expect(markup.includes("프로젝트 파일 (.json)")).toBe(true);
     expect(markup.includes("project_001_export_v1")).toBe(true);
@@ -50,17 +52,26 @@ describe("export stage", () => {
     expect(markup.includes("준비 완료")).toBe(true);
     expect(markup.includes("검증 필요")).toBe(false);
     expect(markup.includes("내보내기 파일이 준비되었습니다.")).toBe(true);
+    expect(markup.includes("PPTX 최종 확인")).toBe(true);
+    expect(markup.includes("PPTX 파일 다운로드")).toBe(true);
+    expect(markup.includes("검증된 최종 PPTX 패키지")).toBe(true);
+    expect(markup.includes("PPTX SHA-256")).toBe(true);
+    expect(/sha256:[a-f0-9]{64}/.test(markup)).toBe(true);
+    expect(markup.includes("배경 이미지")).toBe(true);
+    expect(markup.includes("1개")).toBe(true);
     expect(markup.includes("## Live Slide Lineage")).toBe(true);
     expect(markup.includes("image request img_req_001")).toBe(true);
   });
 
-  test("keeps export metrics readable on mobile widths", () => {
+  test("prioritizes PPTX proof over summary metrics on mobile widths", () => {
     const markup = renderToStaticMarkup(
-      <ExportStage project={exportProjectFixture()} executionMode="production" />,
+      <ExportStage project={productionExportProjectFixture()} executionMode="production" />,
     );
 
     expect(markup.includes("grid-cols-2")).toBe(true);
     expect(markup.includes("sm:grid-cols-4")).toBe(true);
+    expect(markup.includes("hidden grid-cols-2")).toBe(true);
+    expect(markup.includes("lg:hidden")).toBe(true);
     expect(markup.includes("break-keep")).toBe(true);
     expect(markup.includes("px-4")).toBe(true);
     expect(markup.includes("sm:px-8")).toBe(true);

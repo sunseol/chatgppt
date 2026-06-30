@@ -1,8 +1,7 @@
 import { createFileRoute, Link, useParams, Navigate } from "@tanstack/react-router";
 import { useEffect, useState, type ComponentType } from "react";
 import { isStepReachable, stageToStep, useProject } from "@/lib/deck-store";
-import { Stepper } from "@/components/deck/Stepper";
-import { ProjectCockpit } from "@/components/deck/ProjectCockpit";
+import { ProjectStageFrame } from "@/components/deck/ProjectStageFrame";
 import {
   SettingsDialogBody,
   type SettingsCodexLoginStatus,
@@ -32,7 +31,6 @@ import {
 } from "@/lib/client-workflow-stage-selection";
 import type { StepKey } from "@/lib/deck-types";
 import type { ProductionTextWorkflowBridgeStatus } from "@/lib/production-text-workflow-gate";
-import { ChevronLeft } from "lucide-react";
 
 const VALID_STEPS: StepKey[] = [
   "project",
@@ -150,49 +148,25 @@ function ProjectStagePage() {
   };
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-background lg:grid lg:grid-cols-[280px_1fr]">
-      <aside className="flex min-h-0 shrink-0 flex-col border-b border-border bg-paper lg:h-screen lg:border-b-0 lg:border-r">
-        <div className="border-b border-border px-4 py-3 lg:py-4">
-          <Link
-            to="/"
-            className="mb-3 inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
-          >
-            <ChevronLeft className="h-3 w-3" /> 프로젝트 목록
-          </Link>
-          <div className="truncate font-serif text-base">{project.name}</div>
-          <div className="mt-0.5 text-[11px] uppercase tracking-wider text-muted-foreground">
-            {project.aspectRatio} · {project.slideCount}장
-          </div>
-        </div>
-        <div className="min-h-0 max-h-40 overflow-y-auto overscroll-none py-2 lg:max-h-none lg:flex-1 lg:py-3">
-          <Stepper project={project} />
-        </div>
-        <div className="hidden border-t border-border px-4 py-3 text-[11px] text-muted-foreground lg:block">
-          <div>승인 {project.approvalLog.length}건</div>
-          <div className="mt-1 font-mono">{project.stage}</div>
-        </div>
-      </aside>
-      <main className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-        <ProjectCockpit
+    <>
+      <ProjectStageFrame
+        project={project}
+        step={step}
+        runtime={runtime}
+        appServerBridge={appServerBridge}
+        productionRunStatus={productionRunStatus}
+        onOpenConnectionSettings={openConnectionSettings}
+      >
+        <WorkflowStage
           project={project}
           step={step}
           runtime={runtime}
           appServerBridge={appServerBridge}
-          codexRunStatus={runtime === "production" ? productionRunStatus : undefined}
+          runStatus={productionRunStatus}
+          onRunStatusChange={setProductionRunStatus}
           onOpenConnectionSettings={openConnectionSettings}
         />
-        <div className="min-h-0 flex-1 overflow-hidden">
-          <WorkflowStage
-            project={project}
-            step={step}
-            runtime={runtime}
-            appServerBridge={appServerBridge}
-            runStatus={productionRunStatus}
-            onRunStatusChange={setProductionRunStatus}
-            onOpenConnectionSettings={openConnectionSettings}
-          />
-        </div>
-      </main>
+      </ProjectStageFrame>
       <Dialog open={connectionSettingsOpen} onOpenChange={setConnectionSettingsOpen}>
         <DialogContent className="max-h-[calc(100vh-2rem)] w-[calc(100vw-2rem)] max-w-[42rem] overflow-y-auto">
           <DialogHeader>
@@ -211,7 +185,7 @@ function ProjectStagePage() {
           />
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 }
 

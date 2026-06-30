@@ -85,7 +85,7 @@ export function ExportStage({
     <StageShell>
       <StageScroll className="mx-auto max-w-5xl px-4 sm:px-8">
         <StageHeader num="10" sub="Final Report" title="최종 보고 · 내보내기" />
-        <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="mb-8 hidden grid-cols-2 gap-3 sm:grid sm:grid-cols-4">
           <Metric label="슬라이드" value={String(layers.length)} />
           <Metric label="PNG" value={String(exportPackage?.pngFiles.length ?? 0)} />
           <Metric label="승인 이벤트" value={String(approvals.length)} accent />

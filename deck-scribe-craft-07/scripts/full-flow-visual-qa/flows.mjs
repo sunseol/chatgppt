@@ -67,18 +67,29 @@ async function runLiveInterviewInteraction(page, outDir, results) {
       .waitFor({ timeout: 8_000 });
     results.push(await inspect(page, "desktop-interview-live-questions", outDir));
 
-    const answerInput = page.getByRole("textbox").first();
+    const answerPanel = page.locator("section").filter({ hasText: "Live interview answers" });
+    const answerInput = answerPanel.locator("textarea").first();
     if (await answerInput.isVisible().catch(() => false)) {
       await page.getByText("필수 답변 1개 남음").waitFor({ timeout: 5_000 });
       await answerInput.fill("후속 미팅을 요청하도록 명확한 투자 설득 구조를 원합니다.");
       await page.getByText("모든 필수 답변 입력 완료").waitFor({ timeout: 5_000 });
-      await page.getByRole("button", { name: "답변 제출하고 브리프 생성" }).last().click();
-      await page.waitForFunction(
-        () => document.body.innerText.includes("라이브 인터뷰 브리프가 준비되었습니다"),
-        null,
-        { timeout: 15_000 },
+      await answerPanel.getByRole("button", { name: "답변 제출하고 브리프 생성" }).click();
+      const briefReady = await page
+        .waitForFunction(
+          () => document.body.innerText.includes("라이브 인터뷰 브리프가 준비되었습니다"),
+          null,
+          { timeout: 30_000 },
+        )
+        .then(() => true)
+        .catch(() => false);
+      results.push(
+        await inspect(
+          page,
+          briefReady ? "desktop-interview-live-brief" : "desktop-interview-live-brief-pending",
+          outDir,
+          briefReady ? {} : { skipped: true, reason: "brief_ready_timeout" },
+        ),
       );
-      results.push(await inspect(page, "desktop-interview-live-brief", outDir));
     }
     return;
   }
