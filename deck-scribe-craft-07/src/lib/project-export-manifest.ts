@@ -13,6 +13,10 @@ type ExportFileRef = {
   readonly hash: string;
 };
 
+type ExportPptxFileRef = ExportFileRef & {
+  readonly backgroundImageCount: number;
+};
+
 export type ProjectExportManifest = {
   readonly type: "deckforge_project_export";
   readonly projectId: string;
@@ -24,7 +28,7 @@ export type ProjectExportManifest = {
     ProjectExportHybridSvgFile,
     "slideNumber" | "path" | "hash"
   >[];
-  readonly pptxFile?: ExportFileRef;
+  readonly pptxFile?: ExportPptxFileRef;
   readonly projectFile: ExportFileRef;
 };
 
@@ -46,7 +50,13 @@ export function buildProjectExportManifest(input: {
     svgFiles: input.svgFiles.map(toSlideFileRef),
     hybridSvgFiles: input.hybridSvgFiles.map(toSlideFileRef),
     ...(input.pptxExport.kind === "ready"
-      ? { pptxFile: { path: input.pptxExport.file.path, hash: input.pptxExport.file.hash } }
+      ? {
+          pptxFile: {
+            path: input.pptxExport.file.path,
+            hash: input.pptxExport.file.hash,
+            backgroundImageCount: input.pptxExport.file.backgroundImageCount,
+          },
+        }
       : {}),
     projectFile: { path: input.projectFile.path, hash: input.projectFile.hash },
   };

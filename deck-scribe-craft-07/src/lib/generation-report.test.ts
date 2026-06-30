@@ -19,6 +19,7 @@ describe("generation report", () => {
     expect(report.includes("Generated slide: v3 approved · note: 제목 수정 반영")).toBe(true);
     expect(report.includes("Export: project_001_export_v1 · sha256:export")).toBe(true);
     expect(report.includes("projects/project_001/exports/export.v1.json")).toBe(true);
+    expect(report.includes("projects/project_001/exports/pptx/project_001.pptx")).toBe(true);
   });
 
   test("surfaces validation failures, fact-check issues, and uncertain claims", () => {
@@ -255,6 +256,8 @@ function reportProjectFixture(): DeckProject {
       pngCount: 1,
       svgCount: 1,
       hybridSvgCount: 1,
+      pptxFilePath: "projects/project_001/exports/pptx/project_001.pptx",
+      pptxBackgroundImageCount: 0,
       projectFilePath: "projects/project_001/exports/project_001.deckforge.json",
     },
     invalidated: {},

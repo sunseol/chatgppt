@@ -2,7 +2,7 @@ import { realSourceOpenIssues } from "./live-manual-qa-source-evidence";
 
 export const MANUAL_QA_SETUP_TASKS = ["new_project", "login_check", "prompt_input"] as const;
 
-export const MANUAL_QA_EXPORTS = ["png", "project", "report"] as const;
+export const MANUAL_QA_EXPORTS = ["png", "project", "report", "pptx"] as const;
 
 export const MANUAL_QA_TESTER_ROLES = ["non_developer", "developer"] as const;
 
@@ -173,7 +173,7 @@ function exportIssues(exports: readonly ManualQaExport[]): readonly LiveManualQa
     : [
         issue(
           "missing_export_open",
-          "PNG, project, and report outputs must all be found and opened.",
+          "PNG, project, report, and PPTX outputs must all be found and opened.",
           missing,
         ),
       ];

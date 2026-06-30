@@ -204,6 +204,11 @@ function appendExport(project: DeckProject, out: string[]) {
   out.push(
     `- PNG: ${project.exportPackage.pngCount} · SVG: ${project.exportPackage.svgCount} · Hybrid SVG: ${project.exportPackage.hybridSvgCount} · Project file: ${project.exportPackage.projectFilePath}`,
   );
+  if (project.exportPackage.pptxFilePath) {
+    out.push(
+      `- PPTX: ${project.exportPackage.pptxFilePath} · Background images: ${project.exportPackage.pptxBackgroundImageCount ?? 0}`,
+    );
+  }
 }
 
 function appendAuditLog(auditEvents: readonly AuditLogEvent[], out: string[]) {

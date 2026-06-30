@@ -90,7 +90,11 @@ Visual QA summary:
 - Hard visual checks passed: Yes / No
 - P0 visual defects: 0 / count
 - P1 visual defects with owner/workaround: Yes / No / N/A
+- Agy + 6-model advisory score target met: Yes / No / N/A
+- Advisory score evidence paths:
 - Overall visual result: Pass / Blocked / Needs review
+
+Note: advisory model review cannot override deterministic hard-gate failures.
 
 ## Regeneration and Edit Evidence
 
@@ -117,6 +121,7 @@ Visual QA summary:
 | PNG output              |      |         | Yes / No       |       |
 | Project file            |      |         | Yes / No       |       |
 | Report                  |      |         | Yes / No       |       |
+| PPTX file               |      |         | Yes / No       |       |
 | Final validation bundle |      |         | Yes / No / N/A |       |
 
 Report checks:

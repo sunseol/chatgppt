@@ -76,12 +76,18 @@ describe("PNG and project export package", () => {
     ).toBe(true);
     expect(result.package.pptxExport.file.editableTextCount).toBe(1);
     expect(result.package.pptxExport.file.editableShapeCount).toBe(1);
+    expect(result.package.pptxExport.file.backgroundImageCount).toBe(1);
+    expect(result.package.summary.pptxFilePath).toBe(
+      "projects/project_001/exports/pptx/project_001.pptx",
+    );
+    expect(result.package.summary.pptxBackgroundImageCount).toBe(1);
     expect(result.package.pptxExport.fallbacks.map((fallback) => fallback.layerId)).toEqual([
       "chart_1",
     ]);
     expect(result.package.manifest.pptxFile?.path).toBe(
       "projects/project_001/exports/pptx/project_001.pptx",
     );
+    expect(result.package.manifest.pptxFile?.backgroundImageCount).toBe(1);
   });
 
   test("stores the export artifact summary in a project patch", () => {
@@ -220,6 +226,36 @@ function exportProjectFixture(): DeckProject {
         ],
       },
     ],
+    liveSlideGeneration: {
+      version: 1,
+      generatedAt: 456,
+      artifacts: [
+        {
+          providerId: "openaiImage",
+          slideNumber: 1,
+          aspectRatio: "16:9",
+          canvas: { width: 1600, height: 900 },
+          layoutReference: {
+            screenshot: "projects/project_001/layouts/slide_001.png",
+            mode: "composition-reference",
+          },
+          imageDataUrl: png,
+          prompt: {
+            id: "slide_generation",
+            version: "slide_generation@v1",
+            hash: "sha256:prompt",
+          },
+          request: {
+            model: "gpt-image-2",
+            requestId: "img_req_001",
+          },
+          generatedAt: 456,
+        },
+      ],
+      storedArtifacts: [],
+      compositions: [],
+      providerLineage: [],
+    },
     invalidated: {},
     approvalLog: [],
   };

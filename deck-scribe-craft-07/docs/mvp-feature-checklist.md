@@ -37,7 +37,7 @@ Scope: DeckForge `0.0.15` MVP release-candidate feature review. This checklist t
 | MVP-F-017 | Visual QA blockers       | Text collision, fake PNG, mock background, and missing stored artifacts are blocked | Blocker screenshot or test evidence | Pending |
 | MVP-F-018 | One slide regeneration   | A selected slide can be regenerated without losing approved original on failure     | Before/after screenshots            | Pending |
 | MVP-F-019 | Title edit               | One title can be edited and persists through export                                 | Before/after screenshots            | Pending |
-| MVP-F-020 | Export package           | PNG, project, and report outputs are generated and opened                           | Paths, hashes, screenshots          | Pending |
+| MVP-F-020 | Export package           | PNG, project, report, and PPTX outputs are generated and opened                     | Paths, hashes, screenshots          | Pending |
 | MVP-F-021 | Final report             | Report includes sources, approvals, prompts, risks, lineage, and export identity    | Report path/hash                    | Pending |
 | MVP-F-022 | Restart/reopen           | Project reloads after restart with the same final export artifact                   | Screenshot and artifact id          | Pending |
 
@@ -65,7 +65,7 @@ Scope: DeckForge `0.0.15` MVP release-candidate feature review. This checklist t
 | MVP-U-003 | Source trust               | Tester opens and comments on at least one real source                             | Pending |
 | MVP-U-004 | Regeneration comprehension | Tester understands what changed in the regenerated slide                          | Pending |
 | MVP-U-005 | Edit comprehension         | Tester can identify the edited title after export                                 | Pending |
-| MVP-U-006 | Artifact discovery         | Tester finds PNG, project, and report outputs                                     | Pending |
+| MVP-U-006 | Artifact discovery         | Tester finds PNG, project, report, and PPTX outputs                               | Pending |
 | MVP-U-007 | Report comprehension       | Tester answers at least five of six report questions                              | Pending |
 | MVP-U-008 | No implementation hints    | Tester completes core tasks without engineer-only explanation                     | Pending |
 
@@ -90,7 +90,7 @@ Block MVP RC acceptance when any of these occur:
 - The deck cannot produce five reviewable slides.
 - Any source-backed claim is fabricated or lacks a blocker/evidence path.
 - Any secret-like value appears in UI, exported files, report, recording, or evidence.
-- Export is missing PNG, project, or report output.
+- Export is missing PNG, project, report, or PPTX output.
 - Restart/reopen loses the project or final export artifact.
 - A P0 issue remains open.
 

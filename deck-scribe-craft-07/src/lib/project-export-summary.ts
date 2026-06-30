@@ -6,5 +6,7 @@ export interface ProjectExportSummary {
   readonly pngCount: number;
   readonly svgCount: number;
   readonly hybridSvgCount: number;
+  readonly pptxFilePath?: string;
+  readonly pptxBackgroundImageCount?: number;
   readonly projectFilePath: string;
 }

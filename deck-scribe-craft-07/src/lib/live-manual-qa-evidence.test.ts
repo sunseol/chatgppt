@@ -39,7 +39,7 @@ describe("live manual QA evidence", () => {
     expect(summary.includes("tester role: non_developer")).toBe(true);
     expect(summary.includes("10 minutes")).toBe(true);
     expect(summary.includes("real sources opened: 1")).toBe(true);
-    expect(summary.includes("exports opened: png, project, report")).toBe(true);
+    expect(summary.includes("exports opened: png, project, report, pptx")).toBe(true);
     expect(summary.includes("P0: 0 · P1: 0 · P2: 1")).toBe(true);
   });
 

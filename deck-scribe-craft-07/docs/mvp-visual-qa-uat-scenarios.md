@@ -19,7 +19,7 @@ Use one fixed deck type for all MVP QA sessions.
 - Required source behavior: at least three real source URLs, including at least one primary or official source
 - Required image behavior: five live image/background artifacts with request metadata
 - Required edit behavior: regenerate one slide and edit one title
-- Required export behavior: open PNG, project, and report outputs
+- Required export behavior: open PNG, project, report, and PPTX outputs
 
 ## Session Roles
 
@@ -208,12 +208,13 @@ Steps:
 - [ ] Open PNG output.
 - [ ] Open project file or saved project artifact.
 - [ ] Open final report.
+- [ ] Open PPTX output.
 - [ ] Restart/reopen the app and confirm the same project and final export artifact can be found.
 
 Pass criteria:
 
 - Title edit survives export and restart/reopen.
-- PNG, project, and report outputs are discoverable.
+- PNG, project, report, and PPTX outputs are discoverable.
 - Report identifies sources, prompts, approvals, risks, and export artifact identity.
 - No secret-like values are visible in UI, report, recording, or exported text.
 
@@ -224,6 +225,7 @@ Evidence:
 - Export artifact paths and hashes
 - Screenshot of opened PNG
 - Screenshot of report
+- Screenshot of opened PPTX
 - Restart/reopen screenshot
 
 ## Scenario 7: Report Comprehension
@@ -267,7 +269,7 @@ The session passes only if all are true:
 - [ ] Live interview, research, plan, design, layout, image, regeneration, title edit, export, and report steps are all attempted.
 - [ ] Any skipped step is explicitly recorded as blocker, not treated as pass.
 - [ ] All hard visual checks pass or have accepted P1 owner/workaround.
-- [ ] PNG, project, and report outputs are opened.
+- [ ] PNG, project, report, and PPTX outputs are opened.
 - [ ] The tester understands approval targets.
 - [ ] No P0 issue is present.
 - [ ] Evidence paths are recorded in `mvp-qa-result-templates.md` format.

@@ -1,5 +1,6 @@
 import { hashContent } from "./artifacts";
 import type { DeckProject, ProjectExportSummary } from "./deck-types";
+import { exportPackageIssues } from "./final-export-package-gate";
 import {
   validateLiveGenerationReportLineage,
   type LiveGenerationReportLineageIssueCode,
@@ -14,6 +15,8 @@ export type FinalExportGateIssueCode =
   | "missing_png_export"
   | "missing_svg_export"
   | "missing_hybrid_svg_export"
+  | "missing_pptx_export"
+  | "missing_pptx_background_images"
   | "missing_project_file"
   | "missing_generation_report"
   | "fatal_workflow_error"
@@ -67,7 +70,7 @@ export function evaluateFinalExportGate(input: {
   const issues = [
     ...invalidatedIssues(input.project),
     ...workflowErrorIssues(input.project),
-    ...exportPackageIssues(summary),
+    ...exportPackageIssues(input.project, summary, input.liveReportLineage),
     ...reportIssues(reportMarkdown, summary),
     ...productionLineageIssues(input.executionMode, input.lineage ?? []),
     ...liveReportLineageIssues(input.executionMode, input.liveReportLineage),
@@ -204,31 +207,6 @@ function invalidatedIssues(project: DeckProject): readonly FinalExportGateIssue[
       step,
       message: `${step} 단계 결과를 다시 확인해야 합니다.`,
     }));
-}
-
-function exportPackageIssues(
-  summary: ProjectExportSummary | undefined,
-): readonly FinalExportGateIssue[] {
-  if (!summary) {
-    return [{ code: "missing_export_package", message: "내보내기 파일을 먼저 준비해야 합니다." }];
-  }
-  const issues: FinalExportGateIssue[] = [];
-  if (summary.pngCount <= 0) {
-    issues.push({ code: "missing_png_export", message: "PNG 파일이 1개 이상 필요합니다." });
-  }
-  if (summary.svgCount <= 0) {
-    issues.push({ code: "missing_svg_export", message: "SVG 파일이 1개 이상 필요합니다." });
-  }
-  if (summary.hybridSvgCount <= 0) {
-    issues.push({
-      code: "missing_hybrid_svg_export",
-      message: "편집용 SVG 파일이 1개 이상 필요합니다.",
-    });
-  }
-  if (summary.projectFilePath.trim().length === 0) {
-    issues.push({ code: "missing_project_file", message: "프로젝트 파일이 필요합니다." });
-  }
-  return issues;
 }
 
 function reportIssues(

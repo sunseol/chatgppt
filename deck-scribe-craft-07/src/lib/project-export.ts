@@ -117,6 +117,12 @@ export function buildProjectExportPackage(
         pngCount: pngFiles.length,
         svgCount: svgFiles.length,
         hybridSvgCount: hybridSvgFiles.length,
+        ...(pptxExport.kind === "ready"
+          ? {
+              pptxFilePath: pptxExport.file.path,
+              pptxBackgroundImageCount: pptxExport.file.backgroundImageCount,
+            }
+          : {}),
         projectFilePath: projectFile.path,
       },
     },
