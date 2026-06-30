@@ -3,6 +3,7 @@
 import { mkdir, readdir, readFile, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { readCurrentLocalArtifactIdentity } from "./current-local-candidate-identity.mjs";
 import { evaluateReleaseEvidenceBundle, hashManifestForBundle } from "./preflight.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
@@ -32,18 +33,12 @@ const cleanMachine = await readJson(cleanMachinePath);
 const powerPointRoundTrip = await readJson(powerPointRoundTripPath);
 const nonDeveloperUat = await readJson(nonDeveloperUatPath);
 const visualCouncil = await readJson(visualCouncilPath);
-const dmgSha256 = releaseArtifact?.actualHash ?? "";
+const artifactIdentity = await readCurrentLocalArtifactIdentity({ root, releaseArtifact });
+const dmgSha256 = artifactIdentity.dmgSha256;
 const manifest = {
   schemaVersion: 1,
   qaStatus: "local-candidate",
-  artifactIdentity: {
-    gitCommit: "dirty-local-worktree",
-    dirtyWorktree: true,
-    version: "0.0.0.15",
-    buildNumber: "15",
-    dmgPath: "release-artifacts/DeckForge_0.0.0.15_aarch64.dmg",
-    dmgSha256,
-  },
+  artifactIdentity,
   evidence: {
     releaseArtifact: evidence(releaseArtifactPath, dmgSha256),
     nativePackageQa: evidence(nativePackageQaPath, dmgSha256),
