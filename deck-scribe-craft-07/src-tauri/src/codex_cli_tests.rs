@@ -64,6 +64,27 @@ fn skips_broken_codex_candidate_and_uses_working_candidate() -> Result<(), Box<d
     Ok(())
 }
 
+#[test]
+fn redacts_login_status_stdout_and_stderr() -> Result<(), Box<dyn Error>> {
+    let root = env::temp_dir().join("deckforge_codex_redaction_test");
+    if root.exists() {
+        fs::remove_dir_all(&root)?;
+    }
+    fs::create_dir_all(&root)?;
+    let working = root.join("working-codex");
+    write_executable(
+        &working,
+        "#!/bin/sh\nif [ \"$1\" = \"--help\" ]; then echo help; exit 0; fi\nif [ \"$1\" = \"login\" ] && [ \"$2\" = \"status\" ]; then echo 'OPENAI_API_KEY=sk-live-secret'; echo 'Authorization: Bearer codex.session.secret' >&2; exit 0; fi\nexit 2\n",
+    )?;
+
+    let evidence = run_codex_login_status_with_candidates(vec![working], None)?;
+
+    assert_eq!(evidence.stdout.trim(), "OPENAI_API_KEY=[redacted]");
+    assert_eq!(evidence.stderr.trim(), "Authorization: Bearer [redacted]");
+    fs::remove_dir_all(root)?;
+    Ok(())
+}
+
 fn write_executable(path: &Path, content: &str) -> Result<(), Box<dyn Error>> {
     fs::write(path, content)?;
     let mut permissions = fs::metadata(path)?.permissions();

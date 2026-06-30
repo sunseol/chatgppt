@@ -6,6 +6,7 @@ mod codex_app_server_structured_turn;
 mod codex_cli;
 mod codex_cli_error;
 mod project_folder;
+mod redaction;
 
 use codex_app_server_smoke::{
     run_codex_app_server_smoke, CodexAppServerSmokeError, CodexAppServerSmokeEvidence,

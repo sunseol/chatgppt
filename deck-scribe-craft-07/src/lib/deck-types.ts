@@ -4,6 +4,10 @@ import type { WorkflowErrorRecord } from "./workflow-error-types";
 import type { LiveTextArtifactRecord } from "./live-text-artifact-record";
 import type { ProjectExportSummary } from "./project-export-summary";
 import type { ImagePathDecisionRecord } from "./image-path-decision";
+import type { FinalSlideComposition } from "./final-slide-compositor";
+import type { StoredSlideImageArtifact } from "./image-artifact-store";
+import type { ProviderArtifactProvenance } from "./provider-provenance";
+import type { SlideImageArtifact } from "./slide-image-provider";
 
 export type {
   ChartType,
@@ -191,6 +195,15 @@ export interface EditableLayerModel {
   }[];
 }
 
+export interface LiveSlideGenerationRecord {
+  readonly version: number;
+  readonly generatedAt: number;
+  readonly artifacts: readonly SlideImageArtifact[];
+  readonly storedArtifacts: readonly StoredSlideImageArtifact[];
+  readonly compositions: readonly FinalSlideComposition[];
+  readonly providerLineage: readonly ProviderArtifactProvenance[];
+}
+
 export interface ApprovalLogEntry {
   stage: string;
   at: number;
@@ -220,6 +233,7 @@ export interface DeckProject {
   layers?: EditableLayerModel[];
   exportPackage?: ProjectExportSummary;
   liveTextArtifacts?: readonly LiveTextArtifactRecord[];
+  liveSlideGeneration?: LiveSlideGenerationRecord;
   imagePathDecision?: ImagePathDecisionRecord;
 
   invalidated: Partial<Record<StepKey, boolean>>;

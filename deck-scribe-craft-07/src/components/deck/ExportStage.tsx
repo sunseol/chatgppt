@@ -11,8 +11,15 @@ import { updateProject } from "@/lib/deck-store";
 import { evaluateFinalExportGate, type FinalExportGateIssue } from "@/lib/final-export-gate";
 import { buildGenerationReport } from "@/lib/generation-report";
 import { buildProjectExportPackage, createProjectExportPatch } from "@/lib/project-export";
+import type { ExecutionMode } from "@/lib/provider-provenance";
 
-export function ExportStage({ project }: { readonly project: DeckProject }) {
+export function ExportStage({
+  project,
+  executionMode,
+}: {
+  readonly project: DeckProject;
+  readonly executionMode?: ExecutionMode;
+}) {
   const layers = project.layers ?? [];
   const approvals = project.approvalLog;
   const exportResult = useMemo(
@@ -35,8 +42,10 @@ export function ExportStage({ project }: { readonly project: DeckProject }) {
         project,
         exportPackage: exportPackage?.summary,
         reportMarkdown: reportMd,
+        executionMode,
+        lineage: project.liveSlideGeneration?.providerLineage,
       }),
-    [exportPackage, project, reportMd],
+    [executionMode, exportPackage, project, reportMd],
   );
   const finalize = useCallback(() => {
     if (!exportPackage || finalGate.kind !== "ready") return;

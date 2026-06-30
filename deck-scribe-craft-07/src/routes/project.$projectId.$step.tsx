@@ -221,14 +221,25 @@ type ResolvedWorkflowStageProps = WorkflowStageProps & {
 };
 
 function WorkflowStage({ runtime, appServerBridge, ...props }: ResolvedWorkflowStageProps) {
+  if (runtime === "production" && isProductionLateStage(props.step)) {
+    return <DevelopmentWorkflowStageLoader {...props} productionLateStage />;
+  }
   if (runtime === "production") {
     return <ProductionWorkflowStage {...props} appServerBridge={appServerBridge} />;
   }
   return <DevelopmentWorkflowStageLoader {...props} />;
 }
 
-function DevelopmentWorkflowStageLoader(props: WorkflowStageProps) {
-  const [Component, setComponent] = useState<ComponentType<WorkflowStageProps>>();
+function isProductionLateStage(step: StepKey): boolean {
+  return step === "generate" || step === "review" || step === "editor" || step === "export";
+}
+
+type DevelopmentWorkflowStageLoaderProps = WorkflowStageProps & {
+  readonly productionLateStage?: boolean;
+};
+
+function DevelopmentWorkflowStageLoader(props: DevelopmentWorkflowStageLoaderProps) {
+  const [Component, setComponent] = useState<ComponentType<DevelopmentWorkflowStageLoaderProps>>();
 
   useEffect(() => {
     let mounted = true;

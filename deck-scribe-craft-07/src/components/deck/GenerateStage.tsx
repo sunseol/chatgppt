@@ -14,6 +14,7 @@ import { fakeAsync } from "@/components/deck/stage-timing";
 import { resolveGenerateProgress } from "@/components/deck/generate-progress";
 import { invalidateDownstream, updateProject } from "@/lib/deck-store";
 import type { DeckProject, GeneratedSlide } from "@/lib/deck-types";
+import type { LiveSlideGenerationWorkflowResult } from "@/lib/live-slide-generation-workflow";
 import { mockSlides } from "@/lib/mock-ai";
 import {
   createProductionImageGenerationGate,
@@ -35,6 +36,13 @@ import {
 
 const GENERATE_STEP = "generate";
 
+export type GenerateStageLiveRunner = (input: {
+  readonly project: DeckProject;
+  readonly manager: ProviderJobManager;
+  readonly onProgress: (percent: number, message: string) => void;
+  readonly isCancellationRequested: () => boolean;
+}) => Promise<LiveSlideGenerationWorkflowResult>;
+
 type GenerateRecovery = {
   readonly snapshot: ProviderJobRecoverySnapshot;
   readonly job: ProviderJob;
@@ -43,9 +51,11 @@ type GenerateRecovery = {
 export function GenerateStage({
   project,
   executionMode = defaultExecutionMode(),
+  runLiveGeneration,
 }: {
   readonly project: DeckProject;
   readonly executionMode?: ImageGenerationExecutionMode;
+  readonly runLiveGeneration?: GenerateStageLiveRunner;
 }) {
   const navigate = useNavigate();
   const imageGenerationGate = createProductionImageGenerationGate({
@@ -66,9 +76,20 @@ export function GenerateStage({
   );
   const [job, setJob] = useState<ProviderJob | undefined>(initialRecovery?.job);
   const [recovered, setRecovered] = useState(initialRecovery !== undefined);
+  const missingLiveRunner =
+    imageGenerationGate.kind === "ready" &&
+    imageGenerationGate.executionMode === "production" &&
+    runLiveGeneration === undefined;
 
   const generate = async () => {
-    if (!project.plan || !project.design || imageGenerationGate.kind !== "ready") return;
+    if (
+      !project.plan ||
+      !project.design ||
+      imageGenerationGate.kind !== "ready" ||
+      missingLiveRunner
+    ) {
+      return;
+    }
     const queued = manager.enqueue({
       providerId: imageGenerationGate.providerId,
       capability: "imageGeneration",
@@ -93,6 +114,10 @@ export function GenerateStage({
 
   const runGeneration = async (jobId: string) => {
     if (!project.plan || !project.design || imageGenerationGate.kind !== "ready") return;
+    if (imageGenerationGate.executionMode === "production") {
+      await runProductionGeneration(jobId);
+      return;
+    }
     setBusy(true);
     setProgress(0);
     const target = mockSlides(project.plan);
@@ -137,6 +162,64 @@ export function GenerateStage({
     invalidateDownstream(project.id, "generate");
   };
 
+  const runProductionGeneration = async (jobId: string) => {
+    if (!runLiveGeneration) return;
+    setBusy(true);
+    setProgress(0);
+    const draft: GeneratedSlide[] =
+      project.plan?.slides.map((slide) => ({
+        number: slide.number,
+        version: 1,
+        status: "generating",
+        imageDescriptor: `live-generation|${slide.role}|${slide.title}`,
+      })) ?? [];
+    setSlides(draft);
+
+    const completed = await manager.run(jobId, async (context) => {
+      context.reportProgress({ percent: 5, message: "라이브 이미지 생성 경로 준비" });
+      const result = await runLiveGeneration({
+        project,
+        manager,
+        onProgress: (percent, message) => {
+          setProgress(percent);
+          syncJob(
+            project.id,
+            manager,
+            context.reportProgress({ percent, message }),
+            setJob,
+            setRecovered,
+          );
+        },
+        isCancellationRequested: context.isCancellationRequested,
+      });
+      if (result.kind !== "ready") {
+        throw new Error(liveGenerationFailureMessage(result));
+      }
+      return result;
+    });
+
+    syncJob(project.id, manager, completed, setJob, setRecovered);
+    setBusy(false);
+    if (completed.status !== "succeeded" || completed.output === undefined) return;
+    const result = completed.output;
+    setSlides([...result.slides]);
+    setProgress(result.progress.percent);
+    updateProject(project.id, {
+      slides: [...result.slides],
+      layers: [...result.layers],
+      liveSlideGeneration: {
+        version: 1,
+        generatedAt: Date.now(),
+        artifacts: [...result.artifacts],
+        storedArtifacts: [...result.storedArtifacts],
+        compositions: [...result.compositions],
+        providerLineage: [...result.providerLineage],
+      },
+      stage: "SLIDE_REVIEW_PENDING",
+    });
+    invalidateDownstream(project.id, "generate");
+  };
+
   const openReview = () => {
     navigate({
       to: "/project/$projectId/$step",
@@ -156,6 +239,12 @@ export function GenerateStage({
             message={imageGenerationGate.issues.map((issue) => issue.message).join(" ")}
           />
         ) : null}
+        {missingLiveRunner ? (
+          <StageErrorBanner
+            title="OpenAI 이미지 transport 필요"
+            message="Production 이미지 생성은 네이티브 secret-store 기반 OpenAI image transport가 연결된 뒤에만 실행할 수 있습니다. mock 경로로 대체하지 않습니다."
+          />
+        ) : null}
         {job ? (
           <ProviderJobProgressPanel
             stageLabel="슬라이드 이미지 생성"
@@ -172,10 +261,12 @@ export function GenerateStage({
             label={
               imageGenerationGate.kind === "blocked"
                 ? "실제 이미지 경로 결정 레코드가 필요합니다."
-                : "승인한 레이아웃으로 슬라이드 이미지 생성"
+                : missingLiveRunner
+                  ? "네이티브 OpenAI image transport 연결 필요"
+                  : "승인한 레이아웃으로 슬라이드 이미지 생성"
             }
             busy={busy}
-            disabled={imageGenerationGate.kind === "blocked"}
+            disabled={imageGenerationGate.kind === "blocked" || missingLiveRunner}
             onClick={generate}
           />
         ) : (
@@ -221,6 +312,19 @@ function syncJob(
   writeGenerateRecovery(projectId, nextJob.id, manager.snapshot());
 }
 
+function liveGenerationFailureMessage(
+  result: Exclude<LiveSlideGenerationWorkflowResult, { readonly kind: "ready" }>,
+): string {
+  switch (result.kind) {
+    case "blocked":
+      return result.issues.map((issue) => issue.message).join(" ");
+    case "incomplete":
+      return result.failures.map((failure) => failure.userMessage).join(" ");
+    default:
+      return assertNever(result);
+  }
+}
+
 function readGenerateRecovery(projectId: string): GenerateRecovery | undefined {
   if (!isBrowser()) return undefined;
   const snapshot = parseProviderJobRecoverySnapshot(
@@ -254,4 +358,8 @@ function isBrowser(): boolean {
 
 function defaultExecutionMode(): ImageGenerationExecutionMode {
   return import.meta.env.PROD ? "production" : "development";
+}
+
+function assertNever(value: never): never {
+  throw new Error(`Unhandled generate stage value: ${JSON.stringify(value)}`);
 }

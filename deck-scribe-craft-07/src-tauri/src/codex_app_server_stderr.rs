@@ -3,6 +3,8 @@ use std::{
     sync::{Arc, Mutex},
 };
 
+use crate::redaction::redact_sensitive_text;
+
 const STDERR_TAIL_LIMIT: usize = 4_000;
 
 pub(super) fn capture_stderr_tail(mut stderr: impl Read, stderr_tail: Arc<Mutex<String>>) {
@@ -15,7 +17,7 @@ pub(super) fn capture_stderr_tail(mut stderr: impl Read, stderr_tail: Arc<Mutex<
         };
         let chunk = String::from_utf8_lossy(&buffer[..count]);
         if let Ok(mut tail) = stderr_tail.lock() {
-            tail.push_str(&chunk);
+            tail.push_str(&redact_sensitive_text(&chunk));
             trim_stderr_tail(&mut tail);
         }
     }
@@ -26,7 +28,10 @@ pub(super) fn append_stderr_tail(message: String, stderr_tail: &str) -> String {
     if trimmed.is_empty() {
         return message;
     }
-    format!("{message}; app-server stderr: {trimmed}")
+    format!(
+        "{message}; app-server stderr: {}",
+        redact_sensitive_text(trimmed)
+    )
 }
 
 fn trim_stderr_tail(tail: &mut String) {
@@ -53,6 +58,19 @@ mod tests {
 
         assert!(message.contains("stdout closed while waiting for initialize"));
         assert!(message.contains("app-server stderr: Error: missing auth token"));
+    }
+
+    #[test]
+    fn redacts_secret_like_values_from_stderr_tail() {
+        let message = append_stderr_tail(
+            "app-server stdout closed while waiting for initialize".to_owned(),
+            "Authorization: Bearer codex.session.secret OPENAI_API_KEY=sk-live\n",
+        );
+
+        assert!(message.contains("Bearer [redacted]"));
+        assert!(message.contains("OPENAI_API_KEY=[redacted]"));
+        assert!(!message.contains("codex.session.secret"));
+        assert!(!message.contains("sk-live"));
     }
 
     #[test]

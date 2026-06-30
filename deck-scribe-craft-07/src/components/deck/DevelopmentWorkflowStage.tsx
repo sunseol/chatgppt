@@ -14,9 +14,14 @@ import { VectorizeStage } from "@/components/deck/VectorizeStage";
 export type WorkflowStageProps = {
   readonly project: DeckProject;
   readonly step: StepKey;
+  readonly productionLateStage?: boolean;
 };
 
-export function DevelopmentWorkflowStage({ project, step }: WorkflowStageProps) {
+export function DevelopmentWorkflowStage({
+  project,
+  step,
+  productionLateStage = false,
+}: WorkflowStageProps) {
   switch (step) {
     case "project":
       return <ProjectStage project={project} />;
@@ -31,15 +36,25 @@ export function DevelopmentWorkflowStage({ project, step }: WorkflowStageProps) 
     case "layout":
       return <LayoutStage project={project} />;
     case "generate":
-      return <GenerateStage project={project} />;
+      return (
+        <GenerateStage
+          project={project}
+          executionMode={productionLateStage ? "production" : undefined}
+        />
+      );
     case "review":
       return <ReviewStage project={project} />;
     case "vectorize":
       return <VectorizeStage project={project} />;
     case "editor":
-      return <EditorStage project={project} />;
+      return <EditorStage project={project} allowMockConversion={!productionLateStage} />;
     case "export":
-      return <ExportStage project={project} />;
+      return (
+        <ExportStage
+          project={project}
+          executionMode={productionLateStage ? "production" : undefined}
+        />
+      );
     default:
       return assertNever(step);
   }

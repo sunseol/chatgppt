@@ -1,4 +1,7 @@
-use crate::codex_cli_error::{CodexCliCommandError, CodexCliCommandResult};
+use crate::{
+    codex_cli_error::{CodexCliCommandError, CodexCliCommandResult},
+    redaction::redact_sensitive_text,
+};
 use serde::Serialize;
 use std::{
     env,
@@ -89,8 +92,8 @@ fn run_codex_login_status_with_candidates(
         command: launcher.login_status_label(),
         exit_code: output.status.code(),
         success: output.status.success(),
-        stdout: String::from_utf8_lossy(&output.stdout).to_string(),
-        stderr: String::from_utf8_lossy(&output.stderr).to_string(),
+        stdout: redact_sensitive_text(&String::from_utf8_lossy(&output.stdout)),
+        stderr: redact_sensitive_text(&String::from_utf8_lossy(&output.stderr)),
     })
 }
 
@@ -206,7 +209,11 @@ fn probe_codex_candidate(candidate: &Path, path: Option<&OsString>) -> Result<()
 fn compact_process_failure(exit_code: Option<i32>, stderr: &[u8]) -> String {
     let stderr_text = String::from_utf8_lossy(stderr);
     let first_line = stderr_text.lines().next().unwrap_or("no stderr");
-    format!("exit {:?}, {}", exit_code, first_line)
+    format!(
+        "exit {:?}, {}",
+        exit_code,
+        redact_sensitive_text(first_line)
+    )
 }
 
 fn unavailable_message(failures: &[String]) -> String {

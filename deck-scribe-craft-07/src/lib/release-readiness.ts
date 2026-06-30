@@ -10,7 +10,8 @@ export type ReleaseReadinessBlockerCode =
   | "missing_hardened_runtime"
   | "missing_notarization"
   | "missing_gatekeeper_validation"
-  | "missing_license_review";
+  | "missing_license_review"
+  | "version_identity_mismatch";
 
 export type ReleaseReadinessEvidence = {
   readonly hasTauriManifest: boolean;
@@ -21,6 +22,7 @@ export type ReleaseReadinessEvidence = {
   readonly notarized: boolean;
   readonly gatekeeperValidated: boolean;
   readonly licenseReviewUpdated: boolean;
+  readonly versionIdentityConsistent: boolean;
 };
 
 export type ReleaseReadinessBlocker = {
@@ -76,6 +78,12 @@ function publicMacosBlockers(
     evidence.hasRustManifest
       ? undefined
       : blocker("missing_rust_manifest", "Rust desktop package manifest is required."),
+    evidence.versionIdentityConsistent
+      ? undefined
+      : blocker(
+          "version_identity_mismatch",
+          "Tauri, Cargo, release artifact, and release documentation versions must match.",
+        ),
     evidence.developerIdCertificate
       ? undefined
       : blocker("missing_developer_id", "Developer ID Application certificate is required."),

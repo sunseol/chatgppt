@@ -43,6 +43,81 @@ describe("generate stage production gate", () => {
     expect(markup.includes("100%")).toBe(true);
     expect(markup.includes(">0%</div>")).toBe(false);
   });
+
+  test("does not fall back to mock generation when production image transport is missing", () => {
+    // Given
+    const project = {
+      ...generateProjectFixture(),
+      plan: {
+        id: "plan_001",
+        markdown: "# Plan",
+        approvedHash: "sha256:plan",
+        slides: [
+          {
+            number: 1,
+            title: "시장 기회",
+            role: "Market",
+            coreMessage: "라이브 이미지가 필요하다",
+            visualType: "chart",
+            evidence: [],
+            editableElements: [],
+          },
+        ],
+      },
+      design: {
+        id: "design_001",
+        canvas: { ratio: "16:9", w: 1600, h: 900, safeMargin: { x: 96, y: 72 } },
+        grid: { columns: 12, gutter: 24 },
+        colors: {
+          background: "#ffffff",
+          textPrimary: "#111111",
+          textSecondary: "#555555",
+          primary: "#222222",
+          secondary: "#eeeeee",
+          accent: "#0f766e",
+        },
+        typography: {
+          titleStyle: "serif",
+          bodyStyle: "sans",
+          title: { style: "serif", minPx: 44, maxPx: 72 },
+          body: { style: "sans", minPx: 24, maxPx: 36 },
+          caption: { style: "sans", minPx: 14, maxPx: 20 },
+          number: { style: "sans", minPx: 36, maxPx: 64 },
+        },
+        layoutRules: [],
+        componentRules: [],
+        visualLanguage: "editorial",
+        negativeRules: [],
+        approvedHash: "sha256:design",
+      },
+      imagePathDecision: {
+        decisionId: "decision_001",
+        decidedAt: 1_789_700_000,
+        status: "locked",
+        providerId: "openaiImage",
+        authMode: "openaiApiKey",
+        model: "gpt-image-2",
+        billingOwner: "DeckForge QA",
+        requiredPermissions: ["images.generate"],
+        organizationVerification: "verified",
+        fixtureFallbackAllowed: false,
+        excludedRoutes: [],
+        blockers: [],
+        binaryArtifactPath: "projects/project_001/slides/images/slide_001.v1.png",
+        requestId: "img_req_preflight_001",
+      },
+    } satisfies DeckProject;
+
+    // When
+    const markup = renderToStaticMarkup(
+      <GenerateStage project={project} executionMode="production" />,
+    );
+
+    // Then
+    expect(markup.includes("OpenAI 이미지 transport 필요")).toBe(true);
+    expect(markup.includes("mock 경로로 대체하지 않습니다.")).toBe(true);
+    expect(markup.includes("네이티브 OpenAI image transport 연결 필요")).toBe(true);
+  });
 });
 
 function generateProjectFixture(): DeckProject {

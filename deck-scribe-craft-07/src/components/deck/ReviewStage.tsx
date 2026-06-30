@@ -2,10 +2,16 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { Maximize2 } from "lucide-react";
 import { GateBar } from "@/components/deck/GateBar";
+import { ReviewGalleryPanel } from "@/components/deck/ReviewGalleryPanel";
 import { RevisionComparePanel } from "@/components/deck/RevisionComparePanel";
 import { SlidePreview } from "@/components/deck/SlidePreview";
 import { SlidePreviewDialog } from "@/components/deck/SlidePreviewDialog";
-import { StageHeader, StageScroll, StageShell } from "@/components/deck/stage-shared";
+import {
+  StageErrorBanner,
+  StageHeader,
+  StageScroll,
+  StageShell,
+} from "@/components/deck/stage-shared";
 import { fakeAsync } from "@/components/deck/stage-timing";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,6 +19,11 @@ import { approveStage, updateProject } from "@/lib/deck-store";
 import { hash } from "@/lib/mock-ai";
 import type { DeckProject, GeneratedSlide } from "@/lib/deck-types";
 import type { SlideRevisionComparison } from "@/lib/slide-revision-generation";
+import {
+  approveReviewSlide,
+  buildReviewGalleryItems,
+  validateReviewGalleryLiveCompositions,
+} from "@/components/deck/review-gallery-model";
 
 export function ReviewStage({ project }: { readonly project: DeckProject }) {
   const navigate = useNavigate();
@@ -83,6 +94,62 @@ export function ReviewStage({ project }: { readonly project: DeckProject }) {
 
   const spec = project.plan?.slides.find((slide) => slide.number === selected);
   const slide = slides.find((item) => item.number === selected);
+  const liveItems =
+    project.liveSlideGeneration && project.plan
+      ? buildReviewGalleryItems({
+          slides,
+          specs: project.plan.slides,
+          selectedSlideNumber: selected,
+          compositions: project.liveSlideGeneration.compositions,
+        })
+      : undefined;
+  const liveValidation = liveItems
+    ? validateReviewGalleryLiveCompositions({
+        items: liveItems,
+        expectedSlideCount: project.slideCount,
+      })
+    : undefined;
+
+  const approveSelectedLiveSlide = () => {
+    if (selected === null) return;
+    const approved = [...approveReviewSlide(slides, selected)];
+    setSlides(approved);
+    updateProject(project.id, { slides: approved });
+  };
+
+  if (liveItems) {
+    return (
+      <StageShell>
+        <StageScroll className="mx-auto max-w-7xl px-8">
+          <StageHeader num="07" sub="Review" title="슬라이드 검토" />
+          {liveValidation?.kind === "blocked" ? (
+            <StageErrorBanner
+              title="Live compositor 검증 필요"
+              message={liveValidation.issues.map((issue) => issue.message).join(" ")}
+            />
+          ) : null}
+          <ReviewGalleryPanel
+            items={liveItems}
+            selectedSlideNumber={selected}
+            canRegenerate={false}
+            onSelect={setSelected}
+            onApproveSelected={approveSelectedLiveSlide}
+            onRegenerateSelected={() => undefined}
+            onDeleteRequest={() => undefined}
+            onAddRequest={() => undefined}
+          />
+        </StageScroll>
+        <GateBar
+          hint="Live compositor 검증을 통과한 뒤 편집기에서 레이어를 조정합니다."
+          approve={{
+            label: "전체 슬라이드 승인하고 편집 시작",
+            onClick: approveAll,
+            disabled: liveValidation?.kind === "blocked",
+          }}
+        />
+      </StageShell>
+    );
+  }
 
   return (
     <StageShell>

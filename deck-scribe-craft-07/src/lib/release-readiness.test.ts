@@ -12,6 +12,7 @@ describe("release readiness", () => {
       notarized: false,
       gatekeeperValidated: false,
       licenseReviewUpdated: true,
+      versionIdentityConsistent: true,
     });
 
     const internal = assessments.find((assessment) => assessment.target === "internal_dry_run");
@@ -26,5 +27,29 @@ describe("release readiness", () => {
       "missing_gatekeeper_validation",
     ]);
     expect(publicMacos?.verificationCommands.includes("bun run tauri:build")).toBe(true);
+  });
+
+  test("blocks public release when version identity is inconsistent", () => {
+    const assessments = assessReleaseReadiness({
+      hasTauriManifest: true,
+      hasRustManifest: true,
+      dryRunPackageCreated: true,
+      developerIdCertificate: true,
+      hardenedRuntime: true,
+      notarized: true,
+      gatekeeperValidated: true,
+      licenseReviewUpdated: true,
+      versionIdentityConsistent: false,
+    });
+
+    const publicMacos = assessments.find((assessment) => assessment.target === "public_macos");
+
+    expect(publicMacos?.status).toBe("blocked");
+    expect(publicMacos?.blockers).toEqual([
+      {
+        code: "version_identity_mismatch",
+        message: "Tauri, Cargo, release artifact, and release documentation versions must match.",
+      },
+    ]);
   });
 });

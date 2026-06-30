@@ -30,7 +30,13 @@ import { applyDeckLayerTextEdit, serializeEditorLayersForExport } from "@/lib/ed
 import { updateProject } from "@/lib/deck-store";
 import { mockLayers } from "@/lib/mock-ai";
 
-export function EditorStage({ project }: { readonly project: DeckProject }) {
+export function EditorStage({
+  project,
+  allowMockConversion = true,
+}: {
+  readonly project: DeckProject;
+  readonly allowMockConversion?: boolean;
+}) {
   const navigate = useNavigate();
   const [layers, setLayers] = useState<EditableLayerModel[]>(project.layers ?? []);
   const [selected, setSelected] = useState(layers[0]?.slideNumber ?? 1);
@@ -50,7 +56,15 @@ export function EditorStage({ project }: { readonly project: DeckProject }) {
   }, [project.layers]);
 
   useEffect(() => {
-    if (layers.length > 0 || conversionBusy || !project.plan || !project.design) return;
+    if (
+      layers.length > 0 ||
+      conversionBusy ||
+      !allowMockConversion ||
+      !project.plan ||
+      !project.design
+    ) {
+      return;
+    }
     let cancelled = false;
     setConversionBusy(true);
     void fakeAsync(null, 1100).then(() => {
@@ -63,7 +77,14 @@ export function EditorStage({ project }: { readonly project: DeckProject }) {
     return () => {
       cancelled = true;
     };
-  }, [conversionBusy, layers.length, project.design, project.id, project.plan]);
+  }, [
+    allowMockConversion,
+    conversionBusy,
+    layers.length,
+    project.design,
+    project.id,
+    project.plan,
+  ]);
 
   const current = layers.find((model) => model.slideNumber === selected);
   const selectedLayer = current?.layers.find((layer) => layer.id === selectedLayerId);
