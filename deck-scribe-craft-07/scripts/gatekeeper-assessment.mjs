@@ -4,6 +4,7 @@ import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { finalizeGatekeeperMountCleanup } from "./gatekeeper-assessment/cleanup.mjs";
 import { verifyDmgSha256File } from "./release-artifact/checksum.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -61,13 +62,21 @@ async function assessGatekeeper() {
     ]);
     verification.checks.dmgGatekeeper = commandCheck(dmgAssessment);
 
-    rmSync(mountDir, { recursive: true, force: true });
-    mkdirSync(mountDir, { recursive: true });
-    run("hdiutil", ["attach", dmgPath, "-nobrowse", "-readonly", "-mountpoint", mountDir], {
-      failOnError: true,
-    });
-    attachedByScript = true;
-    const realMount = realpathSync(mountDir);
+    const existingMount = mountedPathForImage(dmgPath);
+    if (!existingMount) {
+      rmSync(mountDir, { recursive: true, force: true });
+      mkdirSync(mountDir, { recursive: true });
+      run("hdiutil", ["attach", dmgPath, "-nobrowse", "-readonly", "-mountpoint", mountDir], {
+        failOnError: true,
+      });
+      attachedByScript = true;
+    }
+    const realMount = realpathSync(existingMount || mountDir);
+    verification.checks.mount = {
+      ok: true,
+      reusedExistingMount: Boolean(existingMount),
+      realMount,
+    };
     const appPath = join(realMount, "DeckForge.app");
     requirePath(appPath, "DeckForge.app");
     verification.appPath = appPath;
@@ -88,8 +97,13 @@ async function assessGatekeeper() {
     verification.error = error instanceof Error ? error.message : String(error);
     return verification;
   } finally {
-    if (attachedByScript) run("hdiutil", ["detach", mountDir]);
-    rmSync(mountDir, { recursive: true, force: true });
+    finalizeGatekeeperMountCleanup({
+      verification,
+      attachedByScript,
+      mountDir,
+      run,
+      removeMountDir,
+    });
   }
 }
 
@@ -130,6 +144,27 @@ function run(command, commandArgs, options = {}) {
 
 function requirePath(filePath, label) {
   if (!existsSync(filePath)) throw new Error(`Missing ${label}: ${filePath}`);
+}
+
+function mountedPathForImage(filePath) {
+  const target = realpathSync(filePath);
+  for (const block of run("hdiutil", ["info"]).stdout.split(
+    "================================================",
+  )) {
+    const lines = block.split("\n");
+    const imageLine = lines.find((line) => line.trim().startsWith("image-path"));
+    if (!imageLine) continue;
+    const imagePath = imageLine.split(":").slice(1).join(":").trim();
+    if (!imagePath || !existsSync(imagePath) || realpathSync(imagePath) !== target) continue;
+    const mountLine = [...lines].reverse().find((line) => /\t\/.+/.test(line));
+    if (!mountLine) return null;
+    return mountLine.trim().split(/\t+/).at(-1) || null;
+  }
+  return null;
+}
+
+function removeMountDir(filePath) {
+  rmSync(filePath, { recursive: true, force: true });
 }
 
 function writeVerification(verification) {
