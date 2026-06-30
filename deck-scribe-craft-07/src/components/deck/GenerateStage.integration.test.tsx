@@ -44,6 +44,25 @@ describe("generate stage production gate", () => {
     expect(markup.includes(">0%</div>")).toBe(false);
   });
 
+  test("allows native production runner to create the first image path decision", () => {
+    // Given
+    const project = generateProjectFixture();
+
+    // When
+    const markup = renderToStaticMarkup(
+      <GenerateStage
+        project={project}
+        executionMode="production"
+        runLiveGeneration={async () => ({ kind: "blocked", issues: [] })}
+      />,
+    );
+
+    // Then
+    expect(markup.includes("실제 이미지 경로 Lock 필요")).toBe(false);
+    expect(markup.includes("실제 이미지 경로 결정 레코드가 필요합니다.")).toBe(false);
+    expect(markup.includes("승인한 레이아웃으로 슬라이드 이미지 생성")).toBe(true);
+  });
+
   test("does not fall back to mock generation when production image transport is missing", () => {
     // Given
     const project = {

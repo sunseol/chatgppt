@@ -94,7 +94,7 @@ function isTextEvidenceFile(filePath) {
 function redactExcerpt(line) {
   return line
     .replace(/Bearer\s+[A-Za-z0-9._~+/=-]{8,}/gi, "Bearer [REDACTED]")
-    .replace(/sk-[A-Za-z0-9_-]{8,}/g, "sk-[REDACTED]")
+    .replace(/(^|[^A-Za-z0-9])sk-[A-Za-z0-9_-]{8,}/g, "$1sk-[REDACTED]")
     .replace(
       /(["']?\b[A-Z0-9_]*API_KEY\b["']?|["']?\bCODEX_SESSION\b["']?|["']?\btoken\b["']?|["']?\bpassword\b["']?|["']?\bsecret\b["']?|["']?\bsession\b["']?)(\s*[:=]\s*)("[^"]+"|'[^']+'|\S+)/gi,
       "$1$2[REDACTED]",
@@ -114,7 +114,7 @@ function secretPatterns() {
     },
     {
       code: "unredacted_openai_key",
-      pattern: /sk-(?!\[REDACTED\]|\[redacted\])[A-Za-z0-9_-]{16,}/,
+      pattern: /(^|[^A-Za-z0-9])sk-(?!\[REDACTED\]|\[redacted\])[A-Za-z0-9_-]{16,}/,
     },
     {
       code: "unredacted_secret_assignment",
@@ -123,7 +123,7 @@ function secretPatterns() {
     },
     {
       code: "unredacted_set_cookie",
-      pattern: /set-cookie:\s*(?!\[REDACTED\]|\[redacted\])[^\n]{12,}/i,
+      pattern: /set-cookie:(?!\s*\[(?:REDACTED|redacted)\])\s*[^\n]{12,}/i,
     },
   ];
 }

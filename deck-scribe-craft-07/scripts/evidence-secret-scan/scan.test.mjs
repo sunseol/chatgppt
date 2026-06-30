@@ -8,13 +8,14 @@ describe("evidence secret scan", () => {
   test("passes a clean text evidence bundle and skips binary evidence", async () => {
     const bundle = await createBundle({
       "summary.json": '{"status":"pass","authorization":"Bearer [REDACTED]"}\n',
+      "styles.html": "li.task-list-item{list-style:none}\nset-cookie: [REDACTED]\n",
       "recording/video.webm": "\u0000\u0001binary",
     });
 
     const result = await scanEvidenceSecrets([bundle]);
 
     expect(result.ok).toBe(true);
-    expect(result.scannedFileCount).toBe(1);
+    expect(result.scannedFileCount).toBe(2);
     expect(result.skippedBinaryCount).toBe(1);
     expect(result.findings).toEqual([]);
   });

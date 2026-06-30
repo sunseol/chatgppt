@@ -30,6 +30,8 @@ describe("home tool dialog bodies", () => {
     expect(markup.includes("Bridge 감지 (available)")).toBe(false);
     expect(markup.includes("앱 실행 통로 확인됨")).toBe(true);
     expect(markup.includes("Codex CLI 로그인")).toBe(true);
+    expect(markup.includes("OpenAI 이미지 API Key")).toBe(true);
+    expect(markup.includes("Keychain 저장")).toBe(true);
     expect(markup.includes("Logged in using ChatGPT")).toBe(true);
     expect(markup.includes("Codex 로그인")).toBe(true);
     expect(markup.includes("Codex 상태 확인")).toBe(true);

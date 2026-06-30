@@ -5,6 +5,8 @@ mod codex_app_server_stderr;
 mod codex_app_server_structured_turn;
 mod codex_cli;
 mod codex_cli_error;
+mod openai_image;
+mod project_artifact;
 mod project_folder;
 mod redaction;
 
@@ -20,6 +22,14 @@ use codex_cli::{
     CodexLoginStatusEvidence,
 };
 use codex_cli_error::CodexCliCommandError;
+use openai_image::{
+    generate_openai_image, save_openai_image_secret, OpenAiImageError, OpenAiImageGenerateRequest,
+    OpenAiImageGenerateResponse, OpenAiImageSecretReference, OpenAiImageSecretSaveRequest,
+};
+use project_artifact::{
+    write_project_artifact_at_root, DeckforgeProjectArtifactError,
+    DeckforgeProjectArtifactWriteEvidence, DeckforgeProjectArtifactWriteRequest,
+};
 use project_folder::{
     prepare_project_folder_at_root, reveal_project_folder, DeckforgeProjectFolderError,
     DeckforgeProjectFolderEvidence, DeckforgeProjectFolderRequest,
@@ -100,6 +110,34 @@ async fn deckforge_open_codex_login_terminal(
 }
 
 #[tauri::command]
+async fn deckforge_save_openai_image_api_key(
+    request: OpenAiImageSecretSaveRequest,
+) -> Result<OpenAiImageSecretReference, OpenAiImageError> {
+    tauri::async_runtime::spawn_blocking(move || save_openai_image_secret(request))
+        .await
+        .map_err(|error| {
+            OpenAiImageError::public(
+                "blocking_task_failed",
+                format!("failed to join OpenAI image secret task: {error}"),
+            )
+        })?
+}
+
+#[tauri::command]
+async fn deckforge_openai_image_generate(
+    request: OpenAiImageGenerateRequest,
+) -> Result<OpenAiImageGenerateResponse, OpenAiImageError> {
+    tauri::async_runtime::spawn_blocking(move || generate_openai_image(request))
+        .await
+        .map_err(|error| {
+            OpenAiImageError::public(
+                "blocking_task_failed",
+                format!("failed to join OpenAI image generation task: {error}"),
+            )
+        })?
+}
+
+#[tauri::command]
 fn deckforge_prepare_project_folder(
     app: tauri::AppHandle,
     request: DeckforgeProjectFolderRequest,
@@ -111,6 +149,20 @@ fn deckforge_prepare_project_folder(
         )
     })?;
     prepare_project_folder_at_root(&root, &request)
+}
+
+#[tauri::command]
+fn deckforge_write_project_artifact(
+    app: tauri::AppHandle,
+    request: DeckforgeProjectArtifactWriteRequest,
+) -> Result<DeckforgeProjectArtifactWriteEvidence, DeckforgeProjectArtifactError> {
+    let root = app.path().app_data_dir().map_err(|error| {
+        DeckforgeProjectArtifactError::new(
+            "app_data_dir_failed",
+            format!("failed to resolve app data dir: {error}"),
+        )
+    })?;
+    write_project_artifact_at_root(&root, &request)
 }
 
 #[tauri::command]
@@ -127,7 +179,10 @@ pub fn run() -> Result<(), tauri::Error> {
             deckforge_codex_app_server_structured_turn,
             deckforge_codex_login_status,
             deckforge_open_codex_login_terminal,
+            deckforge_save_openai_image_api_key,
+            deckforge_openai_image_generate,
             deckforge_prepare_project_folder,
+            deckforge_write_project_artifact,
             deckforge_reveal_project_folder
         ])
         .run(tauri::generate_context!())

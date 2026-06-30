@@ -14,6 +14,11 @@ import { fakeAsync } from "@/components/deck/stage-timing";
 import { resolveGenerateProgress } from "@/components/deck/generate-progress";
 import { invalidateDownstream, updateProject } from "@/lib/deck-store";
 import type { DeckProject, GeneratedSlide } from "@/lib/deck-types";
+import {
+  TARGET_IMAGE_MODEL,
+  decideImageProviderFeasibility,
+} from "@/lib/image-provider-feasibility";
+import { createImagePathDecisionRecord } from "@/lib/image-path-decision";
 import type { LiveSlideGenerationWorkflowResult } from "@/lib/live-slide-generation-workflow";
 import { mockSlides } from "@/lib/mock-ai";
 import {
@@ -76,22 +81,26 @@ export function GenerateStage({
   );
   const [job, setJob] = useState<ProviderJob | undefined>(initialRecovery?.job);
   const [recovered, setRecovered] = useState(initialRecovery !== undefined);
+  const productionLiveRunnerAvailable =
+    imageGenerationGate.executionMode === "production" && runLiveGeneration !== undefined;
+  const productionRunnerCanCreateInitialDecision =
+    productionLiveRunnerAvailable &&
+    imageGenerationGate.kind === "blocked" &&
+    imageGenerationGate.issues.every((issue) => issue.code === "missing_image_path_decision");
+  const generationReady =
+    imageGenerationGate.kind === "ready" || productionRunnerCanCreateInitialDecision;
   const missingLiveRunner =
     imageGenerationGate.kind === "ready" &&
     imageGenerationGate.executionMode === "production" &&
     runLiveGeneration === undefined;
 
   const generate = async () => {
-    if (
-      !project.plan ||
-      !project.design ||
-      imageGenerationGate.kind !== "ready" ||
-      missingLiveRunner
-    ) {
+    if (!project.plan || !project.design || !generationReady || missingLiveRunner) {
       return;
     }
     const queued = manager.enqueue({
-      providerId: imageGenerationGate.providerId,
+      providerId:
+        imageGenerationGate.kind === "ready" ? imageGenerationGate.providerId : "openaiImage",
       capability: "imageGeneration",
       description: "슬라이드 이미지 생성",
     });
@@ -113,8 +122,8 @@ export function GenerateStage({
   };
 
   const runGeneration = async (jobId: string) => {
-    if (!project.plan || !project.design || imageGenerationGate.kind !== "ready") return;
-    if (imageGenerationGate.executionMode === "production") {
+    if (!project.plan || !project.design || !generationReady) return;
+    if (productionLiveRunnerAvailable) {
       await runProductionGeneration(jobId);
       return;
     }
@@ -202,19 +211,21 @@ export function GenerateStage({
     setBusy(false);
     if (completed.status !== "succeeded" || completed.output === undefined) return;
     const result = completed.output;
+    const liveVersion = (project.liveSlideGeneration?.version ?? 0) + 1;
     setSlides([...result.slides]);
     setProgress(result.progress.percent);
     updateProject(project.id, {
       slides: [...result.slides],
       layers: [...result.layers],
       liveSlideGeneration: {
-        version: 1,
+        version: liveVersion,
         generatedAt: Date.now(),
         artifacts: [...result.artifacts],
         storedArtifacts: [...result.storedArtifacts],
         compositions: [...result.compositions],
         providerLineage: [...result.providerLineage],
       },
+      imagePathDecision: createImagePathDecisionFromLiveResult(project, result, liveVersion),
       stage: "SLIDE_REVIEW_PENDING",
     });
     invalidateDownstream(project.id, "generate");
@@ -233,7 +244,7 @@ export function GenerateStage({
     <StageShell>
       <StageScroll className="mx-auto max-w-6xl px-8">
         <StageHeader num="06" sub="Generate" title="슬라이드 이미지 생성" />
-        {imageGenerationGate.kind === "blocked" ? (
+        {imageGenerationGate.kind === "blocked" && !productionRunnerCanCreateInitialDecision ? (
           <StageErrorBanner
             title="실제 이미지 경로 Lock 필요"
             message={imageGenerationGate.issues.map((issue) => issue.message).join(" ")}
@@ -259,14 +270,14 @@ export function GenerateStage({
         {!slides ? (
           <EmptyAction
             label={
-              imageGenerationGate.kind === "blocked"
+              !generationReady
                 ? "실제 이미지 경로 결정 레코드가 필요합니다."
                 : missingLiveRunner
                   ? "네이티브 OpenAI image transport 연결 필요"
                   : "승인한 레이아웃으로 슬라이드 이미지 생성"
             }
             busy={busy}
-            disabled={imageGenerationGate.kind === "blocked" || missingLiveRunner}
+            disabled={!generationReady || missingLiveRunner}
             onClick={generate}
           />
         ) : (
@@ -298,6 +309,30 @@ export function GenerateStage({
       />
     </StageShell>
   );
+}
+
+function createImagePathDecisionFromLiveResult(
+  project: DeckProject,
+  result: Extract<LiveSlideGenerationWorkflowResult, { readonly kind: "ready" }>,
+  liveVersion: number,
+) {
+  const artifact = result.artifacts[0];
+  const stored = result.storedArtifacts[0];
+  if (artifact === undefined || stored === undefined) return project.imagePathDecision;
+  return createImagePathDecisionRecord({
+    decisionId: `${project.id}_openai_image_v${liveVersion}`,
+    decidedAt: Date.now(),
+    feasibility: decideImageProviderFeasibility({
+      codexImageCapability: "notSupported",
+      apiCredential: "available",
+      organizationVerification: "unknown",
+    }),
+    billingOwner: "openai_api_keychain_account",
+    requiredPermissions: ["images.generate", `model:${TARGET_IMAGE_MODEL}`],
+    organizationVerification: "unknown",
+    successfulArtifact: artifact,
+    binaryArtifactPath: stored.binary.path,
+  });
 }
 
 function syncJob(

@@ -1,6 +1,8 @@
-import { Activity, CheckCircle2, LogIn, RefreshCw, WifiOff } from "lucide-react";
+import { useState } from "react";
+import { Activity, CheckCircle2, KeyRound, LogIn, RefreshCw, WifiOff } from "lucide-react";
 import { ProviderCapabilityMatrix } from "@/components/deck/ProviderCapabilityMatrix";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { CODEX_APP_SERVER_CAPABILITIES } from "@/lib/client-provider-runtime-selection";
 import {
   createCodexLiveStatusView,
@@ -11,10 +13,20 @@ import {
   type CodexStatusActionError,
 } from "@/lib/codex-live-status";
 import { createProviderCapabilityMatrixView } from "@/lib/provider-capability-view";
+import {
+  saveDesktopOpenAIImageApiKey,
+  type DesktopOpenAIImageSecretReference,
+} from "@/lib/desktop-openai-image";
 import type { ProductionTextWorkflowBridgeStatus } from "@/lib/production-text-workflow-gate";
 
 export type SettingsSmokeStatus = CodexSmokeStatus;
 export type SettingsCodexLoginStatus = CodexLoginStatus;
+type SettingsOpenAIImageKeyStatus =
+  | { readonly kind: "idle" }
+  | { readonly kind: "saving" }
+  | { readonly kind: "saved"; readonly reference: DesktopOpenAIImageSecretReference }
+  | { readonly kind: "missing" }
+  | { readonly kind: "failed"; readonly message: string };
 
 export function SettingsDialogBody({
   appServerBridge,
@@ -31,6 +43,10 @@ export function SettingsDialogBody({
   readonly onOpenLogin: () => void;
   readonly onRunSmoke: () => void;
 }) {
+  const [imageApiKey, setImageApiKey] = useState("");
+  const [imageKeyStatus, setImageKeyStatus] = useState<SettingsOpenAIImageKeyStatus>({
+    kind: "idle",
+  });
   const liveStatus = createCodexLiveStatusView({
     bridge: appServerBridge,
     login: loginStatus,
@@ -43,6 +59,24 @@ export function SettingsDialogBody({
     status: createCodexProviderStatus(liveStatus),
     capabilities: CODEX_APP_SERVER_CAPABILITIES,
   });
+  const saveImageApiKey = async () => {
+    setImageKeyStatus({ kind: "saving" });
+    const result = await saveDesktopOpenAIImageApiKey({ apiKey: imageApiKey });
+    switch (result.kind) {
+      case "completed":
+        setImageApiKey("");
+        setImageKeyStatus({ kind: "saved", reference: result.reference });
+        return;
+      case "missing_bridge":
+        setImageKeyStatus({ kind: "missing" });
+        return;
+      case "failed":
+        setImageKeyStatus({ kind: "failed", message: result.error.message });
+        return;
+      default:
+        assertNever(result);
+    }
+  };
 
   return (
     <div className="min-w-0 space-y-4 text-sm">
@@ -101,6 +135,47 @@ export function SettingsDialogBody({
         </div>
       </div>
       <div className="min-w-0 overflow-hidden border border-border bg-background p-3">
+        <div className="flex min-w-0 flex-col gap-3">
+          <div className="min-w-0">
+            <div className="font-medium">OpenAI 이미지 API Key</div>
+            <div className="mt-1 min-w-0 whitespace-pre-wrap break-words text-xs text-muted-foreground [overflow-wrap:anywhere]">
+              {imageKeyStatusText(imageKeyStatus)}
+            </div>
+            {imageKeyStatus.kind === "failed" ? (
+              <ActionableError
+                error={createCodexStatusActionError({
+                  code: "openai_image_key_failed",
+                  message: imageKeyStatus.message,
+                })}
+              />
+            ) : null}
+          </div>
+          <div className="grid min-w-0 gap-2 sm:grid-cols-[1fr_auto]">
+            <Input
+              type="password"
+              value={imageApiKey}
+              placeholder="sk-..."
+              aria-label="OpenAI 이미지 API Key"
+              autoComplete="off"
+              onChange={(event) => setImageApiKey(event.currentTarget.value)}
+              disabled={imageKeyStatus.kind === "saving"}
+            />
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              aria-label="OpenAI 이미지 API Key 저장"
+              className="w-full justify-center sm:w-auto"
+              onClick={saveImageApiKey}
+              disabled={imageKeyStatus.kind === "saving" || imageApiKey.trim().length === 0}
+            >
+              <KeyRound className="h-4 w-4" />
+              Keychain 저장
+            </Button>
+          </div>
+        </div>
+      </div>
+      <div className="min-w-0 overflow-hidden border border-border bg-background p-3">
         <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
             <div className="font-medium">라이브 실행 테스트</div>
@@ -134,6 +209,26 @@ export function SettingsDialogBody({
       </details>
     </div>
   );
+}
+
+function imageKeyStatusText(status: SettingsOpenAIImageKeyStatus): string {
+  switch (status.kind) {
+    case "idle":
+      return "이미지 생성에 사용할 별도 OpenAI API Key를 macOS Keychain에 저장합니다.";
+    case "saving":
+      return "OpenAI 이미지 API Key를 Keychain에 저장하는 중입니다.";
+    case "saved":
+      return `Keychain 저장 완료: ${status.reference.account}`;
+    case "missing":
+      return "데스크톱 연결을 찾지 못했습니다. Tauri 앱에서 다시 시도하세요.";
+    case "failed":
+      return createCodexStatusActionError({
+        code: "openai_image_key_failed",
+        message: status.message,
+      }).title;
+    default:
+      return assertNever(status);
+  }
 }
 
 function StatusRow({

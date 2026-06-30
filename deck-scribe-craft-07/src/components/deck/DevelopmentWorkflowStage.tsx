@@ -10,6 +10,7 @@ import { ProjectStage } from "@/components/deck/ProjectStage";
 import { ResearchStage } from "@/components/deck/ResearchStage";
 import { ReviewStage } from "@/components/deck/ReviewStage";
 import { VectorizeStage } from "@/components/deck/VectorizeStage";
+import { createDesktopLiveSlideGenerationRunnerIfAvailable } from "@/lib/desktop-openai-image";
 
 export type WorkflowStageProps = {
   readonly project: DeckProject;
@@ -22,6 +23,10 @@ export function DevelopmentWorkflowStage({
   step,
   productionLateStage = false,
 }: WorkflowStageProps) {
+  const liveGenerationRunner = productionLateStage
+    ? createDesktopLiveSlideGenerationRunnerIfAvailable()
+    : undefined;
+
   switch (step) {
     case "project":
       return <ProjectStage project={project} />;
@@ -40,6 +45,7 @@ export function DevelopmentWorkflowStage({
         <GenerateStage
           project={project}
           executionMode={productionLateStage ? "production" : undefined}
+          runLiveGeneration={liveGenerationRunner}
         />
       );
     case "review":
