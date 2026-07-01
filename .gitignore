@@ -3,11 +3,37 @@
 
 # Local orchestration/runtime state
 /.omx/
+.omx/
 /.playwright-mcp/
+.playwright-mcp/
+
+# Local tool metadata
+.lovable/
 
 # Build and dependency outputs
 node_modules/
 dist/
+.next/
+out/
+.turbo/
+.vercel/
+.vite/
+.cache/
+coverage/
+playwright-report/
+test-results/
+*.tsbuildinfo
+
+# Downloaded handoff archives
+랜딩사이트/*.zip
+
+# Local scratch checkouts
+deckforge-main-pr/
+
+# Generated release/package payloads
+deck-scribe-craft-07/release-artifacts/BUILD_VERSION
+deck-scribe-craft-07/release-artifacts/*.dmg
+deck-scribe-craft-07/release-artifacts/*.dmg.sha256
 
 # Nested app runtime outputs
 deck-scribe-craft-07/.git/

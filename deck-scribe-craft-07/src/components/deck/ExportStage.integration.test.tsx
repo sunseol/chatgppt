@@ -1,8 +1,11 @@
 import { describe, expect, test } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
 import { ExportStage } from "./ExportStage";
+import { ReadyExportPanel } from "./ExportStagePanels";
 import type { DeckProject } from "@/lib/deck-types";
+import type { FinalExportGateWarning } from "@/lib/final-export-gate";
 import { encodeSolidPngDataUrl } from "@/lib/png-encoder";
+import { buildProjectExportPackage } from "@/lib/project-export";
 
 describe("export stage", () => {
   test("renders PNG and redacted project export actions", () => {
@@ -26,6 +29,35 @@ describe("export stage", () => {
 
     expect(markup.includes("내보내기 전에 확인이 필요합니다.")).toBe(true);
     expect(markup.includes("layout 단계 결과를 다시 확인해야 합니다.")).toBe(true);
+  });
+
+  test("renders development mock export warning and watermark", () => {
+    const project = exportProjectFixture();
+    const exportResult = buildProjectExportPackage(project, { now: () => 456, version: 1 });
+    if (exportResult.kind !== "ready") throw new Error("Expected export fixture to be ready.");
+    const warnings: readonly FinalExportGateWarning[] = [
+      {
+        code: "development_mock_lineage",
+        message:
+          "Development export includes mock artifact mock_slide_1; upstream path: layout_001 -> mock_slide_1.",
+        artifactId: "mock_slide_1",
+        upstreamArtifactIds: ["layout_001"],
+      },
+    ];
+
+    const markup = renderToStaticMarkup(
+      <ReadyExportPanel
+        exportPackage={exportResult.package}
+        reportMd="# Report"
+        project={project}
+        warnings={warnings}
+        developmentWatermark="MOCK MODE"
+      />,
+    );
+
+    expect(markup.includes("MOCK MODE")).toBe(true);
+    expect(markup.includes("mock_slide_1")).toBe(true);
+    expect(markup.includes("layout_001")).toBe(true);
   });
 });
 

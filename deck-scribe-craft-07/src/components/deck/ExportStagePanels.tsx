@@ -1,16 +1,21 @@
 import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { DeckProject } from "@/lib/deck-types";
+import type { FinalExportGateWarning } from "@/lib/final-export-gate";
 import type { ProjectExportPackage } from "@/lib/project-export";
 
 export function ReadyExportPanel({
   exportPackage,
   reportMd,
   project,
+  warnings = [],
+  developmentWatermark,
 }: {
   readonly exportPackage: ProjectExportPackage;
   readonly reportMd: string;
   readonly project: DeckProject;
+  readonly warnings?: readonly FinalExportGateWarning[];
+  readonly developmentWatermark?: "MOCK MODE";
 }) {
   const pptxFile =
     exportPackage.pptxExport.kind === "ready" ? exportPackage.pptxExport.file : undefined;
@@ -22,6 +27,7 @@ export function ReadyExportPanel({
           슬라이드 이미지, 편집 데이터, 보고서를 필요한 형식으로 저장할 수 있습니다.
         </div>
       </div>
+      <DevelopmentExportWarning warnings={warnings} watermark={developmentWatermark} />
       <div className="grid grid-cols-2 gap-3">
         <Button
           variant="outline"
@@ -71,6 +77,33 @@ export function ReadyExportPanel({
         ) : null}
       </div>
     </>
+  );
+}
+
+function DevelopmentExportWarning({
+  warnings,
+  watermark,
+}: {
+  readonly warnings: readonly FinalExportGateWarning[];
+  readonly watermark?: "MOCK MODE";
+}) {
+  if (warnings.length === 0 && watermark === undefined) return null;
+  return (
+    <div className="mb-4 border border-warning/40 bg-warning/10 px-4 py-3 text-sm">
+      {watermark === undefined ? null : (
+        <div className="font-mono text-xs font-semibold text-warning">{watermark}</div>
+      )}
+      <ul className="mt-2 list-disc pl-5 text-muted-foreground">
+        {warnings.map((warning) => (
+          <li key={`${warning.code}:${warning.artifactId}`}>
+            {warning.message}
+            {warning.upstreamArtifactIds.length > 0
+              ? ` (${warning.upstreamArtifactIds.join(" -> ")} -> ${warning.artifactId})`
+              : ""}
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 

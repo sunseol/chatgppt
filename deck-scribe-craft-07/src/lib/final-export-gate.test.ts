@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { DeckProject, ProjectExportSummary } from "./deck-types";
 import { evaluateFinalExportGate } from "./final-export-gate";
+import { createProviderArtifactProvenance } from "./provider-provenance";
 
 describe("final export gate", () => {
   test("blocks final export when outputs are invalidated", () => {
@@ -63,6 +64,68 @@ describe("final export gate", () => {
     if (result.kind === "blocked") {
       expect(result.issues[0]?.code).toBe("fatal_workflow_error");
     }
+  });
+
+  test("blocks production export when lineage contains mock artifacts", () => {
+    const result = evaluateFinalExportGate({
+      project: projectFixture(),
+      exportPackage: exportSummaryFixture(),
+      reportMarkdown: reportFixture(),
+      executionMode: "production",
+      lineage: [
+        createProviderArtifactProvenance({
+          artifactId: "mock_slide_1",
+          executionMode: "production",
+          providerKind: "mock",
+          authMode: "none",
+          modelOrRuntime: "mock-provider",
+          promptVersion: "slide_generation@v1",
+          durationMs: 1,
+          inputArtifactIds: ["layout_001"],
+          fixture: true,
+        }),
+      ],
+    });
+
+    expect(result.kind).toBe("blocked");
+    if (result.kind !== "blocked") return;
+    expect(result.issues.map((issue) => issue.code).includes("mock_lineage_contamination")).toBe(
+      true,
+    );
+    expect(result.issues[0]?.artifactId).toBe("mock_slide_1");
+    expect(result.issues[0]?.upstreamArtifactIds).toEqual(["layout_001"]);
+  });
+
+  test("allows development export only with contamination warnings and a mock watermark", () => {
+    const result = evaluateFinalExportGate({
+      project: projectFixture(),
+      exportPackage: exportSummaryFixture(),
+      reportMarkdown: reportFixture(),
+      executionMode: "development",
+      lineage: [
+        createProviderArtifactProvenance({
+          artifactId: "mock_slide_1",
+          executionMode: "development",
+          providerKind: "mock",
+          authMode: "none",
+          modelOrRuntime: "mock-provider",
+          promptVersion: "slide_generation@v1",
+          durationMs: 1,
+          inputArtifactIds: ["layout_001"],
+          fixture: true,
+        }),
+      ],
+    });
+
+    expect(result.kind).toBe("ready");
+    if (result.kind !== "ready") return;
+    expect(result.developmentWatermark).toBe("MOCK MODE");
+    expect(result.warnings.map((warning) => warning.code)).toEqual([
+      "development_mock_lineage",
+      "development_fixture_lineage",
+    ]);
+    expect(result.warnings[0]?.artifactId).toBe("mock_slide_1");
+    expect(result.warnings[0]?.upstreamArtifactIds).toEqual(["layout_001"]);
   });
 
   test("allows final export when report references a complete export package", () => {

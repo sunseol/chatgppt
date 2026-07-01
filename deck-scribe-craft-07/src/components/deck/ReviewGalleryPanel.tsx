@@ -25,6 +25,16 @@ export function ReviewGalleryPanel(props: {
                 item.selected ? "border-foreground bg-paper" : "border-transparent hover:bg-paper"
               }`}
             >
+              {item.composition && (
+                <img
+                  alt=""
+                  data-compositor-thumbnail={item.slide.number}
+                  data-export-basis={item.composition.exportBasis}
+                  data-background-artifact-path={item.composition.backgroundArtifact?.path}
+                  src={item.composition.previewPngDataUrl}
+                  className="h-10 aspect-video shrink-0 border border-border object-cover"
+                />
+              )}
               <span className="font-mono text-muted-foreground">
                 {String(item.slide.number).padStart(2, "0")}
               </span>
@@ -46,6 +56,21 @@ export function ReviewGalleryPanel(props: {
             <span className="text-xs font-medium text-destructive">검증 실패</span>
           )}
         </div>
+        {selected?.composition && (
+          <div
+            data-selected-composition={selected.slide.number}
+            data-presentation-preview={selected.slide.number}
+            data-export-basis={selected.composition.exportBasis}
+            data-background-artifact-path={selected.composition.backgroundArtifact?.path}
+            className="border border-border bg-muted/30 p-2"
+          >
+            <img
+              alt=""
+              src={selected.composition.previewPngDataUrl}
+              className="aspect-video w-full object-cover"
+            />
+          </div>
+        )}
         <div className="grid grid-cols-2 gap-2">
           <Button variant="outline" onClick={props.onApproveSelected} disabled={!selected}>
             <Check className="h-4 w-4" />

@@ -17,6 +17,7 @@ describe("slide prompt package", () => {
       promptVersion: pkg.promptVersion,
       promptHash: pkg.promptHash,
       deckContextId: pkg.deckContextId,
+      designSystemId: pkg.designSystemId,
       slideNumber: pkg.slideNumber,
       layoutScreenshot: pkg.layoutScreenshot,
       sourceMapCount: pkg.sourceMapIds.length,
@@ -25,6 +26,7 @@ describe("slide prompt package", () => {
       promptVersion: "v1",
       promptHash: promptAsset.contentHash,
       deckContextId: bundle.deckContextId,
+      designSystemId: "design_001",
       slideNumber: 3,
       layoutScreenshot: "slide_03_layout.png",
       sourceMapCount: 7,
@@ -60,6 +62,40 @@ describe("slide prompt package", () => {
     const pkg = buildSlidePromptPackage(bundle);
 
     expect(pkg.prompt.includes(project.initialPrompt)).toBe(false);
+  });
+
+  test("compiles slide control spec metadata for provider requests", () => {
+    const pkg = buildSlidePromptPackage(chartSlideBundle());
+
+    expect(pkg.slideControlSpec).toEqual({
+      outputKind: "full_presentation_slide",
+      designConsistencyContractId: pkg.designConsistency.contractId,
+      layoutArchetype: "chart",
+      slideRole: "Market",
+      visualHierarchy: {
+        title: "시장 변화가 만드는 기회",
+        keyMessage: "AI 콘텐츠 제작 시장은 빠르게 확장 중",
+        visualType: "막대 차트 + 인사이트 카드",
+      },
+      mustPreserve: [
+        "header/footer locked positions",
+        "card radius/stroke/shadow family",
+        "safe area top 72px right 96px bottom 72px left 96px",
+        "same palette and typography fingerprints",
+      ],
+      mustAvoid: [
+        "cropped_text",
+        "fake_microcopy",
+        "mask_leakage",
+        "region_intrusion",
+        "node_line_misalignment",
+        "poster_only_composition",
+      ],
+    });
+    expect(pkg.prompt.includes("[SLIDE CONTROL SPEC]")).toBe(true);
+    expect(pkg.prompt.includes("Layout archetype: chart")).toBe(true);
+    expect(pkg.prompt.includes("Must preserve: header/footer locked positions")).toBe(true);
+    expect(pkg.prompt.includes("Must avoid: cropped_text")).toBe(true);
   });
 });
 

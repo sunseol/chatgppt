@@ -1,5 +1,11 @@
 import { hashContent } from "./artifacts";
 import type { DeckProject, ProjectExportSummary } from "./deck-types";
+import {
+  validateLiveGenerationReportLineage,
+  type LiveGenerationReportLineageIssueCode,
+  type LiveSlideReportLineage,
+} from "./live-generation-report-lineage";
+import { type ExecutionMode, type ProviderArtifactProvenance } from "./provider-provenance";
 import { workflowErrorBlocksFinalApproval } from "./workflow-error-policy";
 
 export type FinalExportGateIssueCode =
@@ -10,12 +16,28 @@ export type FinalExportGateIssueCode =
   | "missing_hybrid_svg_export"
   | "missing_project_file"
   | "missing_generation_report"
-  | "fatal_workflow_error";
+  | "fatal_workflow_error"
+  | "mock_lineage_contamination"
+  | "fixture_lineage_contamination"
+  | "missing_live_report_lineage"
+  | LiveGenerationReportLineageIssueCode;
 
 export type FinalExportGateIssue = {
   readonly code: FinalExportGateIssueCode;
   readonly message: string;
   readonly step?: string;
+  readonly slideNumber?: number;
+  readonly artifactId?: string;
+  readonly upstreamArtifactIds?: readonly string[];
+};
+
+export type FinalExportGateWarningCode = "development_mock_lineage" | "development_fixture_lineage";
+
+export type FinalExportGateWarning = {
+  readonly code: FinalExportGateWarningCode;
+  readonly message: string;
+  readonly artifactId: string;
+  readonly upstreamArtifactIds: readonly string[];
 };
 
 export type FinalExportGateResult =
@@ -24,6 +46,8 @@ export type FinalExportGateResult =
       readonly exportArtifactId: string;
       readonly exportArtifactHash: string;
       readonly reportHash: string;
+      readonly warnings: readonly FinalExportGateWarning[];
+      readonly developmentWatermark?: "MOCK MODE";
     }
   | {
       readonly kind: "blocked";
@@ -34,6 +58,9 @@ export function evaluateFinalExportGate(input: {
   readonly project: DeckProject;
   readonly exportPackage?: ProjectExportSummary;
   readonly reportMarkdown?: string;
+  readonly executionMode?: ExecutionMode;
+  readonly lineage?: readonly ProviderArtifactProvenance[];
+  readonly liveReportLineage?: readonly LiveSlideReportLineage[];
 }): FinalExportGateResult {
   const summary = input.exportPackage ?? input.project.exportPackage;
   const reportMarkdown = input.reportMarkdown ?? "";
@@ -42,7 +69,10 @@ export function evaluateFinalExportGate(input: {
     ...workflowErrorIssues(input.project),
     ...exportPackageIssues(summary),
     ...reportIssues(reportMarkdown, summary),
+    ...productionLineageIssues(input.executionMode, input.lineage ?? []),
+    ...liveReportLineageIssues(input.executionMode, input.liveReportLineage),
   ];
+  const warnings = developmentLineageWarnings(input.executionMode, input.lineage ?? []);
   if (issues.length > 0) return { kind: "blocked", issues };
   if (!summary) {
     return {
@@ -57,7 +87,105 @@ export function evaluateFinalExportGate(input: {
     exportArtifactId: summary.artifactId,
     exportArtifactHash: summary.artifactHash,
     reportHash: hashContent(reportMarkdown),
+    warnings,
+    ...(warnings.length > 0 ? { developmentWatermark: "MOCK MODE" as const } : {}),
   };
+}
+
+function liveReportLineageIssues(
+  executionMode: ExecutionMode | undefined,
+  liveReportLineage: readonly LiveSlideReportLineage[] | undefined,
+): readonly FinalExportGateIssue[] {
+  if (executionMode !== "production") return [];
+  if (!liveReportLineage || liveReportLineage.length === 0) {
+    return [
+      {
+        code: "missing_live_report_lineage",
+        message: "Production export requires slide-level live generation report lineage.",
+      },
+    ];
+  }
+  const validation = validateLiveGenerationReportLineage({
+    executionMode,
+    slides: liveReportLineage,
+  });
+  if (validation.kind === "ready") return [];
+  return validation.issues.map((issue) => ({
+    code: issue.code,
+    message: issue.message,
+    ...(issue.slideNumber === undefined ? {} : { slideNumber: issue.slideNumber }),
+  }));
+}
+
+function productionLineageIssues(
+  executionMode: ExecutionMode | undefined,
+  lineage: readonly ProviderArtifactProvenance[],
+): readonly FinalExportGateIssue[] {
+  if (executionMode !== "production") return [];
+  return [
+    ...lineage
+      .filter((item) => item.providerKind === "mock")
+      .map((item) => ({
+        code: "mock_lineage_contamination" as const,
+        artifactId: item.artifactId,
+        upstreamArtifactIds: item.inputArtifactIds,
+        message: `Production export includes mock artifact ${item.artifactId}${formatUpstreamPath(item)}.`,
+      })),
+    ...lineage
+      .filter((item) => item.fixture)
+      .map((item) => ({
+        code: "fixture_lineage_contamination" as const,
+        artifactId: item.artifactId,
+        upstreamArtifactIds: item.inputArtifactIds,
+        message: `Production export includes fixture artifact ${item.artifactId}${formatUpstreamPath(item)}.`,
+      })),
+  ];
+}
+
+function developmentLineageWarnings(
+  executionMode: ExecutionMode | undefined,
+  lineage: readonly ProviderArtifactProvenance[],
+): readonly FinalExportGateWarning[] {
+  if (executionMode === "production") return [];
+  return [
+    ...lineage
+      .filter((item) => item.providerKind === "mock")
+      .map((item) =>
+        warning(
+          "development_mock_lineage",
+          item,
+          `Development export includes mock artifact ${item.artifactId}${formatUpstreamPath(item)}.`,
+        ),
+      ),
+    ...lineage
+      .filter((item) => item.fixture)
+      .map((item) =>
+        warning(
+          "development_fixture_lineage",
+          item,
+          `Development export includes fixture artifact ${item.artifactId}${formatUpstreamPath(item)}.`,
+        ),
+      ),
+  ];
+}
+
+function warning(
+  code: FinalExportGateWarningCode,
+  item: ProviderArtifactProvenance,
+  message: string,
+): FinalExportGateWarning {
+  return {
+    code,
+    message,
+    artifactId: item.artifactId,
+    upstreamArtifactIds: item.inputArtifactIds,
+  };
+}
+
+function formatUpstreamPath(item: ProviderArtifactProvenance): string {
+  return item.inputArtifactIds.length === 0
+    ? ""
+    : `; upstream path: ${item.inputArtifactIds.join(" -> ")} -> ${item.artifactId}`;
 }
 
 function workflowErrorIssues(project: DeckProject): readonly FinalExportGateIssue[] {

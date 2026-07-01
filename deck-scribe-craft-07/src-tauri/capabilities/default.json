@@ -3,5 +3,5 @@
   "identifier": "default",
   "description": "Default DeckForge desktop window capability.",
   "windows": ["main"],
-  "permissions": []
+  "permissions": ["core:default"]
 }

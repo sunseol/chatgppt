@@ -1,6 +1,9 @@
 import type { ResearchPack } from "./research-types";
 import type { LayoutValidationReport } from "./layout-validation";
 import type { WorkflowErrorRecord } from "./workflow-error-types";
+import type { LiveTextArtifactRecord } from "./live-text-artifact-record";
+import type { ProjectExportSummary } from "./project-export-summary";
+import type { ImagePathDecisionRecord } from "./image-path-decision";
 
 export type {
   ChartType,
@@ -14,7 +17,11 @@ export type {
   ResearchDataset,
   ResearchDatasetRow,
   ResearchPack,
+  ResearchReinforcementRequest,
+  ResearchReinforcementStatus,
   ResearchSourceType,
+  ResearchReviewSourceDecision,
+  ResearchReviewState,
   Source,
   SourceGrade,
   SourceUsePolicy,
@@ -25,6 +32,7 @@ export type {
   WorkflowErrorKind,
   WorkflowErrorRecord,
 } from "./workflow-error-types";
+export type { ProjectExportSummary } from "./project-export-summary";
 
 export type Stage =
   | "PROJECT_CREATED"
@@ -192,17 +200,6 @@ export interface ApprovalLogEntry {
   artifactType?: string;
 }
 
-export interface ProjectExportSummary {
-  readonly artifactId: string;
-  readonly artifactHash: string;
-  readonly artifactPath: string;
-  readonly createdAt: number;
-  readonly pngCount: number;
-  readonly svgCount: number;
-  readonly hybridSvgCount: number;
-  readonly projectFilePath: string;
-}
-
 export interface DeckProject {
   id: string;
   name: string;
@@ -222,6 +219,8 @@ export interface DeckProject {
   slides?: GeneratedSlide[];
   layers?: EditableLayerModel[];
   exportPackage?: ProjectExportSummary;
+  liveTextArtifacts?: readonly LiveTextArtifactRecord[];
+  imagePathDecision?: ImagePathDecisionRecord;
 
   invalidated: Partial<Record<StepKey, boolean>>;
   workflowErrors?: readonly WorkflowErrorRecord[];

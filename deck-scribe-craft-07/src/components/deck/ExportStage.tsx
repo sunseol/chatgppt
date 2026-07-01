@@ -65,7 +65,13 @@ export function ExportStage({ project }: { readonly project: DeckProject }) {
           />
         </div>
         {exportPackage && finalGate.kind === "ready" ? (
-          <ReadyExportPanel exportPackage={exportPackage} reportMd={reportMd} project={project} />
+          <ReadyExportPanel
+            exportPackage={exportPackage}
+            reportMd={reportMd}
+            project={project}
+            warnings={finalGate.warnings}
+            developmentWatermark={finalGate.developmentWatermark}
+          />
         ) : (
           <BlockedExportPanel
             issues={exportResult.kind === "blocked" ? exportResult.issues : gateIssues(finalGate)}

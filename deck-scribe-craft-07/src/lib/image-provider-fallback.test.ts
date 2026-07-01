@@ -45,6 +45,9 @@ describe("OpenAI image fallback provider", () => {
     const response = await client.generate({
       model: "gpt-image-2",
       prompt: "Generate a slide",
+      outputKind: "full_presentation_slide",
+      designSystemId: "design_001",
+      designConsistencyContractId: "full_slide_design_contract_fixture",
       aspectRatio: "16:9",
       layoutReference: {
         screenshot: "layout.png",

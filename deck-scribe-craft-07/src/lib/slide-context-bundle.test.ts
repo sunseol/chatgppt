@@ -72,6 +72,7 @@ describe("slide context bundle", () => {
     expect({
       deckContextId: first.deckContextId,
       deckContextHash: first.deckContextHash,
+      designSystemId: first.designSystemId,
       slideNumber: first.slideSpec.slideNumber,
       title: first.slideSpec.title,
       layoutScreenshot: first.layoutPrototype.layoutScreenshot,
@@ -81,6 +82,7 @@ describe("slide context bundle", () => {
     }).toEqual({
       deckContextId: context.deckContextId,
       deckContextHash: context.hash,
+      designSystemId: "design_001",
       slideNumber: 1,
       title: "검증 가능한 AI 슬라이드 제작 시스템",
       layoutScreenshot: "slide_01_layout.png",

@@ -1,0 +1,21 @@
+import { describe, expect, test } from "bun:test";
+import { readFileSync } from "node:fs";
+
+const GOLDEN_PATH_E2E_DOC = new URL("../../docs/live-golden-path-e2e.md", import.meta.url);
+
+describe("live golden path E2E documentation", () => {
+  test("records the Live Golden Path E2E evidence contract", () => {
+    const goldenPathE2E = readFileSync(GOLDEN_PATH_E2E_DOC, "utf8");
+
+    expect(goldenPathE2E.includes("DF-241")).toBe(true);
+    expect(goldenPathE2E.includes("live_e2e_report.md")).toBe(true);
+    expect(goldenPathE2E.includes("missing_e2e_step")).toBe(true);
+    expect(goldenPathE2E.includes("report_digest_mismatch")).toBe(true);
+    expect(goldenPathE2E.includes("missing_step_screenshot")).toBe(true);
+    expect(goldenPathE2E.includes("validation_bundle_report_digest_mismatch")).toBe(true);
+    expect(goldenPathE2E.includes("validation_bundle_missing_image_artifact")).toBe(true);
+    expect(goldenPathE2E.includes("insufficient_live_sources")).toBe(true);
+    expect(goldenPathE2E.includes("insufficient_live_image_artifacts")).toBe(true);
+    expect(goldenPathE2E.includes("missing_restart_reopen_evidence")).toBe(true);
+  });
+});
