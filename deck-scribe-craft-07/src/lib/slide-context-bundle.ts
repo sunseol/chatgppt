@@ -21,6 +21,7 @@ export type SlideContextBundle = {
   readonly bundleId: string;
   readonly deckContextId: string;
   readonly deckContextHash: string;
+  readonly designSystemId: string;
   readonly globalSummary: {
     readonly goal: string;
     readonly audience: string;
@@ -32,6 +33,8 @@ export type SlideContextBundle = {
     readonly colors: DesignSystem["colors"];
     readonly typography: DesignSystem["typography"];
     readonly layoutRules: readonly string[];
+    readonly componentRules: readonly string[];
+    readonly visualLanguage: string;
     readonly negativeRules: readonly string[];
   };
   readonly layoutPrototype: {
@@ -103,6 +106,7 @@ function buildBundle(input: {
     )}`,
     deckContextId: input.context.deckContextId,
     deckContextHash: input.context.hash,
+    designSystemId: input.design.id,
     globalSummary: {
       goal: input.brief.goal,
       audience: input.brief.audience,
@@ -114,6 +118,8 @@ function buildBundle(input: {
       colors: input.design.colors,
       typography: input.design.typography,
       layoutRules: input.design.layoutRules,
+      componentRules: input.design.componentRules,
+      visualLanguage: input.design.visualLanguage,
       negativeRules: input.design.negativeRules,
     },
     layoutPrototype: {

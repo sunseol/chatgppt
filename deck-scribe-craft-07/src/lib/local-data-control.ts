@@ -20,6 +20,8 @@ export type LocalProjectFolderExportFile = {
   readonly hash: string;
 };
 
+export type LocalProjectArchiveExportFile = LocalProjectFolderExportFile;
+
 export function describeLocalProjectStorage(project: DeckProject): LocalProjectStorageDescriptor {
   return {
     projectId: project.id,
@@ -28,6 +30,29 @@ export function describeLocalProjectStorage(project: DeckProject): LocalProjectS
     virtualFolderPath: `projects/${project.id}`,
     cloudSync: "not_available",
     exportFilename: `${project.id}.deckforge-folder.json`,
+  };
+}
+
+export function buildLocalProjectArchiveExport(
+  projects: readonly DeckProject[],
+): LocalProjectArchiveExportFile {
+  const content = redactSensitiveText(
+    JSON.stringify(
+      {
+        type: "deckforge_local_project_archive",
+        storageKey: LOCAL_PROJECT_STORAGE_KEY,
+        exportedAt: new Date(0).toISOString(),
+        projects,
+      },
+      null,
+      2,
+    ),
+  );
+  return {
+    filename: "deckforge-projects.deckforge-archive.json",
+    mime: "application/json",
+    content,
+    hash: hashContent(content),
   };
 }
 

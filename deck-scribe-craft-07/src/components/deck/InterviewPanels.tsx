@@ -22,17 +22,25 @@ export function QuestionAnswerPanel({
     <section className="border border-border bg-paper p-4">
       <div className="text-[11px] uppercase tracking-wider text-muted-foreground">인터뷰 질문</div>
       <div className="mt-4 space-y-4">
-        {plan.questions.map((question) => (
-          <label key={question.field} className="block">
-            <span className="text-sm font-medium">{question.question}</span>
-            <Textarea
-              value={answers[question.field] ?? ""}
-              onChange={(event) => onAnswers({ ...answers, [question.field]: event.target.value })}
-              rows={2}
-              className="mt-2"
-            />
-          </label>
-        ))}
+        {plan.questions.map((question) => {
+          const inputId = `interview-answer-${question.field}`;
+          return (
+            <label key={question.field} htmlFor={inputId} className="block">
+              <span className="text-sm font-medium">{question.question}</span>
+              <Textarea
+                id={inputId}
+                aria-label={question.question}
+                value={answers[question.field] ?? ""}
+                onChange={(event) =>
+                  onAnswers({ ...answers, [question.field]: event.target.value })
+                }
+                rows={2}
+                placeholder="답변 입력"
+                className="mt-2"
+              />
+            </label>
+          );
+        })}
       </div>
     </section>
   );
@@ -129,10 +137,15 @@ export function RevisionRequest({
 }) {
   return (
     <section className="border border-border bg-paper p-4">
-      <Label className="text-[11px] uppercase tracking-wider text-muted-foreground">
+      <Label
+        htmlFor="interview-revision-request"
+        className="text-[11px] uppercase tracking-wider text-muted-foreground"
+      >
         수정 요청
       </Label>
       <Textarea
+        id="interview-revision-request"
+        aria-label="인터뷰 브리프 수정 요청"
         value={value}
         onChange={(event) => onChange(event.target.value)}
         rows={4}

@@ -5,8 +5,13 @@ import { createFrozenDeckContext } from "./deck-context";
 import { composeMvpEditableLayers } from "./editable-layer-composer";
 import { composeFinalSlide, countKoreanTextOverlays } from "./final-slide-compositor";
 import { mockBrief, mockDesign, mockLayout, mockPlan, mockResearch } from "./mock-ai";
+import { encodeSolidPngDataUrl } from "./png-encoder";
 import { buildSlideContextBundles, type SlideContextBundle } from "./slide-context-bundle";
-import { createMockSlideImageProvider, generateSlideImage } from "./slide-image-provider";
+import {
+  createMockSlideImageProvider,
+  createOpenAIImageProvider,
+  generateSlideImage,
+} from "./slide-image-provider";
 import { buildSlidePromptPackage } from "./slide-prompt-package";
 import { buildMinimalSlideSourceMap } from "./slide-source-map";
 
@@ -37,11 +42,70 @@ describe("final slide compositor", () => {
     expect(composition.svg.includes("AI 콘텐츠 제작 시장은 빠르게 확장 중")).toBe(true);
     expect(composition.svg.includes('data-locked="true"')).toBe(true);
   });
+
+  test("records background provider and editable overlay metadata for live review", async () => {
+    const { project, bundle } = approvedFixture();
+    const composition = await compositionFixture(project, bundle);
+
+    expect(composition.backgroundProviderId).toBe("mock");
+    expect([...composition.overlayRoles].sort()).toEqual(["body", "chart", "source", "title"]);
+    expect([...composition.overlayBounds.map((overlay) => overlay.role)].sort()).toEqual([
+      "body",
+      "chart",
+      "source",
+      "title",
+    ]);
+  });
+
+  test("records stored live background artifact metadata on the compositor layer", async () => {
+    const { project, bundle } = approvedFixture();
+    const composition = await compositionFixture(project, bundle, {
+      liveBackgroundArtifact: true,
+    });
+
+    expect(composition.backgroundProviderId).toBe("openaiImage");
+    expect(composition.backgroundArtifact).toEqual({
+      artifactId: "project_001_image_slide_003_v1",
+      path: "projects/project_001/slides/images/slide_003.v1.png",
+      hash: "sha256:live-background",
+    });
+    expect(
+      composition.svg.includes('data-background-artifact-id="project_001_image_slide_003_v1"'),
+    ).toBe(true);
+    expect(
+      composition.svg.includes(
+        'data-background-artifact-path="projects/project_001/slides/images/slide_003.v1.png"',
+      ),
+    ).toBe(true);
+    expect(composition.svg.includes('data-background-artifact-hash="sha256:live-background"')).toBe(
+      true,
+    );
+  });
 });
 
-async function compositionFixture(project: DeckProject, bundle: SlideContextBundle) {
+async function compositionFixture(
+  project: DeckProject,
+  bundle: SlideContextBundle,
+  options: { readonly liveBackgroundArtifact?: boolean } = {},
+) {
   const imageResult = await generateSlideImage({
-    provider: createMockSlideImageProvider({ now: () => 123 }),
+    provider: options.liveBackgroundArtifact
+      ? createOpenAIImageProvider({
+          async generate() {
+            return {
+              imageDataUrl: encodeSolidPngDataUrl({
+                width: 160,
+                height: 90,
+                color: { r: 40, g: 90, b: 160, a: 255 },
+              }),
+              requestId: "req_live_background_003",
+              size: "1600x900",
+              quality: "high",
+              latencyMs: 1200,
+            };
+          },
+        })
+      : createMockSlideImageProvider({ now: () => 123 }),
     package: buildSlidePromptPackage(bundle),
     aspectRatio: "16:9",
   });
@@ -57,6 +121,15 @@ async function compositionFixture(project: DeckProject, bundle: SlideContextBund
   return composeFinalSlide({
     background: imageResult.artifact,
     layers: composeMvpEditableLayers({ bundle, chartOverlays: overlays.overlays }),
+    ...(options.liveBackgroundArtifact
+      ? {
+          backgroundArtifact: {
+            artifactId: "project_001_image_slide_003_v1",
+            path: "projects/project_001/slides/images/slide_003.v1.png",
+            hash: "sha256:live-background",
+          },
+        }
+      : {}),
   });
 }
 

@@ -13,7 +13,7 @@ describe("workflow stepper UI", () => {
     expect(markup.includes("완료")).toBe(true);
     expect(markup.includes("현재 단계")).toBe(true);
     expect(markup.includes("잠김")).toBe(true);
-    expect(markup.includes("레이아웃 승인 후 접근할 수 있습니다.")).toBe(true);
+    expect(markup.includes("승인된 레이아웃이 필요합니다.")).toBe(true);
     expect(markup.includes("재생성 필요")).toBe(true);
     expect(markup.includes("앞 단계 내용이 바뀌어 다시 확인이 필요합니다.")).toBe(true);
     expect(markup.includes("편집 준비")).toBe(false);

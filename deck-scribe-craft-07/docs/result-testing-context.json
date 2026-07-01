@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-07-01 10:50:06 KST",
+  "trigger_phrases": [
+    "결과 테스트",
+    "시각 결과 테스트",
+    "DeckForge 결과물 테스트",
+    "PPT 결과 테스트"
+  ],
+  "user_role": "human_visual_tester",
+  "assistant_role": "artifact_log_diagnostician_builder",
+  "default_target_label": "system_consistent_varied",
+  "show_user_first": [
+    "10_delivery/contact_sheet_final.png",
+    "08_rendered/contact_sheet/*.png",
+    "08_rendered/slide_png/*.png",
+    "rendered PDF/PPTX"
+  ],
+  "internal_evidence": [
+    "manifest/run_manifest.json",
+    "manifest/artifact_index.csv",
+    "manifest/hashes.sha256",
+    "04_design/*",
+    "05_prompts/*",
+    "06_generation/*",
+    "07_assembly/source/*",
+    "08_rendered/*",
+    "09_qa/*"
+  ],
+  "canonical_docs": [
+    "/Users/jake/ppt_samples/RESULT_TESTING_HANDOFF.md",
+    "/Users/jake/ppt_samples/ARTIFACT_LOGGING_RULES.md",
+    "/Users/jake/ppt_samples/DECK_DESIGN_CONSISTENCY_TDD_ROADMAP.md",
+    "/Users/jake/ppt_samples/design_consistency/tester_visual_feedback_protocol_v1.md",
+    "/Users/jake/chatgppt/deck-scribe-craft-07/docs/result-testing-handoff.md",
+    "/Users/jake/chatgppt/deck-scribe-craft-07/AGENTS.md"
+  ]
+}

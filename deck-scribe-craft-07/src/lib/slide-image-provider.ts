@@ -1,8 +1,12 @@
 import type { GeneratedSlide } from "./deck-types";
+import {
+  classifyImageProviderFailure,
+  type ImageProviderFailureKind,
+} from "./image-provider-errors";
 import { TARGET_IMAGE_MODEL } from "./image-provider-feasibility";
 import { encodeSolidPngDataUrl, type RgbaColor } from "./png-encoder";
-import { redactSensitiveText } from "./redaction";
-import type { SlidePromptPackage } from "./slide-prompt-package";
+import type { ProviderUsageSummary } from "./provider-job-manager";
+import type { SlideControlSpec, SlidePromptPackage } from "./slide-prompt-package";
 
 export type SlideImageAspectRatio = "16:9" | "4:3";
 export type SlideImageProviderId = "mock" | "openaiImage" | "codex";
@@ -17,6 +21,19 @@ export interface SlideImageCanvas {
   readonly height: number;
 }
 
+export interface SlideImageRequestMetadata {
+  readonly model: typeof TARGET_IMAGE_MODEL;
+  readonly outputKind?: SlidePromptPackage["outputKind"];
+  readonly designSystemId?: string;
+  readonly designConsistencyContractId?: string;
+  readonly slideControlSpec?: SlideControlSpec;
+  readonly requestId?: string;
+  readonly size?: string;
+  readonly quality?: string;
+  readonly latencyMs?: number;
+  readonly usage?: ProviderUsageSummary;
+}
+
 export interface SlideImageArtifact {
   readonly providerId: SlideImageProviderId;
   readonly slideNumber: number;
@@ -29,6 +46,7 @@ export interface SlideImageArtifact {
     readonly version: string;
     readonly hash: string;
   };
+  readonly request?: SlideImageRequestMetadata;
   readonly generatedAt: number;
 }
 
@@ -45,7 +63,8 @@ export interface SlideImageProvider {
 export interface SlideImageFailure {
   readonly providerId: SlideImageProviderId;
   readonly slideNumber: number;
-  readonly retryable: true;
+  readonly errorKind: ImageProviderFailureKind;
+  readonly retryable: boolean;
   readonly errorMessage: string;
   readonly userMessage: string;
 }
@@ -61,12 +80,21 @@ export type SlideImageGenerationResult =
 export interface OpenAIImageClientRequest {
   readonly model: typeof TARGET_IMAGE_MODEL;
   readonly prompt: string;
+  readonly outputKind: SlidePromptPackage["outputKind"];
+  readonly designSystemId: string;
+  readonly designConsistencyContractId: string;
+  readonly slideControlSpec?: SlideControlSpec;
   readonly aspectRatio: SlideImageAspectRatio;
   readonly layoutReference: SlideImageLayoutReference;
 }
 
 export interface OpenAIImageClientResponse {
   readonly imageDataUrl: string;
+  readonly requestId?: string;
+  readonly size?: string;
+  readonly quality?: string;
+  readonly latencyMs?: number;
+  readonly usage?: ProviderUsageSummary;
 }
 
 export interface OpenAIImageClient {
@@ -105,6 +133,10 @@ export function createOpenAIImageProvider(client: OpenAIImageClient): SlideImage
       const response = await client.generate({
         model: TARGET_IMAGE_MODEL,
         prompt: input.package.prompt,
+        outputKind: input.package.outputKind,
+        designSystemId: input.package.designSystemId,
+        designConsistencyContractId: input.package.designConsistency.contractId,
+        slideControlSpec: input.package.slideControlSpec,
         aspectRatio: input.aspectRatio,
         layoutReference,
       });
@@ -112,6 +144,7 @@ export function createOpenAIImageProvider(client: OpenAIImageClient): SlideImage
         input,
         providerId: "openaiImage",
         imageDataUrl: response.imageDataUrl,
+        request: requestMetadata(response, input.package),
         generatedAt: Date.now(),
       });
     },
@@ -134,6 +167,7 @@ export async function generateSlideImage(input: {
       slide: generatedSlideFromArtifact(artifact),
     };
   } catch (error) {
+    if (!(error instanceof Error)) throw error;
     return { kind: "failed", failure: failureFromError(input.provider.id, input.package, error) };
   }
 }
@@ -142,6 +176,7 @@ function createArtifact(input: {
   readonly input: SlideImageProviderInput;
   readonly providerId: SlideImageProviderId;
   readonly imageDataUrl: string;
+  readonly request?: SlideImageRequestMetadata;
   readonly generatedAt: number;
 }): SlideImageArtifact {
   return {
@@ -156,7 +191,26 @@ function createArtifact(input: {
       version: input.input.package.promptVersion,
       hash: input.input.package.promptHash,
     },
+    ...(input.request === undefined ? {} : { request: input.request }),
     generatedAt: input.generatedAt,
+  };
+}
+
+function requestMetadata(
+  response: OpenAIImageClientResponse,
+  pkg: SlidePromptPackage,
+): SlideImageRequestMetadata {
+  return {
+    model: TARGET_IMAGE_MODEL,
+    outputKind: pkg.outputKind,
+    designSystemId: pkg.designSystemId,
+    designConsistencyContractId: pkg.designConsistency.contractId,
+    slideControlSpec: pkg.slideControlSpec,
+    ...(response.requestId === undefined ? {} : { requestId: response.requestId }),
+    ...(response.size === undefined ? {} : { size: response.size }),
+    ...(response.quality === undefined ? {} : { quality: response.quality }),
+    ...(response.latencyMs === undefined ? {} : { latencyMs: response.latencyMs }),
+    ...(response.usage === undefined ? {} : { usage: response.usage }),
   };
 }
 
@@ -166,7 +220,7 @@ function generatedSlideFromArtifact(artifact: SlideImageArtifact): GeneratedSlid
     version: 1,
     status: "ready",
     imageDescriptor: `${artifact.providerId}|${artifact.aspectRatio}|${artifact.layoutReference.screenshot}|${artifact.prompt.id}@${artifact.prompt.version}`,
-    notes: "Generated visual background; editable text/chart overlays are applied later.",
+    notes: "Generated complete presentation slide raster; editable layers may be extracted or refined later.",
   };
 }
 
@@ -175,15 +229,17 @@ function failureFromError(
   pkg: SlidePromptPackage,
   error: unknown,
 ): SlideImageFailure {
-  const errorMessage = redactSensitiveText(
-    error instanceof Error ? error.message : "Unknown image provider failure.",
-  );
+  const failure = classifyImageProviderFailure(error);
+  const action = failure.retryable
+    ? "Retry is available."
+    : "Resolve the provider issue before retrying.";
   return {
     providerId,
     slideNumber: pkg.slideNumber,
-    retryable: true,
-    errorMessage,
-    userMessage: `Slide ${pkg.slideNumber} image generation failed: ${errorMessage}. Retry is available.`,
+    errorKind: failure.kind,
+    retryable: failure.retryable,
+    errorMessage: failure.message,
+    userMessage: `Slide ${pkg.slideNumber} image generation failed: ${failure.message}. ${action}`,
   };
 }
 

@@ -65,6 +65,8 @@ describe("interview stage UI integration", () => {
     const markup = renderInterviewUi(undefined);
 
     expect(markup.includes("인터뷰 질문")).toBe(true);
+    expect(markup.includes("aria-label=")).toBe(true);
+    expect(markup.includes('placeholder="답변 입력"')).toBe(true);
     expect(markup.includes("브리프 미리보기")).toBe(true);
     expect(markup.includes("수정 요청")).toBe(true);
     expect(markup.includes('disabled=""')).toBe(true);

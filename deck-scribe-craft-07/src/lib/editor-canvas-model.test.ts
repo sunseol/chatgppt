@@ -42,6 +42,31 @@ describe("editor canvas rendering model", () => {
     expect(estimate.passed).toBe(true);
     expect(estimate.estimatedMs < 5_000).toBe(true);
   });
+
+  test("clamps oversized layer bounds inside the canvas", () => {
+    const model = buildEditorCanvasModel({
+      canvas: { width: 1600, height: 900 },
+      layerModel: {
+        slideNumber: 1,
+        layers: [
+          {
+            id: "overflow_bg",
+            type: "shape",
+            role: "background",
+            bounds: { x: 0, y: 0, w: 2000, h: 1200 },
+            editable: false,
+          },
+        ],
+      },
+    });
+
+    expect(model.layers[0]?.style).toEqual({
+      left: "0.00%",
+      top: "0.00%",
+      width: "100.00%",
+      height: "100.00%",
+    });
+  });
 });
 
 function layerModelFixture(): EditableLayerModel {

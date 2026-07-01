@@ -3,6 +3,7 @@ import type { DeckProject } from "./deck-types";
 import { createAuditLogEvent } from "./audit-log";
 import { buildGenerationReport } from "./generation-report";
 import { mockBrief, mockDesign, mockPlan, mockResearch } from "./mock-ai";
+import { createProviderArtifactProvenance } from "./provider-provenance";
 
 describe("generation report", () => {
   test("includes slide lineage across plan, sources, design, layout, layers, and export", () => {
@@ -56,6 +57,48 @@ describe("generation report", () => {
     expect(report.includes("layout_001, slide_1_v3")).toBe(true);
     expect(report.includes("token=[redacted]")).toBe(true);
     expect(report.includes("abc123def456")).toBe(false);
+  });
+
+  test("lists provider provenance including turn id, request id, prompt version, and fixture flag", () => {
+    const report = buildGenerationReport(
+      reportProjectFixture(),
+      undefined,
+      [],
+      [
+        createProviderArtifactProvenance({
+          artifactId: "plan_live_001",
+          executionMode: "production",
+          providerKind: "codex",
+          authMode: "codex_session",
+          modelOrRuntime: "codex-app-server 1.0.0",
+          promptVersion: "deck_plan@v1",
+          durationMs: 1_200,
+          inputArtifactIds: ["research_001"],
+          turnId: "turn_001",
+          threadId: "thread_001",
+          fixture: false,
+        }),
+        createProviderArtifactProvenance({
+          artifactId: "slide_image_001",
+          executionMode: "production",
+          providerKind: "openaiImage",
+          authMode: "api_key",
+          modelOrRuntime: "gpt-image-2",
+          promptVersion: "slide_generation@v1",
+          durationMs: 2_400,
+          inputArtifactIds: ["layout_001"],
+          requestId: "img_req_001",
+          fixture: false,
+        }),
+      ],
+    );
+
+    expect(report.includes("## 12. Provider Provenance")).toBe(true);
+    expect(report.includes("plan_live_001 · codex · production · codex_session")).toBe(true);
+    expect(report.includes("turn turn_001 · thread thread_001")).toBe(true);
+    expect(report.includes("slide_image_001 · openaiImage · production · api_key")).toBe(true);
+    expect(report.includes("request img_req_001")).toBe(true);
+    expect(report.includes("fixture no")).toBe(true);
   });
 });
 

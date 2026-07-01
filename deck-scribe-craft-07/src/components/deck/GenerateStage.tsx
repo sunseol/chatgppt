@@ -3,11 +3,22 @@ import { useNavigate } from "@tanstack/react-router";
 import { GateBar } from "@/components/deck/GateBar";
 import { GeneratedSlideGrid } from "@/components/deck/GeneratedSlideGrid";
 import { ProviderJobProgressPanel } from "@/components/deck/ProviderJobProgressPanel";
-import { EmptyAction, StageHeader, StageScroll, StageShell } from "@/components/deck/stage-shared";
+import {
+  EmptyAction,
+  StageErrorBanner,
+  StageHeader,
+  StageScroll,
+  StageShell,
+} from "@/components/deck/stage-shared";
 import { fakeAsync } from "@/components/deck/stage-timing";
+import { resolveGenerateProgress } from "@/components/deck/generate-progress";
 import { invalidateDownstream, updateProject } from "@/lib/deck-store";
 import type { DeckProject, GeneratedSlide } from "@/lib/deck-types";
 import { mockSlides } from "@/lib/mock-ai";
+import {
+  createProductionImageGenerationGate,
+  type ImageGenerationExecutionMode,
+} from "@/lib/production-image-generation-gate";
 import {
   createProviderJobManager,
   ProviderJobCancelledError,
@@ -29,8 +40,18 @@ type GenerateRecovery = {
   readonly job: ProviderJob;
 };
 
-export function GenerateStage({ project }: { readonly project: DeckProject }) {
+export function GenerateStage({
+  project,
+  executionMode = defaultExecutionMode(),
+}: {
+  readonly project: DeckProject;
+  readonly executionMode?: ImageGenerationExecutionMode;
+}) {
   const navigate = useNavigate();
+  const imageGenerationGate = createProductionImageGenerationGate({
+    executionMode,
+    imagePathDecision: project.imagePathDecision,
+  });
   const initialRecovery = readGenerateRecovery(project.id);
   const [manager] = useState<ProviderJobManager>(() =>
     createProviderJobManager({
@@ -40,14 +61,16 @@ export function GenerateStage({ project }: { readonly project: DeckProject }) {
   );
   const [slides, setSlides] = useState<GeneratedSlide[] | undefined>(project.slides);
   const [busy, setBusy] = useState(false);
-  const [progress, setProgress] = useState(initialRecovery?.job.progress?.percent ?? 0);
+  const [progress, setProgress] = useState(
+    initialRecovery?.job.progress?.percent ?? resolveGenerateProgress(project.slides),
+  );
   const [job, setJob] = useState<ProviderJob | undefined>(initialRecovery?.job);
   const [recovered, setRecovered] = useState(initialRecovery !== undefined);
 
   const generate = async () => {
-    if (!project.plan || !project.design) return;
+    if (!project.plan || !project.design || imageGenerationGate.kind !== "ready") return;
     const queued = manager.enqueue({
-      providerId: "mock",
+      providerId: imageGenerationGate.providerId,
       capability: "imageGeneration",
       description: "슬라이드 이미지 생성",
     });
@@ -69,7 +92,7 @@ export function GenerateStage({ project }: { readonly project: DeckProject }) {
   };
 
   const runGeneration = async (jobId: string) => {
-    if (!project.plan || !project.design) return;
+    if (!project.plan || !project.design || imageGenerationGate.kind !== "ready") return;
     setBusy(true);
     setProgress(0);
     const target = mockSlides(project.plan);
@@ -127,6 +150,12 @@ export function GenerateStage({ project }: { readonly project: DeckProject }) {
     <StageShell>
       <StageScroll className="mx-auto max-w-6xl px-8">
         <StageHeader num="06" sub="Generate" title="슬라이드 이미지 생성" />
+        {imageGenerationGate.kind === "blocked" ? (
+          <StageErrorBanner
+            title="실제 이미지 경로 Lock 필요"
+            message={imageGenerationGate.issues.map((issue) => issue.message).join(" ")}
+          />
+        ) : null}
         {job ? (
           <ProviderJobProgressPanel
             stageLabel="슬라이드 이미지 생성"
@@ -140,8 +169,13 @@ export function GenerateStage({ project }: { readonly project: DeckProject }) {
         ) : null}
         {!slides ? (
           <EmptyAction
-            label="승인한 레이아웃으로 슬라이드 이미지 생성"
+            label={
+              imageGenerationGate.kind === "blocked"
+                ? "실제 이미지 경로 결정 레코드가 필요합니다."
+                : "승인한 레이아웃으로 슬라이드 이미지 생성"
+            }
             busy={busy}
+            disabled={imageGenerationGate.kind === "blocked"}
             onClick={generate}
           />
         ) : (
@@ -216,4 +250,8 @@ function writeGenerateRecovery(
 
 function isBrowser(): boolean {
   return typeof window !== "undefined";
+}
+
+function defaultExecutionMode(): ImageGenerationExecutionMode {
+  return import.meta.env.PROD ? "production" : "development";
 }

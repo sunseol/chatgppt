@@ -4,6 +4,7 @@ import { createFrozenDeckContext } from "./deck-context";
 import { mockBrief, mockDesign, mockLayout, mockPlan, mockResearch } from "./mock-ai";
 import { buildSlideContextBundles, type SlideContextBundle } from "./slide-context-bundle";
 import { buildSlidePromptPackage } from "./slide-prompt-package";
+import { ImageProviderRequestError } from "./image-provider-errors";
 import {
   createMockSlideImageProvider,
   createOpenAIImageProvider,
@@ -34,7 +35,7 @@ describe("slide image provider call", () => {
       version: 1,
       status: "ready",
       imageDescriptor: "mock|16:9|slide_03_layout.png|slide_generation@v1",
-      notes: "Generated visual background; editable text/chart overlays are applied later.",
+      notes: "Generated complete presentation slide raster; editable layers may be extracted or refined later.",
     });
   });
 
@@ -43,7 +44,14 @@ describe("slide image provider call", () => {
     const provider = createOpenAIImageProvider({
       async generate(request) {
         requests.push(request);
-        return { imageDataUrl: "data:image/png;base64,ZmFrZQ==" };
+        return {
+          imageDataUrl: "data:image/png;base64,ZmFrZQ==",
+          requestId: "img_req_001",
+          latencyMs: 2_400,
+          size: "1200x900",
+          quality: "high",
+          usage: { imageCount: 1, estimatedCostUsd: 0.08 },
+        };
       },
     });
     const pkg = buildSlidePromptPackage(chartSlideBundle());
@@ -54,6 +62,10 @@ describe("slide image provider call", () => {
       {
         model: "gpt-image-2",
         prompt: pkg.prompt,
+        outputKind: "full_presentation_slide",
+        designSystemId: pkg.designSystemId,
+        designConsistencyContractId: pkg.designConsistency.contractId,
+        slideControlSpec: pkg.slideControlSpec,
         aspectRatio: "4:3",
         layoutReference: {
           screenshot: "slide_03_layout.png",
@@ -61,6 +73,19 @@ describe("slide image provider call", () => {
         },
       },
     ]);
+    if (result.kind !== "ready") return;
+    expect(result.artifact.request).toEqual({
+      requestId: "img_req_001",
+      model: "gpt-image-2",
+      outputKind: "full_presentation_slide",
+      designSystemId: pkg.designSystemId,
+      designConsistencyContractId: pkg.designConsistency.contractId,
+      slideControlSpec: pkg.slideControlSpec,
+      size: "1200x900",
+      quality: "high",
+      latencyMs: 2_400,
+      usage: { imageCount: 1, estimatedCostUsd: 0.08 },
+    });
   });
 
   test("provider failures return retryable user-facing metadata", async () => {
@@ -80,11 +105,44 @@ describe("slide image provider call", () => {
       failure: {
         providerId: "openaiImage",
         slideNumber: 3,
+        errorKind: "unknown",
         retryable: true,
         errorMessage: "image quota exceeded",
         userMessage: "Slide 3 image generation failed: image quota exceeded. Retry is available.",
       },
     });
+  });
+
+  test("provider request errors distinguish retryable rate limits from locked failures", async () => {
+    const rateLimitedProvider = createOpenAIImageProvider({
+      async generate() {
+        throw new ImageProviderRequestError("rate_limit", "429 rate limited");
+      },
+    });
+    const contentPolicyProvider = createOpenAIImageProvider({
+      async generate() {
+        throw new ImageProviderRequestError("content_policy", "content policy blocked");
+      },
+    });
+
+    const rateLimited = await generateSlideImage({
+      provider: rateLimitedProvider,
+      package: buildSlidePromptPackage(chartSlideBundle()),
+      aspectRatio: "16:9",
+    });
+    const contentPolicy = await generateSlideImage({
+      provider: contentPolicyProvider,
+      package: buildSlidePromptPackage(chartSlideBundle()),
+      aspectRatio: "16:9",
+    });
+
+    expect(rateLimited.kind).toBe("failed");
+    expect(contentPolicy.kind).toBe("failed");
+    if (rateLimited.kind !== "failed" || contentPolicy.kind !== "failed") return;
+    expect(rateLimited.failure.errorKind).toBe("rate_limit");
+    expect(rateLimited.failure.retryable).toBe(true);
+    expect(contentPolicy.failure.errorKind).toBe("content_policy");
+    expect(contentPolicy.failure.retryable).toBe(false);
   });
 });
 
