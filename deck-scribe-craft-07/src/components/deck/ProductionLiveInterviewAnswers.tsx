@@ -1,7 +1,5 @@
-import { Send } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
 import type { InterviewQuestionField } from "@/lib/interview-questions";
 import type { LiveInterviewAnswerMap } from "@/lib/live-interview-cutover";
 
@@ -10,7 +8,6 @@ export type ProductionLiveInterviewAnswersProps = {
   readonly requiredFields: readonly InterviewQuestionField[];
   readonly answers: LiveInterviewAnswerMap;
   readonly onAnswers: (answers: LiveInterviewAnswerMap) => void;
-  readonly onSubmitAnswers?: () => void;
 };
 
 export function ProductionLiveInterviewAnswers({
@@ -18,7 +15,6 @@ export function ProductionLiveInterviewAnswers({
   requiredFields,
   answers,
   onAnswers,
-  onSubmitAnswers,
 }: ProductionLiveInterviewAnswersProps) {
   if (requiredFields.length === 0 && questions.length === 0) return null;
 
@@ -26,7 +22,6 @@ export function ProductionLiveInterviewAnswers({
     onAnswers({ ...answers, [field]: value });
   };
   const missingAnswerCount = requiredFields.filter((field) => !answers[field]?.trim()).length;
-  const isSubmitDisabled = onSubmitAnswers === undefined || missingAnswerCount > 0;
 
   return (
     <section className="mt-6 border border-border bg-paper p-5 text-sm">
@@ -60,16 +55,13 @@ export function ProductionLiveInterviewAnswers({
           ))}
         </ul>
       ) : null}
-      <div className="mt-5 flex flex-col gap-2 border border-border bg-background p-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="text-xs text-muted-foreground">
+      <div className="mt-5 flex flex-col gap-1 border border-border bg-background p-3 text-xs text-muted-foreground">
+        <div>
           {missingAnswerCount > 0
             ? `필수 답변 ${missingAnswerCount}개 남음`
             : "모든 필수 답변 입력 완료"}
         </div>
-        <Button type="button" onClick={onSubmitAnswers} disabled={isSubmitDisabled}>
-          <Send className="h-4 w-4" />
-          답변 제출하고 브리프 생성
-        </Button>
+        <div>브리프 생성은 화면 상단의 primary 버튼으로 실행합니다.</div>
       </div>
     </section>
   );

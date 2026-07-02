@@ -4,13 +4,14 @@ import { ProjectCockpit } from "./ProjectCockpit";
 import type { DeckProject } from "@/lib/deck-types";
 
 describe("project cockpit", () => {
-  test("renders current stage, next action, runtime, approvals, and locked-step reason", () => {
+  test("renders current stage, next action, compact runtime, approvals, and locked-step reason", () => {
     const markup = renderToStaticMarkup(
       <ProjectCockpit
         project={projectFixture()}
         step="design"
         runtime="production"
         appServerBridge="available"
+        codexLoginStatus={{ kind: "completed", success: true, output: "Logged in" }}
       />,
     );
 
@@ -19,18 +20,18 @@ describe("project cockpit", () => {
     expect(markup.includes("다음 액션")).toBe(true);
     expect(markup.includes("색상, 글꼴, 미리보기를 확인하고 승인하세요.")).toBe(true);
     expect(markup.includes("다음 액션: 색상, 글꼴")).toBe(false);
-    expect(markup.includes("실행 모드")).toBe(true);
-    expect(markup.includes("라이브 실행")).toBe(true);
-    expect(markup.includes("Bridge 감지")).toBe(true);
-    expect(markup.includes("앱 실행 통로 확인됨")).toBe(true);
-    expect(markup.includes("실행 시 Codex 상태 확인")).toBe(true);
-    expect(markup.includes("승인 2건")).toBe(true);
+    expect(markup.includes("모드")).toBe(true);
+    expect(markup.includes("Live")).toBe(true);
+    expect(markup.includes("Codex")).toBe(true);
+    expect(markup.includes("OK")).toBe(true);
+    expect(markup.includes("승인")).toBe(true);
+    expect(markup.includes(">2<")).toBe(true);
     expect(markup.includes("다음 잠김")).toBe(true);
     expect(markup.includes("승인된 디자인 시스템이 필요합니다.")).toBe(true);
-    expect(markup.includes("다음 잠김: 잠김")).toBe(false);
+    expect(markup.includes("승인 2건")).toBe(false);
   });
 
-  test("renders a visible development runtime warning", () => {
+  test("renders a compact development runtime warning", () => {
     const markup = renderToStaticMarkup(
       <ProjectCockpit
         project={projectFixture({ stage: "PROJECT_CREATED" })}
@@ -40,9 +41,9 @@ describe("project cockpit", () => {
       />,
     );
 
-    expect(markup.includes("샘플 화면 모드")).toBe(true);
-    expect(markup.includes("Codex 미연결")).toBe(true);
+    expect(markup.includes("Demo")).toBe(true);
     expect(markup.includes("실제 Codex 실행이 아닙니다.")).toBe(true);
+    expect(markup.includes("Codex 미연결")).toBe(false);
   });
 
   test("renders an actionable Codex connection button when settings are available", () => {
@@ -58,7 +59,7 @@ describe("project cockpit", () => {
 
     expect(markup.includes("Codex 연결 설정 열기")).toBe(true);
     expect(markup.includes('type="button"')).toBe(true);
-    expect(markup.includes("Bridge 없음")).toBe(true);
+    expect(markup.includes("앱 실행 통로 없음")).toBe(true);
   });
 
   test("uses the visible route step as the cockpit stage", () => {
@@ -91,7 +92,7 @@ describe("project cockpit", () => {
       />,
     );
 
-    expect(markup.includes("성공")).toBe(true);
+    expect(markup.includes("OK")).toBe(true);
     expect(markup.includes("라이브 인터뷰 브리프가 준비되었습니다.")).toBe(true);
     expect(markup.includes("완료 단계: 브리프 생성")).toBe(true);
   });
@@ -117,9 +118,34 @@ describe("project cockpit", () => {
       />,
     );
 
-    expect(markup.includes("실패")).toBe(true);
+    expect(markup.includes("!" )).toBe(true);
     expect(markup.includes("app-server smoke 실패")).toBe(true);
     expect(markup.includes("연결 및 실행 환경에서 다시 확인하세요.")).toBe(true);
+  });
+
+  test("renders the workflow primary action above compact status indicators", () => {
+    const markup = renderToStaticMarkup(
+      <ProjectCockpit
+        project={projectFixture({ stage: "INTERVIEWING", approvalLog: [] })}
+        step="interview"
+        runtime="production"
+        appServerBridge="available"
+        codexLoginStatus={{ kind: "completed", success: true, output: "Logged in" }}
+        primaryAction={{
+          label: "답변 제출하고 브리프 생성",
+          detail: "상단 버튼으로 답변을 제출하고 브리프를 생성합니다.",
+          onClick: () => undefined,
+        }}
+      />,
+    );
+
+    expect(markup.includes("답변 제출하고 브리프 생성")).toBe(true);
+    expect(markup.includes("상단 버튼으로 답변을 제출하고 브리프를 생성합니다.")).toBe(true);
+    expect(markup.includes("모드")).toBe(true);
+    expect(markup.includes("Live")).toBe(true);
+    expect(markup.includes("Codex")).toBe(true);
+    expect(markup.includes("승인")).toBe(true);
+    expect(markup.includes("승인 0건")).toBe(false);
   });
 });
 

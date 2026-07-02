@@ -213,7 +213,7 @@ function loginStatusText(status: SettingsCodexLoginStatus): string {
     case "running":
       return "Codex CLI 로그인 상태 확인 중입니다.";
     case "opening":
-      return "Terminal에서 Codex 로그인을 여는 중입니다.";
+      return "터미널에서 Codex 로그인을 여는 중입니다.";
     case "opened":
       return `${status.command} 창을 열었습니다. 로그인을 마친 뒤 상태를 새로고침하세요.`;
     case "completed":

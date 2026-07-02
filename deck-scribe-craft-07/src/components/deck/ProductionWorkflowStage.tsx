@@ -1,19 +1,17 @@
 import { useNavigate } from "@tanstack/react-router";
-import { ProviderCapabilityMatrix } from "@/components/deck/ProviderCapabilityMatrix";
+import { useCallback, useEffect } from "react";
 import { ProductionResearchNetworkPolicy } from "@/components/deck/ProductionResearchNetworkPolicy";
 import { ProductionResearchReview } from "@/components/deck/ProductionResearchReview";
 import { ProductionResearchWebSearchLauncher } from "@/components/deck/ProductionResearchWebSearchLauncher";
 import { ProductionTextWorkflowLauncher } from "@/components/deck/ProductionTextWorkflowLauncher";
 import type { ProductionTextWorkflowRunStatus } from "@/components/deck/ProductionTextWorkflowPanel";
 import { StageHeader, StageScroll, StageShell } from "@/components/deck/stage-shared";
-import { Button } from "@/components/ui/button";
 import { hashContent } from "@/lib/artifacts";
-import { createClientNewProjectProviderMatrixInput } from "@/lib/client-provider-runtime-selection";
 import { approveStage, updateProject } from "@/lib/deck-store";
 import type { DeckProject, InterviewBrief, StepKey } from "@/lib/deck-types";
 import { getDesktopAppServerBridgeStatus } from "@/lib/desktop-app-server-bridge";
-import { createProviderCapabilityMatrixView } from "@/lib/provider-capability-view";
 import type { ProductionTextWorkflowBridgeStatus } from "@/lib/production-text-workflow-gate";
+import type { WorkflowPrimaryActionSetter } from "./workflow-primary-action";
 
 export type WorkflowStageProps = {
   readonly project: DeckProject;
@@ -22,8 +20,11 @@ export type WorkflowStageProps = {
   readonly runStatus?: ProductionTextWorkflowRunStatus;
   readonly onRunStatusChange?: (status: ProductionTextWorkflowRunStatus) => void;
   readonly onOpenConnectionSettings?: () => void;
+  readonly codexLoginVerified?: boolean;
+  readonly onRequireCodexConnection?: () => void;
   readonly actionLabelOverride?: string;
   readonly disabledReason?: string;
+  readonly onPrimaryActionChange?: WorkflowPrimaryActionSetter;
 };
 
 type ProductionStepCopy = {
@@ -109,34 +110,22 @@ export function ProductionWorkflowStage({
   runStatus,
   onRunStatusChange,
   onOpenConnectionSettings,
+  codexLoginVerified,
+  onRequireCodexConnection,
   actionLabelOverride,
   disabledReason,
+  onPrimaryActionChange,
 }: WorkflowStageProps) {
   const copy = PRODUCTION_STEP_COPY[step];
   const resolvedAppServerBridge = appServerBridge ?? getDesktopAppServerBridgeStatus();
-  const providerMatrixView = createProviderCapabilityMatrixView(
-    createClientNewProjectProviderMatrixInput({
-      isProductionBuild: import.meta.env.PROD,
-      appServerBridge: resolvedAppServerBridge,
-    }),
-  );
 
   return (
     <StageShell>
       <StageScroll className="mx-auto max-w-4xl px-8">
         <StageHeader num={copy.num} sub={copy.sub} title={copy.title} />
-        <section className="border border-border bg-paper p-5 text-sm">
-          <div className="font-medium">Live production gate</div>
-          <div className="mt-2 text-muted-foreground">{copy.status}</div>
-          <dl className="mt-5 grid gap-3 sm:grid-cols-2">
-            <ProductionField label="프로젝트" value={project.name} />
-            <ProductionField label="현재 단계" value={project.stage} />
-            <ProductionField
-              label="슬라이드"
-              value={`${project.slideCount}장 · ${project.aspectRatio}`}
-            />
-            <ProductionField label="승인 기록" value={`${project.approvalLog.length}건`} />
-          </dl>
+        <section className="border border-border bg-paper p-4 text-sm">
+          <div className="font-medium">현재 상태</div>
+          <div className="mt-1 text-muted-foreground">{copy.status}</div>
         </section>
         <ProductionTextWorkflowLauncher
           project={project}
@@ -145,11 +134,19 @@ export function ProductionWorkflowStage({
           runStatusOverride={runStatus}
           onRunStatusChange={onRunStatusChange}
           onOpenConnectionSettings={onOpenConnectionSettings}
+          codexLoginVerified={codexLoginVerified}
+          onRequireCodexConnection={onRequireCodexConnection}
           actionLabelOverride={actionLabelOverride}
           disabledReason={disabledReason}
+          onPrimaryActionChange={onPrimaryActionChange}
+          suppressPrimaryAction={step === "interview" && project.brief !== undefined}
         />
         {step === "interview" && project.brief ? (
-          <ProductionInterviewBriefReview project={project} brief={project.brief} />
+          <ProductionInterviewBriefReview
+            project={project}
+            brief={project.brief}
+            onPrimaryActionChange={onPrimaryActionChange}
+          />
         ) : null}
         {step === "research" ? (
           <ProductionResearchWebSearchLauncher
@@ -161,9 +158,6 @@ export function ProductionWorkflowStage({
         {step === "research" && project.research ? (
           <ProductionResearchReview project={project} />
         ) : null}
-        <div className="mt-6">
-          <ProviderCapabilityMatrix view={providerMatrixView} />
-        </div>
       </StageScroll>
     </StageShell>
   );
@@ -172,12 +166,14 @@ export function ProductionWorkflowStage({
 function ProductionInterviewBriefReview({
   project,
   brief,
+  onPrimaryActionChange,
 }: {
   readonly project: DeckProject;
   readonly brief: InterviewBrief;
+  readonly onPrimaryActionChange?: WorkflowPrimaryActionSetter;
 }) {
   const navigate = useNavigate();
-  const approveBrief = () => {
+  const approveBrief = useCallback(() => {
     const approvedHash =
       brief.approvedHash ?? hashContent(JSON.stringify(stripApprovedHash(brief)));
     updateProject(project.id, { brief: { ...brief, approvedHash } });
@@ -186,25 +182,27 @@ function ProductionInterviewBriefReview({
       to: "/project/$projectId/$step",
       params: { projectId: project.id, step: "research" },
     });
-  };
+  }, [brief, navigate, project.id]);
+
+  useEffect(() => {
+    onPrimaryActionChange?.({
+      label: brief.approvedHash ? "브리프 승인 완료" : "브리프 승인하고 조사로 이동",
+      detail: brief.approvedHash
+        ? "이미 승인된 브리프입니다. 조사 단계로 이동할 수 있습니다."
+        : "생성된 브리프를 승인하면 다음 단계가 명확히 열립니다.",
+      disabled: brief.approvedHash !== undefined,
+      onClick: brief.approvedHash ? undefined : approveBrief,
+    });
+    return () => onPrimaryActionChange?.(undefined);
+  }, [approveBrief, brief.approvedHash, onPrimaryActionChange]);
 
   return (
     <section className="mt-6 border border-border bg-paper p-5 text-sm">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <div className="font-medium">Live interview brief review</div>
-          <div className="mt-2 text-muted-foreground">
-            목적, 청중, 성공 기준을 확인한 뒤 승인하면 Research Pack 생성이 열립니다.
-          </div>
+      <div>
+        <div className="font-medium">Live interview brief review</div>
+        <div className="mt-2 text-muted-foreground">
+          목적, 청중, 성공 기준을 확인한 뒤 상단 버튼으로 승인하면 Research Pack 생성이 열립니다.
         </div>
-        <Button
-          type="button"
-          disabled={brief.approvedHash !== undefined}
-          onClick={approveBrief}
-          className="shrink-0 bg-foreground text-background hover:bg-foreground/90"
-        >
-          {brief.approvedHash ? "Live brief 승인 완료" : "Live brief 승인하고 조사로 이동"}
-        </Button>
       </div>
       <dl className="mt-5 grid gap-3 sm:grid-cols-2">
         <ProductionField label="목적" value={brief.goal} />

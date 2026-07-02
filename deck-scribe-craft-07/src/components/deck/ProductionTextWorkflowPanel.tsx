@@ -1,4 +1,4 @@
-import { Loader2, Play, Settings } from "lucide-react";
+import { Settings } from "lucide-react";
 import { FailureControls, RunningControls } from "./ProductionTextWorkflowPanelControls";
 import { Button } from "@/components/ui/button";
 import { createCodexLiveStatusView, type CodexWorkflowRunStatus } from "@/lib/codex-live-status";
@@ -53,24 +53,16 @@ export function ProductionTextWorkflowPanel({
 
   return (
     <section className="mt-6 border border-border bg-paper p-5 text-sm">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <div className="font-medium">{gate.title}</div>
-          <div className="mt-2 text-muted-foreground">
-            {gate.kind === "ready"
-              ? `${liveStatus.label}: ${liveStatus.detail}`
-              : "필요 조건을 해결해야 라이브 실행을 시작할 수 있습니다."}
-          </div>
+      <div>
+        <div className="font-medium">{gate.title}</div>
+        <div className="mt-2 text-muted-foreground">
+          {gate.kind === "ready"
+            ? `${liveStatus.label}: ${liveStatus.detail}`
+            : "필요 조건을 해결해야 라이브 실행을 시작할 수 있습니다."}
+          <span className="mt-1 block text-xs">
+            {actionDisabled ? "상단 액션 대기" : "상단 액션"}: {actionLabel}
+          </span>
         </div>
-        <Button
-          type="button"
-          disabled={actionDisabled}
-          onClick={onRun}
-          className="shrink-0 bg-foreground text-background hover:bg-foreground/90"
-        >
-          {isRunning ? <Loader2 className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />}
-          {actionLabel}
-        </Button>
       </div>
       {disabledReason ? (
         <div className="mt-3 border border-border bg-background p-3 text-xs text-muted-foreground">

@@ -79,7 +79,7 @@ function interviewGate(
   const base = {
     workflow: "interview" as const,
     title: "라이브 인터뷰 실행",
-    actionLabel: "라이브 인터뷰 실행",
+    actionLabel: "라이브 인터뷰 질문지 생성",
     requiredStages: INTERVIEW_STAGES,
   };
   const issues = bridgeIssues(appServerBridge);

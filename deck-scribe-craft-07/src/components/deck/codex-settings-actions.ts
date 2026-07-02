@@ -8,6 +8,10 @@ import {
   readDesktopCodexLoginStatus,
 } from "@/lib/desktop-codex-login";
 
+export function isCodexLoginVerified(status: SettingsCodexLoginStatus): boolean {
+  return status.kind === "completed" && status.success;
+}
+
 export async function refreshCodexLoginStatus(
   setLoginStatus: (status: SettingsCodexLoginStatus) => void,
 ): Promise<void> {

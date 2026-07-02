@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useParams, Navigate } from "@tanstack/react-router";
-import { useEffect, useState, type ComponentType } from "react";
+import { useCallback, useEffect, useState, type ComponentType } from "react";
 import { isStepReachable, stageToStep, useProject } from "@/lib/deck-store";
 import { Stepper } from "@/components/deck/Stepper";
 import { ProjectCockpit } from "@/components/deck/ProjectCockpit";
@@ -14,6 +14,7 @@ import {
 } from "@/components/deck/ProductionWorkflowStage";
 import type { ProductionTextWorkflowRunStatus } from "@/components/deck/ProductionTextWorkflowPanel";
 import {
+  isCodexLoginVerified,
   openCodexLoginTerminal,
   refreshCodexLoginStatus,
   runSettingsSmoke,
@@ -32,7 +33,10 @@ import {
 } from "@/lib/client-workflow-stage-selection";
 import type { StepKey } from "@/lib/deck-types";
 import type { ProductionTextWorkflowBridgeStatus } from "@/lib/production-text-workflow-gate";
+import type { WorkflowPrimaryAction } from "@/components/deck/workflow-primary-action";
 import { ChevronLeft } from "lucide-react";
+
+type ConnectionSettingsIntent = "general" | "codex_required";
 
 const VALID_STEPS: StepKey[] = [
   "project",
@@ -67,6 +71,8 @@ function ProjectStagePage() {
   const project = useProject(projectId);
   const [hydrated, setHydrated] = useState(false);
   const [connectionSettingsOpen, setConnectionSettingsOpen] = useState(false);
+  const [connectionSettingsIntent, setConnectionSettingsIntent] =
+    useState<ConnectionSettingsIntent>("general");
   const [appServerBridge, setAppServerBridge] =
     useState<ProductionTextWorkflowBridgeStatus>("missing");
   const [loginStatus, setLoginStatus] = useState<SettingsCodexLoginStatus>({ kind: "idle" });
@@ -74,6 +80,10 @@ function ProjectStagePage() {
   const [productionRunStatus, setProductionRunStatus] = useState<ProductionTextWorkflowRunStatus>({
     kind: "idle",
   });
+  const [primaryAction, setPrimaryAction] = useState<WorkflowPrimaryAction | undefined>();
+  const updatePrimaryAction = useCallback((action: WorkflowPrimaryAction | undefined) => {
+    setPrimaryAction(() => action);
+  }, []);
 
   useEffect(() => {
     setHydrated(true);
@@ -84,7 +94,8 @@ function ProjectStagePage() {
 
   useEffect(() => {
     setProductionRunStatus({ kind: "idle" });
-  }, [projectId, step]);
+    updatePrimaryAction(undefined);
+  }, [projectId, step, updatePrimaryAction]);
 
   if (!hydrated) {
     return (
@@ -131,8 +142,18 @@ function ProjectStagePage() {
   const openConnectionSettings = () => {
     const bridge = getDesktopAppServerBridgeStatus();
     setAppServerBridge(bridge);
+    setConnectionSettingsIntent("general");
     setConnectionSettingsOpen(true);
     if (bridge === "available" && loginStatus.kind === "idle") {
+      void refreshCodexLoginStatus(setLoginStatus);
+    }
+  };
+  const openCodexRequiredConnection = () => {
+    const bridge = getDesktopAppServerBridgeStatus();
+    setAppServerBridge(bridge);
+    setConnectionSettingsIntent("codex_required");
+    setConnectionSettingsOpen(true);
+    if (bridge === "available" && !isCodexLoginVerified(loginStatus)) {
       void refreshCodexLoginStatus(setLoginStatus);
     }
   };
@@ -178,7 +199,9 @@ function ProjectStagePage() {
           step={step}
           runtime={runtime}
           appServerBridge={appServerBridge}
+          codexLoginStatus={runtime === "production" ? loginStatus : undefined}
           codexRunStatus={runtime === "production" ? productionRunStatus : undefined}
+          primaryAction={primaryAction}
           onOpenConnectionSettings={openConnectionSettings}
         />
         <div className="min-h-0 flex-1 overflow-hidden">
@@ -190,16 +213,17 @@ function ProjectStagePage() {
             runStatus={productionRunStatus}
             onRunStatusChange={setProductionRunStatus}
             onOpenConnectionSettings={openConnectionSettings}
+            codexLoginVerified={isCodexLoginVerified(loginStatus)}
+            onRequireCodexConnection={openCodexRequiredConnection}
+            onPrimaryActionChange={updatePrimaryAction}
           />
         </div>
       </main>
       <Dialog open={connectionSettingsOpen} onOpenChange={setConnectionSettingsOpen}>
         <DialogContent className="max-h-[calc(100vh-2rem)] w-[calc(100vw-2rem)] max-w-[42rem] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>연결 및 실행 환경</DialogTitle>
-            <DialogDescription>
-              Codex 로그인, 라이브 실행 테스트, provider 준비 상태를 확인합니다.
-            </DialogDescription>
+            <DialogTitle>{connectionDialogTitle(connectionSettingsIntent)}</DialogTitle>
+            <DialogDescription>{connectionDialogDescription(connectionSettingsIntent)}</DialogDescription>
           </DialogHeader>
           <SettingsDialogBody
             appServerBridge={appServerBridge}
@@ -213,6 +237,18 @@ function ProjectStagePage() {
       </Dialog>
     </div>
   );
+}
+
+function connectionDialogTitle(intent: ConnectionSettingsIntent): string {
+  if (intent === "codex_required") return "Codex 연결이 필요합니다";
+  return "연결 및 실행 환경";
+}
+
+function connectionDialogDescription(intent: ConnectionSettingsIntent): string {
+  if (intent === "codex_required") {
+    return "인터뷰 실행 전에 Codex CLI 로그인 세션이 필요합니다. 아래에서 상태를 확인하거나 Codex 로그인을 연 뒤 다시 실행하세요.";
+  }
+  return "Codex 로그인, 라이브 실행 테스트, provider 준비 상태를 확인합니다.";
 }
 
 type ResolvedWorkflowStageProps = WorkflowStageProps & {

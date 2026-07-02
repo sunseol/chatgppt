@@ -21,7 +21,7 @@ export function createCodexStatusActionError(input: {
     return {
       title: "Codex CLI를 찾을 수 없습니다",
       cause: "이 앱에서 Codex CLI 실행 파일을 찾지 못했습니다.",
-      action: `지원 버전 ${formatSupportedCodexRuntimeRange()}의 Codex CLI를 설치하거나 Terminal에서 codex login status가 실행되는지 확인하세요.`,
+      action: `지원 버전 ${formatSupportedCodexRuntimeRange()}의 Codex CLI를 설치하거나 Windows 터미널/터미널에서 codex login status가 실행되는지 확인하세요.`,
       retryLabel: "상태 다시 확인",
       rawMessage,
     };

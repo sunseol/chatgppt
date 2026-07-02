@@ -52,17 +52,13 @@ describe("production text workflow panel", () => {
     );
 
     // Then
-    expect(markup.includes("라이브 인터뷰 실행")).toBe(true);
+    expect(markup.includes("라이브 인터뷰 질문지 생성")).toBe(true);
     expect(markup.includes("app_server_bridge_missing")).toBe(false);
     expect(markup.includes("Bridge 감지")).toBe(true);
     expect(markup.includes("실행 시 Codex 상태 확인")).toBe(true);
     expect(markup.includes("실행 준비 완료")).toBe(false);
     expect(markup.includes("연결 및 실행 환경에서 Codex 연결 상태를 확인하세요.")).toBe(false);
-    const buttonMarkup = markup.slice(
-      Math.max(0, markup.indexOf("라이브 인터뷰 실행") - 300),
-      markup.indexOf("라이브 인터뷰 실행") + 120,
-    );
-    expect(buttonMarkup.includes("disabled")).toBe(false);
+    expect(markup.includes("상단 액션: 라이브 인터뷰 질문지 생성")).toBe(true);
   });
 
   test("renames the interview action when answers are ready for brief generation", () => {
@@ -81,7 +77,8 @@ describe("production text workflow panel", () => {
 
     // Then
     expect(markup.includes("답변 제출하고 브리프 생성")).toBe(true);
-    expect(liveRunButtonMarkup(markup).includes("라이브 인터뷰 실행")).toBe(false);
+    expect(markup.includes("상단 액션: 답변 제출하고 브리프 생성")).toBe(true);
+    expect(markup.includes("라이브 인터뷰 질문지 생성")).toBe(false);
   });
 
   test("shows disabled progress feedback, expected stages, cancel, and retry copy while running", () => {
@@ -106,13 +103,12 @@ describe("production text workflow panel", () => {
 
     // Then
     expect(markup.includes("라이브 실행 중")).toBe(true);
-    expect(markup.includes("animate-spin")).toBe(true);
+    expect(markup.includes("상단 액션 대기: 라이브 실행 중")).toBe(true);
     expect(markup.includes("예상 단계")).toBe(true);
     expect(markup.includes("로그인 확인")).toBe(true);
     expect(markup.includes("app-server smoke")).toBe(true);
     expect(markup.includes("취소 요청")).toBe(true);
     expect(markup.includes("재시도")).toBe(false);
-    expect(liveRunButtonMarkup(markup).includes("disabled")).toBe(true);
   });
 
   test("shows user-facing cause action and retry controls when a live run fails", () => {
@@ -159,9 +155,9 @@ describe("production text workflow panel", () => {
 
     // Then
     expect(markup.includes("Live interview brief review")).toBe(true);
+    expect(markup.includes("상단 버튼으로 승인하면 Research Pack 생성이 열립니다")).toBe(true);
     expect(markup.includes("분기 성과 공유")).toBe(true);
-    expect(markup.includes("Live brief 승인하고 조사로 이동")).toBe(true);
-    expect(briefApprovalButtonMarkup(markup).includes(' disabled=""')).toBe(false);
+    expect(markup.includes("Live brief 승인하고 조사로 이동")).toBe(false);
   });
 
   test("shows upstream blockers before the production text pipeline can run", () => {
@@ -218,20 +214,6 @@ function projectFixture(patch: Partial<DeckProject> = {}): DeckProject {
     approvalLog: [],
     ...patch,
   };
-}
-
-function liveRunButtonMarkup(markup: string): string {
-  const labelIndex = markup.indexOf("라이브 실행 중");
-  const buttonStart = markup.lastIndexOf("<button", labelIndex);
-  const buttonEnd = markup.indexOf("</button>", labelIndex);
-  return markup.slice(buttonStart, buttonEnd);
-}
-
-function briefApprovalButtonMarkup(markup: string): string {
-  const labelIndex = markup.indexOf("Live brief 승인하고 조사로 이동");
-  const buttonStart = markup.lastIndexOf("<button", labelIndex);
-  const buttonEnd = markup.indexOf("</button>", labelIndex);
-  return markup.slice(buttonStart, buttonEnd);
 }
 
 function briefFixture(): InterviewBrief {

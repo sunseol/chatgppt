@@ -1,9 +1,12 @@
-import { AlertTriangle, CheckCircle2, MonitorCog } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Loader2, MonitorCog, Play } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import type { WorkflowPrimaryAction } from "./workflow-primary-action";
 import type { ClientWorkflowStageRuntime } from "@/lib/client-workflow-stage-selection";
 import type { DeckProject, StepKey } from "@/lib/deck-types";
 import { getWorkflowStepItems, type WorkflowStepItem } from "@/lib/workflow-stepper";
 import type { ProductionTextWorkflowBridgeStatus } from "@/lib/production-text-workflow-gate";
 import { createCodexLiveStatusView } from "@/lib/codex-live-status";
+import type { CodexLoginStatus } from "@/lib/codex-live-status";
 import type { ProductionTextWorkflowRunStatus } from "./ProductionTextWorkflowPanel";
 
 export function ProjectCockpit({
@@ -11,20 +14,24 @@ export function ProjectCockpit({
   step,
   runtime,
   appServerBridge,
+  codexLoginStatus,
   codexRunStatus,
+  primaryAction,
   onOpenConnectionSettings,
 }: {
   readonly project: DeckProject;
   readonly step: StepKey;
   readonly runtime: ClientWorkflowStageRuntime;
   readonly appServerBridge: ProductionTextWorkflowBridgeStatus;
+  readonly codexLoginStatus?: CodexLoginStatus;
   readonly codexRunStatus?: ProductionTextWorkflowRunStatus;
+  readonly primaryAction?: WorkflowPrimaryAction;
   readonly onOpenConnectionSettings?: () => void;
 }) {
   const items = getWorkflowStepItems(project);
   const visibleStep = findStep(items, step);
   const nextLockedStep = items.find((item) => item.status === "locked");
-  const runtimeCopy = runtimeSummary(runtime, appServerBridge, codexRunStatus);
+  const runtimeCopy = runtimeSummary(runtime, appServerBridge, codexLoginStatus, codexRunStatus);
   const visibleStepAction = stripActionPrefix(visibleStep.detail);
 
   return (
@@ -45,31 +52,30 @@ export function ProjectCockpit({
             <CockpitField label="다음 액션" value={visibleStepAction} detail={visibleStep.sub} />
           </div>
         </div>
-        <div className="grid shrink-0 grid-cols-3 gap-2 text-xs xl:w-[28rem]">
-          <RuntimeBadge
-            label="실행 모드"
-            value={runtimeCopy.modeLabel}
-            detail={runtimeCopy.detail}
-          />
-          <RuntimeBadge
-            label="Codex"
-            value={runtimeCopy.codexLabel}
-            detail={runtimeCopy.codexDetail}
-            ok={runtimeCopy.codexOk}
-            warning={runtimeCopy.codexWarning}
-            onClick={onOpenConnectionSettings}
-            actionLabel="Codex 연결 설정 열기"
-          />
-          <RuntimeBadge
-            label="승인"
-            value={`승인 ${project.approvalLog.length}건`}
-            detail={
-              nextLockedStep
-                ? `다음 잠김: ${stripLockPrefix(nextLockedStep.detail)}`
-                : "잠긴 단계 없음"
-            }
-            warning={nextLockedStep !== undefined}
-          />
+        <div className="flex shrink-0 flex-col gap-2 xl:min-w-[30rem] xl:items-end">
+          {primaryAction ? <PrimaryActionButton action={primaryAction} /> : null}
+          <div className="flex flex-wrap gap-1.5 text-xs xl:justify-end">
+            <RuntimeBadge label="모드" value={runtime === "production" ? "Live" : "Demo"} detail={runtimeCopy.detail} />
+            <RuntimeBadge
+              label="Codex"
+              value={codexCompactValue(runtimeCopy)}
+              detail={runtimeCopy.codexDetail}
+              ok={runtimeCopy.codexOk}
+              warning={runtimeCopy.codexWarning}
+              onClick={onOpenConnectionSettings}
+              actionLabel="Codex 연결 설정 열기"
+            />
+            <RuntimeBadge
+              label="승인"
+              value={`${project.approvalLog.length}`}
+              detail={
+                nextLockedStep
+                  ? `다음 잠김: ${stripLockPrefix(nextLockedStep.detail)}`
+                  : "잠긴 단계 없음"
+              }
+              warning={nextLockedStep !== undefined}
+            />
+          </div>
         </div>
       </div>
     </section>
@@ -103,6 +109,7 @@ function stripActionPrefix(detail: string): string {
 function runtimeSummary(
   runtime: ClientWorkflowStageRuntime,
   appServerBridge: ProductionTextWorkflowBridgeStatus,
+  codexLoginStatus: CodexLoginStatus | undefined,
   codexRunStatus: ProductionTextWorkflowRunStatus | undefined,
 ): {
   readonly modeLabel: string;
@@ -114,7 +121,7 @@ function runtimeSummary(
 } {
   const codexStatus = createCodexLiveStatusView({
     bridge: appServerBridge,
-    login: { kind: "idle" },
+    login: codexLoginStatus ?? { kind: "idle" },
     smoke: { kind: "idle" },
     workflow: codexRunStatus ?? { kind: "idle" },
   });
@@ -147,6 +154,34 @@ function codexStatusDetail(codexStatus: ReturnType<typeof createCodexLiveStatusV
     return `${codexStatus.summary}. 원인: ${codexStatus.error.cause}. 조치: ${codexStatus.error.action}`;
   }
   return `${codexStatus.summary}. ${codexStatus.detail}`;
+}
+
+function codexCompactValue(runtimeCopy: ReturnType<typeof runtimeSummary>): string {
+  if (runtimeCopy.codexWarning) return "!";
+  if (runtimeCopy.codexOk) return "OK";
+  return "-";
+}
+
+function PrimaryActionButton({ action }: { readonly action: WorkflowPrimaryAction }) {
+  const disabled = action.disabled === true || action.onClick === undefined;
+  return (
+    <div className="w-full xl:max-w-[30rem]">
+      <Button
+        type="button"
+        disabled={disabled}
+        onClick={action.onClick}
+        className="h-11 w-full justify-center bg-foreground px-5 text-background hover:bg-foreground/90"
+      >
+        {action.busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />}
+        {action.label}
+      </Button>
+      {action.detail ? (
+        <div className="mt-1 line-clamp-1 text-right text-xs text-muted-foreground">
+          {action.detail}
+        </div>
+      ) : null}
+    </div>
+  );
 }
 
 function CockpitField({

@@ -1,6 +1,7 @@
 use super::{
-    applescript_string_literal, run_codex_login_status_with_candidates, shell_single_quote,
-    terminal_login_script, LOGIN_STATUS_ARGUMENTS,
+    applescript_string_literal, command_invocation_prefix, is_search_path_command,
+    run_codex_login_status_with_candidates, shell_single_quote, terminal_login_launch,
+    terminal_login_script, windows_cmd_quote, LOGIN_STATUS_ARGUMENTS,
 };
 use std::{env, error::Error, fs, os::unix::fs::PermissionsExt, path::Path};
 
@@ -36,6 +37,58 @@ fn builds_terminal_login_script() {
     assert!(script.contains("tell application \"Terminal\""));
     assert!(script.contains("activate"));
     assert!(script.contains("do script \"codex login\""));
+}
+
+#[test]
+fn builds_platform_terminal_login_launcher() {
+    let launch = terminal_login_launch("codex login");
+
+    if cfg!(target_os = "macos") {
+        assert_eq!(launch.program, "osascript");
+        assert_eq!(launch.label, "macOS Terminal");
+        assert!(launch.args.join(" ").contains("codex login"));
+    } else if cfg!(windows) {
+        assert_eq!(launch.program, "cmd");
+        assert_eq!(launch.label, "Windows Command Prompt");
+        assert_eq!(
+            launch.args,
+            vec![
+                "/C",
+                "start",
+                "DeckForge Codex Login",
+                "cmd",
+                "/K",
+                "codex login"
+            ]
+        );
+    } else {
+        assert_eq!(launch.program, "sh");
+        assert_eq!(launch.label, "system terminal");
+        assert!(launch.args.join(" ").contains("x-terminal-emulator"));
+    }
+}
+
+#[test]
+fn formats_search_path_and_quoted_login_commands() {
+    assert!(is_search_path_command(Path::new("codex")));
+    assert!(is_search_path_command(Path::new("codex.cmd")));
+    assert!(!is_search_path_command(Path::new("/Users/jake/bin/codex")));
+    assert_eq!(
+        command_invocation_prefix(Path::new("codex.cmd")),
+        "codex.cmd"
+    );
+
+    if cfg!(windows) {
+        assert_eq!(
+            windows_cmd_quote("C:\\Program Files\\Codex\\codex.cmd"),
+            "\"C:\\Program Files\\Codex\\codex.cmd\""
+        );
+    } else {
+        assert_eq!(
+            command_invocation_prefix(Path::new("/Users/jake/Library/Application Support/codex")),
+            "'/Users/jake/Library/Application Support/codex'"
+        );
+    }
 }
 
 #[test]
