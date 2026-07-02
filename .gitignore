@@ -27,6 +27,9 @@ test-results/
 # Downloaded handoff archives
 랜딩사이트/*.zip
 
+# Root-level verification screenshots
+/*.png
+
 # Local scratch checkouts
 deckforge-main-pr/
 
