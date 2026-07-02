@@ -9,6 +9,7 @@
 
 # Local tool metadata
 .lovable/
+deck-scribe-craft-07/.lovable/
 
 # Build and dependency outputs
 node_modules/

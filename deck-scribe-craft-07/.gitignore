@@ -18,6 +18,9 @@ src-tauri/gen/schemas
 src-tauri/target
 *.local
 
+# Local tool metadata
+.lovable/
+
 # Wrangler / Cloudflare
 .wrangler/
 .dev.vars
