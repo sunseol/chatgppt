@@ -1,7 +1,10 @@
 import {
   buildFullSlideDesignConsistencyContract,
+  formatTypographyControl,
   type FullSlideDesignConsistencyContract,
   type FullSlideOutputKind,
+  type FullSlideTypographyControl,
+  type FullSlideTypographyRole,
 } from "./full-slide-design-consistency";
 import { getPromptAsset, type PromptVersion } from "./prompt-assets";
 import type { SlideContextBundle } from "./slide-context-bundle";
@@ -11,9 +14,24 @@ import {
   type TextOverlayStrategy,
 } from "./text-overlay-strategy";
 
+export interface SlideTypographyZone {
+  readonly layerId: string;
+  readonly domRole: string;
+  readonly typographyRole: FullSlideTypographyRole;
+  readonly providerRaster: "native" | "forbidden";
+  readonly rule: string;
+  readonly bounds: {
+    readonly x: number;
+    readonly y: number;
+    readonly w: number;
+    readonly h: number;
+  };
+}
+
 export interface SlideControlSpec {
   readonly outputKind: FullSlideOutputKind;
   readonly designConsistencyContractId: string;
+  readonly designConsistencyPolicyId: string;
   readonly layoutArchetype: string;
   readonly slideRole: string;
   readonly visualHierarchy: {
@@ -21,6 +39,8 @@ export interface SlideControlSpec {
     readonly keyMessage: string;
     readonly visualType: string;
   };
+  readonly typographyControl: FullSlideTypographyControl;
+  readonly typographyZones: readonly SlideTypographyZone[];
   readonly mustPreserve: readonly string[];
   readonly mustAvoid: readonly string[];
 }
@@ -63,7 +83,13 @@ export function buildSlidePromptPackage(bundle: SlideContextBundle): SlidePrompt
     layoutScreenshot: bundle.layoutPrototype.layoutScreenshot,
     sourceMapIds: bundle.sourceMap.sourceMapIds,
     textOverlayStrategy,
-    prompt: buildPrompt(bundle, textOverlayStrategy, asset.contentHash, designConsistency, slideControlSpec),
+    prompt: buildPrompt(
+      bundle,
+      textOverlayStrategy,
+      asset.contentHash,
+      designConsistency,
+      slideControlSpec,
+    ),
   };
 }
 
@@ -154,6 +180,7 @@ function buildSlideControlSpec(
   return {
     outputKind: designConsistency.outputKind,
     designConsistencyContractId: designConsistency.contractId,
+    designConsistencyPolicyId: designConsistency.policyId,
     layoutArchetype: normalizeLayoutArchetype(bundle.slideSpec.visualType),
     slideRole: bundle.slideSpec.role,
     visualHierarchy: {
@@ -161,19 +188,65 @@ function buildSlideControlSpec(
       keyMessage: bundle.slideSpec.message,
       visualType: bundle.slideSpec.visualType,
     },
+    typographyControl: designConsistency.typographyControl,
+    typographyZones: buildTypographyZones(bundle, designConsistency.typographyControl),
     mustPreserve: [
       "header/footer locked positions",
       "card radius/stroke/shadow family",
       `safe area top ${safeArea.top}px right ${safeArea.right}px bottom ${safeArea.bottom}px left ${safeArea.left}px`,
       "same palette and typography fingerprints",
+      ...designConsistency.mustPreserve,
     ],
     mustAvoid: [...designConsistency.forbiddenFailures],
   };
 }
 
+const TYPOGRAPHY_ZONE_ROLE_MAP: Record<string, FullSlideTypographyRole> = {
+  title: "title",
+  subtitle: "subtitle",
+  hero: "hero",
+  message: "hero",
+  metric: "hero",
+  sectionMarker: "cardHeading",
+  heading: "cardHeading",
+  cardHeading: "cardHeading",
+  caption: "cardSupport",
+  supporting: "cardSupport",
+  callout: "cardSupport",
+  cta: "cardSupport",
+  cardSupport: "cardSupport",
+  body: "bodyParagraph",
+  source: "bodyParagraph",
+};
+
+const FORBIDDEN_RASTER_TYPOGRAPHY_ROLES: readonly FullSlideTypographyRole[] = ["bodyParagraph"];
+
+function buildTypographyZones(
+  bundle: SlideContextBundle,
+  typographyControl: FullSlideTypographyControl,
+): readonly SlideTypographyZone[] {
+  return bundle.layoutPrototype.domLayers.flatMap((layer) => {
+    const typographyRole = TYPOGRAPHY_ZONE_ROLE_MAP[layer.role];
+    if (typographyRole === undefined) return [];
+    return [
+      {
+        layerId: layer.id,
+        domRole: layer.role,
+        typographyRole,
+        providerRaster: FORBIDDEN_RASTER_TYPOGRAPHY_ROLES.includes(typographyRole)
+          ? "forbidden"
+          : "native",
+        rule: typographyControl[typographyRole],
+        bounds: layer.bounds,
+      } satisfies SlideTypographyZone,
+    ];
+  });
+}
+
 function normalizeLayoutArchetype(visualType: string): string {
   const normalized = visualType.trim().toLowerCase();
-  if (normalized.includes("chart") || normalized.includes("차트") || normalized.includes("그래프")) return "chart";
+  if (normalized.includes("chart") || normalized.includes("차트") || normalized.includes("그래프"))
+    return "chart";
   if (normalized.includes("timeline")) return "timeline";
   if (normalized.includes("map") || normalized.includes("route")) return "route_map";
   if (normalized.includes("comparison") || normalized.includes("table")) return "comparison";
@@ -187,12 +260,25 @@ function buildSlideControlSpecPromptBlock(spec: SlideControlSpec): string {
     "[SLIDE CONTROL SPEC]",
     `Output kind: ${spec.outputKind}`,
     `Design consistency contract: ${spec.designConsistencyContractId}`,
+    `Design consistency policy: ${spec.designConsistencyPolicyId}`,
     `Layout archetype: ${spec.layoutArchetype}`,
     `Slide role: ${spec.slideRole}`,
     `Visual hierarchy: title=${spec.visualHierarchy.title}; key_message=${spec.visualHierarchy.keyMessage}; visual_type=${spec.visualHierarchy.visualType}`,
+    `Typography control: ${formatTypographyControl(spec.typographyControl)}`,
+    `Typography zones: ${spec.typographyZones.length === 0 ? "none" : ""}`,
+    ...spec.typographyZones.map(formatTypographyZone),
     `Must preserve: ${spec.mustPreserve.join(", ")}`,
     `Must avoid: ${spec.mustAvoid.join(", ")}`,
   ].join("\n");
+}
+
+function formatTypographyZone(zone: SlideTypographyZone): string {
+  return [
+    `- ${zone.layerId} | ${zone.domRole}->${zone.typographyRole}`,
+    `raster=${zone.providerRaster}`,
+    `bounds ${formatBounds(zone.bounds)}`,
+    `rule "${zone.rule}"`,
+  ].join(" | ");
 }
 
 function formatDomLayer(layer: SlideContextBundle["layoutPrototype"]["domLayers"][number]): string {

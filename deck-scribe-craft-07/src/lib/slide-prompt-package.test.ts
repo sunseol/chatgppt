@@ -37,7 +37,7 @@ describe("slide prompt package", () => {
     expect(pkg.prompt.includes("dataset_001, dataset_002")).toBe(true);
   });
 
-  test("includes required negative constraints and text overlay instructions", () => {
+  test("includes required negative constraints and native typography instructions", () => {
     const pkg = buildSlidePromptPackage(chartSlideBundle());
 
     expect(pkg.prompt.includes("composition reference, not final style")).toBe(true);
@@ -52,9 +52,18 @@ describe("slide prompt package", () => {
     expect(
       pkg.prompt.includes("Do not add new numbers, sentences, logos, or source citations."),
     ).toBe(true);
+    expect(pkg.prompt.includes("[TYPOGRAPHY CONTROL]")).toBe(true);
+    expect(
+      pkg.prompt.includes(
+        "Render title, subtitle, hero, card heading, and card support text natively in the raster per the typography control contract",
+      ),
+    ).toBe(true);
+    expect(
+      pkg.prompt.includes("Do not render body paragraphs or source-list text in the raster"),
+    ).toBe(true);
     expect(
       pkg.prompt.includes("Do not render exact title, body, metric, chart, or source text"),
-    ).toBe(true);
+    ).toBe(false);
   });
 
   test("does not depend on original conversation history", () => {
@@ -70,6 +79,7 @@ describe("slide prompt package", () => {
     expect(pkg.slideControlSpec).toEqual({
       outputKind: "full_presentation_slide",
       designConsistencyContractId: pkg.designConsistency.contractId,
+      designConsistencyPolicyId: "controlled-native-typography-image-generation-v6",
       layoutArchetype: "chart",
       slideRole: "Market",
       visualHierarchy: {
@@ -77,11 +87,43 @@ describe("slide prompt package", () => {
         keyMessage: "AI 콘텐츠 제작 시장은 빠르게 확장 중",
         visualType: "막대 차트 + 인사이트 카드",
       },
+      typographyControl: pkg.designConsistency.typographyControl,
+      typographyZones: [
+        {
+          layerId: "slide_3_title",
+          domRole: "title",
+          typographyRole: "title",
+          providerRaster: "native",
+          rule: "bold but not oversized",
+          bounds: { x: 96, y: 72, w: 1728, h: 140 },
+        },
+        {
+          layerId: "slide_3_body",
+          domRole: "body",
+          typographyRole: "bodyParagraph",
+          providerRaster: "forbidden",
+          rule: "forbidden in provider raster",
+          bounds: { x: 96, y: 252, w: 1728, h: 676 },
+        },
+        {
+          layerId: "slide_3_source",
+          domRole: "source",
+          typographyRole: "bodyParagraph",
+          providerRaster: "forbidden",
+          rule: "forbidden in provider raster",
+          bounds: { x: 96, y: 968, w: 1728, h: 40 },
+        },
+      ],
       mustPreserve: [
         "header/footer locked positions",
         "card radius/stroke/shadow family",
         "safe area top 72px right 96px bottom 72px left 96px",
         "same palette and typography fingerprints",
+        "backend pipeline provenance",
+        "one design consistency contract",
+        "title-lock / no internal slide numbers / no accent bars",
+        "bright editorial IR design layer",
+        "system_consistent_varied target",
       ],
       mustAvoid: [
         "cropped_text",
@@ -90,12 +132,25 @@ describe("slide prompt package", () => {
         "region_intrusion",
         "node_line_misalignment",
         "poster_only_composition",
+        "visible_pasted_text_overlay",
+        "bold_text_generated_then_covered",
+        "awkward_repair_text_position",
+        "posthoc_coverup_as_product_answer",
+        "all_bold_typography",
+        "thin_text_blur",
+        "colored_vertical_accent_bar",
+        "ai_template_stripe",
       ],
     });
     expect(pkg.prompt.includes("[SLIDE CONTROL SPEC]")).toBe(true);
     expect(pkg.prompt.includes("Layout archetype: chart")).toBe(true);
     expect(pkg.prompt.includes("Must preserve: header/footer locked positions")).toBe(true);
     expect(pkg.prompt.includes("Must avoid: cropped_text")).toBe(true);
+    expect(pkg.prompt.includes("Typography zones:")).toBe(true);
+    expect(
+      pkg.prompt.includes("slide_3_title | title->title | raster=native | bounds 96,72,1728,140"),
+    ).toBe(true);
+    expect(pkg.prompt.includes("slide_3_body | body->bodyParagraph | raster=forbidden")).toBe(true);
   });
 });
 

@@ -1,7 +1,7 @@
 # Controlled Native Typography Image Generation v6
 
 작성일: 2026-07-02 06:56 KST
-분류: specification only — 아직 구현/재생성 완료 아님
+분류: specification — 계약/프롬프트/게이트 구현 반영됨(2026-09-20), provider 재생성 증거는 아직 없음
 
 ## Trigger feedback
 

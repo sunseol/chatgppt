@@ -26,6 +26,7 @@ export interface SlideImageRequestMetadata {
   readonly outputKind?: SlidePromptPackage["outputKind"];
   readonly designSystemId?: string;
   readonly designConsistencyContractId?: string;
+  readonly designConsistencyPolicyId?: string;
   readonly slideControlSpec?: SlideControlSpec;
   readonly requestId?: string;
   readonly size?: string;
@@ -83,6 +84,7 @@ export interface OpenAIImageClientRequest {
   readonly outputKind: SlidePromptPackage["outputKind"];
   readonly designSystemId: string;
   readonly designConsistencyContractId: string;
+  readonly designConsistencyPolicyId: string;
   readonly slideControlSpec?: SlideControlSpec;
   readonly aspectRatio: SlideImageAspectRatio;
   readonly layoutReference: SlideImageLayoutReference;
@@ -136,6 +138,7 @@ export function createOpenAIImageProvider(client: OpenAIImageClient): SlideImage
         outputKind: input.package.outputKind,
         designSystemId: input.package.designSystemId,
         designConsistencyContractId: input.package.designConsistency.contractId,
+        designConsistencyPolicyId: input.package.designConsistency.policyId,
         slideControlSpec: input.package.slideControlSpec,
         aspectRatio: input.aspectRatio,
         layoutReference,
@@ -205,6 +208,7 @@ function requestMetadata(
     outputKind: pkg.outputKind,
     designSystemId: pkg.designSystemId,
     designConsistencyContractId: pkg.designConsistency.contractId,
+    designConsistencyPolicyId: pkg.designConsistency.policyId,
     slideControlSpec: pkg.slideControlSpec,
     ...(response.requestId === undefined ? {} : { requestId: response.requestId }),
     ...(response.size === undefined ? {} : { size: response.size }),
@@ -220,7 +224,8 @@ function generatedSlideFromArtifact(artifact: SlideImageArtifact): GeneratedSlid
     version: 1,
     status: "ready",
     imageDescriptor: `${artifact.providerId}|${artifact.aspectRatio}|${artifact.layoutReference.screenshot}|${artifact.prompt.id}@${artifact.prompt.version}`,
-    notes: "Generated complete presentation slide raster; editable layers may be extracted or refined later.",
+    notes:
+      "Generated complete presentation slide raster; editable layers may be extracted or refined later.",
   };
 }
 
