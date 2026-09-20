@@ -19,7 +19,9 @@ describe("full-slide design consistency contract", () => {
       safeAreaPx: { top: 72, right: 96, bottom: 72, left: 96 },
     });
     expect(contract.componentGrammar.cards.includes("same radius")).toBe(true);
-    expect(contract.componentGrammar.nodesLines.includes("line must pass through exact node centers")).toBe(true);
+    expect(
+      contract.componentGrammar.nodesLines.includes("line must pass through exact node centers"),
+    ).toBe(true);
     expect(contract.componentGrammar.icons.includes("same stroke")).toBe(true);
     expect(contract.allowedVariation.includes("layout_archetype")).toBe(true);
     expect(contract.allowedVariation.includes("hero_motif_position")).toBe(true);
@@ -31,9 +33,82 @@ describe("full-slide design consistency contract", () => {
     expect(contract.forbiddenFailures.includes("node_line_misalignment")).toBe(true);
     expect(contract.forbiddenFailures.includes("poster_only_composition")).toBe(true);
     expect(contract.promptBlock.includes("Canvas: 16:9 1600x900")).toBe(true);
-    expect(contract.promptBlock.includes("Safe area: top 72px, right 96px, bottom 72px, left 96px")).toBe(true);
+    expect(
+      contract.promptBlock.includes("Safe area: top 72px, right 96px, bottom 72px, left 96px"),
+    ).toBe(true);
     expect(contract.promptBlock.includes("line must pass through exact node centers")).toBe(true);
-    expect(contract.promptBlock.includes("Forbidden failures: cropped_text, fake_microcopy, mask_leakage, region_intrusion, node_line_misalignment, poster_only_composition")).toBe(true);
+    expect(contract.promptBlock.includes("Forbidden failures: cropped_text")).toBe(true);
+  });
+
+  test("carries the v6 native typography control contract", () => {
+    const contract = buildFullSlideDesignConsistencyContract(controlBundle());
+
+    expect(contract.policyId).toBe("controlled-native-typography-image-generation-v6");
+    expect(contract.typographyControl).toEqual({
+      title: "bold but not oversized",
+      subtitle: "regular/light, high contrast, one line",
+      hero: "medium, max two lines",
+      cardHeading: "semibold",
+      cardSupport: "regular, one short phrase",
+      bodyParagraph: "forbidden in provider raster",
+    });
+    expect(contract.mustPreserve).toEqual([
+      "backend pipeline provenance",
+      "one design consistency contract",
+      "title-lock / no internal slide numbers / no accent bars",
+      "bright editorial IR design layer",
+      "system_consistent_varied target",
+    ]);
+    expect(contract.forbiddenFailures).toEqual([
+      "cropped_text",
+      "fake_microcopy",
+      "mask_leakage",
+      "region_intrusion",
+      "node_line_misalignment",
+      "poster_only_composition",
+      "visible_pasted_text_overlay",
+      "bold_text_generated_then_covered",
+      "awkward_repair_text_position",
+      "posthoc_coverup_as_product_answer",
+      "all_bold_typography",
+      "thin_text_blur",
+      "colored_vertical_accent_bar",
+      "ai_template_stripe",
+    ]);
+    expect(contract.promptBlock.includes("[TYPOGRAPHY CONTROL]")).toBe(true);
+    expect(
+      contract.promptBlock.includes(
+        "Typography control: title=bold but not oversized; subtitle=regular/light, high contrast, one line; hero=medium, max two lines; cardHeading=semibold; cardSupport=regular, one short phrase; bodyParagraph=forbidden in provider raster",
+      ),
+    ).toBe(true);
+    expect(
+      contract.promptBlock.includes("Typography is rendered natively inside the provider raster"),
+    ).toBe(true);
+    expect(contract.promptBlock.includes("Title lock: no internal slide numbers")).toBe(true);
+    expect(contract.promptBlock.includes("Must preserve: backend pipeline provenance")).toBe(true);
+    expect(
+      contract.promptBlock.includes("never cover generated text with a new pasted layer"),
+    ).toBe(true);
+  });
+
+  test("blocks a package whose slide control spec references a different contract", () => {
+    const contract = buildFullSlideDesignConsistencyContract(controlBundle());
+    const pkg = {
+      ...promptPackageWithoutControlRules(),
+      prompt: contract.promptBlock,
+      slideControlSpec: {
+        ...promptPackageWithoutControlRules().slideControlSpec!,
+        designConsistencyContractId: "other_contract",
+      },
+    };
+
+    const validation = validateFullSlideDesignConsistency([pkg]);
+
+    expect(validation.kind).toBe("blocked");
+    if (validation.kind !== "blocked") return;
+    expect(validation.issues.map((issue) => issue.code)).toEqual([
+      "control_spec_contract_mismatch",
+    ]);
   });
 
   test("keeps contract id stable for equivalent input and changes it when control-critical rules change", () => {
@@ -43,7 +118,10 @@ describe("full-slide design consistency contract", () => {
       ...controlBundle(),
       designTokens: {
         ...controlBundle().designTokens,
-        componentRules: [...controlBundle().designTokens.componentRules, "route nodes must be larger"],
+        componentRules: [
+          ...controlBundle().designTokens.componentRules,
+          "route nodes must be larger",
+        ],
       },
     });
 
@@ -58,9 +136,21 @@ describe("full-slide design consistency contract", () => {
 
     expect(validation.kind).toBe("blocked");
     if (validation.kind !== "blocked") return;
-    expect(validation.issues.map((issue) => issue.code).includes("missing_contract_rule")).toBe(true);
-    expect(validation.issues.map((issue) => issue.message).join("\n").includes("Canvas: 16:9")).toBe(true);
-    expect(validation.issues.map((issue) => issue.message).join("\n").includes("Forbidden failures")).toBe(true);
+    expect(validation.issues.map((issue) => issue.code).includes("missing_contract_rule")).toBe(
+      true,
+    );
+    expect(
+      validation.issues
+        .map((issue) => issue.message)
+        .join("\n")
+        .includes("Canvas: 16:9"),
+    ).toBe(true);
+    expect(
+      validation.issues
+        .map((issue) => issue.message)
+        .join("\n")
+        .includes("Forbidden failures"),
+    ).toBe(true);
   });
 });
 
@@ -79,6 +169,7 @@ function promptPackageWithoutControlRules(): SlidePromptPackage {
     slideControlSpec: {
       outputKind: "full_presentation_slide",
       designConsistencyContractId: designConsistency.contractId,
+      designConsistencyPolicyId: designConsistency.policyId,
       layoutArchetype: "cover_hero",
       slideRole: "cover",
       visualHierarchy: {
@@ -86,6 +177,8 @@ function promptPackageWithoutControlRules(): SlidePromptPackage {
         keyMessage: "도심 러닝 경험을 시민 캠페인으로 확장",
         visualType: "hero_anchor",
       },
+      typographyControl: designConsistency.typographyControl,
+      typographyZones: [],
       mustPreserve: [
         "header/footer locked positions",
         "card radius/stroke/shadow family",
@@ -152,7 +245,10 @@ function controlBundle(): SlideContextBundle {
         number: { style: "condensed numeric", minPx: 28, maxPx: 56 },
       },
       layoutRules: ["16:9 canvas", "96px horizontal safe margins", "72px vertical safe margins"],
-      componentRules: ["glass cards use same radius and stroke", "route line nodes align to exact centers"],
+      componentRules: [
+        "glass cards use same radius and stroke",
+        "route line nodes align to exact centers",
+      ],
       visualLanguage: "dark neon Seoul running-lane motif",
       negativeRules: ["no cropped text", "no fake UI labels", "no region intrusion"],
     },

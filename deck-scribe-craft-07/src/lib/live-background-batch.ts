@@ -9,7 +9,7 @@ export type LiveBackgroundBatchIssueCode =
   | "mock_provider_output"
   | "deck_context_mismatch"
   | "design_system_mismatch"
-  | "missing_text_overlay_rule"
+  | "missing_typography_control_rule"
   | "missing_provider_request_metadata"
   | "missing_stored_background_artifact"
   | "stored_background_artifact_mismatch"
@@ -95,7 +95,7 @@ function artifactIssues(
     ...slideIdIssues(artifact, pkg),
     ...layoutReferenceIssues(artifact, pkg),
     ...contextIssues(pkg, batch),
-    ...textOverlayIssues(pkg),
+    ...typographyControlIssues(pkg),
   ];
 }
 
@@ -257,14 +257,14 @@ function contextIssues(
   ];
 }
 
-function textOverlayIssues(pkg: SlidePromptPackage): readonly LiveBackgroundBatchIssue[] {
-  return pkg.prompt.includes("Do not render exact title")
+function typographyControlIssues(pkg: SlidePromptPackage): readonly LiveBackgroundBatchIssue[] {
+  return pkg.prompt.includes("[TYPOGRAPHY CONTROL]")
     ? []
     : [
         {
-          code: "missing_text_overlay_rule",
+          code: "missing_typography_control_rule",
           slideNumber: pkg.slideNumber,
-          message: "Prompt package must include the exact text overlay exclusion rule.",
+          message: "Prompt package must include the native typography control contract rules.",
         },
       ];
 }

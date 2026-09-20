@@ -35,7 +35,8 @@ describe("slide image provider call", () => {
       version: 1,
       status: "ready",
       imageDescriptor: "mock|16:9|slide_03_layout.png|slide_generation@v1",
-      notes: "Generated complete presentation slide raster; editable layers may be extracted or refined later.",
+      notes:
+        "Generated complete presentation slide raster; editable layers may be extracted or refined later.",
     });
   });
 
@@ -65,6 +66,7 @@ describe("slide image provider call", () => {
         outputKind: "full_presentation_slide",
         designSystemId: pkg.designSystemId,
         designConsistencyContractId: pkg.designConsistency.contractId,
+        designConsistencyPolicyId: pkg.designConsistency.policyId,
         slideControlSpec: pkg.slideControlSpec,
         aspectRatio: "4:3",
         layoutReference: {
@@ -80,6 +82,7 @@ describe("slide image provider call", () => {
       outputKind: "full_presentation_slide",
       designSystemId: pkg.designSystemId,
       designConsistencyContractId: pkg.designConsistency.contractId,
+      designConsistencyPolicyId: pkg.designConsistency.policyId,
       slideControlSpec: pkg.slideControlSpec,
       size: "1200x900",
       quality: "high",

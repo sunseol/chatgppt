@@ -62,7 +62,7 @@ describe("live background batch", () => {
           packages[0],
           { ...packages[1], deckContextId: "other_context" },
           { ...packages[2], designSystemId: "other_design" },
-          { ...packages[3], prompt: packages[3].prompt.replace("Do not render exact title", "") },
+          { ...packages[3], prompt: packages[3].prompt.replace("[TYPOGRAPHY CONTROL]", "") },
           packages[4],
         ],
       }),
@@ -78,7 +78,7 @@ describe("live background batch", () => {
       "slide_id_mismatch",
       "design_system_mismatch",
       "layout_reference_mismatch",
-      "missing_text_overlay_rule",
+      "missing_typography_control_rule",
     ]);
   });
 
@@ -193,6 +193,7 @@ function slidePackages(): SlidePromptPackage[] {
     outputKind: "full_presentation_slide",
     designConsistency: {
       contractId: "full_slide_design_contract_fixture",
+      policyId: "controlled-native-typography-image-generation-v6",
       outputKind: "full_presentation_slide",
       designSystemId: "design_001",
       canvas: {
@@ -216,6 +217,29 @@ function slidePackages(): SlidePromptPackage[] {
         "region_intrusion",
         "node_line_misalignment",
         "poster_only_composition",
+        "visible_pasted_text_overlay",
+        "bold_text_generated_then_covered",
+        "awkward_repair_text_position",
+        "posthoc_coverup_as_product_answer",
+        "all_bold_typography",
+        "thin_text_blur",
+        "colored_vertical_accent_bar",
+        "ai_template_stripe",
+      ],
+      typographyControl: {
+        title: "bold but not oversized",
+        subtitle: "regular/light, high contrast, one line",
+        hero: "medium, max two lines",
+        cardHeading: "semibold",
+        cardSupport: "regular, one short phrase",
+        bodyParagraph: "forbidden in provider raster",
+      },
+      mustPreserve: [
+        "backend pipeline provenance",
+        "one design consistency contract",
+        "title-lock / no internal slide numbers / no accent bars",
+        "bright editorial IR design layer",
+        "system_consistent_varied target",
       ],
       lockedRules: {
         headerFooter: "Header/footer template is locked across all slides",
@@ -224,6 +248,8 @@ function slidePackages(): SlidePromptPackage[] {
         motif: "Repeating motif is locked across all slides",
         grid: "Grid and spacing rhythm are locked across all slides",
         textDensity: "Maximum text density is locked across all slides",
+        nativeTypography: "Typography is rendered natively inside the provider raster",
+        titleLock: "Title lock: no internal slide numbers",
       },
       promptBlock: "[DESIGN CONSISTENCY CONTRACT]\nOutput kind: full_presentation_slide",
     },
@@ -240,14 +266,15 @@ function slidePackages(): SlidePromptPackage[] {
       generatedBackgroundLayerIds: ["background"],
       layers: [],
       negativePromptRules: [
-        "Do not render exact title, body, metric, chart, or source text.",
+        "Render title, subtitle, hero, card heading, and card support text natively in the slide raster; pasted or covering text layers are failures.",
         "Do not invent numbers, logos, citations, charts, or source captions.",
       ],
     },
     prompt: [
       "Deck Context ID: deck_context_001",
       "Design System ID: design_001",
-      "Do not render exact title, body, metric, chart, or source text",
+      "[TYPOGRAPHY CONTROL]",
+      "Render title, subtitle, hero, card heading, and card support text natively in the slide raster",
       "Layout screenshot composition reference",
     ].join("\n"),
   }));

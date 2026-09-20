@@ -79,9 +79,10 @@ export function buildTextOverlayStrategy(bundle: SlideContextBundle): TextOverla
     layers,
     negativePromptRules: [
       "composition reference, not final web UI",
-      "Do not render exact title, body, metric, chart, or source text.",
+      "Render title, subtitle, hero, card heading, and card support text natively in the slide raster; pasted or covering text layers are failures.",
       "Do not invent numbers, logos, citations, charts, or source captions.",
-      "Leave reserved overlay regions clean enough for editable text and data layers.",
+      "Do not render body paragraphs or source-list text in the raster; the typography control contract forbids them.",
+      "Keep editable and data regions visually separable for later layer extraction.",
     ],
   };
 }
@@ -92,10 +93,11 @@ export function buildTextOverlayPromptAddendum(strategy: TextOverlayStrategy): s
     `- Deck Context: ${strategy.deckContextId} (${strategy.deckContextHash})`,
     `- Layout reference: ${strategy.layoutScreenshot}`,
     "- Treat the HTML layout screenshot as composition reference, not final web UI.",
-    "- Do not render exact title, body, metric, chart, or source text in the generated image.",
+    "- The generated artifact is a finished slide raster, not a background layer.",
+    "- Render title, subtitle, hero, card heading, and card support text natively in the raster per the typography control contract; pasted or covering text layers are failures.",
+    "- Do not render body paragraphs or source-list text in the raster; the typography control contract forbids them.",
     "- Do not draw fake numbers, fake charts, fake logos, or source captions.",
-    `- Reserved editable/data overlay layers: ${strategy.reservedOverlayLayerIds.join(", ")}`,
-    "- Generated background may contain atmosphere, illustration, shape, texture, and photo regions only.",
+    `- Editable/data regions that must remain visually separable for later extraction: ${strategy.reservedOverlayLayerIds.join(", ")}`,
   ].join("\n");
 }
 

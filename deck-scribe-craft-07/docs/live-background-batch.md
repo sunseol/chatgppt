@@ -17,7 +17,7 @@ The validator also requires each artifact to preserve its slide identity, use th
 - `src/lib/slide-context-bundle.ts` now carries `designSystemId` from the approved design system into each slide context bundle.
 - `src/lib/slide-prompt-package.ts` includes `designSystemId` in the prompt package and the generated prompt text.
 - `src/lib/slide-generation-queue-types.ts` and `src/lib/slide-generation-queue.ts` keep queue context and worker input aligned on the shared design system.
-- `src/lib/live-background-batch.ts` validates the five-artifact batch and reports contract failures such as `mock_provider_output`, `missing_stored_background_artifact`, `stored_background_artifact_mismatch`, `deck_context_mismatch`, `design_system_mismatch`, `wrong_aspect_ratio`, `slide_id_mismatch`, `layout_reference_mismatch`, `invalid_image_binary`, `missing_provider_request_metadata`, and `missing_text_overlay_rule`.
+- `src/lib/live-background-batch.ts` validates the five-artifact batch and reports contract failures such as `mock_provider_output`, `missing_stored_background_artifact`, `stored_background_artifact_mismatch`, `deck_context_mismatch`, `design_system_mismatch`, `wrong_aspect_ratio`, `slide_id_mismatch`, `layout_reference_mismatch`, `invalid_image_binary`, `missing_provider_request_metadata`, and `missing_typography_control_rule`.
 - `getRetryableBackgroundSlideNumbers` returns only failed `retryable` slide numbers from a partial queue result, allowing isolated retry instead of regenerating successful slides.
 
 ## Verification

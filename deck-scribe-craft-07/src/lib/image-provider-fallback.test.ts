@@ -48,6 +48,7 @@ describe("OpenAI image fallback provider", () => {
       outputKind: "full_presentation_slide",
       designSystemId: "design_001",
       designConsistencyContractId: "full_slide_design_contract_fixture",
+      designConsistencyPolicyId: "controlled-native-typography-image-generation-v6",
       aspectRatio: "16:9",
       layoutReference: {
         screenshot: "layout.png",

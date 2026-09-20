@@ -28,15 +28,36 @@ export type FullSlideForbiddenFailure =
   | "mask_leakage"
   | "region_intrusion"
   | "node_line_misalignment"
-  | "poster_only_composition";
+  | "poster_only_composition"
+  | "visible_pasted_text_overlay"
+  | "bold_text_generated_then_covered"
+  | "awkward_repair_text_position"
+  | "posthoc_coverup_as_product_answer"
+  | "all_bold_typography"
+  | "thin_text_blur"
+  | "colored_vertical_accent_bar"
+  | "ai_template_stripe";
+
+export type FullSlideTypographyRole =
+  | "title"
+  | "subtitle"
+  | "hero"
+  | "cardHeading"
+  | "cardSupport"
+  | "bodyParagraph";
+
+export type FullSlideTypographyControl = Record<FullSlideTypographyRole, string>;
 
 export type FullSlideAllowedVariation =
   | "layout_archetype"
   | "hero_motif_position"
   | "accent_emphasis";
 
+export type FullSlideContractPolicyId = "controlled-native-typography-image-generation-v6";
+
 export type FullSlideDesignConsistencyContract = {
   readonly contractId: string;
+  readonly policyId: FullSlideContractPolicyId;
   readonly outputKind: FullSlideOutputKind;
   readonly designSystemId: string;
   readonly canvas: FullSlideControlCanvas;
@@ -45,6 +66,8 @@ export type FullSlideDesignConsistencyContract = {
   readonly componentGrammar: FullSlideComponentGrammar;
   readonly allowedVariation: readonly FullSlideAllowedVariation[];
   readonly forbiddenFailures: readonly FullSlideForbiddenFailure[];
+  readonly typographyControl: FullSlideTypographyControl;
+  readonly mustPreserve: readonly string[];
   readonly lockedRules: {
     readonly headerFooter: string;
     readonly cards: string;
@@ -52,6 +75,8 @@ export type FullSlideDesignConsistencyContract = {
     readonly motif: string;
     readonly grid: string;
     readonly textDensity: string;
+    readonly nativeTypography: string;
+    readonly titleLock: string;
   };
   readonly promptBlock: string;
 };
@@ -62,7 +87,8 @@ export type FullSlideDesignConsistencyIssue = {
     | "output_kind_mismatch"
     | "contract_id_mismatch"
     | "missing_contract_prompt_block"
-    | "missing_contract_rule";
+    | "missing_contract_rule"
+    | "control_spec_contract_mismatch";
   readonly message: string;
   readonly slideNumber?: number;
 };
@@ -90,6 +116,34 @@ const FORBIDDEN_FAILURES: readonly FullSlideForbiddenFailure[] = [
   "region_intrusion",
   "node_line_misalignment",
   "poster_only_composition",
+  "visible_pasted_text_overlay",
+  "bold_text_generated_then_covered",
+  "awkward_repair_text_position",
+  "posthoc_coverup_as_product_answer",
+  "all_bold_typography",
+  "thin_text_blur",
+  "colored_vertical_accent_bar",
+  "ai_template_stripe",
+];
+
+const CONTRACT_POLICY_ID: FullSlideContractPolicyId =
+  "controlled-native-typography-image-generation-v6";
+
+const TYPOGRAPHY_CONTROL: FullSlideTypographyControl = {
+  title: "bold but not oversized",
+  subtitle: "regular/light, high contrast, one line",
+  hero: "medium, max two lines",
+  cardHeading: "semibold",
+  cardSupport: "regular, one short phrase",
+  bodyParagraph: "forbidden in provider raster",
+};
+
+const CONTRACT_MUST_PRESERVE: readonly string[] = [
+  "backend pipeline provenance",
+  "one design consistency contract",
+  "title-lock / no internal slide numbers / no accent bars",
+  "bright editorial IR design layer",
+  "system_consistent_varied target",
 ];
 
 const REQUIRED_PROMPT_RULES = [
@@ -103,6 +157,16 @@ const REQUIRED_PROMPT_RULES = [
   "Repeating motif is locked across all slides",
   "Maximum text density is locked across all slides",
   "line must pass through exact node centers",
+  "[TYPOGRAPHY CONTROL]",
+  "title=bold but not oversized",
+  "subtitle=regular/light, high contrast, one line",
+  "hero=medium, max two lines",
+  "cardHeading=semibold",
+  "cardSupport=regular, one short phrase",
+  "bodyParagraph=forbidden in provider raster",
+  "Typography is rendered natively inside the provider raster",
+  "Title lock: no internal slide numbers",
+  "Must preserve: backend pipeline provenance",
   "Forbidden failures:",
 ] as const;
 
@@ -124,7 +188,11 @@ export function buildFullSlideDesignConsistencyContract(
   };
   const lockedRules = {
     headerFooter:
-      "Header/footer template is locked across all slides: same brand label position, same slide-number position, same footer rule, and cover-only exceptions must be explicit.",
+      "Header/footer template is locked across all slides: same brand label position, same footer rule, and cover-only exceptions must be explicit; internal slide numbers are not rendered inside the raster.",
+    nativeTypography:
+      "Typography is rendered natively inside the provider raster per the typography control contract: title/subtitle/hero/card text follow the approved weight hierarchy; post-hoc pasted or covering text layers are failures, not fixes.",
+    titleLock:
+      "Title lock: no internal slide numbers, no colored vertical accent bars, and no AI template stripes may appear inside the raster.",
     cards: `Card component rules are locked across all slides: ${componentGrammar.cards}`,
     icons: `Icon family and stroke weight are locked across all slides: ${componentGrammar.icons}`,
     motif: `Repeating motif is locked across all slides: reuse the approved visual language/motif instead of inventing a new visual metaphor. Approved visual language: ${visualLanguage}`,
@@ -132,6 +200,7 @@ export function buildFullSlideDesignConsistencyContract(
     textDensity: `Maximum text density is locked across all slides: large sparse title/labels only; no dashboard microtext, tiny footers, fake map labels, or dense body copy. Negative rules: ${negativeRules}`,
   };
   const contractSeed = {
+    policyId: CONTRACT_POLICY_ID,
     outputKind: OUTPUT_KIND,
     designSystemId: bundle.designSystemId,
     canvas: CONTROL_CANVAS,
@@ -140,6 +209,8 @@ export function buildFullSlideDesignConsistencyContract(
     componentGrammar,
     allowedVariation: ALLOWED_VARIATION,
     forbiddenFailures: FORBIDDEN_FAILURES,
+    typographyControl: TYPOGRAPHY_CONTROL,
+    mustPreserve: CONTRACT_MUST_PRESERVE,
     lockedRules,
   };
   const contractId = `full_slide_design_contract_${hashContent(canonicalJson(contractSeed)).replace(
@@ -148,6 +219,7 @@ export function buildFullSlideDesignConsistencyContract(
   )}`;
   return {
     contractId,
+    policyId: CONTRACT_POLICY_ID,
     outputKind: OUTPUT_KIND,
     designSystemId: bundle.designSystemId,
     canvas: CONTROL_CANVAS,
@@ -156,13 +228,18 @@ export function buildFullSlideDesignConsistencyContract(
     componentGrammar,
     allowedVariation: ALLOWED_VARIATION,
     forbiddenFailures: FORBIDDEN_FAILURES,
+    typographyControl: TYPOGRAPHY_CONTROL,
+    mustPreserve: CONTRACT_MUST_PRESERVE,
     lockedRules,
     promptBlock: buildPromptBlock({
       contractId,
+      policyId: CONTRACT_POLICY_ID,
       canvas: CONTROL_CANVAS,
       componentGrammar,
       allowedVariation: ALLOWED_VARIATION,
       forbiddenFailures: FORBIDDEN_FAILURES,
+      typographyControl: TYPOGRAPHY_CONTROL,
+      mustPreserve: CONTRACT_MUST_PRESERVE,
       lockedRules,
       paletteFingerprint,
       typographyFingerprint,
@@ -176,7 +253,9 @@ export function validateFullSlideDesignConsistency(
   if (packages.length === 0) {
     return {
       kind: "blocked",
-      issues: [{ code: "missing_prompt_package", message: "At least one prompt package is required." }],
+      issues: [
+        { code: "missing_prompt_package", message: "At least one prompt package is required." },
+      ],
     };
   }
 
@@ -213,6 +292,16 @@ export function validateFullSlideDesignConsistency(
         });
       }
     }
+    if (
+      pkg.slideControlSpec !== undefined &&
+      pkg.slideControlSpec.designConsistencyContractId !== pkg.designConsistency.contractId
+    ) {
+      issues.push({
+        code: "control_spec_contract_mismatch",
+        slideNumber: pkg.slideNumber,
+        message: `Slide ${pkg.slideNumber} slide control spec must reference the same design consistency contract.`,
+      });
+    }
   }
 
   if (issues.length > 0) return { kind: "blocked", issues };
@@ -221,10 +310,13 @@ export function validateFullSlideDesignConsistency(
 
 function buildPromptBlock(input: {
   readonly contractId: string;
+  readonly policyId: FullSlideContractPolicyId;
   readonly canvas: FullSlideControlCanvas;
   readonly componentGrammar: FullSlideComponentGrammar;
   readonly allowedVariation: readonly FullSlideAllowedVariation[];
   readonly forbiddenFailures: readonly FullSlideForbiddenFailure[];
+  readonly typographyControl: FullSlideTypographyControl;
+  readonly mustPreserve: readonly string[];
   readonly lockedRules: FullSlideDesignConsistencyContract["lockedRules"];
   readonly paletteFingerprint: string;
   readonly typographyFingerprint: string;
@@ -232,6 +324,7 @@ function buildPromptBlock(input: {
   return [
     "[DESIGN CONSISTENCY CONTRACT]",
     `Contract ID: ${input.contractId}`,
+    `Contract policy: ${input.policyId}`,
     "Output kind: full_presentation_slide",
     `Canvas: ${input.canvas.aspectRatio} ${input.canvas.width}x${input.canvas.height}`,
     `Safe area: top ${input.canvas.safeAreaPx.top}px, right ${input.canvas.safeAreaPx.right}px, bottom ${input.canvas.safeAreaPx.bottom}px, left ${input.canvas.safeAreaPx.left}px`,
@@ -244,10 +337,27 @@ function buildPromptBlock(input: {
     `- ${input.lockedRules.motif}`,
     `- ${input.lockedRules.grid}`,
     `- ${input.lockedRules.textDensity}`,
+    "[TYPOGRAPHY CONTROL]",
+    `Typography control: ${formatTypographyControl(input.typographyControl)}`,
+    `- ${input.lockedRules.nativeTypography}`,
+    `- ${input.lockedRules.titleLock}`,
+    `Must preserve: ${input.mustPreserve.join(", ")}`,
     `Allowed variation: ${input.allowedVariation.join(", ")}`,
     `Forbidden failures: ${input.forbiddenFailures.join(", ")}`,
     "- Treat this contract as a hard constraint. If the slide idea conflicts with it, simplify the slide idea instead of changing the system.",
+    "- Fix failed typography by regenerating inside this contract; never cover generated text with a new pasted layer.",
   ].join("\n");
+}
+
+export function formatTypographyControl(control: FullSlideTypographyControl): string {
+  return [
+    `title=${control.title}`,
+    `subtitle=${control.subtitle}`,
+    `hero=${control.hero}`,
+    `cardHeading=${control.cardHeading}`,
+    `cardSupport=${control.cardSupport}`,
+    `bodyParagraph=${control.bodyParagraph}`,
+  ].join("; ");
 }
 
 function canonicalJson(value: unknown): string {

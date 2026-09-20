@@ -180,7 +180,6 @@ export async function runProductionImageGenerationFlow(input: {
   };
 }
 
-
 export async function runProductionSlideRegenerationFlow(input: {
   readonly project: DeckProject;
   readonly provider: SlideImageProvider;
@@ -216,7 +215,8 @@ export async function runProductionSlideRegenerationFlow(input: {
   }
 
   const originalBackground = input.storedArtifacts.find(
-    (artifact) => artifact.metadata.slideNumber === input.slideNumber &&
+    (artifact) =>
+      artifact.metadata.slideNumber === input.slideNumber &&
       artifact.binary.artifactId.endsWith(`_v${originalSlide.version}`),
   );
   if (!originalBackground) {
@@ -242,7 +242,9 @@ export async function runProductionSlideRegenerationFlow(input: {
       issues: bundleResult.issues.map((message) => ({ code: "bundle_blocked", message })),
     };
   }
-  const bundle = bundleResult.bundles.find((item) => item.slideSpec.slideNumber === input.slideNumber);
+  const bundle = bundleResult.bundles.find(
+    (item) => item.slideSpec.slideNumber === input.slideNumber,
+  );
   if (!bundle) {
     return {
       kind: "blocked",
@@ -331,7 +333,9 @@ export async function runProductionSlideRegenerationFlow(input: {
     };
   }
 
-  const slides = [...approveLiveSlideRegenerationCandidate(input.project.slides ?? [], candidateResult.candidate)];
+  const slides = [
+    ...approveLiveSlideRegenerationCandidate(input.project.slides ?? [], candidateResult.candidate),
+  ];
   return {
     kind: "ready",
     promptPackage,
@@ -355,6 +359,7 @@ function revisionPromptPackage(
     "Regeneration instruction:",
     editInstruction,
     "Keep the approved deck context, design system, and editable overlay exclusions unchanged.",
+    "Repair under the same design consistency contract and typography control; regenerate the failed region in the raster instead of pasting or covering text.",
   ].join("\n");
   return {
     ...pkg,

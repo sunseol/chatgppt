@@ -49,14 +49,22 @@ describe("text overlay strategy", () => {
     expect(source?.sourceMapIds.includes("src_001")).toBe(true);
   });
 
-  test("builds a prompt addendum that bans exact text rendering without echoing text", () => {
+  test("builds a prompt addendum that requires native typography without echoing text", () => {
     const bundle = bundleWithMetricLayer();
     const addendum = buildTextOverlayPromptAddendum(buildTextOverlayStrategy(bundle));
 
     expect(addendum.includes("composition reference, not final web UI")).toBe(true);
     expect(
-      addendum.includes("Do not render exact title, body, metric, chart, or source text"),
+      addendum.includes(
+        "Render title, subtitle, hero, card heading, and card support text natively in the raster",
+      ),
     ).toBe(true);
+    expect(
+      addendum.includes("Do not render body paragraphs or source-list text in the raster"),
+    ).toBe(true);
+    expect(
+      addendum.includes("Do not render exact title, body, metric, chart, or source text"),
+    ).toBe(false);
     expect(addendum.includes(bundle.slideSpec.title)).toBe(false);
     expect(addendum.includes(bundle.slideSpec.message)).toBe(false);
   });
